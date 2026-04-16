@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}파이프라인 작업 목록 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">수능국어DB 파이프라인</h2>
+    <p class="text-sm text-gray-400 mt-1">{{ jobs|length }}개의 작업</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="/suneung/answer-keys"
+       class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition font-medium">
+      정답 DB
+    </a>
+    <a href="/suneung/upload"
+       class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+      + PDF 업로드
+    </a>
+  </div>
+</div>
+
+{% set status_styles = {
+  'parsing':     ('bg-yellow-100 text-yellow-700', 'PDF 변환 중...'),
+  'analyzing':   ('bg-yellow-100 text-yellow-700', 'OCR 중...'),
+  'segmenting':  ('bg-orange-100 text-orange-700', '구조화 중...'),
+  'tagging':     ('bg-blue-100 text-blue-700', '태깅 중...'),
+  'reviewing':   ('bg-green-100 text-green-700', '검수 대기'),
+  'done':        ('bg-gray-100 text-gray-500', '완료'),
+  'error':       ('bg-red-100 text-red-700', '오류'),
+} %}
+
+{% if jobs %}
+<div class="space-y-3">
+  {% for job in jobs %}
+  {% set _key = 'analyzing' if job.status.startswith('analyzing') else job.status %}
+  {% set style, label = status_styles.get(_key, ('bg-yellow-100 text-yellow-700', job.status)) %}
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-4"
+       id="job-{{ job.id }}">
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-sm font-semibold text-gray-800 truncate">{{ job.filename }}</span>
+        <span class="text-xs px-2 py-0.5 rounded-full {{ style }} font-medium status-badge">{{ label }}</span>
+      </div>
+      <div class="flex gap-3 text-xs text-gray-400 items-center">
+        {% set ec = (job.exam_type or '기타').replace(' ','') %}
+        {% set ys = job.source_year|string if job.source_year else '미지정' %}
+        {% set sj = job.subject or '국어' %}
+        <span class="font-mono text-blue-500 font-medium">{{ ys }}-{{ ec }}-{{ sj }}</span>
+        <span>{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+      </div>
+      {% if job.status == 'error' %}
+      <p class="text-xs text-red-500 mt-1 truncate">{{ job.error_message or '오류' }}</p>
+      {% endif %}
+    </div>
+
+    <div class="flex-shrink-0">
+      <div class="flex items-center gap-2">
+        {% if job.status == 'reviewing' %}
+        <a href="/suneung/review/{{ job.id }}"
+           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+          검수하기 →
+        </a>
+        {% elif job.status == 'done' %}
+        <a href="/?category=국어&subcategory=수능국어DB"
+           class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm rounded-lg transition">
+          결과 보기
+        </a>
+        {% elif job.status in ('parsing', 'tagging', 'segmenting') or job.status.startswith('analyzing') %}
+        <span class="text-xs text-gray-400 animate-pulse">처리 중...</span>
+        <form method="POST" action="/suneung/jobs/{{ job.id }}/cancel"
+              onsubmit="return confirm('작업을 취소하시겠습니까?')">
+          <button type="submit"
+                  class="px-3 py-1.5 text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg transition">
+            중지
+          </button>
+        </form>
+        {% endif %}
+
+        <!-- 삭제 버튼 (처리 중이 아닌 경우) -->
+        {% if job.status not in ('parsing', 'tagging', 'segmenting') and not job.status.startswith('analyzing') %}
+        <form method="POST" action="/suneung/jobs/{{ job.id }}/delete"
+              onsubmit="return confirm('이 작업을 삭제하시겠습니까?')">
+          <button type="submit"
+                  class="px-3 py-1.5 text-xs text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 rounded-lg transition">
+            삭제
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 py-20 text-center">
+  <p class="text-5xl mb-4">📭</p>
+  <p class="text-gray-400 mb-4">업로드된 파일이 없습니다.</p>
+  <a href="/suneung/upload"
+     class="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+    첫 PDF 업로드하기
+  </a>
+</div>
+{% endif %}
+
+<script>
+// 처리 중인 작업 상태 자동 갱신
+const processingJobs = [
+  {% for job in jobs %}
+  {% if job.status in ('parsing', 'tagging', 'segmenting') or job.status.startswith('analyzing') %}
+  "{{ job.id }}",
+  {% endif %}
+  {% endfor %}
+];
+
+const STATUS_MAP = {
+  parsing:   ['bg-yellow-100 text-yellow-700', '파싱 중...'],
+  analyzing: ['bg-yellow-100 text-yellow-700', 'AI 분석 중...'],
+  tagging:   ['bg-blue-100 text-blue-700', '태깅 중...'],
+  reviewing: ['bg-green-100 text-green-700', '검수 대기'],
+  done:      ['bg-gray-100 text-gray-500', '완료'],
+  error:     ['bg-red-100 text-red-700', '오류'],
+};
+
+async function pollJobs() {
+  for (const id of processingJobs) {
+    const res = await fetch(`/suneung/jobs/status/${id}`);
+    const data = await res.json();
+    const el = document.getElementById(`job-${id}`);
+    if (!el) continue;
+
+    const badge = el.querySelector('.status-badge');
+    if (badge && STATUS_MAP[data.status]) {
+      const [cls, label] = STATUS_MAP[data.status];
+      badge.className = `text-xs px-2 py-0.5 rounded-full ${cls} font-medium status-badge`;
+      badge.textContent = label;
+    }
+
+    if (data.status === 'reviewing' || data.status === 'done' || data.status === 'error') {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
+  }
+  if (processingJobs.length > 0) setTimeout(pollJobs, 3000);
+}
+
+if (processingJobs.length > 0) setTimeout(pollJobs, 3000);
+</script>
+{% endblock %}

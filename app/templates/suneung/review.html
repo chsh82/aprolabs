@@ -1,0 +1,1190 @@
+{% extends "base.html" %}
+{% block title %}검수 — {{ job.filename }}{% endblock %}
+
+{% block content_wrapper %}
+<style>
+/* 검수 페이지 전용: 뷰포트를 고정하고 내부 패널이 각자 스크롤 */
+body        { height: 100vh !important; overflow: hidden !important; }
+main        { overflow: hidden !important; height: 100% !important; }
+/* Tailwind flex-1 div (body > header + div.flex) */
+body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
+</style>
+<div style="display:flex;height:100%;overflow:hidden;">
+
+{# ══════════════════════════════════════════════════════
+   왼쪽: PDF 원본 패널
+══════════════════════════════════════════════════════ #}
+{# PDF 패널 (접기 가능) #}
+<div id="pdf-panel"
+     style="width:38%;min-width:260px;border-right:1px solid #e5e7eb;background:#f3f4f6;
+            flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;
+            transition:width 0.2s,min-width 0.2s;">
+
+  {# 패널 헤더: 접기 버튼 + 페이지 이동 #}
+  <div style="background:white;border-bottom:1px solid #e5e7eb;padding:7px 10px;
+              display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <button onclick="togglePdfPanel()" title="PDF 패널 접기"
+            style="width:22px;height:22px;font-size:11px;border:1px solid #e5e7eb;
+                   border-radius:5px;background:white;cursor:pointer;flex-shrink:0;">◀</button>
+    <span style="font-size:11px;font-weight:600;color:#6b7280;flex:1;min-width:0;
+                 white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">PDF 원본</span>
+    <div id="pdf-nav" style="display:none;align-items:center;gap:3px;flex-shrink:0;">
+      <button onclick="pdfPrev()"
+              style="width:22px;height:22px;font-size:11px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;">◀</button>
+      <span id="pdf-page-label"
+            style="font-size:11px;color:#374151;white-space:nowrap;min-width:40px;text-align:center;">
+        — / —
+      </span>
+      <button onclick="pdfNext()"
+              style="width:22px;height:22px;font-size:11px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;">▶</button>
+    </div>
+  </div>
+
+  {# 단일 페이지 뷰어 #}
+  <div id="pdf-viewer" style="flex:1;overflow-y:auto;padding:8px;">
+    <p id="pages-loading" style="font-size:11px;color:#9ca3af;text-align:center;padding:24px 0;">
+      페이지 로딩 중…
+    </p>
+    <img id="pdf-current-img" src="" alt=""
+         style="display:none;width:100%;border-radius:6px;border:1px solid #e5e7eb;
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+  </div>
+</div>
+
+{# 접힌 상태 탭 — 얇은 세로 바 #}
+<div id="pdf-collapsed-tab"
+     onclick="togglePdfPanel()" title="PDF 패널 열기"
+     style="display:none;flex-shrink:0;width:20px;background:#e5e7eb;
+            border-right:1px solid #d1d5db;cursor:pointer;
+            align-items:center;justify-content:center;
+            transition:background 0.15s;">
+  <span style="font-size:10px;color:#9ca3af;">▶</span>
+</div>
+
+{# ══════════════════════════════════════════════════════
+   오른쪽: 편집 패널
+══════════════════════════════════════════════════════ #}
+<div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0;background:#dbe4f0;" id="right-panel">
+
+  {# ── 헤더 ── #}
+  <div style="position:sticky;top:0;z-index:30;background:white;border-bottom:1px solid #e5e7eb;
+              padding:9px 16px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-shrink:0;">
+    <button id="pdf-reopen-btn" onclick="togglePdfPanel()" title="PDF 패널 열기"
+            style="display:none;width:26px;height:26px;font-size:12px;border:1px solid #e5e7eb;
+                   border-radius:6px;background:#f9fafb;cursor:pointer;flex-shrink:0;">▶</button>
+    <div style="min-width:0;flex:1;">
+      <p style="font-size:13px;font-weight:700;color:#1f2937;margin:0;
+                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px;">
+        {{ job.filename }}
+      </p>
+      <p style="font-size:11px;color:#9ca3af;margin:2px 0 0;">
+        {% set ec=(job.exam_type or '기타').replace(' ','') %}
+        {% set ys=job.source_year|string if job.source_year else '미지정' %}
+        {% set sj=job.subject or '국어' %}
+        <span style="font-family:monospace;color:#3b82f6;font-weight:600;">{{ ys }}-{{ ec }}-{{ sj }}</span>
+        {% if job.segments %}
+        &nbsp;·&nbsp; 지문 {{ job.segments.passages|length }}개 · 문항 {{ job.segments.questions|length }}개
+        &nbsp;·&nbsp; 검수 <span id="review-progress">0</span>/{{ job.segments.questions|length }}
+        {% endif %}
+      </p>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px;">
+      <button onclick="saveSegments()"
+              style="padding:6px 12px;font-size:12px;background:#f3f4f6;color:#374151;
+                     border:none;border-radius:8px;cursor:pointer;font-weight:500;">
+        임시 저장
+      </button>
+      <button onclick="approveJob()"
+              style="padding:6px 12px;font-size:12px;background:#2563eb;color:white;
+                     border:none;border-radius:8px;cursor:pointer;font-weight:500;">
+        DB 확정 저장 →
+      </button>
+    </div>
+  </div>
+
+  {% if job.status == 'error' %}
+  <div style="margin:10px 16px;padding:9px 12px;background:#fef2f2;border:1px solid #fecaca;
+              border-radius:8px;font-size:12px;color:#dc2626;">
+    파이프라인 오류: {{ job.error_message }}
+  </div>
+  {% endif %}
+
+  {# ── AI 교정 내역 ── #}
+  {% if job.raw_result and job.raw_result.get('verify_corrections') %}
+  {% set vc = job.raw_result.get('verify_corrections', []) %}
+  {% set fixed_list   = vc | selectattr('kind','equalto','fixed')   | list %}
+  {% set warning_list = vc | selectattr('kind','equalto','warning') | list %}
+  {% set error_list   = vc | selectattr('kind','equalto','error')   | list %}
+  <details style="margin:6px 16px 0;">
+    <summary style="font-size:11px;font-weight:600;color:#4338ca;cursor:pointer;
+                    padding:6px 10px;background:#eef2ff;border:1px solid #c7d2fe;
+                    border-radius:7px;list-style:none;display:flex;align-items:center;gap:8px;">
+      🤖 AI 자동 교정 결과
+      {% if fixed_list %}
+      <span style="background:#dcfce7;color:#15803d;padding:1px 7px;border-radius:20px;font-size:10px;">
+        ✅ 수정 {{ fixed_list|length }}건
+      </span>
+      {% endif %}
+      {% if warning_list %}
+      <span style="background:#fef3c7;color:#d97706;padding:1px 7px;border-radius:20px;font-size:10px;">
+        ⚠ 경고 {{ warning_list|length }}건
+      </span>
+      {% endif %}
+      {% if error_list %}
+      <span style="background:#fee2e2;color:#dc2626;padding:1px 7px;border-radius:20px;font-size:10px;">
+        ✗ 오류 {{ error_list|length }}건
+      </span>
+      {% endif %}
+    </summary>
+    <div style="margin-top:4px;padding:8px 12px;background:white;border:1px solid #e0e7ff;
+                border-radius:0 0 7px 7px;font-size:11px;line-height:1.8;max-height:200px;overflow-y:auto;">
+      {% for c in fixed_list %}
+      <div style="color:#15803d;">✅ [{{ c.location }}] {{ c.message }}</div>
+      {% endfor %}
+      {% for c in warning_list %}
+      <div style="color:#d97706;">⚠ [{{ c.location }}] {{ c.message }}</div>
+      {% endfor %}
+      {% for c in error_list %}
+      <div style="color:#dc2626;">✗ [{{ c.location }}] {{ c.message }}</div>
+      {% endfor %}
+    </div>
+  </details>
+  {% endif %}
+
+  {% if not job.segments %}
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#92400e;">
+    {% if job.status not in ('reviewing','done','error') %}
+    <div style="text-align:center;">
+      <p style="font-size:28px;margin:0 0 8px;">
+        {% if job.status == 'verifying' %}🤖{% else %}⚙️{% endif %}
+      </p>
+      <p style="font-size:14px;margin:0;">
+        {% if job.status == 'verifying' %}AI가 PDF와 JSON을 대조 중입니다{% else %}AI가 파일을 분석 중입니다{% endif %}
+      </p>
+      <p id="status-txt" style="font-size:11px;color:#b45309;margin:6px 0 0;">{{ job.status }}</p>
+    </div>
+    <script>
+      setInterval(async()=>{
+        const d=await(await fetch('/suneung/jobs/status/{{ job.id }}')).json();
+        document.getElementById('status-txt').textContent=d.status;
+        if(['reviewing','done'].includes(d.status))location.reload();
+      },3000);
+    </script>
+    {% else %}
+    <p style="font-size:14px;">파싱 결과가 없습니다.</p>
+    {% endif %}
+  </div>
+
+  {% else %}
+  <div id="segments-data" style="display:none;">{{ job.segments|tojson }}</div>
+
+  {# ── 탭 바 ── #}
+  <div id="tabs-bar"
+       style="position:sticky;top:53px;z-index:20;background:white;
+              border-bottom:2px solid #e5e7eb;padding:0 16px;display:flex;gap:2px;flex-shrink:0;">
+    <button onclick="switchTab('passages')" id="tab-passages"
+            style="padding:7px 14px;font-size:12px;font-weight:600;border:none;
+                   border-bottom:2px solid #2563eb;margin-bottom:-2px;
+                   background:none;color:#2563eb;cursor:pointer;">
+      지문 ({{ job.segments.passages|length }})
+    </button>
+    <button onclick="switchTab('questions')" id="tab-questions"
+            style="padding:7px 14px;font-size:12px;font-weight:500;border:none;
+                   border-bottom:2px solid transparent;margin-bottom:-2px;
+                   background:none;color:#6b7280;cursor:pointer;">
+      문항 ({{ job.segments.questions|length }})
+    </button>
+  </div>
+
+  {# ══════════════════════════════════════════════════════
+     툴바 (sticky)
+  ══════════════════════════════════════════════════════ #}
+  <div id="toolbar"
+       style="position:sticky;top:86px;z-index:19;background:#fafafa;
+              border-bottom:1px solid #e5e7eb;padding:5px 16px;flex-shrink:0;">
+
+    {# 줄 1: 특수문자 + 이동 #}
+    <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:4px;">
+
+      {# 되돌리기 / 다시실행 #}
+      <button onclick="doUndo()" title="되돌리기 (Ctrl+Z)"
+              style="width:28px;height:24px;font-size:14px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;line-height:1;">↩</button>
+      <button onclick="doRedo()" title="다시 실행 (Ctrl+Y)"
+              style="width:28px;height:24px;font-size:14px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;line-height:1;">↪</button>
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      {# 특수문자 팔레트 #}
+      <span style="font-size:10px;color:#9ca3af;margin-right:2px;">특수문자</span>
+      {% for ch in ['①','②','③','④','⑤'] %}
+      <button class="tb-char" onclick="insertChar('{{ ch }}')"
+              title="삽입: {{ ch }}"
+              style="min-width:26px;height:24px;font-size:13px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;padding:0 3px;">{{ ch }}</button>
+      {% endfor %}
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      {% for ch in ['「','」','『','』'] %}
+      <button class="tb-char" onclick="insertChar('{{ ch }}')"
+              style="min-width:24px;height:24px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;padding:0 3px;">{{ ch }}</button>
+      {% endfor %}
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      {% for ch in ['㉠','㉡','㉢','㉣','㉤'] %}
+      <button class="tb-char" onclick="insertChar('{{ ch }}')"
+              style="min-width:24px;height:24px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;padding:0 3px;">{{ ch }}</button>
+      {% endfor %}
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      {% for ch in ['…','—','·'] %}
+      <button class="tb-char" onclick="insertChar('{{ ch }}')"
+              style="min-width:24px;height:24px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;padding:0 3px;">{{ ch }}</button>
+      {% endfor %}
+
+      {# 이동 — 우측 #}
+      <div style="margin-left:auto;display:flex;align-items:center;gap:4px;">
+        <button onclick="prevQ()"
+                style="width:26px;height:24px;font-size:13px;border:1px solid #e5e7eb;
+                       border-radius:5px;background:white;cursor:pointer;">◀</button>
+        <input id="jump-input" type="number" min="1" placeholder="번"
+               onkeydown="if(event.key==='Enter')jumpToQ(parseInt(this.value))"
+               style="width:48px;height:24px;text-align:center;font-size:12px;
+                      border:1px solid #e5e7eb;border-radius:5px;outline:none;padding:0 4px;">
+        <span style="font-size:11px;color:#6b7280;">번</span>
+        <button onclick="jumpToQ(parseInt(document.getElementById('jump-input').value))"
+                style="height:24px;padding:0 7px;font-size:11px;background:#e0e7ff;color:#4338ca;
+                       border:none;border-radius:5px;cursor:pointer;">이동</button>
+        <button onclick="nextQ()"
+                style="width:26px;height:24px;font-size:13px;border:1px solid #e5e7eb;
+                       border-radius:5px;background:white;cursor:pointer;">▶</button>
+      </div>
+    </div>
+
+    {# 줄 2: 마커 버튼 + 찾기/바꾸기 #}
+    <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+      <span style="font-size:10px;color:#9ca3af;margin-right:2px;">마커</span>
+
+      <button onclick="toggleUnderline()"
+              title="선택 텍스트 밑줄 토글 (두 번 누르면 제거)"
+              style="height:24px;padding:0 9px;font-size:11px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;text-decoration:underline;font-weight:500;">
+        밑줄
+      </button>
+      <select id="bracket-letter"
+              style="height:24px;font-size:11px;border:1px solid #bfdbfe;border-radius:5px;
+                     padding:0 4px;background:#eff6ff;color:#2563eb;cursor:pointer;">
+        <option value="A">[A]</option>
+        <option value="B">[B]</option>
+        <option value="C">[C]</option>
+        <option value="D">[D]</option>
+        <option value="E">[E]</option>
+      </select>
+      <button onclick="insertBracket('START')"
+              style="height:24px;padding:0 8px;font-size:11px;border:1px solid #bfdbfe;
+                     border-radius:5px;background:#eff6ff;color:#2563eb;cursor:pointer;font-family:monospace;">
+        시작
+      </button>
+      <button onclick="insertBracket('END')"
+              style="height:24px;padding:0 8px;font-size:11px;border:1px solid #bfdbfe;
+                     border-radius:5px;background:#eff6ff;color:#2563eb;cursor:pointer;font-family:monospace;">
+        끝
+      </button>
+      <button onclick="insertChar('\n<보기>\n')"
+              style="height:24px;padding:0 8px;font-size:11px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;">
+        &lt;보기&gt;
+      </button>
+      <button onclick="insertImgMarker()"
+              style="height:24px;padding:0 8px;font-size:11px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;color:#6b7280;">
+        [[IMG]]
+      </button>
+
+      {# 찾기/바꾸기 — 우측 #}
+      <button onclick="toggleFR()"
+              id="fr-toggle-btn"
+              style="margin-left:auto;height:24px;padding:0 10px;font-size:11px;
+                     background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;
+                     border-radius:5px;cursor:pointer;font-weight:500;">
+        찾기/바꾸기
+      </button>
+    </div>
+
+    {# 찾기/바꾸기 패널 (접힘) #}
+    <div id="fr-panel"
+         style="display:none;margin-top:6px;padding:10px 12px;background:white;
+                border:1px solid #e5e7eb;border-radius:8px;">
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <label style="display:block;font-size:10px;color:#9ca3af;margin-bottom:3px;">찾기</label>
+          <input id="fr-find" type="text"
+                 style="width:100%;padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;
+                        font-size:12px;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <label style="display:block;font-size:10px;color:#9ca3af;margin-bottom:3px;">바꾸기</label>
+          <input id="fr-replace" type="text"
+                 style="width:100%;padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;
+                        font-size:12px;outline:none;box-sizing:border-box;">
+        </div>
+        <button onclick="findReplaceAll()"
+                style="height:30px;padding:0 12px;font-size:12px;background:#2563eb;color:white;
+                       border:none;border-radius:6px;cursor:pointer;font-weight:500;white-space:nowrap;">
+          모두 바꾸기
+        </button>
+        <span id="fr-result" style="font-size:11px;color:#6b7280;align-self:center;"></span>
+      </div>
+      {# 프리셋 #}
+      <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:10px;color:#9ca3af;">프리셋</span>
+        <button onclick="applyPreset('  ',' ')" class="preset-btn">이중공백→단일</button>
+        <button onclick="applyPreset('ㅣ','|')" class="preset-btn">ㅣ→|</button>
+        <button onclick="applyPreset('（','(')" class="preset-btn">（→(</button>
+        <button onclick="applyPreset('）',')')" class="preset-btn">）→)</button>
+        <button onclick="applyPreset('、','，')" class="preset-btn">、→，</button>
+      </div>
+    </div>
+  </div>
+  {# ── 툴바 끝 ── #}
+
+  {# ══════════════════════════════════════════════════════
+     지문 패널 (1개씩 표시 / 2단 레이아웃)
+  ══════════════════════════════════════════════════════ #}
+  <div id="panel-passages" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+
+    {# 지문 네비게이션 바 #}
+    <div style="padding:7px 12px;background:white;border-bottom:1px solid #e5e7eb;
+                display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <button onclick="prevPassage()" id="btn-prev-passage"
+              style="height:26px;padding:0 10px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:6px;background:white;cursor:pointer;" disabled>◀ 이전</button>
+      <span id="passage-nav-label"
+            style="font-size:12px;font-weight:600;color:#374151;min-width:90px;text-align:center;">
+        지문 1 / {{ job.segments.passages|length }}
+      </span>
+      <button onclick="nextPassage()" id="btn-next-passage"
+              style="height:26px;padding:0 10px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:6px;background:white;cursor:pointer;">다음 ▶</button>
+      <button onclick="saveCurrentPassage()"
+              style="height:26px;padding:0 12px;font-size:12px;background:#f0fdf4;
+                     color:#16a34a;border:1px solid #86efac;border-radius:6px;
+                     cursor:pointer;font-weight:500;margin-left:auto;">
+        💾 임시 저장
+      </button>
+    </div>
+
+    {# 지문 카드들 — 하나씩 표시 #}
+    {% for p in job.segments.passages %}
+    <div id="p-card-{{ loop.index0 }}"
+         style="flex:1;display:{% if loop.first %}flex{% else %}none{% endif %};
+                flex-direction:column;overflow:hidden;min-height:0;">
+
+      {# 지문 헤더 #}
+      <div style="padding:6px 12px;background:#f9fafb;border-bottom:1px solid #f3f4f6;
+                  display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span style="font-size:11px;padding:2px 8px;background:#e0e7ff;color:#4338ca;
+                     border-radius:20px;font-weight:600;">지문 {{ loop.index }}</span>
+        <span style="font-size:10px;color:#d1d5db;font-family:monospace;">#p{{ loop.index0 }}</span>
+        {% if p.question_range %}
+        <span style="font-size:11px;color:#9ca3af;">{{ p.question_range }}</span>
+        {% endif %}
+        {% for c in (p.concepts or []) %}
+        <span style="font-size:10px;padding:2px 6px;background:#eff6ff;color:#3b82f6;border-radius:20px;">{{ c }}</span>
+        {% endfor %}
+        {% if p.get('complexity_score') is not none %}
+        <span style="font-size:10px;color:#f59e0b;margin-left:auto;">복잡도 {{ "%.2f"|format(p.get('complexity_score')) }}</span>
+        {% endif %}
+      </div>
+
+      {# 2단 본문: 미리보기 | 실제 데이터 #}
+      <div style="flex:1;display:flex;overflow:hidden;min-height:0;">
+
+        {# 왼쪽: 미리보기 #}
+        <div style="flex:1;border-right:2px solid #e5e7eb;overflow-y:auto;padding:14px 16px;
+                    background:#fafafa;">
+          <div style="font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:0.06em;
+                      margin-bottom:10px;text-transform:uppercase;">미리보기</div>
+          <div id="p-preview-{{ loop.index0 }}"
+               style="font-size:12px;line-height:1.9;white-space:pre-wrap;
+                      word-break:break-word;color:#1f2937;">
+            {{ p.content|render_brackets|safe if p.content else '' }}
+          </div>
+        </div>
+
+        {# 오른쪽: 실제 데이터 편집 #}
+        <div style="flex:1;display:flex;flex-direction:column;padding:14px 16px;
+                    background:white;gap:8px;min-width:0;">
+          <div style="font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:0.06em;
+                      flex-shrink:0;text-transform:uppercase;">실제 데이터</div>
+          <textarea style="flex:1;width:100%;padding:8px 10px;border:1px solid #e5e7eb;
+                           border-radius:7px;font-size:12px;font-family:monospace;resize:none;
+                           outline:none;box-sizing:border-box;line-height:1.7;"
+                    data-type="passage" data-idx="{{ loop.index0 }}" data-field="content"
+                    oninput="markDirty();livePreview({{ loop.index0 }})"
+                    onfocus="onFocus(this)" onblur="onBlur(this)">{{ p.content or '' }}</textarea>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if not job.segments.passages %}
+    <p style="font-size:13px;color:#9ca3af;text-align:center;padding:24px 0;">추출된 지문이 없습니다.</p>
+    {% endif %}
+  </div>
+
+  {# ══════════════════════════════════════════════════════
+     문항 패널
+  ══════════════════════════════════════════════════════ #}
+  <div id="panel-questions" style="display:none;padding:14px 16px;flex-direction:column;gap:8px;">
+    {% for q in job.segments.questions %}
+    {% set qi = loop.index0 %}
+    <div id="q-card-{{ qi }}" data-q-num="{{ q.number }}" data-q-idx="{{ qi }}"
+         style="background:white;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;
+                border-left:3px solid #e5e7eb;transition:border-color 0.2s;">
+
+      {# 문항 헤더 #}
+      <div style="padding:7px 12px;background:#f9fafb;border-bottom:1px solid #f3f4f6;
+                  display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+        <button id="q-toggle-{{ qi }}" onclick="toggleQuestion({{ qi }});event.stopPropagation();"
+                style="width:24px;height:24px;font-size:11px;border:1px solid #e5e7eb;
+                       border-radius:6px;background:white;cursor:pointer;color:#6b7280;
+                       flex-shrink:0;padding:0;line-height:1;">▲</button>
+        <span style="font-size:15px;font-weight:700;color:#111827;">{{ q.number }}번</span>
+        <span style="font-size:10px;color:#d1d5db;font-family:monospace;">#q{{ qi }}</span>
+        {% if q.get('passage_idx') is not none %}
+        <span style="font-size:11px;padding:2px 7px;background:#e0e7ff;color:#4338ca;border-radius:20px;">
+          지문{{ q.get('passage_idx')+1 }}</span>
+        {% endif %}
+        {% if q.difficulty %}
+        <span style="font-size:11px;padding:2px 7px;border-radius:20px;
+          {% if q.difficulty == '상' %}background:#fee2e2;color:#dc2626;
+          {% elif q.difficulty == '중' %}background:#fef3c7;color:#d97706;
+          {% else %}background:#d1fae5;color:#059669;{% endif %}">{{ q.difficulty }}</span>
+        {% endif %}
+        {% for tt in (q.thinking_types or []) %}
+        <span style="font-size:10px;padding:2px 7px;background:#f3e8ff;color:#7c3aed;border-radius:20px;">{{ tt }}</span>
+        {% endfor %}
+
+        {# 검수 상태 버튼 #}
+        <button id="status-btn-{{ qi }}" onclick="cycleStatus({{ qi }})"
+                data-status=""
+                style="height:22px;padding:0 8px;font-size:11px;border:1px solid #e5e7eb;
+                       border-radius:20px;background:white;color:#9ca3af;cursor:pointer;">
+          미검수
+        </button>
+
+        {# 삭제 버튼 #}
+        <button onclick="deleteQuestion({{ qi }})"
+                style="height:22px;padding:0 7px;font-size:11px;border:1px solid #fecaca;
+                       border-radius:20px;background:white;color:#ef4444;cursor:pointer;margin-left:2px;">
+          삭제
+        </button>
+
+        {# 정답 버튼 — 우측 #}
+        <div style="margin-left:auto;display:flex;align-items:center;gap:3px;">
+          <span style="font-size:10px;color:#9ca3af;margin-right:3px;">정답</span>
+          {% for circle in ['①','②','③','④','⑤'] %}
+          <button type="button"
+                  onclick="setAnswer({{ qi }},'{{ circle }}')"
+                  data-ans-idx="{{ qi }}" data-ans-val="{{ circle }}"
+                  style="width:27px;height:27px;font-size:13px;border-radius:50%;cursor:pointer;
+                         border:1px solid;transition:all 0.1s;
+                         {% if q.answer == circle %}
+                         background:#2563eb;color:white;border-color:#2563eb;font-weight:700;
+                         {% else %}
+                         background:white;color:#6b7280;border-color:#d1d5db;
+                         {% endif %}">{{ circle }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# 문항 본문 #}
+      <div id="q-body-{{ qi }}" style="padding:12px;display:flex;flex-direction:column;gap:9px;">
+
+        {# 발문 #}
+        <div>
+          <label style="font-size:10px;font-weight:500;color:#9ca3af;display:block;margin-bottom:3px;">발문</label>
+          {% if q.stem %}
+          <div style="margin-bottom:5px;padding:7px 10px;background:#f9fafb;border:1px solid #f3f4f6;
+                      border-radius:7px;font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-word;">
+            {{ q.stem|safe }}</div>
+          {% endif %}
+          <textarea style="width:100%;padding:6px 10px;border:1px solid #e5e7eb;border-radius:7px;
+                           font-size:12px;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;"
+                    rows="2"
+                    data-type="question" data-idx="{{ qi }}" data-field="stem"
+                    oninput="markDirty()" onfocus="onFocus(this)" onblur="onBlur(this)">{{ q.stem or '' }}</textarea>
+        </div>
+
+        {# 보기 #}
+        <div id="bogi-section-{{ qi }}"{% if not q.bogi %} style="display:none;"{% endif %}>
+          <label style="font-size:10px;font-weight:500;color:#9ca3af;display:block;margin-bottom:3px;">&lt;보기&gt;</label>
+          {% if q.bogi %}
+          <div style="margin-bottom:5px;padding:7px 10px;background:#eff6ff;border:1px solid #dbeafe;
+                      border-radius:7px;font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-word;">
+            {{ q.bogi|safe }}</div>
+          {% endif %}
+          <textarea style="width:100%;padding:6px 10px;border:1px solid #e5e7eb;border-radius:7px;
+                           font-size:12px;font-family:monospace;resize:vertical;outline:none;
+                           box-sizing:border-box;line-height:1.6;"
+                    rows="3"
+                    data-type="question" data-idx="{{ qi }}" data-field="bogi"
+                    oninput="markDirty()" onfocus="onFocus(this)" onblur="onBlur(this)">{{ q.bogi or '' }}</textarea>
+        </div>
+
+        {# 선택지 #}
+        <div id="choices-section-{{ qi }}">
+          {% if q.choices %}
+          <label style="font-size:10px;font-weight:500;color:#9ca3af;display:block;margin-bottom:3px;">선택지</label>
+          {% set cmap={'1':'①','2':'②','3':'③','4':'④','5':'⑤'} %}
+          {% for k,v in q.choices.items() %}
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
+            <span style="font-size:13px;color:#6b7280;flex-shrink:0;width:18px;text-align:center;">
+              {{ cmap.get(k,k) }}</span>
+            <input type="text" value="{{ v }}"
+                   style="flex:1;padding:4px 9px;border:1px solid #e5e7eb;border-radius:7px;
+                          font-size:12px;outline:none;"
+                   data-type="question" data-idx="{{ qi }}" data-field="choices.{{ k }}"
+                   oninput="markDirty()" onfocus="onFocus(this)" onblur="onBlur(this)">
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+
+        {# 빠른 추가 버튼 #}
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          {% if not q.bogi %}
+          <button onclick="addBogi({{ qi }})"
+                  style="height:24px;padding:0 10px;font-size:11px;border:1px dashed #93c5fd;
+                         border-radius:6px;background:#eff6ff;color:#3b82f6;cursor:pointer;">
+            + 보기 추가
+          </button>
+          {% endif %}
+          {% if not q.choices %}
+          <button onclick="addChoices({{ qi }})"
+                  style="height:24px;padding:0 10px;font-size:11px;border:1px dashed #86efac;
+                         border-radius:6px;background:#f0fdf4;color:#16a34a;cursor:pointer;">
+            + 선택지 추가
+          </button>
+          {% endif %}
+        </div>
+
+        {# 해설 (접힘) #}
+        <details>
+          <summary style="font-size:11px;color:#9ca3af;cursor:pointer;user-select:none;padding:2px 0;list-style:none;">
+            ▸ 해설 펼치기
+          </summary>
+          <div style="margin-top:5px;">
+            <textarea style="width:100%;padding:6px 10px;border:1px solid #e5e7eb;border-radius:7px;
+                             font-size:12px;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;"
+                      rows="2"
+                      data-type="question" data-idx="{{ qi }}" data-field="explanation"
+                      oninput="markDirty()" onfocus="onFocus(this)" onblur="onBlur(this)">{{ q.explanation or '' }}</textarea>
+          </div>
+        </details>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if not job.segments.questions %}
+    <p style="font-size:13px;color:#9ca3af;text-align:center;padding:24px 0;">추출된 문항이 없습니다.</p>
+    {% endif %}
+  </div>
+
+  {% endif %}{# end if job.segments #}
+</div>{# end right panel #}
+</div>{# end split #}
+
+{# 저장 토스트 #}
+<div id="save-toast"
+     style="display:none;position:fixed;bottom:20px;right:20px;z-index:50;
+            background:#16a34a;color:white;padding:7px 16px;border-radius:9px;
+            font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+  저장됨 ✓
+</div>
+
+<style>
+.preset-btn {
+  height:22px;padding:0 8px;font-size:10px;border:1px solid #e5e7eb;
+  border-radius:5px;background:white;cursor:pointer;color:#6b7280;white-space:nowrap;
+}
+.preset-btn:hover { background:#f3f4f6; }
+.tb-char:hover { background:#f0f9ff !important; border-color:#93c5fd !important; }
+</style>
+
+<script>
+{% if job.segments %}
+let segments = JSON.parse(document.getElementById('segments-data').textContent);
+{% else %}
+let segments = {passages:[],questions:[]};
+{% endif %}
+
+// 지문/문항에 임시 고유 ID 부여 (편집 중 안정적 식별용)
+segments.passages.forEach((p, i) => { if (!p._id) p._id = 'p' + i; });
+segments.questions.forEach((q, i) => { if (!q._id) q._id = 'q' + (q.number ?? i); });
+
+let dirty       = false;
+let lastFocused = null;  // 마지막으로 포커스된 텍스트 입력란
+let reviewCount = 0;     // 검수 완료 문항 수
+
+// ─── Undo / Redo 스택 ─────────────────────────
+const undoStacks = new WeakMap();  // el → [{v, s, e}]
+const redoStacks = new WeakMap();
+
+function pushUndo(el) {
+  if (!el) return;
+  if (!undoStacks.has(el)) undoStacks.set(el, []);
+  if (!redoStacks.has(el)) redoStacks.set(el, []);
+  const stk = undoStacks.get(el);
+  stk.push({v: el.value, s: el.selectionStart, e: el.selectionEnd});
+  if (stk.length > 80) stk.shift();
+  redoStacks.set(el, []);  // 새 작업 시 redo 초기화
+}
+
+function doUndo() {
+  const el = getTarget();
+  if (!el) return;
+  const stk = undoStacks.get(el);
+  if (!stk || !stk.length) return;
+  const redo = redoStacks.get(el) || [];
+  redo.push({v: el.value, s: el.selectionStart, e: el.selectionEnd});
+  redoStacks.set(el, redo);
+  const prev = stk.pop();
+  el.value = prev.v; el.selectionStart = prev.s; el.selectionEnd = prev.e;
+  el.focus(); markDirty();
+}
+
+function doRedo() {
+  const el = getTarget();
+  if (!el) return;
+  const stk = redoStacks.get(el);
+  if (!stk || !stk.length) return;
+  const undo = undoStacks.get(el) || [];
+  undo.push({v: el.value, s: el.selectionStart, e: el.selectionEnd});
+  undoStacks.set(el, undo);
+  const next = stk.pop();
+  el.value = next.v; el.selectionStart = next.s; el.selectionEnd = next.e;
+  el.focus(); markDirty();
+}
+
+// ─── 포커스 추적 ─────────────────────────────
+function onFocus(el) { lastFocused = el; }
+function onBlur(el)  { /* keep lastFocused */ }
+
+function getTarget() {
+  const a = document.activeElement;
+  if (a && (a.tagName==='TEXTAREA'||a.tagName==='INPUT') && a.dataset.type) return a;
+  return lastFocused;
+}
+
+function markDirty() { dirty = true; }
+
+// ─── 특수문자 삽입 ────────────────────────────
+function insertChar(ch) {
+  const el = getTarget();
+  if (!el || el.tagName==='INPUT' && el.type==='number') return;
+  pushUndo(el);
+  const s=el.selectionStart, e=el.selectionEnd;
+  el.value = el.value.slice(0,s) + ch + el.value.slice(e);
+  el.selectionStart = el.selectionEnd = s + ch.length;
+  el.focus();
+  markDirty();
+}
+
+// ─── 밑줄 토글 ───────────────────────────────
+function toggleUnderline() {
+  const el = getTarget();
+  if (!el || el.tagName !== 'TEXTAREA') return;
+  const s = el.selectionStart, e = el.selectionEnd;
+  const sel = el.value.slice(s, e);
+  // 선택 영역이 정확히 <u>...</u> 로 감싸진 경우 제거
+  if (sel.startsWith('<u>') && sel.endsWith('</u>')) {
+    pushUndo(el);
+    const inner = sel.slice(3, sel.length - 4);
+    el.value = el.value.slice(0, s) + inner + el.value.slice(e);
+    el.selectionStart = s;
+    el.selectionEnd = s + inner.length;
+    el.focus(); markDirty(); return;
+  }
+  // 선택 영역 바깥이 <u>...</u> 로 감싸진 경우도 제거
+  const before4 = el.value.slice(Math.max(0, s - 3), s);
+  const after5  = el.value.slice(e, e + 4);
+  if (before4 === '<u>' && after5 === '</u>') {
+    pushUndo(el);
+    el.value = el.value.slice(0, s - 3) + sel + el.value.slice(e + 4);
+    el.selectionStart = s - 3;
+    el.selectionEnd = s - 3 + sel.length;
+    el.focus(); markDirty(); return;
+  }
+  // 아닌 경우 감싸기
+  wrapSel('<u>', '</u>');
+}
+
+// ─── 선택 영역 감싸기 ─────────────────────────
+function wrapSel(before, after) {
+  const el = getTarget();
+  if (!el || el.tagName!=='TEXTAREA') return;
+  pushUndo(el);
+  const s=el.selectionStart, e=el.selectionEnd;
+  const sel = el.value.slice(s,e);
+  el.value = el.value.slice(0,s) + before + sel + after + el.value.slice(e);
+  el.selectionStart = s + before.length;
+  el.selectionEnd   = s + before.length + sel.length;
+  el.focus();
+  markDirty();
+}
+
+// ─── [[IMG]] 마커 삽입 ───────────────────────
+function insertImgMarker() {
+  const path = prompt('이미지 경로 또는 URL 입력:');
+  if (!path) return;
+  insertChar(`[[IMG:${path.trim()}]]`);
+}
+
+// ─── [A-E] 범위 마커 삽입 ────────────────────
+function insertBracket(type) {
+  const letter = document.getElementById('bracket-letter').value;
+  const text = type === 'START' ? `[${letter}:START]\n` : `[${letter}:END]`;
+  insertChar(text);
+}
+
+// ─── 탭 전환 ─────────────────────────────────
+function switchTab(tab) {
+  const isPsg = tab==='passages';
+  const pp = document.getElementById('panel-passages');
+  const qp = document.getElementById('panel-questions');
+  const rp = document.getElementById('right-panel');
+  pp.style.display = isPsg ? 'flex' : 'none';
+  qp.style.display = isPsg ? 'none' : 'flex';
+  if(!isPsg) qp.style.flexDirection='column';
+  // passages: right panel does NOT scroll — inner columns scroll independently
+  rp.style.overflowY = isPsg ? 'hidden' : 'auto';
+
+  const tp = document.getElementById('tab-passages');
+  const tq = document.getElementById('tab-questions');
+  tp.style.color      = isPsg ? '#2563eb' : '#6b7280';
+  tp.style.fontWeight = isPsg ? '600'     : '500';
+  tp.style.borderBottom = isPsg ? '2px solid #2563eb' : '2px solid transparent';
+  tq.style.color      = isPsg ? '#6b7280' : '#2563eb';
+  tq.style.fontWeight = isPsg ? '500'     : '600';
+  tq.style.borderBottom = isPsg ? '2px solid transparent' : '2px solid #2563eb';
+}
+
+// ─── 정답 버튼 ───────────────────────────────
+function setAnswer(qi, circle) {
+  segments.questions[qi].answer = circle;
+  dirty = true;
+  document.querySelectorAll(`[data-ans-idx="${qi}"]`).forEach(btn => {
+    const sel = btn.dataset.ansVal === circle;
+    btn.style.background  = sel ? '#2563eb' : 'white';
+    btn.style.color       = sel ? 'white'   : '#6b7280';
+    btn.style.borderColor = sel ? '#2563eb' : '#d1d5db';
+    btn.style.fontWeight  = sel ? '700'     : '400';
+  });
+}
+
+// ─── 검수 상태 순환 (미검수→확인→주의→미검수) ─
+const STATUS_STYLES = {
+  '':     {label:'미검수', border:'#e5e7eb', color:'#9ca3af', bg:'white'},
+  'ok':   {label:'✓ 확인',  border:'#22c55e', color:'#16a34a', bg:'#f0fdf4'},
+  'flag': {label:'⚠ 주의',  border:'#f59e0b', color:'#d97706', bg:'#fffbeb'},
+};
+const STATUS_CYCLE = ['', 'ok', 'flag'];
+
+function cycleStatus(qi) {
+  const btn = document.getElementById(`status-btn-${qi}`);
+  const card = document.getElementById(`q-card-${qi}`);
+  const cur = btn.dataset.status;
+  const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur)+1) % STATUS_CYCLE.length];
+  btn.dataset.status = next;
+  const st = STATUS_STYLES[next];
+  btn.textContent = st.label;
+  btn.style.borderColor = st.border;
+  btn.style.color = st.color;
+  btn.style.background = st.bg;
+  card.style.borderLeftColor = st.border;
+  // 검수 카운트 갱신
+  reviewCount = document.querySelectorAll('[id^="status-btn-"][data-status="ok"]').length;
+  const prog = document.getElementById('review-progress');
+  if (prog) prog.textContent = reviewCount;
+  segments.questions[qi]._review_status = next;
+  markDirty();
+}
+
+// ─── 보기 추가 ───────────────────────────────
+function addBogi(qi) {
+  const sec = document.getElementById(`bogi-section-${qi}`);
+  if (!sec) return;
+  sec.style.display = 'block';
+  // 텍스트에어리어가 없으면 생성
+  if (!sec.querySelector('textarea')) {
+    const lbl = document.createElement('label');
+    lbl.textContent = '<보기>';
+    lbl.style.cssText = 'font-size:10px;font-weight:500;color:#9ca3af;display:block;margin-bottom:3px;';
+    const ta = document.createElement('textarea');
+    ta.style.cssText = 'width:100%;padding:6px 10px;border:1px solid #e5e7eb;border-radius:7px;' +
+      'font-size:12px;font-family:monospace;resize:vertical;outline:none;box-sizing:border-box;line-height:1.6;';
+    ta.rows = 3;
+    ta.dataset.type = 'question';
+    ta.dataset.idx  = qi;
+    ta.dataset.field = 'bogi';
+    ta.addEventListener('input', markDirty);
+    ta.addEventListener('focus', () => onFocus(ta));
+    sec.appendChild(lbl);
+    sec.appendChild(ta);
+  }
+  // 추가 버튼 숨김
+  const addBtn = document.querySelector(`#q-card-${qi} button[onclick="addBogi(${qi})"]`);
+  if (addBtn) addBtn.style.display = 'none';
+  markDirty();
+}
+
+// ─── 선택지 추가 ─────────────────────────────
+function addChoices(qi) {
+  const sec = document.getElementById(`choices-section-${qi}`);
+  if (!sec) return;
+  const cmap = {'1':'①','2':'②','3':'③','4':'④','5':'⑤'};
+  const lbl = document.createElement('label');
+  lbl.textContent = '선택지';
+  lbl.style.cssText = 'font-size:10px;font-weight:500;color:#9ca3af;display:block;margin-bottom:3px;';
+  sec.appendChild(lbl);
+  ['1','2','3','4','5'].forEach(k => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:7px;margin-bottom:4px;';
+    const sp = document.createElement('span');
+    sp.textContent = cmap[k];
+    sp.style.cssText = 'font-size:13px;color:#6b7280;flex-shrink:0;width:18px;text-align:center;';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.style.cssText = 'flex:1;padding:4px 9px;border:1px solid #e5e7eb;border-radius:7px;font-size:12px;outline:none;';
+    inp.dataset.type  = 'question';
+    inp.dataset.idx   = qi;
+    inp.dataset.field = `choices.${k}`;
+    inp.addEventListener('input', markDirty);
+    inp.addEventListener('focus', () => onFocus(inp));
+    row.appendChild(sp);
+    row.appendChild(inp);
+    sec.appendChild(row);
+  });
+  const addBtn = document.querySelector(`#q-card-${qi} button[onclick="addChoices(${qi})"]`);
+  if (addBtn) addBtn.style.display = 'none';
+  markDirty();
+}
+
+// ─── 문항 삭제 ───────────────────────────────
+function deleteQuestion(qi) {
+  const num = segments.questions[qi] ? segments.questions[qi].number : qi+1;
+  if (!confirm(`${num}번 문항을 삭제하시겠습니까?\n(임시 저장 전까지 되돌릴 수 있습니다)`)) return;
+  segments.questions[qi]._deleted = true;
+  const card = document.getElementById(`q-card-${qi}`);
+  card.style.opacity = '0.35';
+  card.style.pointerEvents = 'none';
+  // 실행취소 토스트
+  showToast(`${num}번 삭제됨 — <a href="#" onclick="undoDelete(${qi});return false;"
+             style="color:#bbf7d0;text-decoration:underline;">되돌리기</a>`, 4000);
+  markDirty();
+}
+
+function undoDelete(qi) {
+  segments.questions[qi]._deleted = false;
+  const card = document.getElementById(`q-card-${qi}`);
+  card.style.opacity = '';
+  card.style.pointerEvents = '';
+  hideToast();
+}
+
+// ─── 문항 이동 ───────────────────────────────
+function jumpToQ(num) {
+  if (!num || isNaN(num)) return;
+  // 문항 탭이 아니면 전환
+  if (document.getElementById('panel-questions').style.display === 'none') {
+    switchTab('questions');
+  }
+  // data-q-num으로 카드 탐색
+  const card = document.querySelector(`[data-q-num="${num}"]`);
+  if (card) {
+    card.scrollIntoView({behavior:'smooth', block:'start'});
+    card.style.outline = '2px solid #3b82f6';
+    setTimeout(() => { card.style.outline = ''; }, 1800);
+  }
+}
+
+function prevQ() {
+  const cards = [...document.querySelectorAll('[data-q-num]')]
+    .filter(c => c.style.display !== 'none');
+  const panel = document.getElementById('right-panel');
+  const scrollTop = panel.scrollTop;
+  // 현재 뷰 위에 있는 마지막 카드
+  for (let i=cards.length-1;i>=0;i--) {
+    if (cards[i].offsetTop < scrollTop - 10) {
+      cards[i].scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
+  }
+}
+
+function nextQ() {
+  if (document.getElementById('panel-questions').style.display === 'none') {
+    switchTab('questions');
+  }
+  const cards = [...document.querySelectorAll('[data-q-num]')]
+    .filter(c => c.style.display !== 'none');
+  const panel = document.getElementById('right-panel');
+  const scrollTop = panel.scrollTop + 150;
+  for (let i=0;i<cards.length;i++) {
+    if (cards[i].offsetTop > scrollTop) {
+      cards[i].scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
+  }
+}
+
+// ─── 찾기/바꾸기 ─────────────────────────────
+let frOpen = false;
+function toggleFR() {
+  frOpen = !frOpen;
+  document.getElementById('fr-panel').style.display = frOpen ? 'block' : 'none';
+  document.getElementById('fr-toggle-btn').style.background = frOpen ? '#e0e7ff' : '#f3f4f6';
+  document.getElementById('fr-toggle-btn').style.color = frOpen ? '#4338ca' : '#374151';
+  if (frOpen) document.getElementById('fr-find').focus();
+}
+
+function findReplaceAll() {
+  const find = document.getElementById('fr-find').value;
+  const repl = document.getElementById('fr-replace').value;
+  if (!find) return;
+  let count = 0;
+  document.querySelectorAll('[data-type]').forEach(el => {
+    if (el.value && el.value.includes(find)) {
+      const replaced = el.value.split(find).join(repl);
+      count += el.value.split(find).length - 1;
+      el.value = replaced;
+      markDirty();
+    }
+  });
+  document.getElementById('fr-result').textContent = `${count}건 변경됨`;
+  setTimeout(() => { document.getElementById('fr-result').textContent = ''; }, 3000);
+}
+
+function applyPreset(find, repl) {
+  document.getElementById('fr-find').value = find;
+  document.getElementById('fr-replace').value = repl;
+  findReplaceAll();
+}
+
+// ─── 데이터 수집 ─────────────────────────────
+function collectSegments() {
+  document.querySelectorAll('[data-type="passage"]').forEach(el => {
+    const idx = parseInt(el.dataset.idx);
+    if (segments.passages[idx]) segments.passages[idx][el.dataset.field] = el.value;
+  });
+  document.querySelectorAll('[data-type="question"]').forEach(el => {
+    const idx = parseInt(el.dataset.idx);
+    const field = el.dataset.field;
+    if (!segments.questions[idx]) return;
+    if (field.startsWith('choices.')) {
+      const k = field.split('.')[1];
+      if (!segments.questions[idx].choices) segments.questions[idx].choices = {};
+      segments.questions[idx].choices[k] = el.value;
+    } else {
+      segments.questions[idx][field] = el.value || null;
+    }
+  });
+  return {
+    passages:  segments.passages,
+    questions: segments.questions.filter(q => !q._deleted),
+  };
+}
+
+// ─── 임시 저장 ───────────────────────────────
+async function saveSegments() {
+  const data = collectSegments();
+  await fetch('/suneung/review/{{ job.id }}/save', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data),
+  });
+  dirty = false;
+  showToast('저장됨 ✓', 2000);
+}
+
+// ─── DB 확정 ─────────────────────────────────
+async function approveJob() {
+  const unchecked = segments.questions.filter(q=>!q._deleted && !q._review_status).length;
+  let msg = '검수를 완료하고 DB에 저장하시겠습니까?';
+  if (unchecked > 0) msg += `\n\n⚠ 아직 검수 표시가 없는 문항이 ${unchecked}개 있습니다.`;
+  await saveSegments();
+  if (confirm(msg)) {
+    const form = document.createElement('form');
+    form.method='POST'; form.action='/suneung/review/{{ job.id }}/approve';
+    document.body.appendChild(form); form.submit();
+  }
+}
+
+// ─── 토스트 ──────────────────────────────────
+let toastTimer = null;
+function showToast(html, ms=2000) {
+  const t = document.getElementById('save-toast');
+  t.innerHTML = html; t.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display='none'; }, ms);
+}
+function hideToast() {
+  clearTimeout(toastTimer);
+  document.getElementById('save-toast').style.display='none';
+}
+
+// ─── PDF 단일 페이지 뷰어 ────────────────────
+let pdfUrls    = [];
+let pdfCurrent = 0;
+
+async function loadPages() {
+  try {
+    pdfUrls = await (await fetch('/suneung/review/{{ job.id }}/pages')).json();
+    const loading = document.getElementById('pages-loading');
+    if (!pdfUrls.length) { if (loading) loading.textContent = '페이지 이미지 없음'; return; }
+    if (loading) loading.remove();
+    document.getElementById('pdf-nav').style.display = 'flex';
+    document.getElementById('pdf-current-img').style.display = 'block';
+    showPdfPage(0);
+  } catch(e) {
+    const l = document.getElementById('pages-loading');
+    if (l) l.textContent = '이미지 로드 실패';
+  }
+}
+
+function showPdfPage(idx) {
+  if (!pdfUrls.length) return;
+  pdfCurrent = Math.max(0, Math.min(idx, pdfUrls.length - 1));
+  document.getElementById('pdf-current-img').src = pdfUrls[pdfCurrent];
+  document.getElementById('pdf-page-label').textContent =
+    `${pdfCurrent + 1} / ${pdfUrls.length}`;
+  const viewer = document.getElementById('pdf-viewer');
+  if (viewer) viewer.scrollTop = 0;
+}
+
+function pdfPrev() { showPdfPage(pdfCurrent - 1); }
+function pdfNext() { showPdfPage(pdfCurrent + 1); }
+
+// ─── PDF 패널 접기/열기 ───────────────────────
+let pdfOpen = true;
+function togglePdfPanel() {
+  const panel   = document.getElementById('pdf-panel');
+  const tab     = document.getElementById('pdf-collapsed-tab');
+  const reopBtn = document.getElementById('pdf-reopen-btn');
+  pdfOpen = !pdfOpen;
+  if (pdfOpen) {
+    panel.style.width = '38%'; panel.style.minWidth = '260px';
+    tab.style.display = 'none';
+    if (reopBtn) reopBtn.style.display = 'none';
+  } else {
+    panel.style.width = '0'; panel.style.minWidth = '0';
+    tab.style.display = 'flex';
+    if (reopBtn) reopBtn.style.display = 'inline-flex';
+  }
+}
+
+// ─── 지문 페이지네이션 ───────────────────────
+let passageIdx   = 0;
+const totalPassages = {{ job.segments.passages|length if job.segments else 0 }};
+
+function showPassage(idx) {
+  const prev = document.getElementById(`p-card-${passageIdx}`);
+  if (prev) prev.style.display = 'none';
+  passageIdx = Math.max(0, Math.min(idx, totalPassages - 1));
+  const cur = document.getElementById(`p-card-${passageIdx}`);
+  if (cur) cur.style.display = 'flex';
+  const label = document.getElementById('passage-nav-label');
+  if (label) label.textContent = `지문 ${passageIdx + 1} / ${totalPassages}`;
+  const btnPrev = document.getElementById('btn-prev-passage');
+  const btnNext = document.getElementById('btn-next-passage');
+  if (btnPrev) btnPrev.disabled = passageIdx === 0;
+  if (btnNext) btnNext.disabled = passageIdx === totalPassages - 1;
+}
+
+function prevPassage() { showPassage(passageIdx - 1); }
+function nextPassage() { showPassage(passageIdx + 1); }
+
+async function saveCurrentPassage() {
+  collectSegments();
+  const data = {
+    passages:  segments.passages,
+    questions: segments.questions.filter(q => !q._deleted),
+  };
+  await fetch('/suneung/review/{{ job.id }}/save', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data),
+  });
+  dirty = false;
+  showToast(`지문 ${passageIdx + 1} 저장됨 ✓`, 2000);
+}
+
+// ─── 지문 라이브 미리보기 ─────────────────────
+function livePreview(idx) {
+  const ta      = document.querySelector(`[data-type="passage"][data-idx="${idx}"]`);
+  const preview = document.getElementById(`p-preview-${idx}`);
+  if (!ta || !preview) return;
+  let text = ta.value
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // <u>...</u> 복원
+  text = text.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/g,
+    '<u>$1</u>');
+  // [X:START] / [X:END] 마커
+  text = text.replace(/\[([A-E]):START\]/g,
+    '<mark style="background:#fef9c3;padding:0 2px;border-radius:2px;">[$1:START]</mark>');
+  text = text.replace(/\[([A-E]):END\]/g,
+    '<mark style="background:#fef9c3;padding:0 2px;border-radius:2px;">[$1:END]</mark>');
+  // [A] 단독 레이블
+  text = text.replace(/\[([A-E])\]/g,
+    '<span style="background:#e0e7ff;color:#4338ca;padding:0 4px;border-radius:3px;font-size:10px;font-weight:700;">[$1]</span>');
+  preview.innerHTML = text;
+}
+
+// ─── 문항 카드 접기/열기 ─────────────────────
+function toggleQuestion(qi) {
+  const body = document.getElementById(`q-body-${qi}`);
+  const btn  = document.getElementById(`q-toggle-${qi}`);
+  if (!body) return;
+  const collapsed = body.style.display === 'none';
+  body.style.display = collapsed ? '' : 'none';
+  if (btn) btn.textContent = collapsed ? '▲' : '▼';
+}
+
+// ─── PDF 키보드 좌/우 이동 ───────────────────
+document.addEventListener('keydown', ev => {
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+  if (ev.key === 'ArrowLeft')  pdfPrev();
+  else if (ev.key === 'ArrowRight') pdfNext();
+});
+
+// ─── 키보드 단축키 (Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z) ──
+document.addEventListener('keydown', ev => {
+  if (!ev.ctrlKey) return;
+  const el = getTarget();
+  if (ev.key === 'z' && !ev.shiftKey) {
+    if (el && undoStacks.has(el) && undoStacks.get(el).length) {
+      ev.preventDefault(); doUndo();
+    }
+  } else if (ev.key === 'y' || (ev.key === 'z' && ev.shiftKey)) {
+    if (el && redoStacks.has(el) && redoStacks.get(el).length) {
+      ev.preventDefault(); doRedo();
+    }
+  }
+});
+
+window.addEventListener('beforeunload', e=>{
+  if(dirty){ e.preventDefault(); e.returnValue=''; }
+});
+
+// 초기 passages 탭 — right panel 스크롤 비활성화
+document.getElementById('right-panel').style.overflowY = 'hidden';
+loadPages();
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+# 환경 변수
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# 데이터 (서버에서 영구 보존)
+aprolabs.db
+uploads/
+
+# 로그 / 임시
+output.txt
+*.log
+
+# 테스트 파일
+test_*.json
+diagnose_font.py
+extract_segments.py
+
+# IDE
+.vscode/
+.idea/

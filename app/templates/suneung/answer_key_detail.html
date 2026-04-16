@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}정답 상세 - {{ key.filename }} - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800 truncate">{{ key.filename }}</h2>
+    <div class="flex gap-3 text-sm text-gray-400 mt-1">
+      <span>{{ key.source_year or '연도미지정' }}</span>
+      <span>{{ key.exam_type or '-' }}</span>
+      <span>{{ key.subject or '-' }}</span>
+      {% if key.status == 'matched' %}
+      <span class="text-green-600 font-medium">매칭됨: {{ key.paper_code }}</span>
+      {% else %}
+      <span class="text-gray-400">미매칭</span>
+      {% endif %}
+    </div>
+  </div>
+  <a href="/suneung/answer-keys"
+     class="text-sm text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg border border-gray-200 hover:border-gray-300 transition">
+    ← 목록
+  </a>
+</div>
+
+<!-- 매칭 폼 -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+  <h3 class="text-sm font-semibold text-gray-700 mb-3">문제지 매칭</h3>
+  <form method="POST" action="/suneung/answer-keys/{{ key.id }}/match" class="flex items-center gap-3">
+    <input type="text" name="paper_code"
+           value="{{ key.paper_code or '' }}"
+           placeholder="예: 2025-수능-국어"
+           class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono">
+    <button type="submit"
+            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+      {% if key.status == 'matched' %}재매칭{% else %}매칭{% endif %}
+    </button>
+  </form>
+  {% if key.status == 'matched' %}
+  <p class="text-xs text-green-600 mt-2">현재 매칭된 paper_code: <span class="font-mono font-semibold">{{ key.paper_code }}</span> — 해당 문제지의 Question에 정답/해설이 적용됩니다.</p>
+  {% endif %}
+</div>
+
+<!-- 문항 테이블 -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-sm font-semibold text-gray-700">문항별 정답·해설 ({{ key.items|length }}문항)</h3>
+    <button onclick="saveAll()"
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
+      전체 저장
+    </button>
+  </div>
+
+  {% if key.items %}
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm" id="itemTable">
+      <thead>
+        <tr class="text-xs text-gray-400 border-b border-gray-100">
+          <th class="pb-2 text-left w-16">문항번호</th>
+          <th class="pb-2 text-left w-24">정답</th>
+          <th class="pb-2 text-left">해설</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for item in key.items %}
+        <tr data-num="{{ item.question_number }}">
+          <td class="py-2 pr-3 font-semibold text-gray-700">{{ item.question_number }}</td>
+          <td class="py-2 pr-3">
+            <select class="ans-select w-full px-2 py-1 border border-gray-200 rounded text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-300">
+              <option value="">-</option>
+              {% for c in ['①','②','③','④','⑤'] %}
+              <option value="{{ c }}" {% if item.answer == c %}selected{% endif %}>{{ c }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td class="py-2">
+            <textarea class="exp-textarea w-full px-2 py-1 border border-gray-200 rounded text-xs text-gray-600 resize-none focus:outline-none focus:ring-1 focus:ring-blue-300"
+                      rows="2">{{ item.explanation or '' }}</textarea>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-sm text-gray-400 text-center py-10">파싱된 정답 항목이 없습니다.</p>
+  {% endif %}
+</div>
+
+<div id="saveMsg" class="fixed bottom-6 right-6 hidden bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-lg">
+  저장되었습니다.
+</div>
+
+<script>
+async function saveAll() {
+  const rows = document.querySelectorAll('#itemTable tbody tr');
+  const items = [];
+  rows.forEach(row => {
+    const num = parseInt(row.dataset.num);
+    const ans = row.querySelector('.ans-select').value;
+    const exp = row.querySelector('.exp-textarea').value.trim();
+    items.push({ question_number: num, answer: ans || null, explanation: exp || null });
+  });
+
+  const res = await fetch('/suneung/answer-keys/{{ key.id }}/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  });
+
+  if (res.ok) {
+    const msg = document.getElementById('saveMsg');
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 2500);
+  } else {
+    alert('저장 실패');
+  }
+}
+</script>
+{% endblock %}

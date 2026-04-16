@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}수능국어DB 업로드 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">수능국어DB 파이프라인</h2>
+    <p class="text-sm text-gray-400 mt-1">PDF 업로드 → 자동 파싱 → 검수 → DB 저장</p>
+  </div>
+
+  <!-- 파이프라인 단계 표시 -->
+  <div class="flex items-center gap-2 mb-8 text-xs text-gray-500">
+    <span class="px-3 py-1.5 bg-blue-600 text-white rounded-full font-semibold">① PDF 업로드</span>
+    <span class="text-gray-300">──</span>
+    <span class="px-3 py-1.5 bg-gray-100 rounded-full">② AI 파싱</span>
+    <span class="text-gray-300">──</span>
+    <span class="px-3 py-1.5 bg-gray-100 rounded-full">③ 검수</span>
+    <span class="text-gray-300">──</span>
+    <span class="px-3 py-1.5 bg-gray-100 rounded-full">④ DB 저장</span>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+    <form method="POST" action="/suneung/upload" enctype="multipart/form-data">
+
+      <!-- 시험 정보 -->
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">과목 <span class="text-red-500">*</span></label>
+          <select name="subject" id="subjectSelect"
+                  class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  onchange="updatePaperCode()">
+            <option value="국어">국어</option>
+            <option value="영어">영어</option>
+            <option value="수학">수학</option>
+            <option value="사회탐구">사회탐구</option>
+            <option value="과학탐구">과학탐구</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">시험 유형 <span class="text-red-500">*</span></label>
+          <select name="exam_type" id="examTypeSelect"
+                  class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  onchange="updatePaperCode()">
+            <option value="수능">수능</option>
+            <option value="6월모평">6월모평</option>
+            <option value="9월모평">9월모평</option>
+            <option value="학력평가">학력평가</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">학년도 <span class="text-red-500">*</span></label>
+          <input type="number" name="source_year" id="sourceYear" placeholder="2025"
+                 class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                 oninput="updatePaperCode()">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">문제지 코드 (자동생성)</label>
+          <input type="text" id="paperCodePreview" readonly
+                 class="w-full px-3 py-2 border border-gray-100 rounded-lg text-sm bg-gray-50 text-blue-700 font-mono"
+                 value="연도-유형-과목">
+        </div>
+      </div>
+
+      <!-- 구분선 -->
+      <hr class="my-4 border-gray-100">
+
+      <!-- PDF 업로드 (최대 20개) -->
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          문제지 PDF <span class="text-red-500">*</span>
+          <span class="text-gray-400 font-normal ml-1">최대 20개 동시 업로드</span>
+        </label>
+        <div id="dropzone"
+             class="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-blue-300 transition cursor-pointer"
+             onclick="document.getElementById('pdfInput').click()"
+             ondragover="event.preventDefault(); this.classList.add('border-blue-400','bg-blue-50')"
+             ondragleave="this.classList.remove('border-blue-400','bg-blue-50')"
+             ondrop="handleDrop(event)">
+          <p class="text-4xl mb-2">📄</p>
+          <p class="text-sm text-gray-500">PDF 파일을 클릭하거나 드래그해서 업로드</p>
+          <p class="text-xs text-gray-400 mt-1">여러 파일 동시 선택 가능 (최대 20개)</p>
+        </div>
+        <input type="file" id="pdfInput" name="files" accept=".pdf,application/pdf"
+               multiple class="hidden" onchange="showFiles(this.files)">
+
+        <!-- 선택된 파일 목록 -->
+        <div id="fileList" class="mt-3 hidden">
+          <div class="flex items-center justify-between mb-1">
+            <span id="fileCount" class="text-xs font-medium text-gray-500"></span>
+            <button type="button" onclick="clearFiles()"
+                    class="text-xs text-red-400 hover:text-red-600">전체 취소</button>
+          </div>
+          <ul id="fileNames" class="space-y-1 max-h-40 overflow-y-auto text-xs text-gray-600 bg-gray-50 rounded-lg p-2"></ul>
+        </div>
+      </div>
+
+      <!-- 안내 -->
+      <div class="bg-blue-50 rounded-lg px-4 py-3 mb-5 text-xs text-blue-700 space-y-1">
+        <p>📌 <strong>자동 처리 내용:</strong></p>
+        <p>• 2단 구성 레이아웃 자동 인식 (Gemini Vision)</p>
+        <p>• 지문 ↔ 문항 1:N 자동 매핑</p>
+        <p>• 발문 / 선택지 ①~⑤ 자동 분리</p>
+        <p>• 사고력 유형 9가지 자동 태깅 (Claude)</p>
+        <p>• 업로드 후 검수 화면에서 수정 가능합니다</p>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm">
+        파이프라인 시작
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+function updatePaperCode() {
+  const year = document.getElementById('sourceYear').value || '연도';
+  const exam = document.getElementById('examTypeSelect').value;
+  const subj = document.getElementById('subjectSelect').value;
+  document.getElementById('paperCodePreview').value = `${year}-${exam}-${subj}`;
+}
+updatePaperCode();
+
+function showFiles(files) {
+  const MAX = 20;
+  const list = document.getElementById('fileList');
+  const names = document.getElementById('fileNames');
+  const count = document.getElementById('fileCount');
+
+  if (!files || files.length === 0) {
+    list.classList.add('hidden');
+    return;
+  }
+
+  if (files.length > MAX) {
+    alert(`최대 ${MAX}개까지 업로드할 수 있습니다. 처음 ${MAX}개만 처리됩니다.`);
+  }
+
+  const validFiles = Array.from(files).slice(0, MAX);
+  count.textContent = `${validFiles.length}개 선택됨`;
+  names.innerHTML = validFiles.map(f =>
+    `<li class="flex items-center gap-1.5"><span class="text-blue-400">✓</span>${f.name}</li>`
+  ).join('');
+  list.classList.remove('hidden');
+
+  // dropzone 스타일 업데이트
+  const dz = document.getElementById('dropzone');
+  dz.classList.add('border-blue-300', 'bg-blue-50');
+}
+
+function clearFiles() {
+  document.getElementById('pdfInput').value = '';
+  document.getElementById('fileList').classList.add('hidden');
+  document.getElementById('dropzone').classList.remove('border-blue-300', 'bg-blue-50');
+}
+
+function showAnswerFile(file) {
+  if (!file) return;
+  document.getElementById('answerFileName').textContent = '✓ ' + file.name;
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('border-blue-400', 'bg-blue-50');
+  const dropped = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+  if (!dropped.length) {
+    alert('PDF 파일만 업로드 가능합니다.');
+    return;
+  }
+  const dt = new DataTransfer();
+  dropped.slice(0, 20).forEach(f => dt.items.add(f));
+  document.getElementById('pdfInput').files = dt.files;
+  showFiles(dt.files);
+}
+</script>
+{% endblock %}

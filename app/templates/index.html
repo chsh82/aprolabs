@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">{{ page_title }}</h2>
+    <p class="text-sm text-gray-400 mt-1">{{ total }}개의 문항</p>
+  </div>
+  <a href="/upload{% if filter_category %}?preset_category={{ filter_category }}{% if filter_subcategory %}&preset_subcategory={{ filter_subcategory }}{% endif %}{% endif %}"
+     class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+    + 문항 추가
+  </a>
+</div>
+
+<!-- 검색/필터 -->
+<form method="GET" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 flex flex-wrap gap-3 items-end">
+  {% if filter_category %}
+  <input type="hidden" name="category" value="{{ filter_category }}">
+  {% else %}
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">대분류</label>
+    <select name="category" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for cat in categories %}
+      <option value="{{ cat }}" {% if filter_category == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">난이도</label>
+    <select name="difficulty" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      <option value="상" {% if filter_difficulty == '상' %}selected{% endif %}>상</option>
+      <option value="중" {% if filter_difficulty == '중' %}selected{% endif %}>중</option>
+      <option value="하" {% if filter_difficulty == '하' %}selected{% endif %}>하</option>
+    </select>
+  </div>
+  <div class="flex-1 min-w-40">
+    <label class="block text-xs font-medium text-gray-500 mb-1">검색</label>
+    <input type="text" name="q" value="{{ filter_q }}" placeholder="내용, 단원, 출처 검색..."
+           class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+  </div>
+  <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">검색</button>
+  <a href="{% if filter_category %}/?category={{ filter_category }}{% else %}/{% endif %}"
+     class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm rounded-lg transition">초기화</a>
+</form>
+
+{% if questions %}
+
+<!-- 일괄 선택 도구바 -->
+<div class="flex items-center justify-between mb-3">
+  <label class="flex items-center gap-2 cursor-pointer select-none">
+    <input type="checkbox" id="selectAll" class="w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
+           onchange="toggleAll(this)">
+    <span class="text-sm text-gray-500">전체 선택</span>
+  </label>
+
+  <div id="bulkBar" class="hidden flex items-center gap-3">
+    <span id="selectedCount" class="text-sm text-gray-600 font-medium"></span>
+    <button onclick="bulkDelete()"
+            class="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition">
+      선택 삭제
+    </button>
+  </div>
+</div>
+
+<!-- 현재 URL (삭제 후 돌아올 주소용) -->
+<input type="hidden" id="currentUrl" value="{{ request.url }}">
+
+<!-- 문항 목록 -->
+<div class="space-y-2" id="questionList">
+  {% for q in questions %}
+  <div class="bg-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition p-4 flex items-start gap-3"
+       data-id="{{ q.id }}">
+
+    <!-- 체크박스 -->
+    <div class="pt-0.5 flex-shrink-0">
+      <input type="checkbox" value="{{ q.id }}"
+             class="question-checkbox w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
+             onchange="onCheck()">
+    </div>
+
+    <!-- 내용 (클릭 → 상세 이동) -->
+    <a href="/questions/{{ q.id }}" class="flex-1 min-w-0 block">
+      <div class="flex flex-wrap gap-1.5 mb-2">
+        {% if q.paper_code %}
+        <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-500 rounded-full font-mono">{{ q.paper_code }}-Q{{ q.question_number }}</span>
+        {% endif %}
+        {% if q.category %}
+        <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-medium">{{ q.category }}</span>
+        {% endif %}
+        {% if q.subject %}
+        <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full">{{ q.subject }}</span>
+        {% endif %}
+        {% if q.unit %}
+        <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">{{ q.unit }}</span>
+        {% endif %}
+        {% if q.difficulty %}
+        <span class="text-xs px-2 py-0.5 rounded-full
+          {% if q.difficulty == '상' %}bg-red-100 text-red-600
+          {% elif q.difficulty == '중' %}bg-yellow-100 text-yellow-600
+          {% else %}bg-green-100 text-green-600{% endif %}">{{ q.difficulty }}</span>
+        {% endif %}
+      </div>
+      <p class="text-sm text-gray-800 line-clamp-2 leading-relaxed">{{ q.content[:200] }}</p>
+      <p class="text-xs text-gray-400 mt-1">
+        {% if q.source %}{{ q.source }} · {% endif %}{{ q.created_at.strftime('%Y-%m-%d') }}
+      </p>
+    </a>
+
+    <!-- 개별 삭제 버튼 -->
+    <form method="POST" action="/questions/{{ q.id }}/delete"
+          onsubmit="return confirm('이 문항을 삭제하시겠습니까?')"
+          class="flex-shrink-0">
+      <input type="hidden" name="redirect_to" value="{{ request.url }}">
+      <button type="submit"
+              class="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
+              title="삭제">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+function onCheck() {
+  const boxes = document.querySelectorAll('.question-checkbox');
+  const checked = document.querySelectorAll('.question-checkbox:checked');
+  document.getElementById('selectAll').checked = checked.length === boxes.length;
+  document.getElementById('selectAll').indeterminate = checked.length > 0 && checked.length < boxes.length;
+
+  const bar = document.getElementById('bulkBar');
+  if (checked.length > 0) {
+    bar.classList.remove('hidden');
+    bar.classList.add('flex');
+    document.getElementById('selectedCount').textContent = `${checked.length}개 선택됨`;
+  } else {
+    bar.classList.add('hidden');
+    bar.classList.remove('flex');
+  }
+}
+
+function toggleAll(master) {
+  document.querySelectorAll('.question-checkbox').forEach(cb => cb.checked = master.checked);
+  onCheck();
+}
+
+async function bulkDelete() {
+  const ids = [...document.querySelectorAll('.question-checkbox:checked')].map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm(`선택한 ${ids.length}개의 문항을 삭제하시겠습니까?`)) return;
+
+  const res = await fetch('/questions/bulk-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  });
+  if (res.ok) {
+    ids.forEach(id => {
+      const el = document.querySelector(`[data-id="${id}"]`);
+      if (el) el.remove();
+    });
+    document.getElementById('selectAll').checked = false;
+    document.getElementById('bulkBar').classList.add('hidden');
+    document.getElementById('bulkBar').classList.remove('flex');
+    // 문항 수 업데이트
+    const remaining = document.querySelectorAll('[data-id]').length;
+    document.querySelector('.text-gray-400.mt-1').textContent = `${remaining}개의 문항`;
+  }
+}
+</script>
+
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 py-20 text-center">
+  <p class="text-5xl mb-4">📭</p>
+  <p class="text-gray-400 mb-4">등록된 문항이 없습니다.</p>
+  <a href="/upload{% if filter_category %}?preset_category={{ filter_category }}{% if filter_subcategory %}&preset_subcategory={{ filter_subcategory }}{% endif %}{% endif %}"
+     class="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+    첫 문항 추가하기
+  </a>
+</div>
+{% endif %}
+{% endblock %}

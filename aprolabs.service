@@ -1,0 +1,14 @@
+[Unit]
+Description=Aprolabs FastAPI
+After=network.target
+
+[Service]
+User=USER_PLACEHOLDER
+WorkingDirectory=/home/USER_PLACEHOLDER/aprolabs
+EnvironmentFile=/home/USER_PLACEHOLDER/aprolabs/.env
+ExecStart=/home/USER_PLACEHOLDER/aprolabs/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

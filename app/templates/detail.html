@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}{{ q.subject or '문항' }} 상세 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% if q.category %}/?category={{ q.category }}{% else %}/{% endif %}"
+     class="text-sm text-gray-400 hover:text-gray-600 transition">← {{ q.category or '전체' }} 목록</a>
+</div>
+
+<!-- 문항 뷰 -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-5">
+  <div class="flex flex-wrap gap-2 mb-4">
+    {% if q.category %}
+    <span class="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full font-semibold">{{ q.category }}</span>
+    {% endif %}
+    {% if q.subject %}<span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">{{ q.subject }}</span>{% endif %}
+    {% if q.unit %}<span class="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full">{{ q.unit }}</span>{% endif %}
+    {% if q.topic %}<span class="text-xs px-2 py-1 bg-gray-100 text-gray-400 rounded-full">{{ q.topic }}</span>{% endif %}
+    {% if q.difficulty %}
+    <span class="text-xs px-2 py-1 rounded-full font-medium
+      {% if q.difficulty == '상' %}bg-red-100 text-red-700
+      {% elif q.difficulty == '중' %}bg-yellow-100 text-yellow-700
+      {% else %}bg-green-100 text-green-700{% endif %}">{{ q.difficulty }}</span>
+    {% endif %}
+    {% if q.question_type %}<span class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full">{{ q.question_type }}</span>{% endif %}
+    {% for tag in (q.tags or []) %}
+    <span class="text-xs px-2 py-1 bg-indigo-50 text-indigo-500 rounded-full">#{{ tag }}</span>
+    {% endfor %}
+  </div>
+
+  {% if q.image_path %}
+  <img src="/{{ q.image_path }}" alt="문항 이미지" class="w-full rounded-lg border border-gray-100 mb-4 max-h-96 object-contain">
+  {% endif %}
+
+  <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap font-mono mb-4">{{ q.content }}</div>
+
+  {% if q.answer %}
+  <div class="bg-green-50 border border-green-100 rounded-lg p-3 mb-3">
+    <p class="text-xs font-semibold text-green-600 mb-1">정답</p>
+    <p class="text-sm text-green-800">{{ q.answer }}</p>
+  </div>
+  {% endif %}
+  {% if q.explanation %}
+  <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-3">
+    <p class="text-xs font-semibold text-blue-600 mb-1">해설</p>
+    <p class="text-sm text-blue-800 whitespace-pre-wrap">{{ q.explanation }}</p>
+  </div>
+  {% endif %}
+  {% if q.memo %}
+  <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-3">
+    <p class="text-xs font-semibold text-yellow-600 mb-1">메모</p>
+    <p class="text-sm text-yellow-800">{{ q.memo }}</p>
+  </div>
+  {% endif %}
+
+  {% if q.source or q.source_year %}
+  <p class="text-xs text-gray-400 mt-4">
+    출처: {{ q.source or '' }}
+    {% if q.source_year %} ({{ q.source_year }}){% endif %}
+    {% if q.source_number %} {{ q.source_number }}번{% endif %}
+  </p>
+  {% endif %}
+</div>
+
+<!-- 수정 폼 -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+  <h3 class="text-base font-semibold text-gray-700 mb-4">수정</h3>
+  <form method="POST" action="/questions/{{ q.id }}/edit">
+
+    <!-- 대분류 -->
+    <div class="mb-3">
+      <label class="block text-xs font-medium text-gray-500 mb-2">대분류</label>
+      <div class="flex flex-wrap gap-3">
+        {% set cat_icons = {'독서논술': '📚', '국어': '📖', '사회': '🏛️', '과학': '🔬', '기타': '📁'} %}
+        {% for cat in categories %}
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="radio" name="category" value="{{ cat }}"
+                 {% if q.category == cat %}checked{% endif %}
+                 class="accent-blue-600" onchange="updateSubEdit(this.value)">
+          <span class="text-sm text-gray-700">{{ cat_icons.get(cat, '') }} {{ cat }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 소메뉴 -->
+    {% for cat, subs in subcategories.items() %}
+    <div id="subedit_{{ cat }}" class="mb-4 ml-1 {% if q.category != cat %}hidden{% endif %}">
+      <label class="block text-xs font-medium text-gray-500 mb-1">소메뉴</label>
+      <div class="flex flex-wrap gap-3">
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="radio" name="subcategory" value=""
+                 {% if not q.subcategory %}checked{% endif %}
+                 class="accent-gray-400">
+          <span class="text-sm text-gray-500">없음</span>
+        </label>
+        {% for sub in subs %}
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="radio" name="subcategory" value="{{ sub }}"
+                 {% if q.subcategory == sub %}checked{% endif %}
+                 class="accent-blue-600">
+          <span class="text-sm text-gray-700">{{ sub }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">세부 과목</label>
+        <input type="text" name="subject" value="{{ q.subject or '' }}"
+               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">단원</label>
+        <input type="text" name="unit" value="{{ q.unit or '' }}"
+               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">세부주제</label>
+        <input type="text" name="topic" value="{{ q.topic or '' }}"
+               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">난이도</label>
+        <select name="difficulty" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <option value="">-</option>
+          <option value="상" {% if q.difficulty == '상' %}selected{% endif %}>상</option>
+          <option value="중" {% if q.difficulty == '중' %}selected{% endif %}>중</option>
+          <option value="하" {% if q.difficulty == '하' %}selected{% endif %}>하</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">유형</label>
+        <select name="question_type" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <option value="">-</option>
+          <option value="객관식" {% if q.question_type == '객관식' %}selected{% endif %}>객관식</option>
+          <option value="주관식" {% if q.question_type == '주관식' %}selected{% endif %}>주관식</option>
+          <option value="서술형" {% if q.question_type == '서술형' %}selected{% endif %}>서술형</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">출처</label>
+        <input type="text" name="source" value="{{ q.source or '' }}"
+               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">연도</label>
+        <input type="number" name="source_year" value="{{ q.source_year or '' }}"
+               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">문항 번호</label>
+        <input type="number" name="source_number" value="{{ q.source_number or '' }}"
+               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-xs font-medium text-gray-500 mb-1">문항 내용</label>
+      <textarea name="content" rows="6"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-y font-mono">{{ q.content }}</textarea>
+    </div>
+    <div class="mb-4">
+      <label class="block text-xs font-medium text-gray-500 mb-1">정답</label>
+      <input type="text" name="answer" value="{{ q.answer or '' }}"
+             class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+    </div>
+    <div class="mb-4">
+      <label class="block text-xs font-medium text-gray-500 mb-1">해설</label>
+      <textarea name="explanation" rows="3"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-y">{{ q.explanation or '' }}</textarea>
+    </div>
+    <div class="mb-5">
+      <label class="block text-xs font-medium text-gray-500 mb-1">메모</label>
+      <input type="text" name="memo" value="{{ q.memo or '' }}"
+             class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit"
+              class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition text-sm">
+        저장
+      </button>
+      <form method="POST" action="/questions/{{ q.id }}/delete"
+            onsubmit="return confirm('삭제하시겠습니까?')">
+        <button type="submit"
+                class="px-4 py-2.5 text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 rounded-lg transition text-sm">
+          삭제
+        </button>
+      </form>
+    </div>
+  </form>
+</div>
+
+<script>
+const SUBCATEGORIES_EDIT = {{ subcategories | tojson }};
+function updateSubEdit(cat) {
+  Object.keys(SUBCATEGORIES_EDIT).forEach(c => {
+    const el = document.getElementById('subedit_' + c);
+    if (el) el.classList.toggle('hidden', c !== cat);
+  });
+}
+</script>
+{% endblock %}

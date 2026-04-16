@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Aprolabs{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<!-- 상단 헤더 -->
+<header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+  <a href="/" class="text-xl font-bold text-blue-600 tracking-tight flex items-center gap-2">
+    🧪 Aprolabs
+  </a>
+  <a href="/upload" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+    + 문항 추가
+  </a>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+
+  <!-- 사이드바 -->
+  <aside class="w-56 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto">
+    <nav class="p-3 space-y-1">
+
+      <!-- 전체 -->
+      <a href="/"
+         class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition
+                {% if not filter_category and request.url.path == '/' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+        <span>📋 전체 문항</span>
+        <span class="text-xs text-gray-400">{{ category_counts.get('전체', 0) }}</span>
+      </a>
+
+      <div class="pt-2 pb-1">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3">대분류</p>
+      </div>
+
+      {% set cat_icons = {'독서논술': '📚', '국어': '📖', '사회': '🏛️', '과학': '🔬', '기타': '📁'} %}
+      {% for cat in categories %}
+      <div>
+        <a href="/?category={{ cat }}"
+           class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition group
+                  {% if filter_category == cat and not filter_subcategory %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
+          <span>{{ cat_icons.get(cat, '📂') }} {{ cat }}</span>
+          <span class="text-xs text-gray-400">{{ category_counts.get(cat, 0) }}</span>
+        </a>
+        <!-- 소메뉴 (항상 표시) -->
+        {% if subcategories.get(cat) %}
+        <div class="ml-3 mt-0.5 space-y-0.5">
+          {% for sub in subcategories.get(cat, []) %}
+          <a href="/?category={{ cat }}&subcategory={{ sub }}"
+             class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition
+                    {% if filter_category == cat and filter_subcategory == sub %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 hover:bg-gray-50{% endif %}">
+            <span>ㄴ {{ sub }}</span>
+            <span class="text-gray-400">{{ sub_counts.get(cat + ':' + sub, 0) }}</span>
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="pt-3 border-t border-gray-100 mt-2">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">관리</p>
+        <a href="/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          ➕ 문항 추가
+        </a>
+        <a href="/suneung/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          📄 수능 PDF 업로드
+        </a>
+        <a href="/suneung/jobs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          ⚙️ 파이프라인 작업
+        </a>
+        <a href="/dashboard" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          📊 API 사용량
+        </a>
+      </div>
+
+    </nav>
+  </aside>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="flex-1 overflow-y-auto">
+    {% block content_wrapper %}
+    <div class="max-w-4xl mx-auto px-6 py-8">
+      {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
+  </main>
+
+</div>
+</body>
+</html>
