@@ -266,6 +266,20 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
       {% endfor %}
 
       <span style="color:#d1d5db;margin:0 3px;">│</span>
+      {% for ch in ['㉮','㉯','㉰','㉱','㉲'] %}
+      <button class="tb-char" onclick="insertChar('{{ ch }}')"
+              style="min-width:24px;height:24px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:#fffbeb;cursor:pointer;padding:0 3px;">{{ ch }}</button>
+      {% endfor %}
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      {% for ch in ['ⓐ','ⓑ','ⓒ','ⓓ','ⓔ','ⓕ','ⓖ'] %}
+      <button class="tb-char" onclick="insertChar('{{ ch }}')"
+              style="min-width:24px;height:24px;font-size:12px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:#f0fdf4;cursor:pointer;padding:0 3px;">{{ ch }}</button>
+      {% endfor %}
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
       {% for ch in ['…','—','·'] %}
       <button class="tb-char" onclick="insertChar('{{ ch }}')"
               style="min-width:24px;height:24px;font-size:12px;border:1px solid #e5e7eb;
@@ -1202,6 +1216,7 @@ function showPassage(idx) {
   const btnNext = document.getElementById('btn-next-passage');
   if (btnPrev) btnPrev.disabled = passageIdx === 0;
   if (btnNext) btnNext.disabled = passageIdx === totalPassages - 1;
+  livePreview(passageIdx);
 }
 
 function prevPassage() { showPassage(passageIdx - 1); }
@@ -1226,21 +1241,37 @@ function livePreview(idx) {
   const ta      = document.querySelector(`[data-type="passage"][data-idx="${idx}"]`);
   const preview = document.getElementById(`p-preview-${idx}`);
   if (!ta || !preview) return;
+
+  // 1) HTML 이스케이프
   let text = ta.value
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // <u>...</u> 복원
-  text = text.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/g,
-    '<u>$1</u>');
-  // [X:START] / [X:END] 마커
+
+  // 2) \n → <br> (pre-wrap 없이도 줄바꿈 보장)
+  text = text.replace(/\n/g, '<br>');
+
+  // 3) <u>...</u> 복원
+  text = text.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/g, '<u>$1</u>');
+
+  // 4) [X:START] / [X:END] 마커
   text = text.replace(/\[([A-E]):START\]/g,
-    '<mark style="background:#fef9c3;padding:0 2px;border-radius:2px;">[$1:START]</mark>');
+    '<mark style="background:#fef9c3;padding:0 2px;border-radius:2px;">[$1▶]</mark>');
   text = text.replace(/\[([A-E]):END\]/g,
-    '<mark style="background:#fef9c3;padding:0 2px;border-radius:2px;">[$1:END]</mark>');
-  // [A] 단독 레이블
+    '<mark style="background:#fef9c3;padding:0 2px;border-radius:2px;">[◀$1]</mark>');
+
+  // 5) [A] 단독 레이블
   text = text.replace(/\[([A-E])\]/g,
     '<span style="background:#e0e7ff;color:#4338ca;padding:0 4px;border-radius:3px;font-size:10px;font-weight:700;">[$1]</span>');
+
+  // 6) [[IMG:...]] 마커
+  text = text.replace(/\[\[IMG:(.*?)\]\]/g,
+    '<span style="background:#fce7f3;color:#be185d;padding:0 4px;border-radius:3px;font-size:10px;">🖼 $1</span>');
+
   preview.innerHTML = text;
+  preview.style.whiteSpace = 'normal';  // <br> 사용하므로 pre-wrap 불필요
 }
+
+// 페이지 로드 시 전체 지문 미리보기 초기화
+for (let _i = 0; _i < totalPassages; _i++) livePreview(_i);
 
 // ─── 문항 카드 접기/열기 ─────────────────────
 function toggleQuestion(qi) {
