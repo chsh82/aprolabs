@@ -29,7 +29,7 @@
          class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition
                 {% if not filter_category and request.url.path == '/' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
         <span>📋 전체 문항</span>
-        <span class="text-xs text-gray-400">{{ category_counts.get('전체', 0) }}</span>
+        <span class="text-xs text-gray-400">{{ (category_counts or {}).get('전체', 0) }}</span>
       </a>
 
       <div class="pt-2 pb-1">
@@ -37,23 +37,23 @@
       </div>
 
       {% set cat_icons = {'독서논술': '📚', '국어': '📖', '사회': '🏛️', '과학': '🔬', '기타': '📁'} %}
-      {% for cat in categories %}
+      {% for cat in (categories or []) %}
       <div>
         <a href="/?category={{ cat }}"
            class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition group
                   {% if filter_category == cat and not filter_subcategory %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %}">
           <span>{{ cat_icons.get(cat, '📂') }} {{ cat }}</span>
-          <span class="text-xs text-gray-400">{{ category_counts.get(cat, 0) }}</span>
+          <span class="text-xs text-gray-400">{{ (category_counts or {}).get(cat, 0) }}</span>
         </a>
         <!-- 소메뉴 (항상 표시) -->
-        {% if subcategories.get(cat) %}
+        {% if (subcategories or {}).get(cat) %}
         <div class="ml-3 mt-0.5 space-y-0.5">
-          {% for sub in subcategories.get(cat, []) %}
+          {% for sub in (subcategories or {}).get(cat, []) %}
           <a href="/?category={{ cat }}&subcategory={{ sub }}"
              class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs transition
                     {% if filter_category == cat and filter_subcategory == sub %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 hover:bg-gray-50{% endif %}">
             <span>ㄴ {{ sub }}</span>
-            <span class="text-gray-400">{{ sub_counts.get(cat + ':' + sub, 0) }}</span>
+            <span class="text-gray-400">{{ (sub_counts or {}).get(cat + ':' + sub, 0) }}</span>
           </a>
           {% endfor %}
         </div>
