@@ -58,6 +58,7 @@ class PipelineJob(Base):
     __tablename__ = "pipeline_jobs"
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    job_number = Column(Integer, nullable=True)  # 순차 고유 번호
 
     filename = Column(String(500), nullable=False)
     file_path = Column(String(500), nullable=True)    # 업로드된 PDF 경로
