@@ -220,6 +220,7 @@ def _parse_post_files(html: str, post_url: str,
     page_title = title_el.get_text(strip=True) if title_el else ""
     year       = _extract_year(page_title)
     exam_type  = _extract_exam_type(page_title)
+    # page title에서 못 찾으면 URL이나 첫 번째 파일명에서 추출 (아래에서 덮어씀)
 
     files = []
     for fig in soup.select("figure.fileblock"):
@@ -239,6 +240,10 @@ def _parse_post_files(html: str, post_url: str,
         sub_type = _extract_sub_type(raw_name)
         filetype = _extract_filetype(raw_name)
 
+        # 파일명에서 연도/시험 보완 (페이지 제목에서 못 찾은 경우)
+        file_year = _extract_year(raw_name) or year
+        file_exam = _extract_exam_type(raw_name) or exam_type
+
         # 과목 필터
         if subj_filter and subj_filter not in subject:
             continue
@@ -246,14 +251,14 @@ def _parse_post_files(html: str, post_url: str,
         if filetype_filter and filetype != filetype_filter:
             continue
 
-        display_title = f"{year} {exam_type} {subject}({sub_type}) {filetype}" if year else raw_name
+        display_title = f"{file_year} {file_exam} {subject}({sub_type}) {filetype}" if file_year else raw_name
 
         files.append({
             "title":     display_title,
             "filename":  raw_name,
             "pdf_url":   pdf_url,
-            "year":      year,
-            "exam_type": exam_type,
+            "year":      file_year,
+            "exam_type": file_exam,
             "subject":   subject,
             "sub_type":  sub_type,
             "file_type": filetype,

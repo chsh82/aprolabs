@@ -87,7 +87,7 @@
           <th class="py-3 px-4 text-left">파일명</th>
           <th class="py-3 px-4 text-left w-16">연도</th>
           <th class="py-3 px-4 text-left w-32">시험</th>
-          <th class="py-3 px-4 text-left w-16">과목</th>
+          <th class="py-3 px-4 text-left w-32">선택과목</th>
           <th class="py-3 px-4 text-left w-20">종류</th>
         </tr>
       </thead>
@@ -164,7 +164,7 @@ function renderFiles(list) {
       <td class="py-2.5 px-4 text-gray-500 font-mono text-xs">${f.year || '-'}</td>
       <td class="py-2.5 px-4 text-gray-500 text-xs">${escHtml(f.exam_type) || '-'}</td>
       <td class="py-2.5 px-4">
-        <span class="text-xs px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">${escHtml(f.sub_type)}</span>
+        <span class="text-xs px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium whitespace-nowrap">${escHtml(f.sub_type) || '-'}</span>
       </td>
       <td class="py-2.5 px-4">
         <span class="text-xs font-semibold ${isAnswer ? 'text-gray-400' : 'text-green-600'}">${f.file_type}</span>
