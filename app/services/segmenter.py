@@ -105,12 +105,17 @@ def _get_line(text: str, pos: int) -> str:
 
 
 def _validate_sequence(positions: dict) -> dict:
-    """연속된 최장 문항 시퀀스 유지 (1개 gap 허용)"""
+    """
+    연속된 문항 시퀀스 유지 (1개 gap 허용).
+    수능 선택과목 구조(예: 1~11 공통 + 12~17 선택 + 23~45 공통처럼
+    중간에 큰 gap이 있는 비연속 구간)도 올바르게 처리.
+    """
     if len(positions) <= 3:
         return positions
 
     nums = sorted(positions.keys())
-    # 1개 건너뜀 허용: n+1 또는 n+2 모두 연속으로 처리
+
+    # 연속 구간 분리 (gap ≤ 2 이면 같은 구간)
     sequences = []
     cur = [nums[0]]
     for n in nums[1:]:
@@ -121,13 +126,30 @@ def _validate_sequence(positions: dict) -> dict:
             cur = [n]
     sequences.append(cur)
 
-    longest = max(sequences, key=len)
+    # 구간이 1개 → 그대로 사용
+    if len(sequences) == 1:
+        longest = sequences[0]
+        if len(longest) < len(nums) * 0.5:
+            return positions
+        min_n, max_n = min(longest), max(longest)
+        return {n: positions[n] for n in nums if min_n <= n <= max_n}
 
-    # 최장 시퀀스가 전체의 50% 미만이면 전체 사용 (부분 시험지)
+    # 구간이 여러 개 → 수능 선택과목 패턴 판별
+    # 패턴: 구간들의 합이 전체의 70% 이상이면 모두 합쳐서 사용
+    total_in_seqs = sum(len(s) for s in sequences)
+    if total_in_seqs >= len(nums) * 0.70:
+        # 모든 구간을 합쳐서 반환 (비연속 구간 전체 허용)
+        valid_nums = set()
+        for seq in sequences:
+            if len(seq) >= 2:  # 단독 1개짜리 오탐 제거
+                valid_nums.update(seq)
+        if valid_nums:
+            return {n: positions[n] for n in nums if n in valid_nums}
+
+    # 폴백: 최장 단일 시퀀스 사용
+    longest = max(sequences, key=len)
     if len(longest) < len(nums) * 0.5:
         return positions
-
-    # 최장 시퀀스 min~max 범위 내 모든 positions 포함
     min_n, max_n = min(longest), max(longest)
     return {n: positions[n] for n in nums if min_n <= n <= max_n}
 
@@ -209,16 +231,33 @@ def _extract_passages(text: str, positions: dict, sorted_nums: list) -> list:
         })
 
     # 각 문항 블록(텍스트 위치 순) 끝에 붙은 다음 지문
+    # pos_sorted[-2]까지만 순회: 마지막 문항(45번 등) 이후 텍스트는 지문이 아님
+    # (저작권 안내, 페이지 여백 등 오탐 방지)
     for i, (num, pos) in enumerate(pos_sorted[:-1]):
         next_pos = pos_sorted[i + 1][1]
         block = text[pos:next_pos]
         chunk = _extract_passage_from_block(block)
-        if chunk and len(chunk) > 150:
+        # 30자 이상이면 보존 (너무 짧은 노이즈만 제외)
+        if chunk and len(chunk) > 30:
+            # 지문 범위 안내문("다음 글을 읽고 물음에 답하시오")만 있는 경우 제외
+            stripped = re.sub(
+                r'^\s*\[?\s*\d+\s*[～~∼]\s*\d+\s*\]?\s*다음.*?답하시오[.\s]*',
+                '', chunk, flags=re.DOTALL
+            ).strip()
+            if len(stripped) < 30:
+                continue
             passages.append({
                 "id": f"p{len(passages) + 1}",
                 "question_range": None,
                 "content": _clean(chunk),
+                "short": len(chunk) <= 150,
             })
+
+    # 수능 국어 최대 지문 수: 12개 초과 시 짧은 지문부터 제거 (오탐 방지)
+    if len(passages) > 12:
+        passages = sorted(passages, key=lambda p: len(p.get("content", "")), reverse=True)[:12]
+        for i, p in enumerate(passages):
+            p["id"] = f"p{i+1}"
 
     return passages
 

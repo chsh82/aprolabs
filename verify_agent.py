@@ -578,6 +578,7 @@ class VerifyAgent:
                     continue
 
             # ① 발문(stem) 교정
+            stem_skipped = False
             if pdf_q.stem:
                 stem_corrs = self._correct_text(
                     loc, "stem", question.stem or "", pdf_q.stem, threshold=0.80
@@ -585,13 +586,30 @@ class VerifyAgent:
                 for tc in stem_corrs:
                     if tc.kind == CorrectionKind.FIXED:
                         question.stem = tc.corrected
+                    if tc.kind == CorrectionKind.SKIPPED:
+                        stem_skipped = True
                 corrections.extend(stem_corrs)
 
             # ② 선택지(choices) 교정
+            # - stem 유사도가 낮아 SKIPPED된 경우: 문항 매칭 자체가 불확실 → 선택지 검증 건너뜀
+            # - has_choices=False(이미지 선택지)인 경우: 자동 추가/불일치 경고 불필요 → 건너뜀
             if pdf_q.choices:
-                corrections.extend(
-                    self._correct_choices(loc, question, pdf_q.choices)
-                )
+                q_has_choices = getattr(question, "has_choices", True)
+                if stem_skipped:
+                    corrections.append(Correction(
+                        kind=CorrectionKind.SKIPPED, location=loc, field="choices",
+                        message="발문 유사도 낮음 → 선택지 검증 건너뜀",
+                    ))
+                elif q_has_choices is False and not question.choices:
+                    # 이미지 선택지 문항: segmenter가 의도적으로 choices=None 처리
+                    corrections.append(Correction(
+                        kind=CorrectionKind.SKIPPED, location=loc, field="choices",
+                        message="이미지 선택지 문항 — 자동 검증 생략",
+                    ))
+                else:
+                    corrections.extend(
+                        self._correct_choices(loc, question, pdf_q.choices)
+                    )
 
             # ③ 문항 <보기> 교정
             if pdf_q.bogi_text:

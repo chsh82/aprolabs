@@ -169,7 +169,13 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
       <div style="color:#15803d;">✅ [{{ c.location }}] {{ c.message }}</div>
       {% endfor %}
       {% for c in warning_list %}
-      <div style="color:#d97706;">⚠ [{{ c.location }}] {{ c.message }}</div>
+      <div style="color:#d97706;cursor:pointer;padding:2px 4px;border-radius:4px;
+                  transition:background .15s;"
+           onmouseover="this.style.background='#fef3c7'"
+           onmouseout="this.style.background=''"
+           onclick="jumpToCorrection('{{ c.location }}')">
+        ⚠ [{{ c.location }}] {{ c.message }}
+      </div>
       {% endfor %}
       {% for c in error_list %}
       <div style="color:#dc2626;">✗ [{{ c.location }}] {{ c.message }}</div>
@@ -1203,6 +1209,39 @@ function togglePdfPanel() {
 // ─── 지문 페이지네이션 ───────────────────────
 let passageIdx   = 0;
 const totalPassages = {{ job.segments.passages|length if job.segments else 0 }};
+
+// ─── 경고 클릭 → 해당 항목으로 이동 ───────────
+function jumpToCorrection(location) {
+  // location 예: "지문1", "문항3", "지문2.보기"
+  const passM = location.match(/지문(\d+)/);
+  const questM = location.match(/문항(\d+)/);
+
+  if (passM) {
+    const idx = parseInt(passM[1]) - 1;
+    switchTab('passages');
+    showPassage(idx);
+    setTimeout(() => {
+      const ta = document.querySelector(`[data-type="passage"][data-idx="${idx}"]`);
+      if (ta) {
+        ta.focus();
+        ta.style.outline = '2px solid #d97706';
+        setTimeout(() => ta.style.outline = '', 2000);
+        ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 150);
+  } else if (questM) {
+    const qNum = parseInt(questM[1]);
+    switchTab('questions');
+    setTimeout(() => {
+      const card = document.querySelector(`[data-q-num="${qNum}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.style.outline = '2px solid #d97706';
+        setTimeout(() => card.style.outline = '', 2000);
+      }
+    }, 150);
+  }
+}
 
 function showPassage(idx) {
   const prev = document.getElementById(`p-card-${passageIdx}`);
