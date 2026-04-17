@@ -1109,7 +1109,9 @@ async function loadPages() {
 function showPdfPage(idx) {
   if (!pdfUrls.length) return;
   pdfCurrent = Math.max(0, Math.min(idx, pdfUrls.length - 1));
-  document.getElementById('pdf-current-img').src = pdfUrls[pdfCurrent];
+  const img = document.getElementById('pdf-current-img');
+  img.onload = () => applyZoom();
+  img.src = pdfUrls[pdfCurrent];
   document.getElementById('pdf-page-label').textContent =
     `${pdfCurrent + 1} / ${pdfUrls.length}`;
   const viewer = document.getElementById('pdf-viewer');
@@ -1131,8 +1133,10 @@ function applyZoom() {
   const label  = document.getElementById('pdf-zoom-label');
   if (!img) return;
   const baseWidth = viewer.clientWidth - 16;  // 패딩 제외한 기준 너비
-  img.style.width    = Math.round(baseWidth * pdfZoom) + 'px';
-  img.style.maxWidth = 'none';
+  if (baseWidth > 0) {
+    img.style.width    = Math.round(baseWidth * pdfZoom) + 'px';
+    img.style.maxWidth = 'none';
+  }
   if (label) label.textContent = Math.round(pdfZoom * 100) + '%';
 }
 
