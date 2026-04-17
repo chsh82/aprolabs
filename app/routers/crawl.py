@@ -82,6 +82,7 @@ async def crawl_search(request: Request):
     subj_list  = body.get("subjList", "")
     page       = int(body.get("page", 1))
     page_size  = int(body.get("pageSize", 50))
+    cookie     = body.get("cookie", "").strip()
 
     params = {
         "targetCd":    "D300",
@@ -94,9 +95,13 @@ async def crawl_search(request: Request):
         "pageSize":    str(page_size),
     }
 
+    headers = dict(_HEADERS)
+    if cookie:
+        headers["Cookie"] = cookie
+
     try:
         async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
-            resp = await client.post(EBS_LIST_API, data=params, headers=_HEADERS)
+            resp = await client.post(EBS_LIST_API, data=params, headers=headers)
         html = resp.text
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)})
@@ -129,9 +134,12 @@ async def crawl_import(request: Request, background_tasks: BackgroundTasks,
             continue
 
         # PDF 다운로드
+        dl_headers = dict(_HEADERS)
+        if paper.get("cookie"):
+            dl_headers["Cookie"] = paper["cookie"]
         try:
             async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
-                r = await client.get(pdf_url, headers=_HEADERS)
+                r = await client.get(pdf_url, headers=dl_headers)
             if r.status_code != 200:
                 created.append({"title": title, "ok": False,
                                  "error": f"HTTP {r.status_code}"})
