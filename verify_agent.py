@@ -198,6 +198,13 @@ _PAGE_EXTRACT_PROMPT = """\
 - 이 페이지에 없는 항목은 빈 배열로 반환하세요.
 - 그림/이미지가 전혀 없는 페이지에서는 [그림]을 삽입하지 마세요.
 
+【문항 번호 누락 방지 - 매우 중요】
+- 페이지가 좌/우 2단 구성이거나 (가)/(나) 지문이 병렬로 배치된 경우, 각 단을 독립적으로 스캔하여 문항 번호를 빠짐없이 추출하세요.
+- 문항 번호는 일반적으로 굵은 숫자(예: 12, 13, 14, 15)로 표시됩니다.
+- 지문 아래 바로 이어지는 문항들도 빠짐없이 추출하세요. 특히 마지막 문항까지 확인하세요.
+- 선택지(① ~ ⑤)가 있으면 반드시 해당 문항 번호를 함께 추출해야 합니다.
+- "다음 중 ...", "윗글의 ...", "㉠~㉤ 중 ..." 등의 패턴이 보이면 문항 발문입니다.
+
 반환 형식 (JSON만, 설명 없이):
 {
   "passages": [
@@ -535,17 +542,40 @@ class VerifyAgent:
                 else:
                     pdf_q_map[pq.number] = pq
 
+        # 전체 추출 stem 목록 (폴백 유사도 매칭용)
+        all_pdf_questions = list(pdf_q_map.values())
+
         for i, question in enumerate(questions):
             num = question.number
             loc = f"문항{num}" if num else f"문항[idx={i}]"
             pdf_q = pdf_q_map.get(num)
 
             if pdf_q is None:
-                corrections.append(Correction(
-                    kind=CorrectionKind.WARNING, location=loc, field="stem",
-                    message="PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
-                ))
-                continue
+                # 폴백: 발문(stem) 유사도로 PDF 추출 문항과 매칭 시도
+                q_stem = (question.stem or "").strip()
+                best_match: PageQuestionExtract | None = None
+                best_ratio = 0.0
+                if q_stem and all_pdf_questions:
+                    for candidate in all_pdf_questions:
+                        if not candidate.stem:
+                            continue
+                        r = difflib.SequenceMatcher(None, q_stem, candidate.stem).ratio()
+                        if r > best_ratio:
+                            best_ratio = r
+                            best_match = candidate
+
+                FALLBACK_THRESHOLD = 0.55  # 55% 이상이면 같은 문항으로 간주
+                if best_match is not None and best_ratio >= FALLBACK_THRESHOLD:
+                    _log(verbose,
+                         f"  [폴백매칭] {loc} → PDF문항{best_match.number} "
+                         f"(유사도={best_ratio:.2f})")
+                    pdf_q = best_match
+                else:
+                    corrections.append(Correction(
+                        kind=CorrectionKind.WARNING, location=loc, field="stem",
+                        message="PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+                    ))
+                    continue
 
             # ① 발문(stem) 교정
             if pdf_q.stem:

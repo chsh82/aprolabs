@@ -176,8 +176,12 @@ async def upload_pdf(
         async with aiofiles.open(pdf_path, "wb") as f:
             await f.write(await file.read())
 
+        from sqlalchemy import func
+        max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
+
         job = PipelineJob(
             id=job_id,
+            job_number=max_num + 1,
             filename=file.filename,
             file_path=pdf_path,
             source=source or None,
@@ -434,6 +438,62 @@ async def save_segments(job_id: str, request: Request, db: Session = Depends(get
     job.segments = data
     db.commit()
     return JSONResponse({"ok": True})
+
+
+@router.post("/review/{job_id}/rerun-agent")
+async def rerun_agent(job_id: str, db: Session = Depends(get_db)):
+    """verify_agent 만 재실행해서 교정 결과를 갱신"""
+    job = db.get(PipelineJob, job_id)
+    if not job or not job.segments or not job.file_path:
+        return JSONResponse({"ok": False, "error": "job not found or missing data"})
+
+    pdf_path = job.file_path
+    if not os.path.exists(pdf_path):
+        return JSONResponse({"ok": False, "error": f"PDF 파일 없음: {pdf_path}"})
+
+    try:
+        import sys, pathlib
+        sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
+        from verify_agent import run as verify_run
+
+        segments = job.segments
+        passages_data = list(segments.get("passages", []))
+        questions_data = list(segments.get("questions", []))
+
+        result = verify_run(
+            pdf_path=pdf_path,
+            segments_json={"passages": passages_data, "questions": questions_data},
+            dpi=120,
+            verbose=False,
+        )
+
+        # 교정된 지문 내용 반영
+        for i, corrected_p in enumerate(result.segments.passages):
+            if i < len(passages_data):
+                passages_data[i]["content"] = corrected_p.content
+
+        verify_corrections = [
+            {"kind": c.kind, "location": c.location, "message": c.message}
+            for c in result.corrections
+        ]
+
+        job.segments = {"passages": passages_data, "questions": questions_data}
+        job.raw_result = {
+            **(job.raw_result or {}),
+            "verify_corrections": verify_corrections,
+        }
+        db.commit()
+
+        return JSONResponse({
+            "ok": True,
+            "fixed": sum(1 for c in result.corrections if c.kind == "fixed"),
+            "warnings": sum(1 for c in result.corrections if c.kind == "warning"),
+            "errors": sum(1 for c in result.corrections if c.kind == "error"),
+        })
+
+    except Exception as e:
+        import traceback
+        return JSONResponse({"ok": False, "error": f"{e}\n{traceback.format_exc()[-400:]}"})
 
 
 @router.post("/review/{job_id}/approve")

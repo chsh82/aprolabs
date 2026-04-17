@@ -39,17 +39,31 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
       <button onclick="pdfNext()"
               style="width:22px;height:22px;font-size:11px;border:1px solid #e5e7eb;
                      border-radius:5px;background:white;cursor:pointer;">▶</button>
+      <span style="color:#e5e7eb;margin:0 2px;">│</span>
+      <button onclick="pdfZoomOut()" title="축소"
+              style="width:22px;height:22px;font-size:14px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;line-height:1;">−</button>
+      <span id="pdf-zoom-label"
+            style="font-size:11px;color:#374151;white-space:nowrap;min-width:36px;text-align:center;">
+        100%
+      </span>
+      <button onclick="pdfZoomIn()" title="확대"
+              style="width:22px;height:22px;font-size:14px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;line-height:1;">+</button>
+      <button onclick="pdfZoomReset()" title="원래 크기"
+              style="height:22px;padding:0 5px;font-size:10px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;color:#6b7280;">⊙</button>
     </div>
   </div>
 
   {# 단일 페이지 뷰어 #}
-  <div id="pdf-viewer" style="flex:1;overflow-y:auto;padding:8px;">
+  <div id="pdf-viewer" style="flex:1;overflow:auto;padding:8px;">
     <p id="pages-loading" style="font-size:11px;color:#9ca3af;text-align:center;padding:24px 0;">
       페이지 로딩 중…
     </p>
     <img id="pdf-current-img" src="" alt=""
          style="display:none;width:100%;border-radius:6px;border:1px solid #e5e7eb;
-                box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+                box-shadow:0 1px 3px rgba(0,0,0,0.08);transform-origin:top left;">
   </div>
 </div>
 
@@ -77,7 +91,7 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
     <div style="min-width:0;flex:1;">
       <p style="font-size:13px;font-weight:700;color:#1f2937;margin:0;
                 white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:420px;">
-        {{ job.filename }}
+        {% if job.job_number %}<span style="font-size:11px;font-weight:600;color:#9ca3af;font-family:monospace;margin-right:6px;">#{{ '%04d'|format(job.job_number) }}</span>{% endif %}{{ job.filename }}
       </p>
       <p style="font-size:11px;color:#9ca3af;margin:2px 0 0;">
         {% set ec=(job.exam_type or '기타').replace(' ','') %}
@@ -91,6 +105,11 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
       </p>
     </div>
     <div style="display:flex;gap:6px;flex-shrink:0;margin-left:12px;">
+      <button id="rerun-btn" onclick="rerunAgent()"
+              style="padding:6px 12px;font-size:12px;background:#fef3c7;color:#92400e;
+                     border:1px solid #fcd34d;border-radius:8px;cursor:pointer;font-weight:500;">
+        🤖 에이전트 재실행
+      </button>
       <button onclick="saveSegments()"
               style="padding:6px 12px;font-size:12px;background:#f3f4f6;color:#374151;
                      border:none;border-radius:8px;cursor:pointer;font-weight:500;">
@@ -1014,6 +1033,33 @@ async function saveSegments() {
   showToast('저장됨 ✓', 2000);
 }
 
+// ─── 에이전트 재실행 ──────────────────────────
+async function rerunAgent() {
+  const btn = document.getElementById('rerun-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 실행 중...';
+  btn.style.opacity = '0.6';
+  try {
+    await saveSegments();  // 현재 편집 내용 먼저 저장
+    const res = await fetch('/suneung/review/{{ job.id }}/rerun-agent', { method: 'POST' });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(`✅ 교정 완료 — 수정 ${data.fixed}건, 경고 ${data.warnings}건`, 4000);
+      setTimeout(() => location.reload(), 1200);
+    } else {
+      alert('에이전트 오류:\n' + (data.error || '알 수 없는 오류'));
+      btn.disabled = false;
+      btn.textContent = '🤖 에이전트 재실행';
+      btn.style.opacity = '1';
+    }
+  } catch (e) {
+    alert('요청 실패: ' + e);
+    btn.disabled = false;
+    btn.textContent = '🤖 에이전트 재실행';
+    btn.style.opacity = '1';
+  }
+}
+
 // ─── DB 확정 ─────────────────────────────────
 async function approveJob() {
   const unchecked = segments.questions.filter(q=>!q._deleted && !q._review_status).length;
@@ -1053,6 +1099,7 @@ async function loadPages() {
     document.getElementById('pdf-nav').style.display = 'flex';
     document.getElementById('pdf-current-img').style.display = 'block';
     showPdfPage(0);
+    applyZoom();
   } catch(e) {
     const l = document.getElementById('pages-loading');
     if (l) l.textContent = '이미지 로드 실패';
@@ -1071,6 +1118,36 @@ function showPdfPage(idx) {
 
 function pdfPrev() { showPdfPage(pdfCurrent - 1); }
 function pdfNext() { showPdfPage(pdfCurrent + 1); }
+
+// ─── PDF 확대/축소 ────────────────────────────
+let pdfZoom = 1.0;
+const ZOOM_STEP = 0.2;
+const ZOOM_MIN  = 0.4;
+const ZOOM_MAX  = 3.0;
+
+function applyZoom() {
+  const img    = document.getElementById('pdf-current-img');
+  const viewer = document.getElementById('pdf-viewer');
+  const label  = document.getElementById('pdf-zoom-label');
+  if (!img) return;
+  const baseWidth = viewer.clientWidth - 16;  // 패딩 제외한 기준 너비
+  img.style.width    = Math.round(baseWidth * pdfZoom) + 'px';
+  img.style.maxWidth = 'none';
+  if (label) label.textContent = Math.round(pdfZoom * 100) + '%';
+}
+
+function pdfZoomIn()    { pdfZoom = Math.min(ZOOM_MAX, pdfZoom + ZOOM_STEP); applyZoom(); }
+function pdfZoomOut()   { pdfZoom = Math.max(ZOOM_MIN, pdfZoom - ZOOM_STEP); applyZoom(); }
+function pdfZoomReset() { pdfZoom = 1.0; applyZoom(); }
+
+// Ctrl+휠로 확대/축소
+document.addEventListener('wheel', ev => {
+  if (!ev.ctrlKey) return;
+  const viewer = document.getElementById('pdf-viewer');
+  if (!viewer || !viewer.contains(ev.target)) return;
+  ev.preventDefault();
+  ev.deltaY < 0 ? pdfZoomIn() : pdfZoomOut();
+}, { passive: false });
 
 // ─── PDF 패널 접기/열기 ───────────────────────
 let pdfOpen = true;
