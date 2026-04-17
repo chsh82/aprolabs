@@ -1,8 +1,9 @@
 """
-EBS 기출문제 크롤링 라우터
-GET  /crawl          → 크롤링 UI
-POST /crawl/search   → EBS 기출문제 목록 검색
-POST /crawl/import   → 선택 PDF 다운로드 → 파이프라인 등록
+레전드스터디 기출문제 크롤링 라우터
+GET  /crawl           → 크롤링 UI
+POST /crawl/search    → 카테고리 페이지에서 글 목록 수집
+POST /crawl/files     → 개별 글 페이지에서 국어 PDF 링크 추출
+POST /crawl/import    → 선택 PDF 다운로드 → 파이프라인 등록
 """
 import os
 import re
@@ -14,6 +15,7 @@ from fastapi.templating import Jinja2Templates
 from bs4 import BeautifulSoup
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from urllib.parse import unquote
 
 from app.database import get_db
 from app.models.passage import PipelineJob
@@ -24,9 +26,11 @@ templates = Jinja2Templates(directory="app/templates")
 UPLOAD_DIR = "uploads/suneung"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-EBS_BASE = "https://www.ebsi.co.kr"
-EBS_LIST_API  = f"{EBS_BASE}/ebs/xip/xipc/previousPaperListAjax.ajax"
-EBS_MONTH_API = f"{EBS_BASE}/ebs/xip/xipc/previousPaperMonthGet.ajax"
+CATEGORY_URL = (
+    "https://legendstudy.com/category/"
+    "%E2%97%86%EF%BB%BF%20%22%EA%B3%A03%22%EC%9D%84%20%EC%9C%84%ED%95%9C%20%EA%B3%B5%EA%B0%84%20"
+    "/3%ED%95%99%EB%85%84%20%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC%20%EC%A0%84%EA%B3%BC%EB%AA%A9%20%EC%9E%90%EB%A3%8C"
+)
 
 _HEADERS = {
     "User-Agent": (
@@ -34,25 +38,7 @@ _HEADERS = {
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/124.0.0.0 Safari/537.36"
     ),
-    "Referer": f"{EBS_BASE}/ebs/xip/xipc/previousPaperList.ebs?targetCd=D300",
-    "Origin": EBS_BASE,
-}
-
-# 시험 종류 코드 → 한글 (EBS monthList 값 기준)
-EXAM_TYPE_LABEL = {
-    "01": "3월 학력평가",
-    "04": "4월 학력평가",
-    "06": "6월 모의평가",
-    "07": "7월 학력평가",
-    "09": "9월 모의평가",
-    "10": "10월 학력평가",
-    "11": "수능",
-}
-
-# 과목 코드 (subjList 값, EBS 기준)
-SUBJ_LABEL = {
-    "": "전체",
-    "010101": "국어 (언어와매체/화법과작문)",
+    "Accept-Language": "ko-KR,ko;q=0.9",
 }
 
 
@@ -63,215 +49,267 @@ SUBJ_LABEL = {
 def crawl_page(request: Request):
     import datetime
     current_year = datetime.datetime.now().year
-    years = list(range(current_year, 2004, -1))
+    years = list(range(current_year + 1, 2009, -1))
     return templates.TemplateResponse("crawl/index.html", {
         "request": request,
         "years": years,
-        "exam_types": EXAM_TYPE_LABEL,
     })
 
 
 # ─────────────────────────────────────────────
-# POST /crawl/search  (AJAX)
+# POST /crawl/search  — 글 목록 수집
 # ─────────────────────────────────────────────
 @router.post("/search")
 async def crawl_search(request: Request):
     body = await request.json()
-    year = str(body.get("year", "")).strip()
-    month_list = body.get("monthList", "")   # 예: "11" (수능) or "" (전체)
-    subj_list  = body.get("subjList", "")
-    page       = int(body.get("page", 1))
-    page_size  = int(body.get("pageSize", 50))
-    cookie     = body.get("cookie", "").strip()
+    year_filter   = str(body.get("year", "")).strip()
+    pages_to_scan = int(body.get("pages", 3))   # 최대 스캔 페이지 수
 
-    params = {
-        "targetCd":    "D300",
-        "beginYear":   year,
-        "endYear":     "",
-        "monthList":   month_list,
-        "subjList":    subj_list,
-        "sort":        "recent",
-        "currentPage": str(page),
-        "pageSize":    str(page_size),
-    }
+    posts = []
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
+        for page_num in range(1, pages_to_scan + 1):
+            url = CATEGORY_URL + (f"?page={page_num}" if page_num > 1 else "")
+            try:
+                resp = await client.get(url)
+                page_posts = _parse_category_page(resp.text)
+                if not page_posts:
+                    break
+                posts.extend(page_posts)
+            except Exception as e:
+                return JSONResponse({"ok": False, "error": str(e)})
 
-    headers = dict(_HEADERS)
-    if cookie:
-        headers["Cookie"] = cookie
+    # 연도 필터
+    if year_filter:
+        posts = [p for p in posts if p.get("year") == year_filter]
 
-    try:
-        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
-            resp = await client.post(EBS_LIST_API, data=params, headers=headers)
-        html = resp.text
-    except Exception as e:
-        return JSONResponse({"ok": False, "error": str(e)})
+    # 국어 관련 글만 (제목에 국어/언매/화작 포함 또는 전과목 글)
+    filtered = [p for p in posts if _is_korean_related(p.get("title", ""))]
 
-    papers = _parse_paper_list(html)
-    return JSONResponse({"ok": True, "papers": papers, "count": len(papers)})
+    return JSONResponse({"ok": True, "posts": filtered, "total": len(filtered)})
 
 
 # ─────────────────────────────────────────────
-# POST /crawl/import  (AJAX)
+# POST /crawl/files  — 개별 글에서 국어 PDF 추출
+# ─────────────────────────────────────────────
+@router.post("/files")
+async def crawl_files(request: Request):
+    body = await request.json()
+    post_url = body.get("url", "").strip()
+    if not post_url:
+        return JSONResponse({"ok": False, "error": "URL 없음"})
+
+    try:
+        async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
+            resp = await client.get(post_url)
+        files = _parse_post_files(resp.text, post_url)
+        return JSONResponse({"ok": True, "files": files})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)})
+
+
+# ─────────────────────────────────────────────
+# POST /crawl/import  — PDF 다운로드 → 파이프라인
 # ─────────────────────────────────────────────
 @router.post("/import")
 async def crawl_import(request: Request, background_tasks: BackgroundTasks,
                        db: Session = Depends(get_db)):
     body = await request.json()
-    papers = body.get("papers", [])   # list of {title, pdf_url, year, exam_type, subject}
+    files = body.get("files", [])
 
-    if not papers:
+    if not files:
         return JSONResponse({"ok": False, "error": "선택된 파일 없음"})
 
     created = []
-    for paper in papers[:20]:
-        pdf_url   = paper.get("pdf_url", "").strip()
-        title     = paper.get("title", "untitled")
-        year      = paper.get("year")
-        exam_type = paper.get("exam_type", "")
-        subject   = paper.get("subject", "국어")
+    async with httpx.AsyncClient(timeout=60, follow_redirects=True, headers=_HEADERS) as client:
+        for f in files[:20]:
+            pdf_url   = f.get("pdf_url", "").strip()
+            title     = f.get("title", "untitled")
+            year      = f.get("year")
+            exam_type = f.get("exam_type", "")
+            subject   = f.get("subject", "국어")
+            file_type = f.get("file_type", "문제")  # 문제 or 정답,해설
 
-        if not pdf_url:
-            continue
-
-        # PDF 다운로드
-        dl_headers = dict(_HEADERS)
-        if paper.get("cookie"):
-            dl_headers["Cookie"] = paper["cookie"]
-        try:
-            async with httpx.AsyncClient(timeout=60, follow_redirects=True) as client:
-                r = await client.get(pdf_url, headers=dl_headers)
-            if r.status_code != 200:
-                created.append({"title": title, "ok": False,
-                                 "error": f"HTTP {r.status_code}"})
+            if not pdf_url:
                 continue
-        except Exception as e:
-            created.append({"title": title, "ok": False, "error": str(e)})
-            continue
 
-        job_id   = str(uuid.uuid4())
-        filename = f"{title}.pdf"
-        pdf_path = os.path.join(UPLOAD_DIR, f"{job_id}.pdf")
+            try:
+                r = await client.get(pdf_url)
+                if r.status_code != 200:
+                    created.append({"title": title, "ok": False,
+                                    "error": f"HTTP {r.status_code}"})
+                    continue
+            except Exception as e:
+                created.append({"title": title, "ok": False, "error": str(e)})
+                continue
 
-        with open(pdf_path, "wb") as f:
-            f.write(r.content)
+            job_id   = str(uuid.uuid4())
+            filename = f"{title}.pdf"
+            pdf_path = os.path.join(UPLOAD_DIR, f"{job_id}.pdf")
 
-        max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
-        job = PipelineJob(
-            id=job_id,
-            job_number=max_num + 1,
-            filename=filename,
-            file_path=pdf_path,
-            source=title,
-            source_year=int(year) if str(year).isdigit() else None,
-            exam_type=exam_type,
-            subject=subject,
-            status="parsing",
-        )
-        db.add(job)
-        db.commit()
+            with open(pdf_path, "wb") as fp:
+                fp.write(r.content)
 
-        from app.routers.suneung import run_pipeline
-        background_tasks.add_task(run_pipeline, job_id, pdf_path)
-        created.append({"title": title, "ok": True, "job_id": job_id})
+            max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
+            job = PipelineJob(
+                id=job_id,
+                job_number=max_num + 1,
+                filename=filename,
+                file_path=pdf_path,
+                source=title,
+                source_year=int(year) if str(year).isdigit() else None,
+                exam_type=exam_type,
+                subject=subject,
+                status="parsing",
+            )
+            db.add(job)
+            db.commit()
+
+            from app.routers.suneung import run_pipeline
+            background_tasks.add_task(run_pipeline, job_id, pdf_path)
+            created.append({"title": title, "ok": True, "job_id": job_id})
 
     return JSONResponse({"ok": True, "created": created})
 
 
 # ─────────────────────────────────────────────
-# HTML 파싱 유틸
+# 파싱 유틸
 # ─────────────────────────────────────────────
-def _parse_paper_list(html: str) -> list[dict]:
-    """EBS previousPaperListAjax HTML → paper 목록"""
+def _parse_category_page(html: str) -> list[dict]:
+    """카테고리 페이지 → 글 목록"""
     soup = BeautifulSoup(html, "html.parser")
-    items = []
+    posts = []
 
-    for li in soup.select("div.board_qusesion ul li, ul.board_list li"):
-        paper = _parse_li(li)
-        if paper:
-            items.append(paper)
+    for a in soup.select("a[href]"):
+        href = a.get("href", "")
+        # 숫자 ID 경로만 (예: /1700)
+        if not re.match(r"^https?://legendstudy\.com/\d+$", href) and \
+           not re.match(r"^/\d+$", href):
+            continue
 
-    # 결과가 없으면 raw HTML을 디버그용으로 포함
-    if not items and soup.find("ul"):
-        pass  # 빈 결과
+        title = a.get_text(strip=True)
+        if not title or len(title) < 5:
+            continue
 
-    return items
+        url = href if href.startswith("http") else f"https://legendstudy.com{href}"
+
+        year   = _extract_year(title)
+        exam   = _extract_exam_type(title)
+
+        posts.append({
+            "title": title,
+            "url":   url,
+            "year":  year,
+            "exam_type": exam,
+        })
+
+    # 중복 제거
+    seen = set()
+    unique = []
+    for p in posts:
+        if p["url"] not in seen:
+            seen.add(p["url"])
+            unique.append(p)
+    return unique
 
 
-def _parse_li(li) -> dict | None:
-    """li 요소에서 제목, PDF URL, 메타 정보 추출"""
-    # 제목
-    title_el = li.select_one(".tit, .subject, h3, h4, .paper_tit, strong")
-    title = title_el.get_text(strip=True) if title_el else li.get_text(" ", strip=True)[:80]
+def _parse_post_files(html: str, post_url: str) -> list[dict]:
+    """개별 글 페이지 → 국어 PDF 파일 목록"""
+    soup = BeautifulSoup(html, "html.parser")
 
-    if not title:
-        return None
+    # 글 제목에서 메타 추출
+    title_el = soup.select_one("h3.title, .title, title")
+    page_title = title_el.get_text(strip=True) if title_el else ""
+    year      = _extract_year(page_title)
+    exam_type = _extract_exam_type(page_title)
 
-    # PDF 다운로드 링크 — onclick 속성이나 href에서 추출
-    pdf_url = None
+    files = []
+    for fig in soup.select("figure.fileblock"):
+        a = fig.select_one("a[href]")
+        if not a:
+            continue
+        pdf_url = a.get("href", "")
+        if not pdf_url or "kakaocdn" not in pdf_url:
+            continue
 
-    # onclick="... paperId='...' ..." 형태
-    for el in li.find_all(attrs={"onclick": True}):
-        onclick = el.get("onclick", "")
-        # 다운로드 관련 onClick
-        if "down" in onclick.lower() or "pdf" in onclick.lower():
-            # paperId 추출 시도
-            m = re.search(r"paperId['\"]?\s*[:=]\s*['\"]?(\w+)", onclick, re.I)
-            if m:
-                pid = m.group(1)
-                pdf_url = (
-                    f"{EBS_BASE}/ebs/xip/xipc/previousPaperDown.ebs"
-                    f"?paperId={pid}&fileType=pdf&type=pdf"
-                )
-                break
+        # 파일명
+        name_el = fig.select_one(".name, .filename, span")
+        raw_name = name_el.get_text(strip=True) if name_el else ""
+        if not raw_name:
+            # URL에서 추출
+            raw_name = unquote(pdf_url.split("/")[-1].split("?")[0])
 
-    # href 에서 직접 .pdf 또는 down 경로
-    if not pdf_url:
-        for a in li.find_all("a", href=True):
-            href = a["href"]
-            if ".pdf" in href.lower() or "down" in href.lower():
-                pdf_url = href if href.startswith("http") else EBS_BASE + href
-                break
+        # 국어 과목만 필터
+        if not _is_korean_file(raw_name):
+            continue
 
-    # data- 속성에서 추출
-    if not pdf_url:
-        for el in li.find_all(True):
-            for attr in el.attrs:
-                if "paper" in attr.lower() or "id" in attr.lower():
-                    val = el[attr]
-                    if isinstance(val, str) and re.match(r"^\w{5,}$", val):
-                        pdf_url = (
-                            f"{EBS_BASE}/ebs/xip/xipc/previousPaperDown.ebs"
-                            f"?paperId={val}&fileType=pdf&type=pdf"
-                        )
-                        break
-            if pdf_url:
-                break
+        subj     = _extract_subject(raw_name)
+        filetype = _extract_filetype(raw_name)
 
-    # 연도 추출
-    year_m = re.search(r"(20\d{2})", title)
-    year = year_m.group(1) if year_m else ""
+        display_title = f"{year} {exam_type} 국어({subj}) {filetype}" if year else raw_name
 
-    # 시험 종류 추출
-    exam_type = ""
-    if "수능" in title:
-        exam_type = "수능"
-    elif "9월" in title or "9모" in title:
-        exam_type = "9월 모의평가"
-    elif "6월" in title or "6모" in title:
-        exam_type = "6월 모의평가"
-    elif "3월" in title:
-        exam_type = "3월 학력평가"
-    elif "4월" in title:
-        exam_type = "4월 학력평가"
-    elif "7월" in title:
-        exam_type = "7월 학력평가"
-    elif "10월" in title:
-        exam_type = "10월 학력평가"
+        files.append({
+            "title":     display_title,
+            "filename":  raw_name,
+            "pdf_url":   pdf_url,
+            "year":      year,
+            "exam_type": exam_type,
+            "subject":   "국어",
+            "sub_type":  subj,    # 언매 / 화작
+            "file_type": filetype, # 문제 / 정답해설
+            "post_url":  post_url,
+        })
 
-    return {
-        "title": title,
-        "year": year,
-        "exam_type": exam_type,
-        "subject": "국어",
-        "pdf_url": pdf_url or "",
-    }
+    return files
+
+
+def _is_korean_related(title: str) -> bool:
+    """글 제목이 국어 관련이거나 전과목 자료인지"""
+    # 전과목, 수능, 모의고사 글은 모두 포함 (국어 파일이 들어있음)
+    keywords = ["수능", "모의고사", "모의평가", "학력평가", "국어"]
+    return any(k in title for k in keywords)
+
+
+def _is_korean_file(filename: str) -> bool:
+    """파일명이 국어 과목인지"""
+    return "국어" in filename or "언매" in filename or "화작" in filename or \
+           "언어와매체" in filename or "화법과작문" in filename
+
+
+def _extract_year(text: str) -> str:
+    m = re.search(r"(20\d{2})(?:학년도|년)", text)
+    if m:
+        return m.group(1)
+    m = re.search(r"(20\d{2})", text)
+    return m.group(1) if m else ""
+
+
+def _extract_exam_type(text: str) -> str:
+    if "수능" in text:
+        return "수능"
+    if "9월" in text and ("모의" in text or "평가" in text):
+        return "9월 모의평가"
+    if "6월" in text and ("모의" in text or "평가" in text):
+        return "6월 모의평가"
+    if "3월" in text:
+        return "3월 학력평가"
+    if "4월" in text:
+        return "4월 학력평가"
+    if "7월" in text:
+        return "7월 학력평가"
+    if "10월" in text:
+        return "10월 학력평가"
+    return ""
+
+
+def _extract_subject(filename: str) -> str:
+    if "언매" in filename or "언어와매체" in filename:
+        return "언매"
+    if "화작" in filename or "화법과작문" in filename:
+        return "화작"
+    return "국어"
+
+
+def _extract_filetype(filename: str) -> str:
+    if "정답" in filename or "해설" in filename:
+        return "정답해설"
+    return "문제"
