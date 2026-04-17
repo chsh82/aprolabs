@@ -7,7 +7,7 @@ from app.database import get_db
 from app.models.user import User
 from app.auth import (
     verify_password, make_session_cookie,
-    get_current_user_id, COOKIE_NAME, COOKIE_MAX_AGE
+    get_current_user_id, COOKIE_NAME, COOKIE_MAX_AGE, COOKIE_MAX_AGE_LONG
 )
 
 router = APIRouter()
@@ -29,6 +29,7 @@ def login_submit(
     email: str = Form(...),
     password: str = Form(...),
     next: str = Form(default="/"),
+    remember: str = Form(default=""),
     db: Session = Depends(get_db),
 ):
     user = db.query(User).filter(User.email == email).first()
@@ -40,8 +41,9 @@ def login_submit(
         }, status_code=401)
 
     token = make_session_cookie(user.id)
+    max_age = COOKIE_MAX_AGE_LONG if remember == "on" else COOKIE_MAX_AGE
     response = RedirectResponse(next or "/", status_code=302)
-    response.set_cookie(COOKIE_NAME, token, max_age=COOKIE_MAX_AGE,
+    response.set_cookie(COOKIE_NAME, token, max_age=max_age,
                         httponly=True, samesite="lax")
     return response
 

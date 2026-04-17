@@ -5,7 +5,8 @@ import hashlib, os, secrets
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "aprolabs-secret-key-change-in-prod")
 COOKIE_NAME = "aprolabs_session"
-COOKIE_MAX_AGE = 60 * 60 * 24 * 7  # 7일
+COOKIE_MAX_AGE       = 60 * 60 * 24 * 7   # 7일 (remember me 미체크)
+COOKIE_MAX_AGE_LONG  = 60 * 60 * 24 * 30  # 30일 (remember me 체크)
 
 serializer = URLSafeTimedSerializer(SECRET_KEY)
 
@@ -33,7 +34,7 @@ def make_session_cookie(user_id: str) -> str:
 
 def decode_session_cookie(token: str) -> str | None:
     try:
-        return serializer.loads(token, max_age=COOKIE_MAX_AGE)
+        return serializer.loads(token, max_age=COOKIE_MAX_AGE_LONG)
     except (BadSignature, SignatureExpired):
         return None
 
