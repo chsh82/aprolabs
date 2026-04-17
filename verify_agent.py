@@ -954,9 +954,11 @@ class VerifyAgent:
             if _is_noise_underline(ju_clean):
                 continue
             if not _underline_confirmed(ju_clean, pdf_underlines):
+                # 오탐 가능성이 높아 WARNING → SKIPPED 로 격하
+                # (PyMuPDF가 박스 하단선·구분선을 밑줄로 오인식하는 경우가 많음)
                 corrections.append(Correction(
-                    kind=CorrectionKind.WARNING, location=loc, field="underlines",
-                    message=f"JSON의 <u> 태그가 PDF에서 미확인: '{ju_clean[:40]}' — 수동 확인 필요",
+                    kind=CorrectionKind.SKIPPED, location=loc, field="underlines",
+                    message=f"JSON의 <u> 태그가 PDF에서 미확인 (오탐 가능): '{ju_clean[:40]}'",
                 ))
 
         return corrections

@@ -196,7 +196,11 @@ def _extract_questions(text: str, positions: dict, sorted_nums: list) -> list:
 
 
 def _trim_trailing_passage(q_text: str) -> str:
-    """문항 끝에 붙은 다음 지문 제거 (마지막 ⑤ 이후 긴 텍스트)"""
+    """
+    문항 끝에 붙은 다음 지문 제거.
+    - 마지막 ⑤ 이후 빈 줄 + 긴 텍스트 = 다음 지문 시작
+    - 임계값을 100 → 60자로 완화 (짧은 지문도 잘 제거)
+    """
     last_choice = max(
         (q_text.rfind(c) for c in "①②③④⑤"),
         default=-1
@@ -204,7 +208,7 @@ def _trim_trailing_passage(q_text: str) -> str:
     if last_choice < 0:
         return q_text
     after = q_text[last_choice:]
-    m = re.search(r'\n\n\S.{100,}', after, re.DOTALL)
+    m = re.search(r'\n\n\S.{60,}', after, re.DOTALL)
     if m:
         return q_text[:last_choice + m.start()].strip()
     return q_text
@@ -286,23 +290,63 @@ def _extract_passage_from_block(block: str) -> str | None:
 # ─────────────────────────────────────────
 
 def _parse_choices(text: str) -> dict | None:
-    """①②③④⑤ 선택지 파싱"""
+    """
+    ①②③④⑤ 선택지 파싱.
+    - 선택지 범위(① ~ ⑤ 끝)를 먼저 특정 후 파싱 (다음 지문 내용 혼입 방지)
+    - 각 선택지 최대 250자 제한 (초과 시 첫 빈 줄 또는 250자에서 절단)
+    """
     circle_map = {"①": "1", "②": "2", "③": "3", "④": "4", "⑤": "5"}
+
+    # 첫 ① 위치 확인
+    first_pos = min(
+        (text.find(c) for c in circle_map if text.find(c) >= 0),
+        default=-1,
+    )
+    if first_pos < 0:
+        return None
+
+    # 마지막 선택지(⑤) 이후 지문 내용 잘라내기
+    # \n\n + 긴 텍스트 시작 = 다음 지문/보기 시작점
+    choices_text = text[first_pos:]
+    last_c_pos = max((choices_text.rfind(c) for c in "①②③④⑤"), default=0)
+    after_last = choices_text[last_c_pos:]
+    cut_m = re.search(r'\n\n(?=\S.{60,})', after_last, re.DOTALL)
+    if cut_m:
+        choices_text = choices_text[:last_c_pos + cut_m.start()]
+
     choices = {}
     for circle, num in circle_map.items():
-        m = re.search(rf'{circle}(.+?)(?=[①②③④⑤]|$)', text, re.DOTALL)
+        m = re.search(rf'{re.escape(circle)}(.+?)(?=[①②③④⑤]|$)',
+                      choices_text, re.DOTALL)
         if m:
-            choices[num] = m.group(1).strip()
+            val = m.group(1).strip()
+            # 선택지별 길이 상한: 빈 줄 이전 또는 250자
+            if len(val) > 250:
+                cut = val.find('\n\n')
+                val = val[:cut].strip() if 0 < cut < 250 else val[:250].strip()
+            choices[num] = val
+
     return choices if choices else None
 
 
+# 발문 앞에 나타날 수 있는 박스 마커 (발문 범위 경계)
+_STEM_BOX_MARKERS = [
+    "①", "<보기>", "<조건>", "<작성 조건>",
+    "<답변 전략>", "<표현 전략>", "<작문 계획>",
+]
+
+
 def _extract_stem(text: str) -> str:
-    """발문 추출 (첫 ① 또는 <보기> 이전)"""
-    for marker in ["①", "<보기>"]:
+    """
+    발문 추출.
+    ①, <보기>, <조건>, <답변 전략> 등 박스 마커 이전까지만 잡음.
+    """
+    earliest = len(text)
+    for marker in _STEM_BOX_MARKERS:
         idx = text.find(marker)
-        if idx > 0:
-            return text[:idx].strip()
-    return text[:300].strip()
+        if 0 < idx < earliest:
+            earliest = idx
+    return text[:earliest].strip() if earliest < len(text) else text[:300].strip()
 
 
 def _extract_bogi(text: str) -> str | None:
