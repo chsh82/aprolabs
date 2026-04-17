@@ -128,7 +128,8 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
             year      = f.get("year")
             exam_type = f.get("exam_type", "")
             subject   = f.get("subject", "국어")
-            file_type = f.get("file_type", "문제")  # 문제 or 정답,해설
+            file_type = f.get("file_type", "문제")
+            grade     = f.get("grade", "") or _extract_grade("", exam_type)
 
             if not pdf_url:
                 continue
@@ -160,6 +161,7 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
                 source_year=int(year) if str(year).isdigit() else None,
                 exam_type=exam_type,
                 subject=subject,
+                grade=grade or None,
                 status="ready",
             )
             db.add(job)
@@ -251,6 +253,7 @@ def _parse_post_files(html: str, post_url: str,
         if filetype_filter and filetype != filetype_filter:
             continue
 
+        grade = _extract_grade(raw_name, file_exam) or _extract_grade(page_title, file_exam)
         display_title = f"{file_year} {file_exam} {subject}({sub_type}) {filetype}" if file_year else raw_name
 
         files.append({
@@ -259,6 +262,7 @@ def _parse_post_files(html: str, post_url: str,
             "pdf_url":   pdf_url,
             "year":      file_year,
             "exam_type": file_exam,
+            "grade":     grade,
             "subject":   subject,
             "sub_type":  sub_type,
             "file_type": filetype,
@@ -341,3 +345,21 @@ def _extract_filetype(filename: str) -> str:
     if "정답" in filename or "해설" in filename:
         return "정답해설"
     return "문제"
+
+
+# 시험 종류 → 학년 규칙 (수능/모평은 항상 고3)
+_EXAM_TO_GRADE = {
+    "수능": "고3",
+    "6월 모의평가": "고3",
+    "9월 모의평가": "고3",
+}
+
+def _extract_grade(text: str, exam_type: str = "") -> str:
+    """파일명 또는 제목에서 학년 추출. 없으면 시험 종류 규칙 적용."""
+    if "고1" in text or "1학년" in text:
+        return "고1"
+    if "고2" in text or "2학년" in text:
+        return "고2"
+    if "고3" in text or "3학년" in text:
+        return "고3"
+    return _EXAM_TO_GRADE.get(exam_type, "")

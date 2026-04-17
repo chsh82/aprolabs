@@ -74,6 +74,7 @@ class PipelineJob(Base):
     source_year = Column(Integer, nullable=True)
     exam_type = Column(String(100), nullable=True)
     subject = Column(String(50), nullable=True, default="국어")
+    grade = Column(String(10), nullable=True)   # 고1 / 고2 / 고3
 
     # 정답/해설 파일
     answer_file_path = Column(String(500), nullable=True)

@@ -1,0 +1,57 @@
+총 문항: 45개
+  1번 | passage_idx=None | stem=1. 윗글을 이해한 내용으로 적절하지 <u>않은</u> 것은?
+  2번 | passage_idx=None | stem=2. [A]에서 알 수 있는 내용으로 가장 적절한 것은?
+  3번 | passage_idx=None | stem=3. <보기>는 윗글을 읽은 학생이 독서 중 떠올린 생각이다. ㉠～㉤과 　관련하여 ⓐ～ⓔ를 설명한 내용으로 
+  4번 | passage_idx=None | stem=4. ㉠에 대한 설명으로 가장 적절한 것은?
+  5번 | passage_idx=None | stem=5. 윗글에서 알 수 있는 내용으로 적절하지 <u>않은</u> 것은?
+  6번 | passage_idx=None | stem=6. ㉡과 관련하여 ⓐ와 ⓑ의 입장에 대한 반응으로 가장 적절한 것은? [3점]
+  7번 | passage_idx=None | stem=7. ㉮～㉰에 따라 <보기>에 대한 언론 보도를 평가한 내용으로 적절하지 <u>않은</u> 것은?
+<img 
+  8번 | passage_idx=None | stem=8. 윗글을 이해한 내용으로 적절하지 <u>않은</u> 것은?
+  9번 | passage_idx=None | stem=9. 윗글을 참고할 때, ㉠의 이유로 가장 적절한 것은?
+  10번 | passage_idx=None | stem=10. ㉡과 관련하여 윗글의 A 기법과 <보기>의 B 기법을 설명한 　내용으로 가장 적절한 것은? [3점]
+
+  11번 | passage_idx=None | stem=11. 문맥상 ⓐ～ⓔ와 바꿔 쓰기에 가장 적절한 것은?
+  12번 | passage_idx=None | stem=12. (가), (나)에 대한 설명으로 가장 적절한 것은?
+  13번 | passage_idx=None | stem=13. (가)에 제시된 한비자의 견해로 적절하지 <u>않은</u> 것은?
+  14번 | passage_idx=None | stem=14. ㉠과 ㉡에 대한 이해로 가장 적절한 것은?
+  15번 | passage_idx=None | stem=15. (나)의 왕안석과 오징의 입장에서 다음의 ㄱ～ㄹ에 대해 판단한 것으로 가장 적절한 것은?
+
+　ㄱ. 도
+  16번 | passage_idx=None | stem=16. <보기>를 참고할 때, (가), (나)의 사상가에 대한 왕부지의 평가로 적절하지 <u>않은</u> 것
+  17번 | passage_idx=None | stem=17. ⓐ와 문맥상 의미가 가장 가까운 것은?
+  18번 | passage_idx=None | stem=18. [A]의 서술상 특징에 대한 설명으로 가장 적절한 것은?
+  19번 | passage_idx=None | stem=19. ㉠과 관련하여 윗글을 이해한 내용으로 적절하지 <u>않은</u> 것은?
+  20번 | passage_idx=None | stem=20. ⓐ～ⓓ에 대한 설명으로 가장 적절한 것은?
+  21번 | passage_idx=None | stem=21. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> 것은? [3점]
+<img src
+  22번 | passage_idx=None | stem=22. (가)～(다)에 대한 설명으로 가장 적절한 것은?
+  23번 | passage_idx=None | stem=23. <보기>를 참고하여 (가)를 감상한 내용으로 적절하지 <u>않은</u> 것은?
+<img src="/u
+  24번 | passage_idx=None | stem=24. (나)에 대한 이해로 가장 적절한 것은?
+  25번 | passage_idx=None | stem=25. ⓐ～ⓔ에 대한 설명으로 적절하지 <u>않은</u> 것은?
+  26번 | passage_idx=None | stem=26. ㉠과 ㉡에 대한 이해로 가장 적절한 것은?
+  27번 | passage_idx=None | stem=27. <보기>를 참고하여 (나), (다)를 감상한 내용으로 적절하지 <u>않은</u> 것은? [3점]
+<i
+  28번 | passage_idx=None | stem=28. 윗글에 대한 설명으로 가장 적절한 것은?
+  29번 | passage_idx=None | stem=29. [A]～[C]에 대한 설명으로 적절하지 <u>않은</u> 것은?
+  30번 | passage_idx=None | stem=30. 집주름 영감과 양 서방에 대한 이해로 가장 적절한 것은?
+  31번 | passage_idx=None | stem=31. <보기>를 참고하여 ㉠～㉤을 이해한 내용으로 적절하지 <u>않은</u> 것은? [3점]
+<img sr
+  32번 | passage_idx=None | stem=32. (가), (나)의 표현상 특징에 대한 설명으로 가장 적절한 것은?
+  33번 | passage_idx=None | stem=33. [A]～[C]에 대한 이해로 적절하지 <u>않은</u> 것은?
+  34번 | passage_idx=None | stem=34. <보기>를 참고하여 (가), (나)를 감상한 내용으로 적절하지 <u>않은</u> 것은? [3점]
+<i
+  35번 | passage_idx=None | stem=35. 윗글에 대한 이해로 적절한 것은?
+  36번 | passage_idx=None | stem=36. 윗글을 바탕으로 중세 국어 단어의 변화 양상을 이해한 내용으로 　적절하지 <u>않은</u> 것은?
+  37번 | passage_idx=None | stem=37. <보기>를 바탕으로 ‘ㅎ’ 말음 용언의 활용 유형을 탐구한 　내용으로 적절하지 <u>않은</u> 것은
+  38번 | passage_idx=None | stem=38. <보기>의 ㉠～㉨에 대한 설명으로 적절한 것은?
+<img src="/uploads/suneung/75
+  39번 | passage_idx=None | stem=39. <학습 활동>을 수행한 결과로 적절한 것은? [3점] 　<학습 활동>
+　부사어는 부사, 체언+조사, 
+  40번 | passage_idx=None | stem=40. (가)에 나타난 정보 전달 방식으로 가장 적절한 것은?
+  41번 | passage_idx=None | stem=41. (나)에 대한 설명으로 적절하지 <u>않은</u> 것은?
+  42번 | passage_idx=None | stem=42. (가)에 대해 (나)의 학생들이 보인 수용 태도에 대한 설명으로 　적절하지 <u>않은</u> 것은?
+  43번 | passage_idx=None | stem=43. ㉠～㉤에 대한 설명으로 적절하지 <u>않은</u> 것은?
+  44번 | passage_idx=None | stem=44. ㉠～㉤에 드러난 의사소통 방식에 대한 이해로 적절하지 <u>않은</u> 것은?
+  45번 | passage_idx=None | stem=45. (나)의 대화 내용을 반영하여 (가)를 아래와 같이 수정했다고 할 때, 수정한 화면에 대한 설명으로 

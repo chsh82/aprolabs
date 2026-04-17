@@ -98,6 +98,7 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
         {% set ys=job.source_year|string if job.source_year else '미지정' %}
         {% set sj=job.subject or '국어' %}
         <span style="font-family:monospace;color:#3b82f6;font-weight:600;">{{ ys }}-{{ ec }}-{{ sj }}</span>
+        {% if job.grade %}<span style="margin-left:4px;padding:1px 6px;background:#eef2ff;color:#4338ca;border-radius:4px;font-size:10px;font-weight:700;">{{ job.grade }}</span>{% endif %}
         {% if job.segments %}
         &nbsp;·&nbsp; 지문 {{ job.segments.passages|length }}개 · 문항 {{ job.segments.questions|length }}개
         &nbsp;·&nbsp; 검수 <span id="review-progress">0</span>/{{ job.segments.questions|length }}

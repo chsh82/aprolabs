@@ -73,6 +73,9 @@
         {% set ys = job.source_year|string if job.source_year else '미지정' %}
         {% set sj = job.subject or '국어' %}
         <span class="font-mono text-blue-500 font-medium">{{ ys }}-{{ ec }}-{{ sj }}</span>
+        {% if job.grade %}
+        <span class="px-1.5 py-0.5 text-xs rounded bg-indigo-50 text-indigo-600 font-semibold">{{ job.grade }}</span>
+        {% endif %}
         <span>{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
       </div>
       {% if job.status == 'error' %}

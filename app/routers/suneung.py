@@ -152,6 +152,7 @@ async def upload_pdf(
     source_year: str = Form(""),
     exam_type: str = Form("수능"),
     subject: str = Form("국어"),
+    grade: str = Form(""),
 ):
     if not files:
         return RedirectResponse(url="/suneung/upload", status_code=303)
@@ -177,7 +178,16 @@ async def upload_pdf(
             await f.write(await file.read())
 
         from sqlalchemy import func
+        from app.routers.crawl import _extract_grade
         max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
+
+        # 학년 자동 추출: 폼 입력 → 파일명 → 시험유형 규칙
+        resolved_grade = (
+            grade.strip()
+            or _extract_grade(file.filename, exam_type)
+            or _extract_grade("", exam_type)
+            or None
+        )
 
         job = PipelineJob(
             id=job_id,
@@ -188,6 +198,7 @@ async def upload_pdf(
             source_year=int(source_year) if source_year.isdigit() else None,
             exam_type=exam_type,
             subject=subject,
+            grade=resolved_grade,
             answer_file_path=answer_path,
             status="parsing",
         )
