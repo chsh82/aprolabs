@@ -57,56 +57,109 @@ def _base_ctx(db: Session, **kwargs):
 
 
 # ─────────────────────────────────────────
-# 정답 PDF 파싱
+# 정답해설 텍스트 파싱
 # ─────────────────────────────────────────
 
-def _parse_answer_key_pdf(pdf_path: str) -> list[dict]:
+def _extract_answers(text: str) -> dict[int, str]:
+    """정답표 파싱: {num: '②'} """
+    answers: dict[int, str] = {}
+    # "1 ②", "1번 ②", "01. ②", "1) ②" 등
+    ANS_RE = re.compile(r'(?<!\d)0?(\d{1,2})\s*[번\.\)\-]?\s*([①②③④⑤])')
+    for m in ANS_RE.finditer(text):
+        num = int(m.group(1))
+        if 1 <= num <= 45 and num not in answers:
+            answers[num] = m.group(2)
+    # 폴백: 원문자만 나열된 표 형식 (첫 500자)
+    if not answers:
+        CIRCLE_RE = re.compile(r'[①②③④⑤]')
+        for i, m in enumerate(CIRCLE_RE.finditer(text[:800]), 1):
+            if i <= 45:
+                answers[i] = m.group()
+    return answers
+
+
+def _extract_passage_explanations(text: str) -> dict[tuple, str]:
+    """지문해설 구간 파싱: {(start_q, end_q): text}"""
+    result: dict[tuple, str] = {}
+    # 헤더: [1~3], [01~03], ◆[4~9], ■ 4~9번 등
+    HDR_RE = re.compile(
+        r'(?:^|[◆◇■□▶•\n])\s*\[?\s*0?(\d{1,2})\s*[~\-～]\s*0?(\d{1,2})\s*\]?[^\n]*\n',
+        re.MULTILINE,
+    )
+    matches = list(HDR_RE.finditer(text))
+    for i, m in enumerate(matches):
+        s, e = int(m.group(1)), int(m.group(2))
+        body_start = m.end()
+        body_end   = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        body = text[body_start:body_end].strip()
+
+        # 지문해설: 첫 번째 개별 문항 헤더 이전 텍스트
+        Q_HDR = re.compile(r'(?:^|\n)\s*0?' + str(s) + r'\s*번')
+        qm = Q_HDR.search(body)
+        p_text = body[:qm.start()].strip() if qm else body[:500].strip()
+
+        if p_text and len(p_text) > 20:
+            result[(s, e)] = p_text
+    return result
+
+
+def _extract_question_explanations(text: str) -> dict[int, str]:
+    """문항별 해설 파싱: {num: text}"""
+    result: dict[int, str] = {}
+    # "N번" 구분자로 분리
+    Q_SPLIT = re.compile(r'\n\s*0?(\d{1,2})\s*번[^\n]*\n')
+    parts = Q_SPLIT.split(text)
+    # split → [before, num, body, num, body, ...]
+    for j in range(1, len(parts) - 1, 2):
+        try:
+            num = int(parts[j])
+        except ValueError:
+            continue
+        if 1 <= num <= 45:
+            body = parts[j + 1].strip() if j + 1 < len(parts) else ''
+            body = re.sub(r'\s+', ' ', body).strip()
+            if body and len(body) > 10:
+                result[num] = body[:1500]
+    return result
+
+
+def _parse_answer_key_text(pdf_path: str) -> list[dict]:
     """
-    정답 PDF → [{question_number, answer, explanation}, ...]
+    텍스트 추출 기반 정답해설 파싱
+    → [{question_number, answer, passage_explanation, explanation}]
     """
     try:
         raw_text, _, _ = extract_pdf_text(pdf_path)
     except Exception:
         return []
 
-    ANS_RE = re.compile(
-        r'^[\s]*(\d{1,2})\s*[번\.\)\-\s]\s*([①②③④⑤])',
-        re.MULTILINE,
-    )
-    TABLE_RE = re.compile(r'([①②③④⑤])')
+    answers      = _extract_answers(raw_text)
+    passage_expl = _extract_passage_explanations(raw_text)
+    q_expl       = _extract_question_explanations(raw_text)
 
-    matches = list(ANS_RE.finditer(raw_text))
+    all_nums = sorted(set(answers) | set(q_expl))
+    if not all_nums:
+        return []
+
     items = []
-
-    if matches:
-        for i, m in enumerate(matches):
-            num = int(m.group(1))
-            ans = m.group(2)
-            if not (1 <= num <= 45):
-                continue
-
-            exp_start = m.end()
-            exp_end = matches[i + 1].start() if i + 1 < len(matches) else len(raw_text)
-            exp_raw = raw_text[exp_start:exp_end].strip()
-            exp_clean = re.sub(r'\s+', ' ', exp_raw).strip()
-
-            items.append({
-                "question_number": num,
-                "answer": ans,
-                "explanation": exp_clean if len(exp_clean) > 20 else None,
-            })
-    else:
-        # 폴백: 원문자 순서대로 1번부터
-        circles = TABLE_RE.findall(raw_text[:500])
-        for i, c in enumerate(circles, 1):
-            if i <= 45:
-                items.append({
-                    "question_number": i,
-                    "answer": c,
-                    "explanation": None,
-                })
-
+    for num in all_nums:
+        # 이 문항 번호가 속하는 지문해설 찾기
+        p_text = next(
+            (txt for (s, e), txt in passage_expl.items() if s <= num <= e),
+            None,
+        )
+        items.append({
+            "question_number":    num,
+            "answer":             answers.get(num),
+            "passage_explanation": p_text,
+            "explanation":        q_expl.get(num),
+        })
     return items
+
+
+# 구 함수명 유지 (호환)
+def _parse_answer_key_pdf(pdf_path: str) -> list[dict]:
+    return _parse_answer_key_text(pdf_path)
 
 
 # ─────────────────────────────────────────
@@ -217,13 +270,14 @@ async def answer_keys_upload(
     db.add(key)
     db.flush()
 
-    parsed = _parse_answer_key_pdf(file_path)
+    parsed = _parse_answer_key_text(file_path)
     for item_data in parsed:
         db.add(AnswerKeyItem(
             key_id=key_id,
             question_number=item_data["question_number"],
-            answer=item_data["answer"],
-            explanation=item_data["explanation"],
+            answer=item_data.get("answer"),
+            passage_explanation=item_data.get("passage_explanation"),
+            explanation=item_data.get("explanation"),
         ))
 
     db.commit()
@@ -265,17 +319,13 @@ def answer_key_detail(key_id: str, request: Request, db: Session = Depends(get_d
 
 @router.post("/answer-keys/{key_id}/reparse")
 def answer_key_reparse(key_id: str, db: Session = Depends(get_db)):
-    """Gemini Vision으로 정답·해설 재파싱"""
+    """텍스트 기반 정답·해설 재파싱"""
     key = db.get(AnswerKey, key_id)
     if not key or not key.file_path or not os.path.exists(key.file_path):
         return JSONResponse({"ok": False, "error": "파일 없음"})
 
-    items = _parse_with_gemini(key.file_path)
-    if not items:
-        # 폴백: 기존 regex 파싱
-        items = _parse_answer_key_pdf(key.file_path)
+    items = _parse_answer_key_text(key.file_path)
 
-    # 기존 항목 교체
     for item in key.items:
         db.delete(item)
     db.flush()
@@ -288,6 +338,7 @@ def answer_key_reparse(key_id: str, db: Session = Depends(get_db)):
             key_id=key_id,
             question_number=int(num),
             answer=item_data.get("answer") or None,
+            passage_explanation=item_data.get("passage_explanation") or None,
             explanation=item_data.get("explanation") or None,
         ))
 
@@ -321,6 +372,7 @@ async def answer_key_save(key_id: str, request: Request, db: Session = Depends(g
             key_id=key_id,
             question_number=int(num),
             answer=item_data.get("answer") or None,
+            passage_explanation=item_data.get("passage_explanation") or None,
             explanation=item_data.get("explanation") or None,
         ))
 

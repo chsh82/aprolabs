@@ -151,13 +151,30 @@ body > div { flex:1 1 0% !important; min-height:0 !important; }
             #{{ item.question_number }}
           </span>
         </div>
-        <div style="padding:8px 12px;">
-          <textarea class="exp-ta" data-num="{{ item.question_number }}"
-                    style="width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;
-                           font-size:11px;resize:vertical;outline:none;box-sizing:border-box;
-                           line-height:1.6;color:#374151;font-family:inherit;"
-                    rows="3"
-                    placeholder="해설 없음">{{ item.explanation or '' }}</textarea>
+        <div style="padding:8px 12px;display:flex;flex-direction:column;gap:5px;">
+          {% if item.passage_explanation %}
+          <div>
+            <div style="font-size:10px;font-weight:600;color:#7c3aed;margin-bottom:2px;">
+              지문해설
+            </div>
+            <div class="p-expl-view" data-num="{{ item.question_number }}"
+                 style="font-size:11px;color:#6b7280;line-height:1.7;padding:5px 8px;
+                        background:#f5f3ff;border:1px solid #e9d5ff;border-radius:6px;
+                        white-space:pre-wrap;cursor:pointer;max-height:80px;overflow:hidden;"
+                 onclick="togglePassageExpl({{ item.question_number }})">{{ item.passage_explanation }}</div>
+          </div>
+          {% endif %}
+          <div>
+            <div style="font-size:10px;font-weight:600;color:#374151;margin-bottom:2px;">
+              문항해설
+            </div>
+            <textarea class="exp-ta" data-num="{{ item.question_number }}"
+                      style="width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;
+                             font-size:11px;resize:vertical;outline:none;box-sizing:border-box;
+                             line-height:1.6;color:#374151;font-family:inherit;"
+                      rows="3"
+                      placeholder="문항해설 없음">{{ item.explanation or '' }}</textarea>
+          </div>
         </div>
       </div>
       {% endfor %}
@@ -192,6 +209,13 @@ function setAnswer(num, circle) {
     const card = document.getElementById(`item-${num}`);
     if (card) card.style.borderLeftColor = answers[num] ? '#3b82f6' : '#e5e7eb';
   });
+}
+
+function togglePassageExpl(num) {
+  const el = document.querySelector(`.p-expl-view[data-num="${num}"]`);
+  if (!el) return;
+  el.style.maxHeight = el.style.maxHeight === 'none' ? '80px' : 'none';
+  el.style.overflow  = el.style.overflow  === 'visible' ? 'hidden' : 'visible';
 }
 
 function scrollToItem(num) {

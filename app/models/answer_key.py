@@ -36,6 +36,7 @@ class AnswerKeyItem(Base):
     key_id = Column(String(36), ForeignKey("answer_keys.id", ondelete="CASCADE"))
     question_number = Column(Integer, nullable=False)
     answer = Column(String(20), nullable=True)
-    explanation = Column(Text, nullable=True)
+    passage_explanation = Column(Text, nullable=True)   # 지문해설 (같은 지문 문항 공유)
+    explanation = Column(Text, nullable=True)           # 문항해설 (개별)
 
     key = relationship("AnswerKey", back_populates="items")
