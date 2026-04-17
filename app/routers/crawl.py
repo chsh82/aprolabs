@@ -61,10 +61,12 @@ def crawl_page(request: Request):
 # ─────────────────────────────────────────────
 @router.post("/search")
 async def crawl_search(request: Request):
+    """카테고리 페이지 스캔 → 각 글에서 국어 PDF 직접 수집"""
     body = await request.json()
     year_filter   = str(body.get("year", "")).strip()
-    pages_to_scan = int(body.get("pages", 3))   # 최대 스캔 페이지 수
+    pages_to_scan = int(body.get("pages", 2))
 
+    # 1단계: 카테고리 페이지에서 글 URL 수집
     posts = []
     async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
         for page_num in range(1, pages_to_scan + 1):
@@ -78,33 +80,33 @@ async def crawl_search(request: Request):
             except Exception as e:
                 return JSONResponse({"ok": False, "error": str(e)})
 
-    # 연도 필터
+    # 연도 필터 + 국어 관련 글만
     if year_filter:
         posts = [p for p in posts if p.get("year") == year_filter]
+    posts = [p for p in posts if _is_korean_related(p.get("title", ""))]
 
-    # 국어 관련 글만 (제목에 국어/언매/화작 포함 또는 전과목 글)
-    filtered = [p for p in posts if _is_korean_related(p.get("title", ""))]
+    # 필터 조건
+    subj_filter     = body.get("subject", "")      # "" = 전체, "국어", "영어", "수학" 등
+    filetype_filter = body.get("filetype", "")     # "" = 전체, "문제", "정답해설"
 
-    return JSONResponse({"ok": True, "posts": filtered, "total": len(filtered)})
+    # 2단계: 각 글 페이지에서 PDF 병렬 수집
+    import asyncio
+    all_files = []
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
+        async def fetch_files(post):
+            try:
+                resp = await client.get(post["url"])
+                return _parse_post_files(resp.text, post["url"],
+                                         subj_filter, filetype_filter)
+            except Exception:
+                return []
 
+        results = await asyncio.gather(*[fetch_files(p) for p in posts])
+        for files in results:
+            all_files.extend(files)
 
-# ─────────────────────────────────────────────
-# POST /crawl/files  — 개별 글에서 국어 PDF 추출
-# ─────────────────────────────────────────────
-@router.post("/files")
-async def crawl_files(request: Request):
-    body = await request.json()
-    post_url = body.get("url", "").strip()
-    if not post_url:
-        return JSONResponse({"ok": False, "error": "URL 없음"})
+    return JSONResponse({"ok": True, "files": all_files, "total": len(all_files)})
 
-    try:
-        async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
-            resp = await client.get(post_url)
-        files = _parse_post_files(resp.text, post_url)
-        return JSONResponse({"ok": True, "files": files})
-    except Exception as e:
-        return JSONResponse({"ok": False, "error": str(e)})
 
 
 # ─────────────────────────────────────────────
@@ -209,15 +211,15 @@ def _parse_category_page(html: str) -> list[dict]:
     return unique
 
 
-def _parse_post_files(html: str, post_url: str) -> list[dict]:
-    """개별 글 페이지 → 국어 PDF 파일 목록"""
+def _parse_post_files(html: str, post_url: str,
+                      subj_filter: str = "", filetype_filter: str = "") -> list[dict]:
+    """개별 글 페이지 → PDF 파일 목록 (과목/종류 필터 적용)"""
     soup = BeautifulSoup(html, "html.parser")
 
-    # 글 제목에서 메타 추출
-    title_el = soup.select_one("h3.title, .title, title")
+    title_el   = soup.select_one("h3.title, .title, title")
     page_title = title_el.get_text(strip=True) if title_el else ""
-    year      = _extract_year(page_title)
-    exam_type = _extract_exam_type(page_title)
+    year       = _extract_year(page_title)
+    exam_type  = _extract_exam_type(page_title)
 
     files = []
     for fig in soup.select("figure.fileblock"):
@@ -228,21 +230,23 @@ def _parse_post_files(html: str, post_url: str) -> list[dict]:
         if not pdf_url or "kakaocdn" not in pdf_url:
             continue
 
-        # 파일명
-        name_el = fig.select_one(".name, .filename, span")
+        name_el  = fig.select_one(".name, .filename, span")
         raw_name = name_el.get_text(strip=True) if name_el else ""
         if not raw_name:
-            # URL에서 추출
             raw_name = unquote(pdf_url.split("/")[-1].split("?")[0])
 
-        # 국어 과목만 필터
-        if not _is_korean_file(raw_name):
-            continue
-
-        subj     = _extract_subject(raw_name)
+        subject  = _extract_subject_label(raw_name)
+        sub_type = _extract_sub_type(raw_name)
         filetype = _extract_filetype(raw_name)
 
-        display_title = f"{year} {exam_type} 국어({subj}) {filetype}" if year else raw_name
+        # 과목 필터
+        if subj_filter and subj_filter not in subject:
+            continue
+        # 파일 종류 필터
+        if filetype_filter and filetype != filetype_filter:
+            continue
+
+        display_title = f"{year} {exam_type} {subject}({sub_type}) {filetype}" if year else raw_name
 
         files.append({
             "title":     display_title,
@@ -250,26 +254,48 @@ def _parse_post_files(html: str, post_url: str) -> list[dict]:
             "pdf_url":   pdf_url,
             "year":      year,
             "exam_type": exam_type,
-            "subject":   "국어",
-            "sub_type":  subj,    # 언매 / 화작
-            "file_type": filetype, # 문제 / 정답해설
+            "subject":   subject,
+            "sub_type":  sub_type,
+            "file_type": filetype,
             "post_url":  post_url,
         })
 
     return files
 
 
+# 과목 키워드 매핑 (파일명 → 표준 과목명)
+_SUBJ_KEYWORDS = [
+    ("국어", ["국어", "언매", "화작", "언어와매체", "화법과작문"]),
+    ("영어", ["영어"]),
+    ("수학", ["수학", "미적", "기하", "확통"]),
+    ("한국사", ["한국사"]),
+    ("사회", ["사회", "경제", "지리", "윤리", "역사", "정치", "법"]),
+    ("과학", ["물리", "화학", "생명", "지구"]),
+]
+
+def _extract_subject_label(filename: str) -> str:
+    for label, keywords in _SUBJ_KEYWORDS:
+        if any(k in filename for k in keywords):
+            return label
+    return "기타"
+
+def _extract_sub_type(filename: str) -> str:
+    """세부 과목 (언매/화작/기하/미적 등)"""
+    if "언매" in filename or "언어와매체" in filename:
+        return "언매"
+    if "화작" in filename or "화법과작문" in filename:
+        return "화작"
+    if "미적" in filename:
+        return "미적분"
+    if "기하" in filename:
+        return "기하"
+    if "확통" in filename:
+        return "확률과통계"
+    return ""
+
 def _is_korean_related(title: str) -> bool:
-    """글 제목이 국어 관련이거나 전과목 자료인지"""
-    # 전과목, 수능, 모의고사 글은 모두 포함 (국어 파일이 들어있음)
     keywords = ["수능", "모의고사", "모의평가", "학력평가", "국어"]
     return any(k in title for k in keywords)
-
-
-def _is_korean_file(filename: str) -> bool:
-    """파일명이 국어 과목인지"""
-    return "국어" in filename or "언매" in filename or "화작" in filename or \
-           "언어와매체" in filename or "화법과작문" in filename
 
 
 def _extract_year(text: str) -> str:

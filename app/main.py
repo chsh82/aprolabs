@@ -30,7 +30,8 @@ app.include_router(crawl.router)
 async def auth_middleware(request: Request, call_next):
     """로그인하지 않은 경우 /login 으로 리디렉션"""
     public_paths = {"/login", "/logout"}
-    if request.url.path in public_paths or request.url.path.startswith("/static"):
+    if request.url.path in public_paths or request.url.path.startswith("/static") \
+            or request.url.path.startswith("/uploads"):
         return await call_next(request)
 
     user_id = get_current_user_id(request)
