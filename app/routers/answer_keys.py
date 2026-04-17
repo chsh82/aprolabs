@@ -6,10 +6,13 @@ POST /suneung/answer-keys/{key_id}/delete → 삭제
 GET  /suneung/answer-keys/{key_id}     → 상세
 POST /suneung/answer-keys/{key_id}/save  → 문항별 정답 저장 (JSON)
 POST /suneung/answer-keys/{key_id}/match → 문제지 매칭
+POST /suneung/answer-keys/{key_id}/reparse → Gemini Vision 재파싱
 """
 import os
 import re
 import uuid
+import json
+import tempfile
 
 from fastapi import APIRouter, Depends, Request, UploadFile, File, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
@@ -107,6 +110,68 @@ def _parse_answer_key_pdf(pdf_path: str) -> list[dict]:
 
 
 # ─────────────────────────────────────────
+# Gemini Vision 파싱
+# ─────────────────────────────────────────
+
+_ANSWER_KEY_PROMPT = """이 이미지는 한국 수능/모의고사 국어 시험의 정답·해설 PDF 페이지입니다.
+
+이 페이지에서 찾을 수 있는 모든 문항의 정답과 해설을 JSON 배열로 추출하세요:
+[
+  {"question_number": 1, "answer": "③", "explanation": "해설 내용 전체..."},
+  ...
+]
+
+규칙:
+- question_number: 문항 번호 (정수, 1~45)
+- answer: 정답 원문자 (①②③④⑤ 중 하나, 없으면 null)
+- explanation: 해설 전체 내용 (없으면 null, 줄바꿈은 \\n으로)
+- 정답표만 있고 해설이 없으면 explanation을 null로
+- 이 페이지에 문항이 없으면 빈 배열 []
+- JSON 배열만 출력, 다른 설명 없이"""
+
+
+def _parse_with_gemini(pdf_path: str) -> list[dict]:
+    """Gemini Vision으로 정답·해설 PDF 파싱"""
+    try:
+        from app.services.pdf_parser import pdf_to_images
+        from google import genai
+        from PIL import Image
+
+        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY", ""))
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            pages = pdf_to_images(pdf_path, tmp_dir, dpi=150)
+            if not pages:
+                return []
+
+            all_items: list[dict] = []
+            seen: set[int] = set()
+
+            for page_path in pages:
+                img = Image.open(page_path)
+                resp = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=[_ANSWER_KEY_PROMPT, img],
+                )
+                text = resp.text.strip()
+                text = re.sub(r'^```[a-z]*\n?', '', text, flags=re.MULTILINE)
+                text = re.sub(r'\n?```$', '', text, flags=re.MULTILINE)
+                try:
+                    page_items = json.loads(text.strip())
+                    for item in page_items:
+                        num = item.get("question_number")
+                        if isinstance(num, int) and 1 <= num <= 45 and num not in seen:
+                            seen.add(num)
+                            all_items.append(item)
+                except Exception:
+                    pass
+
+            return sorted(all_items, key=lambda x: x.get("question_number", 0))
+    except Exception as e:
+        return []
+
+
+# ─────────────────────────────────────────
 # 목록
 # ─────────────────────────────────────────
 
@@ -193,8 +258,41 @@ def answer_key_detail(key_id: str, request: Request, db: Session = Depends(get_d
     key = db.get(AnswerKey, key_id)
     if not key:
         raise HTTPException(status_code=404, detail="Not found")
-    ctx = _base_ctx(db, request=request, key=key)
+    pdf_url = ("/" + key.file_path.replace("\\", "/")) if key.file_path else None
+    ctx = _base_ctx(db, request=request, key=key, pdf_url=pdf_url)
     return templates.TemplateResponse("suneung/answer_key_detail.html", ctx)
+
+
+@router.post("/answer-keys/{key_id}/reparse")
+def answer_key_reparse(key_id: str, db: Session = Depends(get_db)):
+    """Gemini Vision으로 정답·해설 재파싱"""
+    key = db.get(AnswerKey, key_id)
+    if not key or not key.file_path or not os.path.exists(key.file_path):
+        return JSONResponse({"ok": False, "error": "파일 없음"})
+
+    items = _parse_with_gemini(key.file_path)
+    if not items:
+        # 폴백: 기존 regex 파싱
+        items = _parse_answer_key_pdf(key.file_path)
+
+    # 기존 항목 교체
+    for item in key.items:
+        db.delete(item)
+    db.flush()
+
+    for item_data in items:
+        num = item_data.get("question_number")
+        if num is None:
+            continue
+        db.add(AnswerKeyItem(
+            key_id=key_id,
+            question_number=int(num),
+            answer=item_data.get("answer") or None,
+            explanation=item_data.get("explanation") or None,
+        ))
+
+    db.commit()
+    return JSONResponse({"ok": True, "count": len(items)})
 
 
 # ─────────────────────────────────────────

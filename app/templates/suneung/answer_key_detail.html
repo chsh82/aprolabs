@@ -1,119 +1,259 @@
 {% extends "base.html" %}
-{% block title %}정답 상세 - {{ key.filename }} - Aprolabs{% endblock %}
+{% block title %}정답 상세 — {{ key.filename }}{% endblock %}
 
-{% block content %}
-<div class="mb-6 flex items-center justify-between">
-  <div>
-    <h2 class="text-2xl font-bold text-gray-800 truncate">{{ key.filename }}</h2>
-    <div class="flex gap-3 text-sm text-gray-400 mt-1">
-      <span>{{ key.source_year or '연도미지정' }}</span>
-      <span>{{ key.exam_type or '-' }}</span>
-      <span>{{ key.subject or '-' }}</span>
-      {% if key.status == 'matched' %}
-      <span class="text-green-600 font-medium">매칭됨: {{ key.paper_code }}</span>
-      {% else %}
-      <span class="text-gray-400">미매칭</span>
-      {% endif %}
+{% block content_wrapper %}
+<style>
+body { height:100vh !important; overflow:hidden !important; }
+main { overflow:hidden !important; height:100% !important; }
+body > div { flex:1 1 0% !important; min-height:0 !important; }
+</style>
+
+<div style="display:flex;height:100%;overflow:hidden;">
+
+{# ── 왼쪽: PDF 뷰어 ── #}
+<div style="width:42%;min-width:280px;flex-shrink:0;border-right:1px solid #e5e7eb;
+            background:#f3f4f6;display:flex;flex-direction:column;overflow:hidden;">
+  <div style="background:white;border-bottom:1px solid #e5e7eb;padding:7px 12px;
+              display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <span style="font-size:11px;font-weight:600;color:#6b7280;">PDF 원본</span>
+    {% if pdf_url %}
+    <a href="{{ pdf_url }}" target="_blank"
+       style="margin-left:auto;font-size:10px;color:#3b82f6;text-decoration:underline;">
+      새 탭에서 열기 ↗
+    </a>
+    {% endif %}
+  </div>
+  <div style="flex:1;overflow:hidden;">
+    {% if pdf_url %}
+    <iframe src="{{ pdf_url }}" style="width:100%;height:100%;border:none;"></iframe>
+    {% else %}
+    <div style="display:flex;align-items:center;justify-content:center;height:100%;
+                font-size:13px;color:#9ca3af;">PDF 파일 없음</div>
+    {% endif %}
+  </div>
+</div>
+
+{# ── 오른쪽: 편집 패널 ── #}
+<div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:#f8fafc;">
+
+  {# 헤더 #}
+  <div style="position:sticky;top:0;z-index:20;background:white;border-bottom:1px solid #e5e7eb;
+              padding:9px 16px;display:flex;align-items:center;gap:8px;justify-content:space-between;
+              flex-shrink:0;">
+    <div style="min-width:0;flex:1;">
+      <p style="font-size:13px;font-weight:700;color:#1f2937;margin:0;
+                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+        {{ key.filename }}
+      </p>
+      <p style="font-size:11px;color:#9ca3af;margin:2px 0 0;">
+        <span style="font-family:monospace;color:#3b82f6;font-weight:600;">
+          {{ key.source_year or '미지정' }}-{{ (key.exam_type or '기타').replace(' ','') }}-{{ key.subject or '국어' }}
+        </span>
+        &nbsp;·&nbsp; {{ key.items|length }}문항
+        {% if key.status == 'matched' %}
+        &nbsp;·&nbsp; <span style="color:#16a34a;font-weight:600;">매칭됨: {{ key.paper_code }}</span>
+        {% else %}
+        &nbsp;·&nbsp; <span style="color:#9ca3af;">미매칭</span>
+        {% endif %}
+      </p>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;">
+      <button onclick="reparseGemini()" id="reparse-btn"
+              style="padding:6px 12px;font-size:12px;background:#fef3c7;color:#92400e;
+                     border:1px solid #fcd34d;border-radius:8px;cursor:pointer;font-weight:500;">
+        🤖 AI 재파싱
+      </button>
+      <button onclick="saveAll()"
+              style="padding:6px 12px;font-size:12px;background:#f0fdf4;color:#16a34a;
+                     border:1px solid #86efac;border-radius:8px;cursor:pointer;font-weight:500;">
+        💾 저장
+      </button>
+      <button onclick="matchPanel()"
+              style="padding:6px 12px;font-size:12px;background:#2563eb;color:white;
+                     border:none;border-radius:8px;cursor:pointer;font-weight:500;">
+        문제지 매칭 →
+      </button>
+      <a href="/suneung/answer-keys"
+         style="padding:6px 12px;font-size:12px;background:#f3f4f6;color:#374151;
+                border:none;border-radius:8px;cursor:pointer;font-weight:500;
+                text-decoration:none;display:inline-flex;align-items:center;">
+        ← 목록
+      </a>
     </div>
   </div>
-  <a href="/suneung/answer-keys"
-     class="text-sm text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg border border-gray-200 hover:border-gray-300 transition">
-    ← 목록
-  </a>
-</div>
 
-<!-- 매칭 폼 -->
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
-  <h3 class="text-sm font-semibold text-gray-700 mb-3">문제지 매칭</h3>
-  <form method="POST" action="/suneung/answer-keys/{{ key.id }}/match" class="flex items-center gap-3">
-    <input type="text" name="paper_code"
-           value="{{ key.paper_code or '' }}"
-           placeholder="예: 2025-수능-국어"
-           class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono">
-    <button type="submit"
-            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
-      {% if key.status == 'matched' %}재매칭{% else %}매칭{% endif %}
-    </button>
-  </form>
-  {% if key.status == 'matched' %}
-  <p class="text-xs text-green-600 mt-2">현재 매칭된 paper_code: <span class="font-mono font-semibold">{{ key.paper_code }}</span> — 해당 문제지의 Question에 정답/해설이 적용됩니다.</p>
-  {% endif %}
-</div>
-
-<!-- 문항 테이블 -->
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-  <div class="flex items-center justify-between mb-4">
-    <h3 class="text-sm font-semibold text-gray-700">문항별 정답·해설 ({{ key.items|length }}문항)</h3>
-    <button onclick="saveAll()"
-            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
-      전체 저장
-    </button>
+  {# 매칭 패널 (숨김) #}
+  <div id="match-panel"
+       style="display:none;background:#eff6ff;border-bottom:1px solid #bfdbfe;
+              padding:10px 16px;flex-shrink:0;">
+    <form method="POST" action="/suneung/answer-keys/{{ key.id }}/match"
+          style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:12px;font-weight:600;color:#1d4ed8;">paper_code</span>
+      <input type="text" name="paper_code" value="{{ key.paper_code or '' }}"
+             placeholder="예: 2025-수능-국어"
+             style="flex:1;padding:5px 10px;border:1px solid #bfdbfe;border-radius:7px;
+                    font-size:12px;font-family:monospace;outline:none;">
+      <button type="submit"
+              style="padding:5px 14px;background:#2563eb;color:white;font-size:12px;
+                     font-weight:600;border:none;border-radius:7px;cursor:pointer;">
+        {{ '재매칭' if key.status == 'matched' else '매칭' }}
+      </button>
+    </form>
   </div>
 
-  {% if key.items %}
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm" id="itemTable">
-      <thead>
-        <tr class="text-xs text-gray-400 border-b border-gray-100">
-          <th class="pb-2 text-left w-16">문항번호</th>
-          <th class="pb-2 text-left w-24">정답</th>
-          <th class="pb-2 text-left">해설</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-50">
-        {% for item in key.items %}
-        <tr data-num="{{ item.question_number }}">
-          <td class="py-2 pr-3 font-semibold text-gray-700">{{ item.question_number }}</td>
-          <td class="py-2 pr-3">
-            <select class="ans-select w-full px-2 py-1 border border-gray-200 rounded text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-300">
-              <option value="">-</option>
-              {% for c in ['①','②','③','④','⑤'] %}
-              <option value="{{ c }}" {% if item.answer == c %}selected{% endif %}>{{ c }}</option>
-              {% endfor %}
-            </select>
-          </td>
-          <td class="py-2">
-            <textarea class="exp-textarea w-full px-2 py-1 border border-gray-200 rounded text-xs text-gray-600 resize-none focus:outline-none focus:ring-1 focus:ring-blue-300"
-                      rows="2">{{ item.explanation or '' }}</textarea>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  {# 정답 그리드 #}
+  <div style="flex:1;overflow-y:auto;padding:12px 16px;">
+
+    {# 정답 빠른 보기 — 작은 배지 #}
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;padding:10px 12px;
+                background:white;border:1px solid #e5e7eb;border-radius:10px;">
+      {% for item in key.items %}
+      <button onclick="scrollToItem({{ item.question_number }})"
+              style="min-width:36px;height:26px;padding:0 6px;font-size:11px;font-weight:600;
+                     border-radius:6px;cursor:pointer;border:1px solid;
+                     {% if item.answer %}background:#eff6ff;color:#2563eb;border-color:#bfdbfe;
+                     {% else %}background:#f9fafb;color:#9ca3af;border-color:#e5e7eb;{% endif %}">
+        {{ item.question_number }}{% if item.answer %}<span style="font-size:10px;">{{ item.answer }}</span>{% endif %}
+      </button>
+      {% endfor %}
+      {% if not key.items %}
+      <span style="font-size:12px;color:#9ca3af;padding:4px;">파싱된 항목 없음 — AI 재파싱을 실행하세요</span>
+      {% endif %}
+    </div>
+
+    {# 문항 카드 목록 #}
+    <div style="display:flex;flex-direction:column;gap:6px;" id="items-list">
+      {% for item in key.items %}
+      <div id="item-{{ item.question_number }}"
+           style="background:white;border:1px solid #e5e7eb;border-radius:10px;
+                  overflow:hidden;border-left:3px solid
+                  {% if item.answer %}#3b82f6{% else %}#e5e7eb{% endif %};">
+        <div style="padding:7px 12px;background:#f9fafb;border-bottom:1px solid #f3f4f6;
+                    display:flex;align-items:center;gap:8px;">
+          <span style="font-size:14px;font-weight:700;color:#111827;min-width:32px;">
+            {{ item.question_number }}번
+          </span>
+          {# 정답 버튼 #}
+          <div style="display:flex;gap:3px;" id="ans-btns-{{ item.question_number }}">
+            {% for c in ['①','②','③','④','⑤'] %}
+            <button type="button"
+                    onclick="setAnswer({{ item.question_number }},'{{ c }}')"
+                    data-num="{{ item.question_number }}" data-val="{{ c }}"
+                    style="width:28px;height:28px;font-size:13px;border-radius:50%;cursor:pointer;
+                           border:1px solid;transition:all 0.1s;
+                           {% if item.answer == c %}background:#2563eb;color:white;border-color:#2563eb;font-weight:700;
+                           {% else %}background:white;color:#6b7280;border-color:#d1d5db;{% endif %}">
+              {{ c }}
+            </button>
+            {% endfor %}
+          </div>
+          <span style="font-size:11px;color:#9ca3af;font-family:monospace;margin-left:auto;">
+            #{{ item.question_number }}
+          </span>
+        </div>
+        <div style="padding:8px 12px;">
+          <textarea class="exp-ta" data-num="{{ item.question_number }}"
+                    style="width:100%;padding:6px 8px;border:1px solid #e5e7eb;border-radius:7px;
+                           font-size:11px;resize:vertical;outline:none;box-sizing:border-box;
+                           line-height:1.6;color:#374151;font-family:inherit;"
+                    rows="3"
+                    placeholder="해설 없음">{{ item.explanation or '' }}</textarea>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
-  {% else %}
-  <p class="text-sm text-gray-400 text-center py-10">파싱된 정답 항목이 없습니다.</p>
-  {% endif %}
+</div>
 </div>
 
-<div id="saveMsg" class="fixed bottom-6 right-6 hidden bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-lg">
-  저장되었습니다.
+<div id="toast"
+     style="display:none;position:fixed;bottom:20px;right:20px;z-index:999;
+            background:#1e293b;color:white;padding:10px 18px;border-radius:10px;
+            font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.25);">
 </div>
 
 <script>
+// 정답 상태 (JS 측 관리)
+const answers = {
+  {% for item in key.items %}
+  {{ item.question_number }}: "{{ item.answer or '' }}",
+  {% endfor %}
+};
+
+function setAnswer(num, circle) {
+  answers[num] = answers[num] === circle ? '' : circle;
+  document.querySelectorAll(`[data-num="${num}"]`).forEach(btn => {
+    if (!btn.dataset.val) return;
+    const sel = btn.dataset.val === answers[num];
+    btn.style.background  = sel ? '#2563eb' : 'white';
+    btn.style.color       = sel ? 'white'   : '#6b7280';
+    btn.style.borderColor = sel ? '#2563eb' : '#d1d5db';
+    btn.style.fontWeight  = sel ? '700'     : '400';
+    const card = document.getElementById(`item-${num}`);
+    if (card) card.style.borderLeftColor = answers[num] ? '#3b82f6' : '#e5e7eb';
+  });
+}
+
+function scrollToItem(num) {
+  const el = document.getElementById(`item-${num}`);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
 async function saveAll() {
-  const rows = document.querySelectorAll('#itemTable tbody tr');
   const items = [];
-  rows.forEach(row => {
-    const num = parseInt(row.dataset.num);
-    const ans = row.querySelector('.ans-select').value;
-    const exp = row.querySelector('.exp-textarea').value.trim();
-    items.push({ question_number: num, answer: ans || null, explanation: exp || null });
+  document.querySelectorAll('.exp-ta').forEach(ta => {
+    const num = parseInt(ta.dataset.num);
+    items.push({
+      question_number: num,
+      answer: answers[num] || null,
+      explanation: ta.value.trim() || null,
+    });
   });
 
   const res = await fetch('/suneung/answer-keys/{{ key.id }}/save', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items }),
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({items}),
   });
+  showToast(res.ok ? '저장됨 ✓' : '저장 실패', 2500);
+}
 
-  if (res.ok) {
-    const msg = document.getElementById('saveMsg');
-    msg.classList.remove('hidden');
-    setTimeout(() => msg.classList.add('hidden'), 2500);
-  } else {
-    alert('저장 실패');
+async function reparseGemini() {
+  const btn = document.getElementById('reparse-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ AI 파싱 중...';
+  btn.style.opacity = '0.6';
+  showToast('Gemini Vision으로 정답·해설 추출 중...', 0);
+
+  try {
+    const res  = await fetch('/suneung/answer-keys/{{ key.id }}/reparse', {method:'POST'});
+    const data = await res.json();
+    if (data.ok) {
+      showToast(`✅ ${data.count}문항 파싱 완료 — 페이지 새로고침`, 2500);
+      setTimeout(() => location.reload(), 1500);
+    } else {
+      showToast('파싱 실패: ' + (data.error || '알 수 없는 오류'), 4000);
+    }
+  } catch(e) {
+    showToast('요청 실패: ' + e, 4000);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🤖 AI 재파싱';
+    btn.style.opacity = '1';
   }
+}
+
+function matchPanel() {
+  const p = document.getElementById('match-panel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+let _tt = null;
+function showToast(msg, ms) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(_tt);
+  if (ms > 0) _tt = setTimeout(() => t.style.display = 'none', ms);
 }
 </script>
 {% endblock %}

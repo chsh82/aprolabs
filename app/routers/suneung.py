@@ -383,6 +383,21 @@ def start_job(job_id: str, background_tasks: BackgroundTasks,
     return RedirectResponse("/suneung/jobs", status_code=303)
 
 
+@router.post("/jobs/{job_id}/reset")
+def reset_job(job_id: str, db: Session = Depends(get_db)):
+    """파이프라인 결과 초기화 → ready 상태로 되돌림 (PDF 파일 유지)"""
+    job = db.get(PipelineJob, job_id)
+    if not job:
+        return JSONResponse({"ok": False, "error": "not found"})
+    job.status = "ready"
+    job.segments = None
+    job.raw_result = None
+    job.error_message = None
+    job.page_image_paths = None
+    db.commit()
+    return JSONResponse({"ok": True})
+
+
 @router.post("/jobs/bulk-start")
 async def bulk_start_jobs(request: Request, background_tasks: BackgroundTasks,
                           db: Session = Depends(get_db)):
