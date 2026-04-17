@@ -383,6 +383,24 @@ def start_job(job_id: str, background_tasks: BackgroundTasks,
     return RedirectResponse("/suneung/jobs", status_code=303)
 
 
+@router.post("/jobs/bulk-start")
+async def bulk_start_jobs(request: Request, background_tasks: BackgroundTasks,
+                          db: Session = Depends(get_db)):
+    """여러 ready 작업을 한 번에 파이프라인 시작"""
+    body = await request.json()
+    ids = body.get("ids", [])
+    started = 0
+    for job_id in ids[:20]:
+        job = db.get(PipelineJob, job_id)
+        if not job or job.status != "ready":
+            continue
+        job.status = "parsing"
+        db.commit()
+        background_tasks.add_task(run_pipeline, job_id, job.file_path)
+        started += 1
+    return JSONResponse({"ok": True, "started": started})
+
+
 @router.post("/jobs/{job_id}/cancel")
 def cancel_job(job_id: str, db: Session = Depends(get_db)):
     """진행 중인 작업 취소"""
