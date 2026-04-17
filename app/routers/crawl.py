@@ -111,8 +111,7 @@ async def crawl_files(request: Request):
 # POST /crawl/import  — PDF 다운로드 → 파이프라인
 # ─────────────────────────────────────────────
 @router.post("/import")
-async def crawl_import(request: Request, background_tasks: BackgroundTasks,
-                       db: Session = Depends(get_db)):
+async def crawl_import(request: Request, db: Session = Depends(get_db)):
     body = await request.json()
     files = body.get("files", [])
 
@@ -159,13 +158,11 @@ async def crawl_import(request: Request, background_tasks: BackgroundTasks,
                 source_year=int(year) if str(year).isdigit() else None,
                 exam_type=exam_type,
                 subject=subject,
-                status="parsing",
+                status="ready",
             )
             db.add(job)
             db.commit()
 
-            from app.routers.suneung import run_pipeline
-            background_tasks.add_task(run_pipeline, job_id, pdf_path)
             created.append({"title": title, "ok": True, "job_id": job_id})
 
     return JSONResponse({"ok": True, "created": created})

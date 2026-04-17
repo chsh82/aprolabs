@@ -370,6 +370,19 @@ def delete_job(job_id: str, db: Session = Depends(get_db)):
     return RedirectResponse(url="/suneung/jobs", status_code=303)
 
 
+@router.post("/jobs/{job_id}/start")
+def start_job(job_id: str, background_tasks: BackgroundTasks,
+              db: Session = Depends(get_db)):
+    """ready 상태 작업을 파이프라인 시작"""
+    job = db.get(PipelineJob, job_id)
+    if not job or job.status != "ready":
+        return RedirectResponse("/suneung/jobs", status_code=303)
+    job.status = "parsing"
+    db.commit()
+    background_tasks.add_task(run_pipeline, job_id, job.file_path)
+    return RedirectResponse("/suneung/jobs", status_code=303)
+
+
 @router.post("/jobs/{job_id}/cancel")
 def cancel_job(job_id: str, db: Session = Depends(get_db)):
     """진행 중인 작업 취소"""
