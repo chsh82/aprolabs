@@ -1656,8 +1656,8 @@ def _best_match_passage(
             if _norm_qr(pp.question_range) == norm_qr:
                 return pp
 
-    # 텍스트 유사도로 매칭
-    clean_json = _strip_markers(json_text)
+    # 텍스트 유사도로 매칭 — 헤더·마커 제거 후 비교 (Gemini는 헤더 없이 추출)
+    clean_json = _strip_markers(_strip_passage_header(json_text))
     best, best_ratio = None, 0.0
     for pp in pdf_passages:
         ratio = difflib.SequenceMatcher(
