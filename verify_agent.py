@@ -1103,6 +1103,20 @@ class VerifyAgent:
                 message="선택지 자동 추가 (JSON에 없었음)",
             )]
 
+        # 전체 선택지 평균 유사도 사전 계산 — 모두 극저유사도면 잘못된 문항 비교로 판단
+        pre_ratios = []
+        for k, pdf_val in pdf_choices.items():
+            json_val = question.choices.get(k, "")
+            if json_val:
+                jc = _clean_choice_text(json_val)
+                pc = _clean_choice_text(pdf_val)
+                pre_ratios.append(difflib.SequenceMatcher(None, jc, pc).ratio())
+        if pre_ratios and sum(pre_ratios) / len(pre_ratios) < 0.35:
+            return [Correction(
+                kind=CorrectionKind.SKIPPED, location=loc, field="choices",
+                message=f"선택지 전체 유사도 낮음 ({sum(pre_ratios)/len(pre_ratios):.0%}) — PDF 문항 번호 불일치 가능성, 수동 확인",
+            )]
+
         for k, pdf_val in pdf_choices.items():
             json_val = question.choices.get(k, "")
             if not json_val:
@@ -1345,6 +1359,8 @@ def _normalize_for_comparison(text: str) -> str:
     """유사도 비교 전용 정규화 — OCR 혼용 문자·공백·줄바꿈 차이를 통일.
     실제 내용은 변경하지 않으며, 유사도 계산에만 사용한다."""
     text = text.translate(_COMPARISON_NORM_TABLE)
+    # 문항 번호 prefix 제거 — JSON stem에 "6. " 등이 남아있는 경우 PDF와 비교 시 유사도 저하 방지
+    text = re.sub(r'^\d{1,2}\.\s*', '', text)
     # 별표 + 따옴표 패턴: *' → ' (지문7 '*'' 오인식 보정)
     text = re.sub(r'\*(?=[\'\'\"\"\'\"『「])', '', text)
     # (가)/(나)/(다)/(라)/(마) 소단락 구분자 제거 — 지문10 등 구조적 차이 완화
