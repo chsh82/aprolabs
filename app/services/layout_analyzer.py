@@ -460,6 +460,11 @@ def _smart_join_col(col: list, brackets: list = None) -> str:
 
     col_right = max(item[2] for item in col)
 
+    # 시(詩) 판단: 컬럼 내 짧은 블록(너비 80% 미만) 비율 > 55% → 시 구조
+    # 산문은 편집상 짧은 줄도 공백으로 이어쓰기, 시는 줄바꿈 보존
+    short_count = sum(1 for _, _, x1, _, _ in col if col_right > 0 and x1 < col_right * 0.80)
+    is_poem_like = len(col) >= 3 and short_count / len(col) > 0.55
+
     def _bracket_label(y0, y1):
         # 중점이 아닌 overlap 기반: 블록이 브라켓 범위와 조금이라도 겹치면 포함
         for b in brackets:
@@ -474,10 +479,10 @@ def _smart_join_col(col: list, brackets: list = None) -> str:
             return "\n\n"
         if gap > 15:
             return "\n\n"
-        if col_right > 0 and px1 < col_right * 0.80:
+        # 시 구조: 짧은 줄은 의도적 줄바꿈으로 처리
+        if is_poem_like and col_right > 0 and px1 < col_right * 0.80:
             return "\n"
-        if _SENT_END_RE.search(ptxt.rstrip()):
-            return "\n"
+        # 산문: 편집상 줄바꿈·문장 종결 무관하게 공백으로 이어쓰기 (#4, #5)
         return " "
 
     x0, y0, x1, y1, text = col[0]

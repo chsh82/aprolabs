@@ -324,6 +324,8 @@ def _parse_choices(text: str) -> dict | None:
             if len(val) > 250:
                 cut = val.find('\n\n')
                 val = val[:cut].strip() if 0 < cut < 250 else val[:250].strip()
+            # 편집상 줄바꿈 → 공백 (#16: 선지 내 \n이 넓은 공란으로 표시되는 문제)
+            val = re.sub(r'\n+', ' ', val).strip()
             choices[num] = val
 
     return choices if choices else None
