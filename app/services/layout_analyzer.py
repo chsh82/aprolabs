@@ -396,14 +396,17 @@ def _find_labeled_brackets(page) -> tuple[list, set, list]:
     brackets = []
     label_block_nos = set()
     bracket_box_rects = []  # [A] 범위로 사용된 박스
+    page_height = page.rect.height
 
     for label, lx, ly, bno in label_candidates:
         matched = False
 
         # 4-a. 세로선 매칭: y-containment 우선, x-거리 최소 선 선택 (#4-A)
+        # 페이지 높이 60% 초과 세로선은 페이지 테두리로 간주하여 제외
         matching_vlines = [
             (vx, vy0, vy1) for vx, vy0, vy1 in vertical_lines
             if vy0 - 10 <= ly <= vy1 + 10
+            and (vy1 - vy0) < page_height * 0.60
         ]
         if matching_vlines:
             vx, vy0, vy1 = min(matching_vlines, key=lambda v: abs(v[0] - lx))
