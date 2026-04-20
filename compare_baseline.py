@@ -33,9 +33,15 @@ with open(baseline_path, encoding='utf-8') as f:
 print(f"Baseline 저장일시: {baseline['saved_at']}")
 print(f"Baseline 총 경고: {baseline['summary']['total_warnings']}")
 
-# ── 페이지 헤더 키워드 ───────────────────────────────────────────────────
+# ── bleed-in 탐지 패턴 ───────────────────────────────────────────────────
+# choices: <u> 태그 없는 일반 텍스트 → 키워드 기반
 HEADER_KW = re.compile(
     r'국어영역|고3|고등학교|홀수형|짝수형|이 문제지에 관한 저작권'
+)
+# passages: <u> 태그 있는 content → 국어영역+고3 쌍을 1건으로 카운트
+HEADER_PAIR = re.compile(
+    r'<u>[^<]*국어영역[^<]*</u>\s*<u>[^<]*고3?[^<]*</u>'
+    r'|<u>[^<]*고3?[^<]*</u>\s*<u>[^<]*국어영역[^<]*</u>'
 )
 
 # ── 카테고리 분류 ────────────────────────────────────────────────────────
@@ -84,7 +90,7 @@ def count_bleed_in_choices(questions):
 def count_bleed_in_passages(passages):
     count = 0
     for p in passages:
-        count += len(HEADER_KW.findall(p.get('content', '')))
+        count += len(HEADER_PAIR.findall(p.get('content', '')))
     return count
 
 # ── fingerprint ──────────────────────────────────────────────────────────

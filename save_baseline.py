@@ -16,11 +16,15 @@ DB_PATH = '/home/chsh82/aprolabs/aprolabs.db'
 OUTPUT_DIR = '/home/chsh82/aprolabs/golden_tests'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 페이지 헤더 키워드 (이전 스캔과 동일) ────────────────────────────────
-# choices: 일반 텍스트에서 키워드 탐지
-# passages: content 내 키워드 탐지 (<u> 태그 포함 여부 무관)
+# ── bleed-in 탐지 패턴 ───────────────────────────────────────────────────
+# choices: <u> 태그 없는 일반 텍스트 → 키워드 기반
 HEADER_KW = re.compile(
     r'국어영역|고3|고등학교|홀수형|짝수형|이 문제지에 관한 저작권'
+)
+# passages: <u> 태그 있는 content → 국어영역+고3 쌍을 1건으로 카운트
+HEADER_PAIR = re.compile(
+    r'<u>[^<]*국어영역[^<]*</u>\s*<u>[^<]*고3?[^<]*</u>'
+    r'|<u>[^<]*고3?[^<]*</u>\s*<u>[^<]*국어영역[^<]*</u>'
 )
 
 # ── 경고 카테고리 분류 ────────────────────────────────────────────────────
@@ -68,10 +72,10 @@ def count_bleed_in_choices(questions):
     return count
 
 def count_bleed_in_passages(passages):
-    """지문 content 내 페이지 헤더 키워드 총 등장 횟수."""
+    """지문 content 내 국어영역+고3 쌍 (실제 헤더 삽입 이벤트 수)."""
     count = 0
     for p in passages:
-        count += len(HEADER_KW.findall(p.get('content', '')))
+        count += len(HEADER_PAIR.findall(p.get('content', '')))
     return count
 
 # ── fingerprint ──────────────────────────────────────────────────────────
