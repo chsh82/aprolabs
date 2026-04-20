@@ -177,6 +177,23 @@ def _extract_questions(text: str, positions: dict, sorted_nums: list) -> list:
         stem = _extract_stem(q_text)
         bogi = _extract_bogi(q_text)
 
+        # <보기>로 인해 stem이 잘린 경우: 질문 계속 부분("것은?")을 stem에 추가
+        if "<보기>" in q_text:
+            first_choice_pos = min(
+                (q_text.find(c) for c in "①②③④⑤" if q_text.find(c) >= 0),
+                default=len(q_text),
+            )
+            pre_choice = q_text[:first_choice_pos]
+            # 마지막 "것은?" 패턴 탐색 (보기 내부 것은? 제외하기 위해 마지막 사용)
+            continuations = re.findall(
+                r'[가-힣][^<①②③④⑤\[]{2,150}것은\?(?:\s*\[\d점\])?',
+                pre_choice,
+            )
+            if continuations:
+                continuation = continuations[-1].strip()
+                if continuation not in stem:
+                    stem = (stem + " " + continuation).strip()
+
         questions.append({
             "number": num,
             "passage_ref": None,
