@@ -61,16 +61,42 @@ def crawl_page(request: Request):
 # ─────────────────────────────────────────────
 @router.post("/search")
 async def crawl_search(request: Request):
-    """카테고리 페이지 스캔 → 각 글에서 국어 PDF 직접 수집"""
+    """카테고리 페이지 스캔 → 각 글에서 PDF 수집.
+    source_url이 단일 글 URL(/숫자)이면 해당 페이지만 파싱.
+    source_url이 비어있으면 기본 CATEGORY_URL 스캔.
+    """
+    import asyncio
     body = await request.json()
-    year_filter   = str(body.get("year", "")).strip()
-    pages_to_scan = int(body.get("pages", 2))
+    year_filter     = str(body.get("year", "")).strip()
+    pages_to_scan   = int(body.get("pages", 2))
+    subj_filter     = body.get("subject", "")
+    filetype_filter = body.get("filetype", "")
+    source_url      = str(body.get("source_url", "")).strip()
 
-    # 1단계: 카테고리 페이지에서 글 URL 수집
+    # source_url 정규화
+    if source_url and not source_url.startswith("http"):
+        source_url = "https://legendstudy.com/" + source_url.lstrip("/")
+
+    all_files = []
+
+    # ── 단일 글 URL인 경우 (예: legendstudy.com/1700) ──────────────────
+    if source_url and re.search(r"legendstudy\.com/\d+$", source_url):
+        async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
+            try:
+                resp = await client.get(source_url)
+                all_files = _parse_post_files(resp.text, source_url,
+                                              subj_filter, filetype_filter)
+            except Exception as e:
+                return JSONResponse({"ok": False, "error": str(e)})
+        return JSONResponse({"ok": True, "files": all_files, "total": len(all_files)})
+
+    # ── 카테고리 스캔 ───────────────────────────────────────────────────
+    category_url = source_url if source_url else CATEGORY_URL
+
     posts = []
     async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
         for page_num in range(1, pages_to_scan + 1):
-            url = CATEGORY_URL + (f"?page={page_num}" if page_num > 1 else "")
+            url = category_url + (f"?page={page_num}" if page_num > 1 else "")
             try:
                 resp = await client.get(url)
                 page_posts = _parse_category_page(resp.text)
@@ -80,18 +106,10 @@ async def crawl_search(request: Request):
             except Exception as e:
                 return JSONResponse({"ok": False, "error": str(e)})
 
-    # 연도 필터 + 국어 관련 글만
     if year_filter:
         posts = [p for p in posts if p.get("year") == year_filter]
     posts = [p for p in posts if _is_korean_related(p.get("title", ""))]
 
-    # 필터 조건
-    subj_filter     = body.get("subject", "")      # "" = 전체, "국어", "영어", "수학" 등
-    filetype_filter = body.get("filetype", "")     # "" = 전체, "문제", "정답해설"
-
-    # 2단계: 각 글 페이지에서 PDF 병렬 수집
-    import asyncio
-    all_files = []
     async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
         async def fetch_files(post):
             try:

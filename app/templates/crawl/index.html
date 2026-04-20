@@ -10,6 +10,12 @@
 {# ── 검색 필터 ── #}
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
   <div class="flex flex-wrap gap-4 items-end">
+    <div class="w-full sm:w-auto">
+      <label class="block text-xs font-semibold text-gray-500 mb-1">페이지 URL <span class="font-normal text-gray-400">(비우면 기본 카테고리 스캔)</span></label>
+      <input id="inp-url" type="text" placeholder="예: https://legendstudy.com/1700"
+             class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+
     <div>
       <label class="block text-xs font-semibold text-gray-500 mb-1">연도</label>
       <select id="sel-year"
@@ -124,10 +130,11 @@ async function doSearch() {
   document.getElementById('loading-msg').classList.remove('hidden');
 
   try {
+    const source_url = document.getElementById('inp-url').value.trim();
     const res = await fetch('/crawl/search', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({year, subject, filetype, pages: parseInt(pages)}),
+      body: JSON.stringify({year, subject, filetype, pages: parseInt(pages), source_url}),
     });
     const data = await res.json();
     document.getElementById('loading-msg').classList.add('hidden');
