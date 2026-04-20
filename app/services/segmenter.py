@@ -184,14 +184,17 @@ def _extract_questions(text: str, positions: dict, sorted_nums: list) -> list:
                 default=len(q_text),
             )
             pre_choice = q_text[:first_choice_pos]
+            # HTML 태그 제거 후 탐색 (<u>않은</u> 등이 [^<] 패턴을 막지 않도록)
+            pre_choice_clean = re.sub(r'<[^>]+>', '', pre_choice)
             # 마지막 "것은?" 패턴 탐색 (보기 내부 것은? 제외하기 위해 마지막 사용)
             continuations = re.findall(
-                r'[가-힣][^<①②③④⑤\[]{2,150}것은\?(?:\s*\[\d점\])?',
-                pre_choice,
+                r'[가-힣][^①②③④⑤\[]{2,200}것은\?(?:\s*\[\d점\])?',
+                pre_choice_clean,
             )
             if continuations:
                 continuation = continuations[-1].strip()
-                if continuation not in stem:
+                stem_clean = re.sub(r'<[^>]+>', '', stem)
+                if continuation not in stem_clean:
                     stem = (stem + " " + continuation).strip()
 
         questions.append({
