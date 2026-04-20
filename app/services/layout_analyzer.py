@@ -46,6 +46,11 @@ TITLE_PATTERNS = [
 # ── 페이지 번호 패턴 ──
 PAGE_NUM_RE = re.compile(r'^\d+\s*/\s*\d+$|^-\s*\d+\s*-$')
 
+# ── 페이지 헤더 패턴 (고3 국어영역) ──
+# 주의: "고등학교"는 의도적으로 제외 — 정상 지문("○○고등학교학습나침반")에
+# 등장하는 케이스가 있어 false positive 발생 가능
+PAGE_HEADER_RE = re.compile(r'국어영역|고3')
+
 # ── 폰트 인코딩 보정: ｢｣ 등 코너 괄호 정규화 ──
 # 일부 PDF 폰트에서 halfwidth 코너 괄호가 다른 문자로 추출되는 경우 보정
 _CHAR_NORM = str.maketrans({
@@ -95,6 +100,8 @@ def _should_skip(text: str) -> bool:
     for pat in TITLE_PATTERNS:
         if pat.search(plain):
             return True
+    if PAGE_HEADER_RE.search(plain):
+        return True
     return False
 
 
