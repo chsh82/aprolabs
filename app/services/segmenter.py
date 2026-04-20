@@ -177,31 +177,6 @@ def _extract_questions(text: str, positions: dict, sorted_nums: list) -> list:
         stem = _extract_stem(q_text)
         bogi = _extract_bogi(q_text)
 
-        # <보기>로 인해 stem이 잘린 경우: 질문 계속 부분("것은?")을 stem에 추가
-        if "<보기>" in q_text:
-            bogi_pos = q_text.find("<보기>")
-            first_choice_pos = min(
-                (q_text.find(c) for c in "①②③④⑤" if q_text.find(c) >= 0),
-                default=len(q_text),
-            )
-            # <보기> 이후 텍스트만 탐색 (stem 기존 내용 중복 방지)
-            after_bogi = q_text[bogi_pos + len("<보기>"):first_choice_pos]
-            after_bogi_clean = re.sub(r'<[^>]+>', '', after_bogi)
-            if "것은?" in after_bogi_clean:
-                last_kkeot = after_bogi_clean.rfind("것은?")
-                text_before = after_bogi_clean[:last_kkeot]
-                # 역방향으로 문장 시작 탐색 ('. ' 또는 '\n' 이후)
-                last_break = -1
-                for sep, skip in [('. ', 2), ('.\n', 2), ('\n', 1)]:
-                    pos = text_before.rfind(sep)
-                    if pos >= 0 and pos + skip > last_break:
-                        last_break = pos + skip
-                cont_start = last_break if last_break >= 0 else 0
-                continuation = after_bogi_clean[cont_start:last_kkeot + 3].strip()
-                stem_clean = re.sub(r'<[^>]+>', '', stem)
-                if continuation and continuation not in stem_clean:
-                    stem = (stem + " " + continuation).strip()
-
         questions.append({
             "number": num,
             "passage_ref": None,
