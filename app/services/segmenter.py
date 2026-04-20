@@ -179,22 +179,27 @@ def _extract_questions(text: str, positions: dict, sorted_nums: list) -> list:
 
         # <보기>로 인해 stem이 잘린 경우: 질문 계속 부분("것은?")을 stem에 추가
         if "<보기>" in q_text:
+            bogi_pos = q_text.find("<보기>")
             first_choice_pos = min(
                 (q_text.find(c) for c in "①②③④⑤" if q_text.find(c) >= 0),
                 default=len(q_text),
             )
-            pre_choice = q_text[:first_choice_pos]
-            # HTML 태그 제거 후 탐색 (<u>않은</u> 등이 [^<] 패턴을 막지 않도록)
-            pre_choice_clean = re.sub(r'<[^>]+>', '', pre_choice)
-            # 마지막 "것은?" 패턴 탐색 (보기 내부 것은? 제외하기 위해 마지막 사용)
-            continuations = re.findall(
-                r'[가-힣][^①②③④⑤\[]{2,200}것은\?(?:\s*\[\d점\])?',
-                pre_choice_clean,
-            )
-            if continuations:
-                continuation = continuations[-1].strip()
+            # <보기> 이후 텍스트만 탐색 (stem 기존 내용 중복 방지)
+            after_bogi = q_text[bogi_pos + len("<보기>"):first_choice_pos]
+            after_bogi_clean = re.sub(r'<[^>]+>', '', after_bogi)
+            if "것은?" in after_bogi_clean:
+                last_kkeot = after_bogi_clean.rfind("것은?")
+                text_before = after_bogi_clean[:last_kkeot]
+                # 역방향으로 문장 시작 탐색 ('. ' 또는 '\n' 이후)
+                last_break = -1
+                for sep, skip in [('. ', 2), ('.\n', 2), ('\n', 1)]:
+                    pos = text_before.rfind(sep)
+                    if pos >= 0 and pos + skip > last_break:
+                        last_break = pos + skip
+                cont_start = last_break if last_break >= 0 else 0
+                continuation = after_bogi_clean[cont_start:last_kkeot + 3].strip()
                 stem_clean = re.sub(r'<[^>]+>', '', stem)
-                if continuation not in stem_clean:
+                if continuation and continuation not in stem_clean:
                     stem = (stem + " " + continuation).strip()
 
         questions.append({
