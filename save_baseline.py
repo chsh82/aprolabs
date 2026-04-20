@@ -6,17 +6,24 @@
 캡처 항목:
   - 파일별 경고 카테고리 집계
   - 각 경고의 fingerprint (file+location+category+message 앞 80자)
-  - bleed-in 건수 (선택지 / 지문)
+  - bleed-in 건수 (선택지 / 지문) — HEADER_KW 키워드 기반
 """
 import sqlite3, json, re, os, hashlib
 from datetime import datetime
-from collections import Counter, defaultdict
+from collections import Counter
 
 DB_PATH = '/home/chsh82/aprolabs/aprolabs.db'
 OUTPUT_DIR = '/home/chsh82/aprolabs/golden_tests'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 경고 카테고리 분류 (analyze_warnings.py 와 동일) ─────────────────────
+# ── 페이지 헤더 키워드 (이전 스캔과 동일) ────────────────────────────────
+# choices: 일반 텍스트에서 키워드 탐지
+# passages: content 내 키워드 탐지 (<u> 태그 포함 여부 무관)
+HEADER_KW = re.compile(
+    r'국어영역|고3|고등학교|홀수형|짝수형|이 문제지에 관한 저작권'
+)
+
+# ── 경고 카테고리 분류 ────────────────────────────────────────────────────
 def categorize(msg):
     m = msg
     if '<u>' in m and '미확인' in m:
@@ -42,26 +49,29 @@ def categorize(msg):
     return '미분류'
 
 # ── bleed-in 감지 ────────────────────────────────────────────────────────
-# 페이지 헤더 패턴: <u>숫자</u>, <u>국어영역</u>, <u>고N</u>
-_HEADER_U = re.compile(r'<u>(\d{1,2}|국어영역|고\d)</u>')
-
 def count_bleed_in_choices(questions):
-    """선택지에서 bleed-in <u> 태그 건수 반환."""
+    """선택지 텍스트에서 페이지 헤더 키워드 건수."""
     count = 0
     for q in questions:
-        choices = q.get('choices', [])
+        choices = q.get('choices') or []
+        if isinstance(choices, dict):
+            choices = list(choices.values())
         for ch in choices:
-            text = ch.get('text', '') if isinstance(ch, dict) else str(ch)
-            if _HEADER_U.search(text):
+            if isinstance(ch, str):
+                text = ch
+            elif isinstance(ch, dict):
+                text = ch.get('text', '')
+            else:
+                text = str(ch)
+            if HEADER_KW.search(text):
                 count += 1
     return count
 
 def count_bleed_in_passages(passages):
-    """지문 content에서 bleed-in <u> 태그 건수 반환."""
+    """지문 content 내 페이지 헤더 키워드 총 등장 횟수."""
     count = 0
     for p in passages:
-        content = p.get('content', '')
-        count += len(_HEADER_U.findall(content))
+        count += len(HEADER_KW.findall(p.get('content', '')))
     return count
 
 # ── fingerprint ──────────────────────────────────────────────────────────
@@ -101,8 +111,8 @@ for fname, segments_raw, raw_json in rows:
         try:
             seg = json.loads(segments_raw)
             if isinstance(seg, dict):
-                seg_passages = seg.get('passages', [])
-                seg_questions = seg.get('questions', [])
+                seg_passages = seg.get('passages', []) or []
+                seg_questions = seg.get('questions', []) or []
         except Exception:
             pass
 
@@ -166,3 +176,9 @@ print(f"bleed-in 지문:   {baseline['summary']['bleed_in']['passages']}건")
 print("\n카테고리별:")
 for cat, cnt in sorted(baseline['summary']['categories'].items(), key=lambda x: -x[1]):
     print(f"  {cat:<40} {cnt}건")
+
+print("\n파일별 bleed-in:")
+for fname, fdata in baseline['files'].items():
+    bi = fdata['bleed_in']
+    if bi['choices'] or bi['passages']:
+        print(f"  {fname[-40:]:<42} 선택지:{bi['choices']} 지문:{bi['passages']}")

@@ -11,7 +11,7 @@
 """
 import sqlite3, json, re, sys, os, hashlib, glob
 from datetime import datetime
-from collections import Counter, defaultdict
+from collections import Counter
 
 DB_PATH = '/home/chsh82/aprolabs/aprolabs.db'
 GOLDEN_DIR = '/home/chsh82/aprolabs/golden_tests'
@@ -33,7 +33,12 @@ with open(baseline_path, encoding='utf-8') as f:
 print(f"Baseline 저장일시: {baseline['saved_at']}")
 print(f"Baseline 총 경고: {baseline['summary']['total_warnings']}")
 
-# ── 카테고리 분류 (save_baseline.py 와 동일) ─────────────────────────────
+# ── 페이지 헤더 키워드 ───────────────────────────────────────────────────
+HEADER_KW = re.compile(
+    r'국어영역|고3|고등학교|홀수형|짝수형|이 문제지에 관한 저작권'
+)
+
+# ── 카테고리 분류 ────────────────────────────────────────────────────────
 def categorize(msg):
     m = msg
     if '<u>' in m and '미확인' in m:
@@ -58,23 +63,31 @@ def categorize(msg):
         return 'SKIPPED'
     return '미분류'
 
-_HEADER_U = re.compile(r'<u>(\d{1,2}|국어영역|고\d)</u>')
-
+# ── bleed-in 감지 ────────────────────────────────────────────────────────
 def count_bleed_in_choices(questions):
     count = 0
     for q in questions:
-        for ch in q.get('choices', []):
-            text = ch.get('text', '') if isinstance(ch, dict) else str(ch)
-            if _HEADER_U.search(text):
+        choices = q.get('choices') or []
+        if isinstance(choices, dict):
+            choices = list(choices.values())
+        for ch in choices:
+            if isinstance(ch, str):
+                text = ch
+            elif isinstance(ch, dict):
+                text = ch.get('text', '')
+            else:
+                text = str(ch)
+            if HEADER_KW.search(text):
                 count += 1
     return count
 
 def count_bleed_in_passages(passages):
     count = 0
     for p in passages:
-        count += len(_HEADER_U.findall(p.get('content', '')))
+        count += len(HEADER_KW.findall(p.get('content', '')))
     return count
 
+# ── fingerprint ──────────────────────────────────────────────────────────
 def fingerprint(fname, loc, cat, msg):
     raw = f"{fname}|{loc}|{cat}|{msg[:80]}"
     return hashlib.md5(raw.encode('utf-8')).hexdigest()[:12]
@@ -102,8 +115,8 @@ for fname, segments_raw, raw_json in rows:
         try:
             seg = json.loads(segments_raw)
             if isinstance(seg, dict):
-                seg_passages = seg.get('passages', [])
-                seg_questions = seg.get('questions', [])
+                seg_passages = seg.get('passages', []) or []
+                seg_questions = seg.get('questions', []) or []
         except Exception:
             pass
 
