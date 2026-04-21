@@ -939,6 +939,25 @@ class VerifyAgent:
                     # 5자 이하 짧은 밑줄: 노이즈일 가능성 높고 위치 특정 불가 → 경고 없이 건너뜀
                     if len(re.sub(r'\s', '', u_text)) <= 5:
                         continue
+                    # ③ 공백 제거 + 특수문자 정규화 후 plain text에서 존재 확인
+                    #    찾으면 공백/특수문자 차이로 위치 특정 불가 → INFO (경고 아님)
+                    def _norm_ul(t: str) -> str:
+                        t = re.sub(r'\s+', '', t)
+                        for src, dst in [
+                            ('｣', '」'), ('｢', '「'), ('』', '」'), ('『', '「'),
+                            ('\u201c', '"'), ('\u201d', '"'),
+                            ('\u2018', "'"), ('\u2019', "'"),
+                            ('\u2026', '...'), ('\u00b7', '·'),
+                        ]:
+                            t = t.replace(src, dst)
+                        return t
+                    content_plain_ul = re.sub(r'<[^>]+>', '', content)
+                    if _norm_ul(u_text) and _norm_ul(u_text) in _norm_ul(content_plain_ul):
+                        corrections.append(Correction(
+                            kind=CorrectionKind.INFO, location=loc, field="underlines",
+                            message=f"PDF 밑줄 텍스트를 지문에서 찾지 못함(공백·특수문자 차이): '{u_text[:40]}'",
+                        ))
+                        continue
                     corrections.append(Correction(
                         kind=CorrectionKind.WARNING, location=loc, field="underlines",
                         message=f"PDF 밑줄 텍스트를 지문에서 찾지 못함: '{u_text[:40]}'",
