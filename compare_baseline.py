@@ -101,7 +101,8 @@ def count_bleed_in_passages(passages):
 
 # ── fingerprint ──────────────────────────────────────────────────────────
 def fingerprint(fname, loc, cat, msg):
-    raw = f"{fname}|{loc}|{cat}|{msg[:80]}"
+    # cat 제외: 카테고리 재분류 시 false regression 방지
+    raw = f"{fname}|{loc}|{msg[:80]}"
     return hashlib.md5(raw.encode('utf-8')).hexdigest()[:12]
 
 # ── 현재 DB 읽기 ──────────────────────────────────────────────────────────
