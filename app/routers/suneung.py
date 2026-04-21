@@ -2,8 +2,10 @@
 수능국어DB 파이프라인 라우터
 /suneung/upload   → PDF 업로드
 /suneung/jobs     → 작업 목록
+/suneung/warnings → 전체 경고 목록 (카테고리별 검수)
 /suneung/review/{job_id} → 검수 UI
 /suneung/review/{job_id}/approve → DB 확정 저장
+/suneung/review/{job_id}/warning-judgment → 경고 판정 저장
 """
 import os
 import re
@@ -474,6 +476,134 @@ def get_page_images(job_id: str):
             ])
 
     return JSONResponse([])
+
+
+@router.get("/warnings", response_class=HTMLResponse)
+def warnings_list(request: Request, db: Session = Depends(get_db)):
+    """전체 경고 목록 — 카테고리별 그룹 표시"""
+    def _categorize(msg: str) -> str:
+        if 'PDF 밑줄 텍스트' in msg and ('못' in msg or '찾' in msg):
+            return '밑줄못찾음'
+        if '텍스트 불일치' in msg and re.search(r'\[[A-E]\]', msg):
+            return 'bracket텍스트불일치'
+        if re.search(r'\[[A-E]\]', msg) and ('범위 내 텍스트' in msg or '텍스트 미확인' in msg):
+            return 'bracket텍스트불일치'
+        if '끝 위치 특정 불가' in msg or '시작 위치는 찾았' in msg:
+            return 'bracket텍스트불일치'
+        if '선택지' in msg and '불일치' in msg:
+            return '텍스트불일치'
+        if '텍스트 불일치' in msg:
+            return '텍스트불일치'
+        if '지문을 PDF에서 찾지 못' in msg or '대응하는 PDF 지문' in msg:
+            return '지문못찾음'
+        if '문항을 PDF에서 찾지 못' in msg or 'PDF에서 해당 문항을' in msg:
+            return '문항못찾음'
+        return '기타'
+
+    CATEGORY_ORDER = ['텍스트불일치', 'bracket텍스트불일치', '지문못찾음', '문항못찾음', '밑줄못찾음', '기타']
+    CATEGORY_DESC = {
+        '텍스트불일치':      'JSON 텍스트와 PDF 내용이 다름 — 선택지·지문 수동 비교 필요',
+        'bracket텍스트불일치': '[A]~[E] 범위 내 텍스트가 PDF와 불일치 또는 위치 특정 불가',
+        '지문못찾음':        'PDF에서 해당 지문을 찾지 못함 — 지문 인식 실패',
+        '문항못찾음':        'PDF에서 해당 문항을 찾지 못함 — stem 부족 또는 레이아웃 차이',
+        '밑줄못찾음':        'PDF 밑줄 텍스트를 지문 JSON에서 찾지 못함',
+        '기타':             '분류되지 않은 경고',
+    }
+
+    jobs = db.query(PipelineJob).filter(
+        PipelineJob.raw_result.isnot(None)
+    ).order_by(PipelineJob.filename).all()
+
+    all_warnings = []
+    for job in jobs:
+        if not job.raw_result:
+            continue
+        corrections = job.raw_result.get('verify_corrections', [])
+        reviews = job.raw_result.get('warning_reviews', {})
+        for c in corrections:
+            if not isinstance(c, dict):
+                continue
+            if c.get('kind', '').lower() != 'warning':
+                continue
+            loc = c.get('location', '')
+            msg = c.get('message', '')
+            cat = _categorize(msg)
+            key = f"{loc}|||{msg[:80]}"
+            all_warnings.append({
+                'job_id': job.id,
+                'filename': job.filename,
+                'location': loc,
+                'message': msg,
+                'category': cat,
+                'key': key,
+                'judgment': reviews.get(key, ''),
+            })
+
+    # grouped[category][filename] = [warning, ...]
+    grouped: dict = {cat: {} for cat in CATEGORY_ORDER}
+    for w in all_warnings:
+        cat = w['category']
+        if cat not in grouped:
+            grouped[cat] = {}
+        fname = w['filename']
+        if fname not in grouped[cat]:
+            grouped[cat][fname] = []
+        grouped[cat][fname].append(w)
+
+    cat_counts = {cat: sum(len(v) for v in grouped[cat].values()) for cat in CATEGORY_ORDER}
+
+    # job_id map: filename → job_id (for 검수 열기 links)
+    fname_to_job = {job.filename: job.id for job in jobs}
+
+    judgment_counts = {
+        'odam':       sum(1 for w in all_warnings if w['judgment'] == 'odam'),
+        'real_error': sum(1 for w in all_warnings if w['judgment'] == 'real_error'),
+        'pending':    sum(1 for w in all_warnings if w['judgment'] == 'pending'),
+        'none':       sum(1 for w in all_warnings if not w['judgment']),
+    }
+
+    ctx = _base_ctx(
+        db, request=request,
+        all_warnings=all_warnings,
+        grouped=grouped,
+        cat_counts=cat_counts,
+        cat_desc=CATEGORY_DESC,
+        category_order=CATEGORY_ORDER,
+        fname_to_job=fname_to_job,
+        judgment_counts=judgment_counts,
+        total=len(all_warnings),
+    )
+    return templates.TemplateResponse("suneung/warnings.html", ctx)
+
+
+@router.post("/review/{job_id}/warning-judgment")
+async def save_warning_judgment(job_id: str, request: Request, db: Session = Depends(get_db)):
+    """경고별 판정 결과 저장 (오탐/실제오류/보류/초기화)"""
+    data = await request.json()
+    key = data.get('key', '')
+    judgment = data.get('judgment', '')  # 'odam' | 'real_error' | 'pending' | ''
+
+    job = db.get(PipelineJob, job_id)
+    if not job:
+        return JSONResponse({"ok": False, "error": "not found"})
+
+    raw = dict(job.raw_result or {})
+    reviews = dict(raw.get('warning_reviews', {}))
+
+    if judgment:
+        reviews[key] = judgment
+    else:
+        reviews.pop(key, None)
+
+    raw['warning_reviews'] = reviews
+    job.raw_result = raw
+    db.commit()
+
+    total_w = sum(
+        1 for c in raw.get('verify_corrections', [])
+        if isinstance(c, dict) and c.get('kind', '').lower() == 'warning'
+    )
+    return JSONResponse({"ok": True, "reviewed": len(reviews), "total": total_w})
 
 
 @router.get("/review/{job_id}", response_class=HTMLResponse)

@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block title %}경고 검수 목록 — Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-4 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">경고 검수 목록</h2>
+    <p class="text-sm text-gray-400 mt-1">총 {{ total }}건 · 파이프라인 경고 전체</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="/suneung/jobs"
+       class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition font-medium">
+      ← 작업 목록
+    </a>
+  </div>
+</div>
+
+{# ── 판정 현황 요약 바 ── #}
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+  <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 18px;min-width:100px;text-align:center;">
+    <div style="font-size:20px;font-weight:700;color:#15803d;" id="sum-odam">{{ judgment_counts.odam }}</div>
+    <div style="font-size:11px;color:#166534;margin-top:2px;">오탐</div>
+  </div>
+  <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 18px;min-width:100px;text-align:center;">
+    <div style="font-size:20px;font-weight:700;color:#dc2626;" id="sum-real">{{ judgment_counts.real_error }}</div>
+    <div style="font-size:11px;color:#991b1b;margin-top:2px;">실제오류</div>
+  </div>
+  <div style="background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:10px 18px;min-width:100px;text-align:center;">
+    <div style="font-size:20px;font-weight:700;color:#ca8a04;" id="sum-pending">{{ judgment_counts.pending }}</div>
+    <div style="font-size:11px;color:#92400e;margin-top:2px;">보류</div>
+  </div>
+  <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px 18px;min-width:100px;text-align:center;">
+    <div style="font-size:20px;font-weight:700;color:#6b7280;" id="sum-none">{{ judgment_counts.none }}</div>
+    <div style="font-size:11px;color:#9ca3af;margin-top:2px;">미판정</div>
+  </div>
+  <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;padding:10px 18px;min-width:100px;text-align:center;margin-left:auto;">
+    <div style="font-size:20px;font-weight:700;color:#1d4ed8;">{{ total }}</div>
+    <div style="font-size:11px;color:#6b7280;margin-top:2px;">총 경고</div>
+  </div>
+</div>
+
+{# ── 카테고리별 탭 ── #}
+<div id="cat-tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:2px solid #e5e7eb;padding-bottom:0;">
+  {% for cat in category_order %}
+  {% if cat_counts[cat] > 0 %}
+  <button onclick="showCat('{{ cat }}')" id="tab-{{ loop.index }}"
+          data-cat="{{ cat }}"
+          style="padding:8px 14px;font-size:12px;font-weight:600;border:none;border-bottom:2px solid transparent;
+                 margin-bottom:-2px;background:none;color:#6b7280;cursor:pointer;transition:color .15s;">
+    {{ cat }} <span style="font-size:10px;background:#f3f4f6;padding:1px 6px;border-radius:20px;margin-left:3px;"
+                    id="tab-cnt-{{ loop.index }}">{{ cat_counts[cat] }}</span>
+  </button>
+  {% endif %}
+  {% endfor %}
+</div>
+
+{# ── 카테고리 섹션 ── #}
+{% for cat in category_order %}
+{% if cat_counts[cat] > 0 %}
+<div id="cat-section-{{ cat }}" class="cat-section" style="display:none;">
+
+  {# 카테고리 설명 #}
+  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;
+              margin-bottom:14px;font-size:12px;color:#475569;">
+    <strong>{{ cat }}</strong> — {{ cat_desc[cat] }}
+  </div>
+
+  {# 파일별 그룹 #}
+  {% for fname, warnings in grouped[cat].items() %}
+  {% set job_id = fname_to_job.get(fname, '') %}
+  <div style="margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="font-size:12px;font-weight:700;color:#1e40af;flex:1;min-width:0;
+                   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+            title="{{ fname }}">📄 {{ fname }}</span>
+      <span style="font-size:11px;color:#6b7280;flex-shrink:0;">{{ warnings|length }}건</span>
+      {% if job_id %}
+      <a href="/suneung/review/{{ job_id }}"
+         style="flex-shrink:0;font-size:11px;padding:3px 10px;background:#2563eb;color:white;
+                border-radius:6px;text-decoration:none;font-weight:600;white-space:nowrap;"
+         title="{{ fname }} 검수 페이지 열기">검수 열기 →</a>
+      {% endif %}
+    </div>
+
+    <div style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+      {% for w in warnings %}
+      <div id="wrow-{{ w.job_id }}-{{ loop.index0 }}"
+           style="display:flex;align-items:flex-start;gap:10px;padding:9px 12px;
+                  border-bottom:{{ '1px solid #f3f4f6' if not loop.last else 'none' }};
+                  background:{{ 'white' if loop.index0 % 2 == 0 else '#fafafa' }};"
+           data-key="{{ w.key | e }}"
+           data-job="{{ w.job_id }}">
+
+        {# 위치 배지 #}
+        <span style="flex-shrink:0;font-size:10px;padding:2px 7px;border-radius:20px;
+                     background:{{ '#eff6ff' if w.location.startswith('지문') else '#f5f3ff' }};
+                     color:{{ '#1d4ed8' if w.location.startswith('지문') else '#6d28d9' }};
+                     font-weight:600;white-space:nowrap;margin-top:1px;">{{ w.location }}</span>
+
+        {# 메시지 #}
+        <span style="flex:1;font-size:11px;color:#374151;line-height:1.6;
+                     white-space:pre-wrap;word-break:break-all;">{{ w.message[:200] }}</span>
+
+        {# 판정 버튼 3종 #}
+        <div style="flex-shrink:0;display:flex;gap:4px;align-items:center;">
+          <button onclick="setJudgment(this,'odam')"
+                  data-v="odam"
+                  style="font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid #bbf7d0;
+                         background:{{ '#dcfce7' if w.judgment == 'odam' else 'white' }};
+                         color:{{ '#15803d' if w.judgment == 'odam' else '#6b7280' }};
+                         font-weight:{{ '700' if w.judgment == 'odam' else '400' }};
+                         cursor:pointer;transition:all .1s;">오탐</button>
+          <button onclick="setJudgment(this,'real_error')"
+                  data-v="real_error"
+                  style="font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid #fecaca;
+                         background:{{ '#fee2e2' if w.judgment == 'real_error' else 'white' }};
+                         color:{{ '#dc2626' if w.judgment == 'real_error' else '#6b7280' }};
+                         font-weight:{{ '700' if w.judgment == 'real_error' else '400' }};
+                         cursor:pointer;transition:all .1s;">실제오류</button>
+          <button onclick="setJudgment(this,'pending')"
+                  data-v="pending"
+                  style="font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid #fde68a;
+                         background:{{ '#fef9c3' if w.judgment == 'pending' else 'white' }};
+                         color:{{ '#ca8a04' if w.judgment == 'pending' else '#6b7280' }};
+                         font-weight:{{ '700' if w.judgment == 'pending' else '400' }};
+                         cursor:pointer;transition:all .1s;">보류</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endfor %}
+
+<script>
+// ── 탭 전환 ──
+const sections = document.querySelectorAll('.cat-section');
+const tabs = document.querySelectorAll('[data-cat]');
+
+function showCat(cat) {
+  sections.forEach(s => s.style.display = 'none');
+  tabs.forEach(t => {
+    const active = t.dataset.cat === cat;
+    t.style.color = active ? '#1d4ed8' : '#6b7280';
+    t.style.borderBottomColor = active ? '#2563eb' : 'transparent';
+    t.style.fontWeight = active ? '700' : '600';
+  });
+  const sec = document.getElementById('cat-section-' + cat);
+  if (sec) sec.style.display = 'block';
+}
+
+// 첫 탭 활성화
+const firstTab = document.querySelector('[data-cat]');
+if (firstTab) showCat(firstTab.dataset.cat);
+
+// ── 판정 저장 ──
+// 요약 카운터 로컬 업데이트
+const summaryEls = {
+  odam:       document.getElementById('sum-odam'),
+  real_error: document.getElementById('sum-real'),
+  pending:    document.getElementById('sum-pending'),
+  none:       document.getElementById('sum-none'),
+};
+
+// 행 배경색
+const rowBg = { odam: '#f0fdf4', real_error: '#fef2f2', pending: '#fefce8', '': '' };
+
+// 버튼 스타일 정의
+const BTN_STYLE = {
+  odam:       { border:'#bbf7d0', bg:'#dcfce7', color:'#15803d' },
+  real_error: { border:'#fecaca', bg:'#fee2e2', color:'#dc2626' },
+  pending:    { border:'#fde68a', bg:'#fef9c3', color:'#ca8a04' },
+};
+const BTN_DEFAULT = { border:'#e5e7eb', bg:'white', color:'#6b7280' };
+
+function applyBtnStyle(btn, active) {
+  const v = btn.dataset.v;
+  const s = active ? (BTN_STYLE[v] || BTN_DEFAULT) : BTN_DEFAULT;
+  btn.style.background  = s.bg;
+  btn.style.color       = s.color;
+  btn.style.borderColor = s.border;
+  btn.style.fontWeight  = active ? '700' : '400';
+}
+
+async function setJudgment(clickedBtn, value) {
+  const row = clickedBtn.closest('[data-key]');
+  const key = row.dataset.key;
+  const jobId = row.dataset.job;
+  const btns = row.querySelectorAll('button[data-v]');
+
+  // 이미 선택된 값이면 → 취소(toggle off)
+  const prevValue = row.dataset.judgment || '';
+  const newValue = (prevValue === value) ? '' : value;
+
+  // 낙관적 UI 업데이트
+  btns.forEach(b => applyBtnStyle(b, b.dataset.v === newValue));
+  const oldBg = row.style.background;
+  row.style.background = rowBg[newValue] || (row.dataset.evenrow === '1' ? 'white' : '#fafafa');
+
+  // 요약 카운터 업데이트
+  if (prevValue && summaryEls[prevValue]) {
+    summaryEls[prevValue].textContent = parseInt(summaryEls[prevValue].textContent) - 1;
+  }
+  if (newValue && summaryEls[newValue]) {
+    summaryEls[newValue].textContent = parseInt(summaryEls[newValue].textContent) + 1;
+  }
+  if (prevValue !== newValue) {
+    // none 카운터
+    if (!prevValue) summaryEls.none.textContent = parseInt(summaryEls.none.textContent) - 1;
+    if (!newValue)  summaryEls.none.textContent = parseInt(summaryEls.none.textContent) + 1;
+  }
+
+  row.dataset.judgment = newValue;
+
+  try {
+    const resp = await fetch(`/suneung/review/${jobId}/warning-judgment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, judgment: newValue }),
+    });
+    if (!resp.ok) throw new Error('서버 오류');
+  } catch(e) {
+    // 롤백
+    btns.forEach(b => applyBtnStyle(b, b.dataset.v === prevValue));
+    row.style.background = oldBg;
+    row.dataset.judgment = prevValue;
+    alert('저장 실패: ' + e.message);
+  }
+}
+</script>
+{% endblock %}
