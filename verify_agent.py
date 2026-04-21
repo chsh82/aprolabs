@@ -56,6 +56,7 @@ except ImportError:
 
 class CorrectionKind(str, Enum):
     FIXED   = "fixed"    # 자동 교정 완료
+    INFO    = "info"     # 참고 정보 (경고 아님, 집계 제외)
     WARNING = "warning"  # 불일치 발견, 수동 확인 필요
     SKIPPED = "skipped"  # 신뢰도 부족 → 교정 건너뜀
     ERROR   = "error"    # 에이전트 내부 오류
@@ -1063,10 +1064,18 @@ class VerifyAgent:
 
         # 양쪽 모두 이미지 있음 → 개수 및 위치 일치 확인
         if json_count != pdf_count:
-            corrections.append(Correction(
-                kind=CorrectionKind.WARNING, location=loc, field="images",
-                message=f"이미지 개수 불일치: JSON {json_count}개 vs PDF {pdf_count}개 — 수동 확인 필요",
-            ))
+            if json_count > pdf_count:
+                # JSON이 더 많음 → Gemini가 다중 페이지에 분산된 이미지를 일부만 감지한 가능성
+                corrections.append(Correction(
+                    kind=CorrectionKind.INFO, location=loc, field="images",
+                    message=f"이미지 개수 차이: JSON {json_count}개 > PDF {pdf_count}개 — Gemini 다중 페이지 분산 가능성",
+                ))
+            else:
+                # PDF가 더 많음 → JSON에 이미지 누락 가능성 (실제 문제)
+                corrections.append(Correction(
+                    kind=CorrectionKind.WARNING, location=loc, field="images",
+                    message=f"이미지 개수 불일치: JSON {json_count}개 vs PDF {pdf_count}개 — 수동 확인 필요",
+                ))
             return corrections
 
         # 개수 일치 → 각 이미지의 앞뒤 문맥 텍스트로 위치 검증
