@@ -1,0 +1,1002 @@
+{
+  "saved_at": "2026-04-21T11:28:36",
+  "db_path": "/home/chsh82/aprolabs/aprolabs.db",
+  "summary": {
+    "total_warnings": 101,
+    "total_files": 12,
+    "categories": {
+      "지문못찾음": 21,
+      "bracket텍스트불일치": 24,
+      "문항못찾음": 10,
+      "텍스트불일치": 34,
+      "밑줄_PDF→JSON못찾음": 9,
+      "img_그림불일치": 3
+    },
+    "bleed_in": {
+      "choices": 0,
+      "passages": 0
+    }
+  },
+  "files": {
+    "2024학년도 수능_국어(화작) 문제.pdf": {
+      "total_warnings": 8,
+      "categories": {
+        "지문못찾음": 2,
+        "bracket텍스트불일치": 5,
+        "문항못찾음": 1
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "fdeb6d900b7c",
+          "location": "지문3",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "6bacc3a95834",
+          "location": "지문6",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "8ad0e943aff8",
+          "location": "지문6",
+          "category": "bracket텍스트불일치",
+          "message": "[B] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "0651d94084d3",
+          "location": "지문7",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e02eaa6be324",
+          "location": "지문7",
+          "category": "bracket텍스트불일치",
+          "message": "[B] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "d0ac2cd7d02e",
+          "location": "지문7",
+          "category": "bracket텍스트불일치",
+          "message": "[C] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "2f56e333992e",
+          "location": "지문11",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "589e7a431ef1",
+          "location": "문항7",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2024학년도 수능_국어(언매) 문제 (1).pdf": {
+      "total_warnings": 15,
+      "categories": {
+        "bracket텍스트불일치": 7,
+        "텍스트불일치": 2,
+        "밑줄_PDF→JSON못찾음": 1,
+        "img_그림불일치": 2,
+        "지문못찾음": 1,
+        "문항못찾음": 2
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "4cea245814e2",
+          "location": "지문2",
+          "category": "bracket텍스트불일치",
+          "message": "PDF에 [A] 범위 존재하나 범위 내 텍스트 미확인 — 수동 삽입 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "85ee36534459",
+          "location": "지문5",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 65%) — 수동 확인 필요: '[18~21] 다음 글을 읽고 물음에 답하시오.\n\n　' → '' | ' 　' → '\n' | ' 　\"' → '\n“' | '\"\n　' → '”\n' | ' 　' → '",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "88c6b20a9e89",
+          "location": "지문5",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "6c9609a8e900",
+          "location": "지문6",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "dd719d62309c",
+          "location": "지문6",
+          "category": "bracket텍스트불일치",
+          "message": "[B] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "cb66d974daac",
+          "location": "지문7",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "fc7f49fd49d5",
+          "location": "지문7",
+          "category": "bracket텍스트불일치",
+          "message": "[B] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "521c14c1cb9a",
+          "location": "지문7",
+          "category": "bracket텍스트불일치",
+          "message": "[C] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "ee4f12eab338",
+          "location": "지문9",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '줄어듦 가능 여부에 따라 그 유형이 구분된다.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "8843d40bf576",
+          "location": "지문9",
+          "category": "img_그림불일치",
+          "message": "Gemini가 [그림] 4개를 감지했으나 JSON에 <img> 없음 — 이미지 삽입 누락 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "28e2f3157060",
+          "location": "지문10",
+          "category": "img_그림불일치",
+          "message": "Gemini가 [그림] 1개를 감지했으나 JSON에 <img> 없음 — 이미지 삽입 누락 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "783af34961b9",
+          "location": "지문11",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "a3a003015ca7",
+          "location": "문항7",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "5324222702d3",
+          "location": "문항13",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 69%) — 수동 확인 필요: 삽입 '4' | '3' → '' | '가' → '나' | '제시된' → '대한' | '한비자의 견해' → '설명으'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "296c16f5f84a",
+          "location": "문항15",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2026 수능 국어(언매) 문제.pdf": {
+      "total_warnings": 0,
+      "categories": {},
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": []
+    },
+    "2026 수능 국어(화작) 문제.pdf": {
+      "total_warnings": 5,
+      "categories": {
+        "지문못찾음": 2,
+        "텍스트불일치": 3
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "f9e31ccff214",
+          "location": "지문3",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "8dc2964556a9",
+          "location": "지문12",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "0e2b9e5a5637",
+          "location": "문항8",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 55%) — 수동 확인 필요: 삽입 ' 를 이해한 내용으로 적절하지\n않은 것은? [3점]'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "ec61a99f230b",
+          "location": "문항12",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 50%) — 수동 확인 필요: 삽입 ' 를 이해한 내용으로 적절한 것은? [3점]'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "8d46f4f89d63",
+          "location": "문항43",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 51%) — 수동 확인 필요: '43. ' → '' | ' ' → '\n' | '\n\n　마지막 문단에서는 글의 전체적인 흐름을 고려하여, 완벽 　주의적 자기 제시 성향으로 인해 겪을 수 있는 정서",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2025 10월 학력평가 국어(언매) 문제.pdf": {
+      "total_warnings": 8,
+      "categories": {
+        "텍스트불일치": 3,
+        "밑줄_PDF→JSON못찾음": 2,
+        "bracket텍스트불일치": 1,
+        "지문못찾음": 1,
+        "문항못찾음": 1
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "52df307951e8",
+          "location": "지문4",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 54%) — 수동 확인 필요: ' ' → '' | ' ' → '' | ' ' → '' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "ac54331ed859",
+          "location": "지문5",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 70%) — 수동 확인 필요: '[18 ~ 22] 다음 글을 읽고 물음에 답하시오.\n\n' → '' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' 　' → '\n' | '",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "a7d82f6ddd6d",
+          "location": "지문7",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '불안 등이 뒤섞인 복합적인 감정이 반영된 것이다.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "25138a422d3c",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "f68bec1df0d3",
+          "location": "지문9",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '아버지께 확인하라고 하셨습니다.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "304da292227a",
+          "location": "지문11",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "68d591553f3c",
+          "location": "문항19",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 83%) — 수동 확인 필요: '를 참고하여 (가)~(다)를 감상한 내용으로 적절하지 않은 것은? [3점] 　< 보 기 > 　' → '\n' | ' 　' → '' | ' 　' → '' | ' 　",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "8735cdaef7cf",
+          "location": "문항39",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2025 10월 학력평가 국어(화작) 문제.pdf": {
+      "total_warnings": 8,
+      "categories": {
+        "텍스트불일치": 4,
+        "bracket텍스트불일치": 1,
+        "지문못찾음": 1,
+        "문항못찾음": 2
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "9acd19c8edf0",
+          "location": "지문4",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 54%) — 수동 확인 필요: ' ' → '' | ' ' → '' | ' ' → '' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "330fe5f49460",
+          "location": "지문5",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 70%) — 수동 확인 필요: '[18 ~ 22] 다음 글을 읽고 물음에 답하시오.\n\n' → '' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' 　' → '\n' | '",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "de0f33ac44d5",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e7f4176c3892",
+          "location": "지문11",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "d5ffc232f209",
+          "location": "문항13",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "da98905b72f3",
+          "location": "문항33",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "7c51c94f3cad",
+          "location": "문항35",
+          "category": "텍스트불일치",
+          "message": "선택지 4번 불일치 (유사도 28%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "578ff328a6bd",
+          "location": "문항35",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 21%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2026 9월 모의평가 국어(언매) 문제.pdf": {
+      "total_warnings": 5,
+      "categories": {
+        "지문못찾음": 1,
+        "텍스트불일치": 2,
+        "밑줄_PDF→JSON못찾음": 1,
+        "img_그림불일치": 1
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "181e95225f50",
+          "location": "지문7",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e268fb39cb6f",
+          "location": "지문9",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 68%) — 수동 확인 필요: ' 　' → '\n' | ' 　' → '\n' | 삽입 '\n' | '\n' → '' | ' 　' → '\n' | ' 　' → '\n' | 'ⓐ' → '' | ' 　' → ",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "98ab274df692",
+          "location": "지문9",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '정보가 무엇인지 말해 봅시다.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "84cc1e3b6afd",
+          "location": "지문9",
+          "category": "img_그림불일치",
+          "message": "이미지 1번 위치 불일치 — JSON: '...초라 단풍이 들기 전인데요,[img]', PDF: '... 특별한 점인 것 같습니다.[그림]'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "b33e511b1f39",
+          "location": "문항13",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 51%) — 수동 확인 필요: '13. ' → '' | 'ⓐ' → '' | 'ⓔ' → '' | 삽입 '\n①ⓐ: 동떨어지고\n②ⓑ: 멀리하였다\n③ⓒ: 깨달을\n④④: 알맞은\n⑤ⓔ: 이루어지는'",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2026 9월 모의평가 국어(화작) 문제.pdf": {
+      "total_warnings": 6,
+      "categories": {
+        "밑줄_PDF→JSON못찾음": 1,
+        "지문못찾음": 3,
+        "텍스트불일치": 2
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "c2b66ea0043a",
+          "location": "지문3",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '행사 개최지로 선정되지 못했다.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "f1ff911a8b2a",
+          "location": "지문5",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "898eb34c3afe",
+          "location": "지문7",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "1fa13d217b22",
+          "location": "지문10",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "55f9c3384c48",
+          "location": "문항39",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 63%) — 수동 확인 필요: '　' → '' | '\n　구분 내용\n　제안 배경 주변의 사례 제시\n　제안 필요성 개선이 필요한 상황 진단\n　제안 정책 개선 방안 도출\n　예상 난점 정책 실행 시 ",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "690d9e881e57",
+          "location": "문항42",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 76%) — 수동 확인 필요: ' 　' → '\n' | 삽입 ' <조건>에 따라 쓴 것으로 가장 적절한 것은?'",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2025 7월 학력평가 국어(언매) 문제.pdf": {
+      "total_warnings": 14,
+      "categories": {
+        "지문못찾음": 4,
+        "bracket텍스트불일치": 3,
+        "밑줄_PDF→JSON못찾음": 2,
+        "텍스트불일치": 4,
+        "문항못찾음": 1
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "95f954120e38",
+          "location": "지문2",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "db1982ebaa00",
+          "location": "지문4",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "bd3b648bf037",
+          "location": "지문5",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e2d1c3c27242",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "c062a3e45d2a",
+          "location": "지문9",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '반드시 일치해야 하거나, 반대\n가 달라야 하는 제약이 있다'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "b62b58adc778",
+          "location": "지문10",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "beb40f737bff",
+          "location": "지문10",
+          "category": "bracket텍스트불일치",
+          "message": "[B] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "22bba84cf467",
+          "location": "지문10",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '하니까 개인 정보에 해당하는 부분은 가리고 보여 드릴게요.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "fa6ac4590127",
+          "location": "지문11",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "7eedc427cedb",
+          "location": "문항7",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 54%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "969f56c2d267",
+          "location": "문항17",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "2da823815f0b",
+          "location": "문항24",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 31%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "9175ae991d69",
+          "location": "문항29",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 51%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "2628f0ace906",
+          "location": "문항35",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 46%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2025 7월 학력평가 국어(화작) 문제.pdf": {
+      "total_warnings": 8,
+      "categories": {
+        "지문못찾음": 3,
+        "문항못찾음": 2,
+        "텍스트불일치": 3
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "2d7b3073b797",
+          "location": "지문2",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "515ffb0c1a52",
+          "location": "지문4",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "98dd6e4a51e6",
+          "location": "지문5",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "9795b6faff84",
+          "location": "문항6",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "1f570afffd53",
+          "location": "문항17",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "5bddf80c2fc3",
+          "location": "문항24",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 31%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "90a6631fe76f",
+          "location": "문항29",
+          "category": "텍스트불일치",
+          "message": "선택지 5번 불일치 (유사도 51%) — 수동 확인",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "5cdd02570164",
+          "location": "문항44",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 68%) — 수동 확인 필요: '44. ' → '' | ' 　' → '\n' | ' 　글을 마무리할 때는 글에서 제시한 두 가지 빈집 재활용 　방안을 쓰고, 빈집 재활용의 의의를 밝혀야겠어.' ",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2026 6월 모의평가 국어() 문제.pdf": {
+      "total_warnings": 13,
+      "categories": {
+        "bracket텍스트불일치": 6,
+        "텍스트불일치": 6,
+        "문항못찾음": 1
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "074c3b7187a5",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "1bcccdae464a",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[B] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e21940e71fb2",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[C] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e6838d209d41",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[D] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "0ea25eb83d6c",
+          "location": "지문8",
+          "category": "bracket텍스트불일치",
+          "message": "[E] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "b97f0d5d2c3b",
+          "location": "지문11",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 55%) — 수동 확인 필요: ' 　' → '\n' | ' 　' → '\n' | ' ' → '\n' | ' 　' → '\n' | ' ' → '\n' | ' ' → '\n' | ' ' → '\n' | ' 　",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "df5c48e7aa26",
+          "location": "문항6",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 66%) — 수동 확인 필요: '6. (가)와 ' → '' | '를' → '에' | '이해' → '대' | '학생이 보인 반응' → '설명'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "7b893db7f237",
+          "location": "문항7",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 64%) — 수동 확인 필요: '7.' → '발표' | '(나)를' → '내용을' | '㉮' → '에 나타난 학생들' | 삽입 '\n반응에 대한' | '유' → '해'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "334d893d1fce",
+          "location": "문항8",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 67%) — 수동 확인 필요: '8.' → '를 참고하여' | '바탕으로 가), (나)를 바탕으로 를 이해' → '감상' | ' ' → '\n'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e1b0ff9fb8d6",
+          "location": "문항9",
+          "category": "문항못찾음",
+          "message": "PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "28e043a0356c",
+          "location": "문항17",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 58%) — 수동 확인 필요: '17' → '43' | '는' → '(나)를' | '플로리디' → '반영하여 아래' | '학생' → '같' | '나눈 ' → '(' | '상' → ')' | '",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "e5417a1343d6",
+          "location": "문항19",
+          "category": "bracket텍스트불일치",
+          "message": "텍스트 불일치 (유사도 68%) — 수동 확인 필요: '19. [A]' → '㉠' | '서술상 특징으' → '의미'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "b3ef95caf102",
+          "location": "문항41",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 57%) — 수동 확인 필요: 삽입 '(가)의 ' | '의 발화' → '' | '한' → '하여' | '설명' → '(나)의 학생들이 보인 소통 양상' | ' ' → '\n'",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    },
+    "2025  국어() 문제.pdf": {
+      "total_warnings": 11,
+      "categories": {
+        "지문못찾음": 3,
+        "bracket텍스트불일치": 1,
+        "밑줄_PDF→JSON못찾음": 2,
+        "텍스트불일치": 5
+      },
+      "bleed_in": {
+        "choices": 0,
+        "passages": 0
+      },
+      "warnings": [
+        {
+          "fingerprint": "f5c7b9758703",
+          "location": "지문2",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "be96e474775b",
+          "location": "지문4",
+          "category": "bracket텍스트불일치",
+          "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "9a5d2bbec8d9",
+          "location": "지문5",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "109291203e04",
+          "location": "지문7",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '[재혁] 학생들이 활동 참여를 ······ 표시를 해 줄래?'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "61eefe295b96",
+          "location": "지문10",
+          "category": "밑줄_PDF→JSON못찾음",
+          "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '으로부터 일시적으로나마 위안을 얻기도 한다.'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "55903ef9ec2d",
+          "location": "지문12",
+          "category": "지문못찾음",
+          "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "03498a6681d1",
+          "location": "문항6",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 72%) — 수동 확인 필요: '6. ' → '' | 삽입 ' 에 대해\n판단한 것으로 가장 적절한 것은?'",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "b96709166c44",
+          "location": "문항28",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 64%) — 수동 확인 필요: '28. '춘수'의 입장에서 ' → '' | '을' → '에 대한' | '한 내용으' → ''",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "572671c1e373",
+          "location": "문항36",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 82%) — 수동 확인 필요: '의' → '\n○' | '㉠~ ㉤을 이해한 내용으로 적절한 것은? [3점]\n보 기 ( ◦' → '' | '㉠' → '' | '◦' → '○ ' | '㉡' → ''",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "b24454a70755",
+          "location": "문항40",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 62%) — 수동 확인 필요: '40. ' → '' | '\n　1문단\n　◦(가)에서 언급된, 쇼트 폼의 분량상 특징을 쇼트 폼이 청소년\n　들에게 인기가 있다는 내용과 함께 제시해야겠어. ····",
+          "passage_number": "",
+          "question_number": ""
+        },
+        {
+          "fingerprint": "bf9d4ed7a08e",
+          "location": "문항42",
+          "category": "텍스트불일치",
+          "message": "텍스트 불일치 (유사도 51%) — 수동 확인 필요: '42.' → '<조건>을' | '㉠~' → '반영하여' | '㉤에' → '(나)의' | '대' → '제목을 작성' | '설명' → '것' | 삽입 ' [3점]'",
+          "passage_number": "",
+          "question_number": ""
+        }
+      ]
+    }
+  }
+}
