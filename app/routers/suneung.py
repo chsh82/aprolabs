@@ -443,6 +443,161 @@ def cancel_job(job_id: str, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────
 # 검수 UI
 # ─────────────────────────────────────────
+# ─────────────────────────────────────────
+# 정답/해설 관리 (/suneung/answers)
+# ─────────────────────────────────────────
+import sqlite3 as _sqlite3
+
+_ANS_DB = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "aprolabs.db")
+
+
+def _ans_db():
+    conn = _sqlite3.connect(_ANS_DB)
+    conn.row_factory = _sqlite3.Row
+    return conn
+
+
+def _run_answer_pipeline(pdf_path: str, year: int, exam_type: str, subject: str):
+    """백그라운드: answer_pipeline.parse() + save_to_db() 실행"""
+    import sys, pathlib
+    sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
+    try:
+        from answer_pipeline import parse, save_to_db
+        result = parse(pdf_path, source_year=year, exam_type=exam_type, subject=subject)
+        save_to_db(result, _ANS_DB)
+    except Exception:
+        pass
+
+
+@router.get("/answers/api")
+def answer_api_by_year(year: int = 0, qnum: int = 0):
+    """검수 UI용: 연도+문항번호로 정답/해설 JSON 반환"""
+    conn = _ans_db()
+    cur = conn.cursor()
+    rows = cur.execute(
+        "SELECT * FROM question_explanations WHERE paper_code LIKE ? AND question_number = ? LIMIT 5",
+        (f"{year}%", qnum),
+    ).fetchall()
+    conn.close()
+    items = [dict(r) for r in rows]
+    # wrong_answers JSON 파싱
+    import json as _json
+    for it in items:
+        try:
+            it["wrong_answers"] = _json.loads(it.get("wrong_answers") or "{}")
+        except Exception:
+            it["wrong_answers"] = {}
+    return JSONResponse(items)
+
+
+@router.get("/answers", response_class=HTMLResponse)
+def answers_list(request: Request, db: Session = Depends(get_db)):
+    """정답/해설 시험 목록 + 요약"""
+    import json as _json
+    conn = _ans_db()
+    cur = conn.cursor()
+    # paper_code별 요약
+    qe_rows = cur.execute("""
+        SELECT paper_code,
+               COUNT(*) as q_total,
+               SUM(CASE WHEN correct_answer = 0 THEN 1 ELSE 0 END) as q_zero
+        FROM question_explanations
+        GROUP BY paper_code
+        ORDER BY paper_code DESC
+    """).fetchall()
+    pe_rows = cur.execute("""
+        SELECT paper_code, COUNT(*) as p_total
+        FROM passage_explanations
+        GROUP BY paper_code
+    """).fetchall()
+    conn.close()
+
+    pe_map = {r["paper_code"]: r["p_total"] for r in pe_rows}
+    exams = []
+    for r in qe_rows:
+        code = r["paper_code"]
+        exams.append({
+            "paper_code": code,
+            "q_total": r["q_total"],
+            "q_zero": r["q_zero"],
+            "p_total": pe_map.get(code, 0),
+            "accuracy": round((r["q_total"] - r["q_zero"]) / r["q_total"] * 100, 1) if r["q_total"] else 0,
+        })
+
+    ctx = _base_ctx(db, request=request, exams=exams)
+    return templates.TemplateResponse("suneung/answers.html", ctx)
+
+
+@router.post("/answers/upload")
+async def answers_upload(
+    background_tasks: BackgroundTasks,
+    request: Request,
+    db: Session = Depends(get_db),
+    file: UploadFile = File(...),
+    year: str = Form(""),
+    exam_type: str = Form("수능"),
+    subject: str = Form("국어"),
+):
+    """정답해설 PDF 업로드 → answer_pipeline 백그라운드 실행"""
+    if not file or not file.filename:
+        return RedirectResponse(url="/suneung/answers", status_code=303)
+
+    ans_dir = os.path.join(UPLOAD_DIR, "answers")
+    os.makedirs(ans_dir, exist_ok=True)
+    file_id = str(uuid.uuid4())
+    ext = os.path.splitext(file.filename)[1].lower()
+    pdf_path = os.path.join(ans_dir, f"{file_id}{ext}")
+    async with aiofiles.open(pdf_path, "wb") as f:
+        await f.write(await file.read())
+
+    year_int = int(year) if year.isdigit() else 0
+    background_tasks.add_task(_run_answer_pipeline, pdf_path, year_int, exam_type, subject)
+    return RedirectResponse(url="/suneung/answers", status_code=303)
+
+
+@router.get("/answers/{paper_code:path}", response_class=HTMLResponse)
+def answer_detail(paper_code: str, request: Request, db: Session = Depends(get_db)):
+    """특정 시험의 문항별 정답/해설"""
+    import json as _json
+    conn = _ans_db()
+    cur = conn.cursor()
+    questions = [dict(r) for r in cur.execute(
+        "SELECT * FROM question_explanations WHERE paper_code = ? ORDER BY question_number",
+        (paper_code,),
+    ).fetchall()]
+    passages = [dict(r) for r in cur.execute(
+        "SELECT * FROM passage_explanations WHERE paper_code = ? ORDER BY range_start",
+        (paper_code,),
+    ).fetchall()]
+    conn.close()
+
+    # wrong_answers 파싱
+    for q in questions:
+        try:
+            q["wrong_answers"] = _json.loads(q.get("wrong_answers") or "{}")
+        except Exception:
+            q["wrong_answers"] = {}
+
+    # 동일 paper_code의 questions 테이블 데이터 (stem/choices 비교용)
+    # approve()와 동일한 paper_code 형식이어야 매칭됨
+    from app.models.question import Question as QModel
+    db_questions = {
+        q.question_number: q
+        for q in db.query(QModel).filter(QModel.paper_code == paper_code).all()
+    }
+    matched = sum(1 for q in questions if q["question_number"] in db_questions)
+
+    ctx = _base_ctx(
+        db, request=request,
+        paper_code=paper_code,
+        questions=questions,
+        passages=passages,
+        db_questions=db_questions,
+        matched=matched,
+    )
+    return templates.TemplateResponse("suneung/answer_detail.html", ctx)
+
+
 @router.get("/review/{job_id}/pages")
 def get_page_images(job_id: str):
     """검수 UI용 PDF 페이지 이미지 목록 반환.

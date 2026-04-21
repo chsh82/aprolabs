@@ -571,6 +571,14 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
           삭제
         </button>
 
+        {# 해설 보기 버튼 #}
+        <button onclick="showExplanation({{ q.number }})"
+                id="expl-btn-{{ q.number }}"
+                style="height:22px;padding:0 7px;font-size:11px;border:1px solid #c7d2fe;
+                       border-radius:20px;background:#eef2ff;color:#4338ca;cursor:pointer;margin-left:2px;">
+          📝 해설
+        </button>
+
         {# 정답 버튼 — 우측 #}
         <div style="margin-left:auto;display:flex;align-items:center;gap:3px;">
           <span style="font-size:10px;color:#9ca3af;margin-right:3px;">정답</span>
@@ -685,6 +693,64 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
   {% endif %}{# end if job.segments #}
 </div>{# end right panel #}
 </div>{# end split #}
+
+{# 해설 모달 #}
+<div id="expl-modal"
+     style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.45);
+            align-items:center;justify-content:center;"
+     onclick="if(event.target===this)closeExplModal()">
+  <div style="background:white;border-radius:14px;width:560px;max-width:94vw;max-height:85vh;
+              overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    {# 모달 헤더 #}
+    <div style="padding:12px 18px;background:#eef2ff;border-bottom:1px solid #c7d2fe;
+                display:flex;align-items:center;gap:10px;flex-shrink:0;">
+      <span id="expl-modal-num" style="font-size:16px;font-weight:800;color:#1e40af;"></span>
+      <span id="expl-modal-ans" style="font-size:16px;font-weight:700;color:#2563eb;
+             background:white;border-radius:50%;width:32px;height:32px;
+             display:inline-flex;align-items:center;justify-content:center;border:2px solid #bfdbfe;"></span>
+      <span id="expl-modal-type" style="font-size:11px;color:#6b7280;background:white;
+             padding:2px 9px;border-radius:20px;"></span>
+      <span id="expl-modal-score" style="font-size:11px;color:#9ca3af;"></span>
+      <span id="expl-modal-mismatch"
+            style="display:none;font-size:10px;color:#dc2626;background:#fee2e2;
+                   padding:2px 8px;border-radius:20px;border:1px solid #fecaca;">⚠ 정답 불일치</span>
+      <button onclick="closeExplModal()"
+              style="margin-left:auto;width:26px;height:26px;border:none;background:transparent;
+                     font-size:16px;cursor:pointer;color:#6b7280;border-radius:6px;line-height:1;">✕</button>
+    </div>
+    {# 모달 바디 #}
+    <div style="overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px;">
+      <div id="expl-modal-loading" style="text-align:center;color:#9ca3af;font-size:13px;padding:20px 0;">
+        해설 불러오는 중…
+      </div>
+      <div id="expl-modal-body" style="display:none;flex-direction:column;gap:12px;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;
+                      letter-spacing:0.06em;margin-bottom:5px;">정답해설</div>
+          <div id="expl-modal-explanation"
+               style="font-size:12px;line-height:1.8;color:#1f2937;white-space:pre-wrap;
+                      word-break:break-word;padding:10px;background:#fafafa;
+                      border-radius:7px;border:1px solid #e5e7eb;"></div>
+        </div>
+        <div id="expl-modal-wrong-wrap" style="display:none;">
+          <div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;
+                      letter-spacing:0.06em;margin-bottom:5px;">[오답피하기]</div>
+          <div id="expl-modal-wrong-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+        </div>
+        <div id="expl-modal-footer" style="display:none;padding-top:8px;border-top:1px solid #f3f4f6;">
+          <a id="expl-modal-link" href="#"
+             style="font-size:11px;color:#4338ca;text-decoration:none;hover:underline;">
+            📝 해설 상세 페이지에서 보기 →
+          </a>
+        </div>
+      </div>
+      <div id="expl-modal-none" style="display:none;text-align:center;color:#9ca3af;font-size:12px;padding:20px 0;">
+        이 문항의 해설 데이터가 없습니다.<br>
+        <a href="/suneung/answers" style="color:#4338ca;font-size:11px;">정답/해설 관리 →</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 {# 저장 토스트 #}
 <div id="save-toast"
@@ -1445,5 +1511,99 @@ async function reviewWarn(clickedBtn, value) {
     alert('판정 저장 실패: ' + e.message);
   }
 }
+
+// ─── 정답/해설 모달 ───────────────────────
+const EXPL_CIRCLES = {1:'①',2:'②',3:'③',4:'④',5:'⑤'};
+const REVIEW_YEAR = {{ job.source_year or 0 }};
+{% set _ec = (job.exam_type or '').replace(' ','') %}
+{% set _sj = job.subject or '국어' %}
+const REVIEW_PAPER_CODE = '{{ job.source_year or '' }}-{{ _ec }}-{{ _sj }}';
+
+function showExplanation(qnum) {
+  const modal = document.getElementById('expl-modal');
+  modal.style.display = 'flex';
+  document.getElementById('expl-modal-loading').style.display = 'block';
+  document.getElementById('expl-modal-body').style.display = 'none';
+  document.getElementById('expl-modal-none').style.display = 'none';
+  document.getElementById('expl-modal-num').textContent = qnum + '번';
+  document.getElementById('expl-modal-ans').textContent = '';
+  document.getElementById('expl-modal-type').textContent = '';
+  document.getElementById('expl-modal-score').textContent = '';
+  document.getElementById('expl-modal-mismatch').style.display = 'none';
+
+  fetch(`/suneung/answers/api?year=${REVIEW_YEAR}&qnum=${qnum}`)
+    .then(r => r.json())
+    .then(items => {
+      document.getElementById('expl-modal-loading').style.display = 'none';
+      if (!items || items.length === 0) {
+        document.getElementById('expl-modal-none').style.display = 'block';
+        return;
+      }
+      // paper_code 우선: 정확 일치 우선 선택
+      let item = items.find(i => i.paper_code === REVIEW_PAPER_CODE) || items[0];
+
+      const ans = item.correct_answer;
+      document.getElementById('expl-modal-ans').textContent = (ans && ans > 0) ? (EXPL_CIRCLES[ans] || ans) : '?';
+      document.getElementById('expl-modal-type').textContent = item.question_type || '';
+      document.getElementById('expl-modal-score').textContent = item.score > 0 ? item.score + '점' : '';
+      document.getElementById('expl-modal-explanation').textContent = item.explanation || '(해설 없음)';
+
+      // 문항 패널의 현재 정답과 불일치 확인
+      const qCard = document.querySelector(`[data-q-num="${qnum}"]`);
+      if (qCard) {
+        const activeBtn = qCard.querySelector('[data-ans-idx][data-ans-val]');
+        // Find the selected answer button
+        const selBtn = qCard.querySelector('[data-ans-idx][style*="background:#2563eb"]');
+        if (selBtn) {
+          const curAns = '①②③④⑤'.indexOf(selBtn.dataset.ansVal) + 1;
+          if (curAns > 0 && ans && curAns !== ans) {
+            document.getElementById('expl-modal-mismatch').style.display = 'inline-flex';
+          }
+        }
+      }
+
+      // 오답피하기
+      const wa = item.wrong_answers || {};
+      const waKeys = Object.keys(wa).filter(k => wa[k]);
+      const wrongWrap = document.getElementById('expl-modal-wrong-wrap');
+      const wrongList = document.getElementById('expl-modal-wrong-list');
+      if (waKeys.length > 0) {
+        wrongList.innerHTML = waKeys.map(k =>
+          `<div style="display:flex;gap:8px;padding:6px 10px;background:white;
+                       border:1px solid #e5e7eb;border-radius:6px;">
+            <span style="font-size:13px;font-weight:700;color:#6b7280;flex-shrink:0;width:20px;">${EXPL_CIRCLES[k]||k}</span>
+            <span style="font-size:11px;color:#374151;line-height:1.7;white-space:pre-wrap;word-break:break-word;">${wa[k]}</span>
+          </div>`
+        ).join('');
+        wrongWrap.style.display = 'block';
+      } else {
+        wrongWrap.style.display = 'none';
+      }
+
+      // 상세 링크
+      const footer = document.getElementById('expl-modal-footer');
+      const link = document.getElementById('expl-modal-link');
+      if (item.paper_code) {
+        link.href = `/suneung/answers/${item.paper_code}#q${qnum}`;
+        footer.style.display = 'block';
+      } else {
+        footer.style.display = 'none';
+      }
+
+      document.getElementById('expl-modal-body').style.display = 'flex';
+    })
+    .catch(() => {
+      document.getElementById('expl-modal-loading').style.display = 'none';
+      document.getElementById('expl-modal-none').style.display = 'block';
+    });
+}
+
+function closeExplModal() {
+  document.getElementById('expl-modal').style.display = 'none';
+}
+
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape') closeExplModal();
+});
 </script>
 {% endblock %}

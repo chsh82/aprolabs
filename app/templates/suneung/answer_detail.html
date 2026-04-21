@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% block title %}{{ paper_code }} — 정답/해설{% endblock %}
+
+{% block content %}
+{# ── 헤더 ── #}
+<div class="mb-5 flex items-start justify-between gap-4">
+  <div>
+    <div class="flex items-center gap-3 mb-1">
+      <a href="/suneung/answers" class="text-xs text-gray-400 hover:text-gray-600">← 목록</a>
+      <span class="text-gray-300">│</span>
+      <span class="font-mono text-blue-600 font-bold text-lg">{{ paper_code }}</span>
+    </div>
+    <div class="flex gap-3 text-xs mt-1">
+      <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium">문항 {{ questions|length }}개</span>
+      {% if passages %}
+      <span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full font-medium">지문해설 {{ passages|length }}개</span>
+      {% endif %}
+      {% if matched > 0 %}
+      <span class="bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">문항DB 매칭 {{ matched }}개</span>
+      {% endif %}
+      {% set zero_cnt = questions|selectattr('correct_answer','equalto',0)|list|length %}
+      {% if zero_cnt == 0 %}
+      <span class="bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">✅ 정답 100% 확인</span>
+      {% else %}
+      <span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full font-medium">⚠ 정답미확인 {{ zero_cnt }}건</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{# ── 레이아웃: 왼쪽 목록 + 오른쪽 상세 ── #}
+<div style="display:flex;gap:14px;height:calc(100vh - 160px);min-height:500px;">
+
+  {# ── 왼쪽: 지문해설 + 문항 목록 ── #}
+  <div style="width:340px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+
+    {# 지문 해설 섹션 #}
+    {% if passages %}
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+      <div style="padding:8px 12px;background:#f5f3ff;border-bottom:1px solid #e5e7eb;
+                  font-size:11px;font-weight:700;color:#6d28d9;">
+        지문 해설 ({{ passages|length }}개)
+      </div>
+      {% for p in passages %}
+      <div class="passage-item" data-pidx="{{ loop.index0 }}"
+           onclick="showPassage({{ loop.index0 }})"
+           style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f3f4f6;
+                  transition:background 0.1s;">
+        <div style="font-size:11px;font-weight:600;color:#4338ca;">
+          [{{ p.question_range }}] {{ p.domain }}
+          {% if p.sub_domain and p.sub_domain != p.domain %} · {{ p.sub_domain }}{% endif %}
+        </div>
+        {% if p.title %}
+        <div style="font-size:10px;color:#6b7280;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          '{{ p.title[:40] }}'
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {# 문항 목록 테이블 #}
+    <div style="background:white;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;flex:1;">
+      <div style="padding:8px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb;
+                  font-size:11px;font-weight:700;color:#374151;display:flex;align-items:center;gap:8px;">
+        문항 해설
+        <input type="text" id="q-search" placeholder="번호·유형 검색…" oninput="filterQ(this.value)"
+               style="margin-left:auto;font-size:11px;border:1px solid #e5e7eb;border-radius:6px;
+                      padding:2px 7px;width:120px;outline:none;">
+      </div>
+      <div id="q-list" style="overflow-y:auto;max-height:calc(100vh - 310px);">
+        {% for q in questions %}
+        {% set CIRCLES = {1:'①',2:'②',3:'③',4:'④',5:'⑤'} %}
+        <div class="q-row" data-qnum="{{ q.question_number }}" data-qtype="{{ q.question_type }}"
+             data-qidx="{{ loop.index0 }}"
+             onclick="showQuestion({{ loop.index0 }})"
+             style="padding:6px 12px;cursor:pointer;border-bottom:1px solid #f3f4f6;
+                    display:flex;align-items:center;gap:8px;transition:background 0.1s;">
+          <span style="font-size:13px;font-weight:700;color:#111827;width:28px;flex-shrink:0;">
+            {{ q.question_number }}
+          </span>
+          {% if q.correct_answer and q.correct_answer > 0 %}
+          <span style="font-size:14px;font-weight:700;color:#2563eb;width:20px;flex-shrink:0;">
+            {{ CIRCLES.get(q.correct_answer, q.correct_answer) }}
+          </span>
+          {% else %}
+          <span style="font-size:11px;color:#fca5a5;width:20px;flex-shrink:0;">?</span>
+          {% endif %}
+          <span style="font-size:10px;color:#6b7280;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ q.question_type or '' }}
+          </span>
+          {% if q.score and q.score > 0 %}
+          <span style="font-size:10px;color:#9ca3af;flex-shrink:0;">{{ q.score }}점</span>
+          {% endif %}
+          {% if q.question_id %}
+          <span title="문항DB 매칭됨" style="font-size:9px;color:#16a34a;flex-shrink:0;">✓</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {# ── 오른쪽: 상세 패널 ── #}
+  <div style="flex:1;overflow-y:auto;background:white;border:1px solid #e5e7eb;
+              border-radius:10px;padding:20px;">
+    <div id="detail-empty" style="height:100%;display:flex;align-items:center;justify-content:center;
+                                   color:#9ca3af;font-size:13px;">
+      ← 왼쪽에서 문항 또는 지문을 클릭하세요
+    </div>
+
+    {# 지문 상세 #}
+    <div id="detail-passage" style="display:none;">
+      <div style="font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">
+        지문 해설
+      </div>
+      <div id="p-range" style="font-size:12px;font-weight:700;color:#4338ca;margin-bottom:4px;"></div>
+      <div id="p-domain" style="font-size:11px;color:#6b7280;margin-bottom:12px;"></div>
+      <div id="p-title" style="font-size:12px;color:#374151;font-style:italic;margin-bottom:12px;
+                                padding:8px 12px;background:#f5f3ff;border-radius:7px;"></div>
+      <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">지문해설</div>
+      <div id="p-summary" style="font-size:12px;line-height:1.8;color:#1f2937;white-space:pre-wrap;word-break:break-word;
+                                  padding:10px;background:#fafafa;border-radius:7px;border:1px solid #e5e7eb;"></div>
+      <div id="p-topic-wrap" style="margin-top:12px;display:none;">
+        <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">[주제]</div>
+        <div id="p-topic" style="font-size:12px;color:#1f2937;padding:8px 12px;background:#eff6ff;
+                                   border-radius:7px;border-left:3px solid #3b82f6;"></div>
+      </div>
+    </div>
+
+    {# 문항 상세 #}
+    <div id="detail-question" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <span id="q-number" style="font-size:22px;font-weight:800;color:#111827;"></span>
+        <span id="q-answer-badge" style="font-size:18px;font-weight:700;color:#2563eb;
+               background:#eff6ff;border-radius:50%;width:36px;height:36px;
+               display:inline-flex;align-items:center;justify-content:center;border:2px solid #bfdbfe;"></span>
+        <span id="q-type" style="font-size:11px;color:#6b7280;background:#f3f4f6;
+               padding:3px 10px;border-radius:20px;"></span>
+        <span id="q-score" style="font-size:11px;color:#9ca3af;"></span>
+        <div id="q-mismatch-badge" style="display:none;font-size:10px;color:#dc2626;
+             background:#fee2e2;padding:2px 8px;border-radius:20px;border:1px solid #fecaca;">
+          ⚠ 정답 불일치
+        </div>
+        <div id="q-matched-badge" style="display:none;font-size:10px;color:#16a34a;
+             background:#f0fdf4;padding:2px 8px;border-radius:20px;border:1px solid #bbf7d0;">
+          ✓ 문항DB 매칭
+        </div>
+      </div>
+
+      {# 문항DB 비교 (매칭된 경우) #}
+      <div id="q-db-compare" style="display:none;margin-bottom:16px;padding:10px 14px;
+           background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:11px;">
+        <div style="font-weight:700;color:#15803d;margin-bottom:6px;">문항DB 데이터</div>
+        <div id="q-db-stem" style="color:#1f2937;margin-bottom:4px;white-space:pre-wrap;word-break:break-word;"></div>
+        <div id="q-db-answer" style="color:#2563eb;font-weight:700;margin-top:4px;"></div>
+      </div>
+
+      <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">정답해설</div>
+      <div id="q-explanation" style="font-size:12px;line-height:1.8;color:#1f2937;white-space:pre-wrap;word-break:break-word;
+                                      padding:10px;background:#fafafa;border-radius:7px;border:1px solid #e5e7eb;margin-bottom:14px;"></div>
+
+      <div id="q-wrong-wrap" style="display:none;">
+        <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">[오답피하기]</div>
+        <div id="q-wrong-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# 데이터 임베드 #}
+<div id="questions-data" style="display:none;">{{ questions|tojson }}</div>
+<div id="passages-data" style="display:none;">{{ passages|tojson }}</div>
+{% set db_q_data = {} %}
+{% for qnum, qobj in db_questions.items() %}
+{% set _ = db_q_data.update({qnum: {'stem': qobj.stem, 'answer': qobj.answer, 'question_number': qobj.question_number}}) %}
+{% endfor %}
+<div id="db-questions-data" style="display:none;">{{ db_q_data|tojson }}</div>
+
+<style>
+.q-row:hover, .q-row.active { background: #eff6ff !important; }
+.passage-item:hover, .passage-item.active { background: #f5f3ff !important; }
+</style>
+
+<script>
+const questions = JSON.parse(document.getElementById('questions-data').textContent);
+const passages  = JSON.parse(document.getElementById('passages-data').textContent);
+const dbQuestions = JSON.parse(document.getElementById('db-questions-data').textContent);
+const CIRCLES = {1:'①',2:'②',3:'③',4:'④',5:'⑤'};
+
+function clearActive() {
+  document.querySelectorAll('.q-row').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.passage-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('detail-empty').style.display = 'none';
+  document.getElementById('detail-passage').style.display = 'none';
+  document.getElementById('detail-question').style.display = 'none';
+}
+
+function showQuestion(idx) {
+  clearActive();
+  const row = document.querySelector(`.q-row[data-qidx="${idx}"]`);
+  if (row) row.classList.add('active');
+
+  const q = questions[idx];
+  if (!q) return;
+  document.getElementById('detail-question').style.display = 'block';
+
+  document.getElementById('q-number').textContent = q.question_number + '번';
+  const ans = q.correct_answer;
+  document.getElementById('q-answer-badge').textContent = (ans && ans > 0) ? (CIRCLES[ans] || ans) : '?';
+  document.getElementById('q-type').textContent = q.question_type || '';
+  document.getElementById('q-score').textContent = q.score > 0 ? q.score + '점' : '';
+  document.getElementById('q-explanation').textContent = q.explanation || '(해설 없음)';
+
+  // 오답피하기
+  const wa = q.wrong_answers || {};
+  const waKeys = Object.keys(wa).filter(k => wa[k]);
+  const wrongWrap = document.getElementById('q-wrong-wrap');
+  const wrongList = document.getElementById('q-wrong-list');
+  if (waKeys.length > 0) {
+    wrongList.innerHTML = waKeys.map(k =>
+      `<div style="display:flex;gap:8px;padding:6px 10px;background:white;border:1px solid #e5e7eb;border-radius:6px;">
+        <span style="font-size:13px;font-weight:700;color:#6b7280;flex-shrink:0;width:20px;">${CIRCLES[k] || k}</span>
+        <span style="font-size:11px;color:#374151;line-height:1.7;white-space:pre-wrap;word-break:break-word;">${wa[k]}</span>
+      </div>`
+    ).join('');
+    wrongWrap.style.display = 'block';
+  } else {
+    wrongWrap.style.display = 'none';
+  }
+
+  // 문항DB 비교
+  const dbQ = dbQuestions[q.question_number];
+  const mismatch = document.getElementById('q-mismatch-badge');
+  const matchedB = document.getElementById('q-matched-badge');
+  const dbCompare = document.getElementById('q-db-compare');
+
+  if (dbQ) {
+    matchedB.style.display = 'inline-flex';
+    dbCompare.style.display = 'block';
+    document.getElementById('q-db-stem').textContent = dbQ.stem || '';
+    document.getElementById('q-db-answer').textContent = '정답: ' + (dbQ.answer || '?');
+
+    // 불일치 체크
+    const dbAnsNum = parseInt(dbQ.answer);
+    if (dbAnsNum && ans && dbAnsNum !== ans) {
+      mismatch.style.display = 'inline-flex';
+    } else {
+      mismatch.style.display = 'none';
+    }
+  } else {
+    matchedB.style.display = 'none';
+    dbCompare.style.display = 'none';
+    mismatch.style.display = 'none';
+  }
+}
+
+function showPassage(idx) {
+  clearActive();
+  const row = document.querySelector(`.passage-item[data-pidx="${idx}"]`);
+  if (row) row.classList.add('active');
+
+  const p = passages[idx];
+  if (!p) return;
+  document.getElementById('detail-passage').style.display = 'block';
+
+  document.getElementById('p-range').textContent = '[' + p.question_range + '] ' + p.domain;
+  let domainStr = p.sub_domain || '';
+  if (p.sub_domain && p.sub_domain !== p.domain) domainStr = p.domain + ' › ' + p.sub_domain;
+  document.getElementById('p-domain').textContent = domainStr;
+
+  const titleEl = document.getElementById('p-title');
+  if (p.title) {
+    titleEl.textContent = '\'' + p.title + '\'';
+    titleEl.style.display = 'block';
+  } else {
+    titleEl.style.display = 'none';
+  }
+
+  document.getElementById('p-summary').textContent = p.passage_summary || '(지문해설 없음)';
+
+  const topicWrap = document.getElementById('p-topic-wrap');
+  if (p.topic) {
+    document.getElementById('p-topic').textContent = p.topic;
+    topicWrap.style.display = 'block';
+  } else {
+    topicWrap.style.display = 'none';
+  }
+}
+
+function filterQ(val) {
+  const v = val.trim().toLowerCase();
+  document.querySelectorAll('.q-row').forEach(el => {
+    const num = el.dataset.qnum;
+    const type = el.dataset.qtype.toLowerCase();
+    el.style.display = (!v || num.includes(v) || type.includes(v)) ? '' : 'none';
+  });
+}
+
+// URL hash로 바로 문항 열기
+const h = location.hash.replace('#q','');
+if (h && !isNaN(h)) {
+  const row = document.querySelector(`.q-row[data-qnum="${h}"]`);
+  if (row) { row.click(); row.scrollIntoView({block:'nearest'}); }
+}
+</script>
+{% endblock %}
