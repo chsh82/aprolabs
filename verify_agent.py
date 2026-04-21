@@ -942,6 +942,8 @@ class VerifyAgent:
                     # ③ 공백 제거 + 특수문자 정규화 후 plain text에서 존재 확인
                     #    찾으면 공백/특수문자 차이로 위치 특정 불가 → INFO (경고 아님)
                     def _norm_ul(t: str) -> str:
+                        # 전각 공백·bracket 마커(㉠~㉿) 제거 후 모든 공백 제거
+                        t = re.sub(r'[\u3000\u3200-\u32ff\u2460-\u24ff]', '', t)
                         t = re.sub(r'\s+', '', t)
                         for src, dst in [
                             ('｣', '」'), ('｢', '「'), ('』', '」'), ('『', '「'),
