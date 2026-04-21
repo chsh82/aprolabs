@@ -478,6 +478,14 @@ def get_page_images(job_id: str):
     return JSONResponse([])
 
 
+_AI_TO_ENG = {'오탐': 'odam', '실제오류': 'real_error', '보류': 'pending'}
+
+
+def _j2v(ai_kr: str) -> str:
+    """AI 한글 판정 → human 영문 판정 변환."""
+    return _AI_TO_ENG.get(ai_kr, '')
+
+
 @router.get("/warnings", response_class=HTMLResponse)
 def warnings_list(request: Request, db: Session = Depends(get_db)):
     """전체 경고 목록 — 카테고리별 그룹 표시"""
@@ -519,7 +527,8 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
         if not job.raw_result:
             continue
         corrections = job.raw_result.get('verify_corrections', [])
-        reviews = job.raw_result.get('warning_reviews', {})
+        reviews    = job.raw_result.get('warning_reviews', {})
+        ai_reviews = job.raw_result.get('ai_reviews', {})
         for c in corrections:
             if not isinstance(c, dict):
                 continue
@@ -529,6 +538,12 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
             msg = c.get('message', '')
             cat = _categorize(msg)
             key = f"{loc}|||{msg[:80]}"
+            ai_entry   = ai_reviews.get(key, {})
+            ai_judgment = ai_entry.get('judgment', '') if isinstance(ai_entry, dict) else ''
+            ai_reason   = ai_entry.get('reason', '')   if isinstance(ai_entry, dict) else ''
+            human_j     = reviews.get(key, '')
+            # 사람↔AI 불일치 여부 (둘 다 판정된 경우만)
+            disagree = bool(human_j and ai_judgment and human_j != _j2v(ai_judgment))
             all_warnings.append({
                 'job_id': job.id,
                 'filename': job.filename,
@@ -536,7 +551,10 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
                 'message': msg,
                 'category': cat,
                 'key': key,
-                'judgment': reviews.get(key, ''),
+                'judgment': human_j,
+                'ai_judgment': ai_judgment,
+                'ai_reason':   ai_reason,
+                'disagree':    disagree,
             })
 
     # grouped[category][filename] = [warning, ...]
@@ -561,6 +579,13 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
         'pending':    sum(1 for w in all_warnings if w['judgment'] == 'pending'),
         'none':       sum(1 for w in all_warnings if not w['judgment']),
     }
+    ai_counts = {
+        'odam':       sum(1 for w in all_warnings if w['ai_judgment'] == '오탐'),
+        'real_error': sum(1 for w in all_warnings if w['ai_judgment'] == '실제오류'),
+        'pending':    sum(1 for w in all_warnings if w['ai_judgment'] == '보류'),
+        'none':       sum(1 for w in all_warnings if not w['ai_judgment']),
+        'disagree':   sum(1 for w in all_warnings if w['disagree']),
+    }
 
     ctx = _base_ctx(
         db, request=request,
@@ -571,6 +596,7 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
         category_order=CATEGORY_ORDER,
         fname_to_job=fname_to_job,
         judgment_counts=judgment_counts,
+        ai_counts=ai_counts,
         total=len(all_warnings),
     )
     return templates.TemplateResponse("suneung/warnings.html", ctx)
