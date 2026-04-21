@@ -486,6 +486,15 @@ def _j2v(ai_kr: str) -> str:
     return _AI_TO_ENG.get(ai_kr, '')
 
 
+def _extract_judgment(val) -> tuple[str, str]:
+    """warning_reviews 값에서 (judgment_str, source) 추출.
+    값이 문자열이면 ("odam", "human"), dict이면 (val["judgment"], val["source"]) 반환.
+    """
+    if isinstance(val, dict):
+        return val.get('judgment', ''), val.get('source', 'human')
+    return (val or ''), 'human'
+
+
 @router.get("/warnings", response_class=HTMLResponse)
 def warnings_list(request: Request, db: Session = Depends(get_db)):
     """전체 경고 목록 — 카테고리별 그룹 표시"""
@@ -538,12 +547,16 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
             msg = c.get('message', '')
             cat = _categorize(msg)
             key = f"{loc}|||{msg[:80]}"
-            ai_entry   = ai_reviews.get(key, {})
+            ai_entry    = ai_reviews.get(key, {})
             ai_judgment = ai_entry.get('judgment', '') if isinstance(ai_entry, dict) else ''
             ai_reason   = ai_entry.get('reason', '')   if isinstance(ai_entry, dict) else ''
-            human_j     = reviews.get(key, '')
-            # 사람↔AI 불일치 여부 (둘 다 판정된 경우만)
-            disagree = bool(human_j and ai_judgment and human_j != _j2v(ai_judgment))
+            human_j, human_source = _extract_judgment(reviews.get(key))
+            # 사람↔AI 불일치 여부 (둘 다 판정된 경우만, auto_from_ai는 불일치 제외)
+            disagree = bool(
+                human_j and ai_judgment
+                and human_source != 'auto_from_ai'
+                and human_j != _j2v(ai_judgment)
+            )
             all_warnings.append({
                 'job_id': job.id,
                 'filename': job.filename,
@@ -552,6 +565,7 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
                 'category': cat,
                 'key': key,
                 'judgment': human_j,
+                'judgment_source': human_source,
                 'ai_judgment': ai_judgment,
                 'ai_reason':   ai_reason,
                 'disagree':    disagree,
@@ -578,6 +592,7 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
         'real_error': sum(1 for w in all_warnings if w['judgment'] == 'real_error'),
         'pending':    sum(1 for w in all_warnings if w['judgment'] == 'pending'),
         'none':       sum(1 for w in all_warnings if not w['judgment']),
+        'auto':       sum(1 for w in all_warnings if w['judgment_source'] == 'auto_from_ai'),
     }
     ai_counts = {
         'odam':       sum(1 for w in all_warnings if w['ai_judgment'] == '오탐'),
