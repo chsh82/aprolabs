@@ -53,12 +53,18 @@ def categorize(msg):
         return '밑줄_PDF→JSON못찾음'
     if '<img>' in m and '[그림]' in m:
         return 'img_그림불일치'
+    if '이미지' in m and '위치 불일치' in m:
+        return 'img_그림불일치'
     if '이미지' in m and '개수' in m:
         return '이미지개수불일치'
     if '텍스트 불일치' in m and re.search(r'\[[A-E]\]', m):
         return 'bracket텍스트불일치'
+    if re.search(r'\[[A-E]\]', m) and ('범위 내 텍스트' in m or '텍스트 미확인' in m):
+        return 'bracket텍스트불일치'
     if '끝 위치 특정 불가' in m or '시작 위치는 찾았' in m:
         return 'bracket위치특정불가'
+    if '선택지' in m and '불일치' in m:
+        return '텍스트불일치'
     if '텍스트 불일치' in m:
         return '텍스트불일치'
     if '지문을 PDF에서 찾지 못' in m or '대응하는 PDF 지문' in m:
