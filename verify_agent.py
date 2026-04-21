@@ -582,7 +582,8 @@ class VerifyAgent:
             stem_skipped = False
             if pdf_q.stem:
                 stem_corrs = self._correct_text(
-                    loc, "stem", question.stem or "", pdf_q.stem, threshold=0.80
+                    loc, "stem", question.stem or "", pdf_q.stem, threshold=0.80,
+                    bracket_ref_ok=True,
                 )
                 for tc in stem_corrs:
                     if tc.kind == CorrectionKind.FIXED:
@@ -629,6 +630,7 @@ class VerifyAgent:
         extracted: str,
         pdf_text: str,
         threshold: float = 0.85,
+        bracket_ref_ok: bool = False,
     ) -> list[Correction]:
         """
         difflib 로 두 텍스트를 비교, 유사도가 충분하면 자동 교정.
@@ -687,6 +689,14 @@ class VerifyAgent:
                 original=extracted, corrected=corrected,
             )]
         elif ratio >= 0.5:
+            # bracket_ref_ok: [A-E] 참조 제거 후 유사도가 임계값 통과하면 경고 생략
+            # (문항 stem에서 [A], [B] 참조가 실제 텍스트로 대체되는 false positive 방지)
+            if bracket_ref_ok:
+                norm_ext = re.sub(r'\[[A-E]\]', '', clean_ext)
+                norm_pdf = re.sub(r'\[[A-E]\]', '', clean_pdf)
+                norm_ratio = difflib.SequenceMatcher(None, norm_ext, norm_pdf).ratio()
+                if norm_ratio >= threshold:
+                    return []
             return [Correction(
                 kind=CorrectionKind.WARNING, location=loc, field=field,
                 message=f"텍스트 불일치 (유사도 {ratio:.0%}) — 수동 확인 필요: "
@@ -844,9 +854,16 @@ class VerifyAgent:
                         message=f"[{label}] 시작 위치는 찾았으나 끝 위치 특정 불가 — 수동 삽입 필요",
                     ))
                 else:
+                    # 지문에 <img>가 있으면 이미지 범위일 가능성 → INFO로 완화
+                    has_img = '<img' in content
                     corrections.append(Correction(
-                        kind=CorrectionKind.WARNING, location=loc, field=f"brackets.{label}",
-                        message=f"[{label}] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 수동 확인 필요",
+                        kind=CorrectionKind.INFO if has_img else CorrectionKind.WARNING,
+                        location=loc, field=f"brackets.{label}",
+                        message=(
+                            f"[{label}] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 이미지 범위 가능성"
+                            if has_img else
+                            f"[{label}] 범위 내 텍스트를 지문에서 찾지 못했습니다 — 수동 확인 필요"
+                        ),
                         original="", corrected=inner[:30],
                     ))
 
