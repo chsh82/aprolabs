@@ -278,46 +278,86 @@ _WRONG_BLOCK_RE  = re.compile(
 _WRONG_ITEM_RE   = re.compile(
     r'([①②③④⑤])\s+([^①②③④⑤\n]{10,})',
 )
+# 선택과목 섹션 구분 (■ [선택: 화법과 작문] / ■ [선택: 언어와 매체])
+_SELECT_SECTION_RE = re.compile(
+    r'■\s*\[선택\s*:\s*([^\]]+)\]'
+)
+_SUBJ_NORM = {
+    '화법과작문': '화법과작문', '화법과 작문': '화법과작문',
+    '언어와매체': '언어와매체', '언어와 매체': '언어와매체',
+}
+
+
+def _subject_to_select(subject: str) -> str:
+    """paper subject 문자열 → 선택과목 키 ('화법과작문'|'언어와매체'|'')"""
+    if '화작' in subject or '화법' in subject: return '화법과작문'
+    if '언매' in subject or '언어' in subject: return '언어와매체'
+    return ''
 
 
 def parse_questions(text: str) -> list[QuestionExplanation]:
-    """문항별 해설 파싱."""
+    """
+    문항별 해설 파싱.
+    전체 텍스트를 파싱하며 동일 번호 중복이 발생할 수 있음.
+    중복 제거는 save_to_db() 단계에서 정답표 기준으로 처리.
+    """
     questions = []
-
     q_headers = list(_Q_HEADER_RE.finditer(text))
     for i, m in enumerate(q_headers):
-        num        = int(m.group(1))
-        q_type     = m.group(2).strip()
-        block_end  = q_headers[i + 1].start() if i + 1 < len(q_headers) else len(text)
-        block      = text[m.end():block_end]
+        num       = int(m.group(1))
+        q_type    = m.group(2).strip()
+        block_end = q_headers[i + 1].start() if i + 1 < len(q_headers) else len(text)
+        block     = text[m.end():block_end]
 
-        # 정답
         ans_m   = _CORRECT_ANS_RE.search(block)
         correct = _circle(ans_m.group(1)) if ans_m else 0
 
-        # 정답해설
-        exp_m   = _EXPLANATION_RE.search(block)
-        expl    = exp_m.group(1).strip() if exp_m else ""
+        exp_m = _EXPLANATION_RE.search(block)
+        expl  = exp_m.group(1).strip() if exp_m else ""
 
-        # 오답피하기
         wrong_answers: dict[int, str] = {}
         wrong_split = _WRONG_BLOCK_RE.split(block)
         if len(wrong_split) > 1:
-            wrong_block = wrong_split[1]
-            for wm in _WRONG_ITEM_RE.finditer(wrong_block):
-                idx  = _circle(wm.group(1))
-                desc = wm.group(2).strip()
-                wrong_answers[idx] = desc
+            for wm in _WRONG_ITEM_RE.finditer(wrong_split[1]):
+                wrong_answers[_circle(wm.group(1))] = wm.group(2).strip()
 
         questions.append(QuestionExplanation(
-            number         = num,
-            question_type  = q_type,
-            correct_answer = correct,
-            explanation    = expl,
-            wrong_answers  = wrong_answers,
+            number=num, question_type=q_type,
+            correct_answer=correct, explanation=expl,
+            wrong_answers=wrong_answers,
         ))
-
     return questions
+
+
+def _dedup_questions(
+    questions: list[QuestionExplanation],
+    ans_map: dict[int, int],
+) -> list[QuestionExplanation]:
+    """
+    35~45번 중복 제거: 정답표 답과 일치하는 것 우선 선택.
+    일치 없으면 마지막 파싱 항목(선택과목 섹션이 뒤에 위치).
+    """
+    from collections import defaultdict
+    by_num: dict[int, list[QuestionExplanation]] = defaultdict(list)
+    for q in questions:
+        by_num[q.number].append(q)
+
+    result = []
+    for num in sorted(by_num.keys()):
+        qs = by_num[num]
+        if len(qs) == 1:
+            result.append(qs[0])
+            continue
+        # 정답표와 일치하는 것 우선
+        target_ans = ans_map.get(num)
+        if target_ans:
+            matched = [q for q in qs if q.correct_answer == target_ans]
+            if matched:
+                result.append(matched[0])
+                continue
+        # 폴백: 마지막 항목 (선택과목 섹션이 PDF 뒤쪽에 위치)
+        result.append(qs[-1])
+    return result
 
 
 # ─── 5. DB 스키마 생성 ──────────────────────────────────────
@@ -394,8 +434,20 @@ def save_to_db(result: ParseResult, db_path: str = DB_PATH):
             p.domain, p.sub_domain, p.title, p.passage_summary, p.topic,
         ))
 
-    # 정답표에서 배점 추출
+    # 정답표에서 배점 + 정답 추출
     score_map: dict[int, int] = {a.number: a.score for a in result.answer_table}
+
+    # correct_answer 보완용 정답표 맵 (선택과목 구분)
+    select_subj = _subject_to_select(result.subject)
+    ans_map: dict[int, int] = {}
+    for a in result.answer_table:
+        if a.number <= 34 and a.subject == '공통':
+            ans_map[a.number] = a.answer
+        elif a.number >= 35:
+            if select_subj and a.subject == select_subj:
+                ans_map[a.number] = a.answer
+            elif not select_subj:
+                ans_map.setdefault(a.number, a.answer)
 
     # 기존 questions 테이블에서 question_id 매핑
     cur.execute(
@@ -404,8 +456,11 @@ def save_to_db(result: ParseResult, db_path: str = DB_PATH):
     )
     q_id_map: dict[int, str] = {row[1]: row[0] for row in cur.fetchall()}
 
-    # 문항 해설 저장
-    for q in result.questions:
+    # 문항 해설 저장 (중복 제거 후)
+    deduped = _dedup_questions(result.questions, ans_map)
+    for q in deduped:
+        # 수정 2: correct_answer=0이면 정답표에서 보완
+        ca = q.correct_answer or ans_map.get(q.number, 0)
         cur.execute("""
             INSERT INTO question_explanations
               (id, paper_code, question_number, question_type,
@@ -414,7 +469,7 @@ def save_to_db(result: ParseResult, db_path: str = DB_PATH):
         """, (
             str(uuid.uuid4()), paper_code,
             q.number, q.question_type,
-            q.correct_answer, score_map.get(q.number, 0),
+            ca, score_map.get(q.number, 0),
             q.explanation,
             json.dumps(q.wrong_answers, ensure_ascii=False),
             q_id_map.get(q.number),
