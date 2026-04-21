@@ -1101,9 +1101,9 @@ class VerifyAgent:
             return corrections
 
         if json_count > 0 and pdf_count == 0:
-            # 캐시된 Gemini 결과는 구 프롬프트로 추출됐을 수 있으므로 INFO만 기록
+            # Gemini 미감지 = Gemini 한계 (JSON 오류 아님) → INFO (주석과 일치)
             corrections.append(Correction(
-                kind=CorrectionKind.WARNING, location=loc, field="images",
+                kind=CorrectionKind.INFO, location=loc, field="images",
                 message=f"JSON에 <img> {json_count}개 존재하나 Gemini가 [그림]을 감지하지 못함 — 재추출 시 확인",
             ))
             return corrections
