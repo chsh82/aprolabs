@@ -572,10 +572,18 @@ class VerifyAgent:
                          f"(유사도={best_ratio:.2f})")
                     pdf_q = best_match
                 else:
-                    corrections.append(Correction(
-                        kind=CorrectionKind.WARNING, location=loc, field="stem",
-                        message="PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
-                    ))
+                    stem_clean = re.sub(r'\s+', '', question.stem or '')
+                    if len(stem_clean) <= 5:
+                        # 번호만 있는 stem(예: '34.', '7.')은 PDF 비교 자체 불가 → INFO
+                        corrections.append(Correction(
+                            kind=CorrectionKind.INFO, location=loc, field="stem",
+                            message="PDF에서 해당 문항을 찾지 못했습니다. stem 부족으로 PDF 비교 불가",
+                        ))
+                    else:
+                        corrections.append(Correction(
+                            kind=CorrectionKind.WARNING, location=loc, field="stem",
+                            message="PDF에서 해당 문항을 찾지 못했습니다. 수동 확인 필요",
+                        ))
                     continue
 
             # ① 발문(stem) 교정
