@@ -5,11 +5,12 @@ final_summary.py — QA 리포트 최종 현황 분석
   python3 final_summary.py              # 최신 리포트 기반
   python3 final_summary.py --baseline   # 오늘 baseline과 비교
 """
-import json, glob, os, re, argparse
+import json, glob, os, re, argparse, sqlite3
 from collections import defaultdict
 from datetime import datetime
 
 GOLDEN_DIR  = '/home/chsh82/aprolabs/golden_tests'
+DB_PATH     = '/home/chsh82/aprolabs/aprolabs.db'
 QNUM_PREFIX = re.compile(r'^\d+\.\s*[\u3000\s]*')
 HTML_TAG    = re.compile(r'</?(u|b|i|em|strong|span|s)\b[^>]*>', re.IGNORECASE)
 STEM_END_NN = re.compile(r'것은\?(?:\s*\[\d점\])?\s*\n\n')
@@ -29,19 +30,40 @@ def _file_category(fn: str) -> str:
     return 'target'
 
 
+def db_filenames() -> set:
+    """DB pipeline_jobs에 실제 존재하는 파일명 집합."""
+    try:
+        db = sqlite3.connect(DB_PATH)
+        rows = db.execute("SELECT filename FROM pipeline_jobs").fetchall()
+        db.close()
+        return {r[0] for r in rows}
+    except Exception:
+        return set()
+
+
 def latest_reports():
-    """파일명 기준 최신 QA 리포트 1개씩 (전체 — 분류는 main에서)."""
+    """파일명 기준 최신 QA 리포트 1개씩 (DB에 없는 유령 파일 제외)."""
+    valid_fns = db_filenames()
     paths = sorted(glob.glob(f'{GOLDEN_DIR}/qa_report_*.json'))
     latest = {}
+    skipped = []
     for path in paths:
         try:
             ts = os.path.basename(path).replace('qa_report_', '').replace('.json', '')
             for fr in json.load(open(path, encoding='utf-8')):
                 fn = fr.get('filename', '')
+                if valid_fns and fn not in valid_fns:
+                    if fn not in skipped:
+                        skipped.append(fn)
+                    continue
                 if fn not in latest or ts > latest[fn][0]:
                     latest[fn] = (ts, fr)
         except Exception:
             pass
+    if skipped:
+        print(f"[유령 파일 제외] {len(skipped)}개 (DB 미존재):")
+        for fn in sorted(skipped):
+            print(f"  - {fn}")
     return latest
 
 
