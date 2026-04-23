@@ -5,16 +5,22 @@ DB에서 Q3/Q7/Q10/Q16/Q21/Q23/Q27/Q31/Q34/Q37/Q44/Q45의 실제 stem 내용 확
 """
 import json, sqlite3, re
 
+import argparse, sys
 DB_PATH = '/home/chsh82/aprolabs/aprolabs.db'
-FILENAME_FILTER = '2024학년도 수능_국어(화작) 문제.pdf'
-TARGETS = {3, 7, 10, 16, 21, 23, 27, 31, 34, 37, 44, 45}
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--file', default='2024학년도 수능_국어(화작) 문제.pdf', help='파일명 (부분 일치)')
+parser.add_argument('--targets', default='', help='쉼표 구분 문항번호 (기본: 전체 유형B)')
+args = parser.parse_args()
+FILENAME_FILTER = args.file
+TARGETS = set(int(x) for x in args.targets.split(',') if x.strip()) if args.targets else None
 
 _QNUM_PREFIX = re.compile(r'^\d+\.\s*[\u3000\s]*')
 
 db = sqlite3.connect(DB_PATH)
 db.row_factory = sqlite3.Row
 row = db.execute(
-    "SELECT segments FROM pipeline_jobs WHERE filename = ?", (FILENAME_FILTER,)
+    "SELECT segments FROM pipeline_jobs WHERE filename LIKE ?", (f'%{FILENAME_FILTER}%',)
 ).fetchone()
 
 if not row:
@@ -37,7 +43,7 @@ bogi_in_stem = []  # stem에 < 보 기 > 포함
 
 for q in qs:
     n = q.get('number')
-    if n not in TARGETS:
+    if TARGETS and n not in TARGETS:
         continue
     stem = str(q.get('stem') or '')
     bogi = str(q.get('bogi') or '')
