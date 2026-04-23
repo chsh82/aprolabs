@@ -136,8 +136,14 @@ def build_content(stem: str, bogi: str, choices: list) -> str:
     return ' \u3000'.join(parts)
 
 
-def extract_selective_questions(pdf_path: str, page_nums, label: str) -> list:
-    """화작 또는 언매 페이지에서 Q35~Q45 추출. label은 로그용."""
+def extract_selective_questions(pdf_path: str, page_nums, label: str,
+                                verbose: bool = False,
+                                sample_nums: tuple = ()) -> list:
+    """화작 또는 언매 페이지에서 Q35~Q45 추출.
+
+    verbose=True  : stem + bogi + choices 전체 출력 (dry-run용)
+    sample_nums   : 이 번호는 verbose와 무관하게 상세 출력 (확인 샘플)
+    """
     pages = get_pages_text(pdf_path, page_nums)
     questions = []
     for qnum in range(35, 46):
@@ -166,7 +172,16 @@ def extract_selective_questions(pdf_path: str, page_nums, label: str) -> list:
             'thinking_types': None,
             'topic':         None,
         })
-        print(f"    [{label}] Q{qnum} (p{pnum}): {repr(stem[:60])}")
+
+        show_detail = verbose or qnum in sample_nums
+        tag = '[SAMPLE] ' if qnum in sample_nums else ''
+        print(f"    [{label}] {tag}Q{qnum} (p{pnum}):")
+        print(f"      stem   : {repr(stem[:80])}")
+        if show_detail:
+            print(f"      bogi   : {repr(bogi[:80]) if bogi else '(없음)'}")
+            print(f"      choices: {len(choices)}개")
+            for j, c in enumerate(choices):
+                print(f"        {j+1}. {repr(c[:70])}")
     return questions
 
 # ── DB 유틸 ───────────────────────────────────────────────────────────────────
@@ -293,6 +308,9 @@ def cmd_dry_run():
         page_map = classify_pages(pdf_path)
         sections = get_section_pages(page_map)
 
+        # 파일별 샘플 번호: 2025 언매→Q36, 2026 화작→Q42 확인
+        sample_map = {'화작': (42,), '언매': (36,)}
+
         for track, track_pages in [('화작', sections['hwajak']), ('언매', sections['eonmae'])]:
             if not track_pages:
                 print(f"\n  [{track}] 페이지 없음 — skip")
@@ -303,11 +321,15 @@ def cmd_dry_run():
             print(f"    공통 문항: {len(common_qs)}개  (Q{min(q['number'] for q in common_qs)}~Q{max(q['number'] for q in common_qs)})")
             print(f"    선택과목 추출 (페이지 {track_pages}):")
 
-            selective_qs = extract_selective_questions(pdf_path, track_pages, track)
+            selective_qs = extract_selective_questions(
+                pdf_path, track_pages, track,
+                verbose=True,
+                sample_nums=sample_map.get(track, ()),
+            )
 
             total = len(common_qs) + len(selective_qs)
             missing = [n for n in range(35, 46) if n not in {q['number'] for q in selective_qs}]
-            print(f"    추출 결과: {len(selective_qs)}개 / 11개 예상", end='')
+            print(f"\n    추출 결과: {len(selective_qs)}개 / 11개 예상", end='')
             if missing:
                 print(f"  [WARNING] 미발견: Q{missing}")
             else:
