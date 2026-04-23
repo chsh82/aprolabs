@@ -52,6 +52,18 @@ PROMPT = """이 수능 국어 PDF 페이지를 분석해줘.
 
 # ─── DB ───────────────────────────────────────────────────────────────────────
 
+_COMBINE_RE = re.compile(r'국어\s*\(\s*\)')
+
+
+def is_qa_target(filename: str) -> bool:
+    """QA 측정 대상 여부. 합본(국어()) 및 정답해설 제외."""
+    if '정답' in filename or '해설' in filename:
+        return False
+    if _COMBINE_RE.search(filename):
+        return False
+    return True
+
+
 def get_jobs(conn, identifier=None):
     cur = conn.cursor()
     if identifier:
@@ -159,11 +171,14 @@ def analyze_page(client, img_b64: str, page_num: int) -> tuple[dict, object]:
 # ─── 비교 ─────────────────────────────────────────────────────────────────────
 
 _QNUM_PREFIX_RE = re.compile(r'^\d+\.\s*[\u3000\s]*')
+_HTML_FORMAT_RE = re.compile(r'</?(u|b|i|em|strong|span|s)\b[^>]*>', re.IGNORECASE)
 
 def _normalize_stem(text: str) -> str:
-    """공백 정규화 + 문항번호 prefix(예: '15. ') 제거"""
+    """공백 정규화 + 문항번호 prefix 제거 + HTML 서식 태그 제거"""
     t = re.sub(r'\s+', ' ', str(text or '')).strip()
     t = _QNUM_PREFIX_RE.sub('', t).strip()
+    t = _HTML_FORMAT_RE.sub('', t)      # <u>/<b>/<i> 등 제거 (내용 마커 <보기>·<img> 유지)
+    t = re.sub(r'\s+', ' ', t).strip()  # 태그 제거 후 공백 재정규화
     return t
 
 def sim(a, b) -> float:
@@ -406,6 +421,9 @@ def main():
 
     all_results = []
     for job_row in jobs:
+        if not is_qa_target(job_row[1]):
+            print(f"\n[SKIP] {job_row[1]} (합본/정답해설)")
+            continue
         try:
             result = run_job(job_row, page_range=page_range, dry_run=args.dry_run, client=client)
         except Exception as e:
