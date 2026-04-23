@@ -90,10 +90,10 @@ def parse_choices_from_block(block: str) -> list:
         raw = re.sub(r'\s*[가-힣]+영역.*$',  '', raw, flags=re.DOTALL).strip()
         # [18 ~ 22] 형태 지문 번호 범위 이후 제거 (다음 지문 헤더 침입)
         raw = re.sub(r'\s*\[\d+\s*[~～]\s*\d+\].*$', '', raw, flags=re.DOTALL).strip()
+        # 말미의 고N 페이지 헤더 먼저 제거 (제거 후 [A][B]가 말미로 드러남)
+        raw = re.sub(r'\s*고\d+\s*$', '', raw).strip()
         # 말미의 독립 [A] [B] [C] 마커 제거 (연속 등장할 경우 포함)
         raw = re.sub(r'(\s*\[[A-Z]\])+\s*$', '', raw).strip()
-        # 말미의 고N 페이지 헤더 제거
-        raw = re.sub(r'\s*고\d+\s*$', '', raw).strip()
         choices.append(raw)
     return choices
 
