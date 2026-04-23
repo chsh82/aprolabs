@@ -5,7 +5,7 @@ patch_missing_choices.py — 누락/오염 선택지 PDF에서 재추출·복구
   python3 patch_missing_choices.py --file "..." --questions "17,38,41" --dry-run
   python3 patch_missing_choices.py --file "..." --questions "17,38,41" --apply
 """
-import sqlite3, json, re, argparse
+import sqlite3, json, re, argparse, difflib
 import fitz
 
 DB_PATH  = '/home/chsh82/aprolabs/aprolabs.db'
@@ -143,6 +143,16 @@ def list_to_choices(choices_list: list, original_was_dict: bool):
         return {str(i + 1): v for i, v in enumerate(choices_list)}
     return choices_list
 
+
+def choices_similarity(old_list: list, new_list: list) -> float:
+    """기존 choices 전체 텍스트 ↔ 새 choices 전체 텍스트 유사도 (0~1).
+    공통 부분 선택지만 비교 (길이 차이 자체는 무관)."""
+    old_text = ' '.join(old_list)
+    new_text = ' '.join(new_list[:len(old_list)])  # 비교 대상 길이 맞춤
+    if not old_text and not new_text:
+        return 1.0
+    return difflib.SequenceMatcher(None, old_text, new_text).ratio()
+
 # ── 메인 ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -209,9 +219,23 @@ def main():
                 tag = ' ← 신규'
             print(f"  PDF {j+1}. {repr(c[:70])}{tag}")
 
-        # ── 경고 ──────────────────────────────────────────────────────────────
+        # ── 안전장치 ──────────────────────────────────────────────────────────
+        skip = False
+
         if len(new_list) < 5:
             print(f"  [WARNING] PDF 추출 {len(new_list)}개 < 5 — 검토 필요, apply 건너뜀")
+            skip = True
+
+        if old_list:
+            sim = choices_similarity(old_list, new_list)
+            sim_pct = int(sim * 100)
+            if sim < 0.70:
+                print(f"  [WARNING] 유사도 {sim_pct}% < 70% — 내용 불일치 의심, apply 건너뜀")
+                skip = True
+            else:
+                print(f"  유사도: {sim_pct}%  ({'OK' if sim >= 0.70 else '낮음'})")
+
+        if skip:
             continue
 
         patches.append({
