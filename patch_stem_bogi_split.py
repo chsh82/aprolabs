@@ -140,7 +140,8 @@ def main():
             continue
 
         old_stem  = q.get('stem', '') or ''
-        old_bogi  = q.get('bogi', '') or ''
+        _raw_bogi = q.get('bogi')
+        old_bogi  = '' if (_raw_bogi is None or _raw_bogi == 'None') else str(_raw_bogi)
         choices   = q.get('choices', {})
 
         # ── 현재 상태 출력 ────────────────────────────────────────────────────
