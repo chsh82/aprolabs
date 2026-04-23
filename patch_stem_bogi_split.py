@@ -18,10 +18,16 @@ HTML_TAG_RE = re.compile(r'</?(u|b|i|em|strong|s|span)\b[^>]*>', re.IGNORECASE)
 # 1순위: 점수 태그
 _SCORE_RE = re.compile(r'\[[23]점\]')
 
-# 2순위: 마지막 의문문 종결 '?'
+# 2순위: 한국어 발문 종결 ('것은?', '것인가?' 등) — 【】내부 ?보다 우선
+# Q42처럼 보기 내부에 ?가 있는 경우 마지막? 규칙이 잘못된 위치 선택하는 문제 방지
+_KO_QEND_RE = re.compile(
+    r'(?:것은|것인가|엇인가|무엇인가|있는가|없는가|옳은가|맞는가|알맞은가|고르면)[?？]'
+)
+
+# 3순위: 마지막 의문문 종결 '?'
 _QMARK_RE = re.compile(r'[?？]')
 
-# 3순위: 지시문 종결 (이다./였다. 뒤 비공백)
+# 4순위: 지시문 종결 (이다./였다. 뒤 비공백)
 _STMT_RE  = re.compile(r'(?:이다|였다)[.。](?=[\s\u3000]+\S)')
 
 
@@ -33,14 +39,21 @@ def find_stem_end(text: str) -> int:
     if m and text[m.end():].strip():
         return m.end()
 
-    # 2순위: 마지막 '?' 직후 — 뒤에 실질 내용이 있을 때만
+    # 2순위: 한국어 발문 종결 패턴 마지막 발생 (Q42 등 【】내부 ? 오탐 방지)
+    ko_matches = list(_KO_QEND_RE.finditer(text))
+    if ko_matches:
+        last_m = ko_matches[-1]
+        if text[last_m.end():].strip():
+            return last_m.end()
+
+    # 3순위: 마지막 '?' 직후 — 뒤에 실질 내용이 있을 때만
     positions = [m.start() for m in _QMARK_RE.finditer(text)]
     if positions:
         last_q = positions[-1]
         if text[last_q + 1:].strip():
             return last_q + 1
 
-    # 3순위: '이다.' / '였다.' 뒤 공백 + 비공백
+    # 4순위: '이다.' / '였다.' 뒤 공백 + 비공백
     m = _STMT_RE.search(text)
     if m and text[m.end():].strip():
         return m.end()
