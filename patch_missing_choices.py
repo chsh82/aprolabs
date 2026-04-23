@@ -56,12 +56,15 @@ def find_raw_block(pages: dict, qnum: int) -> tuple:
 
 # ── 선택지 파싱 ───────────────────────────────────────────────────────────────
 
-# 역방향 레이아웃 감지: 점선(·) 3개 이상 + 원번호가 줄 끝에 오는 패턴
+# 역방향 레이아웃 감지: 점선(·) 3개 이상 + 원번호가 텍스트 뒤에 오는 패턴
 _REVERSE_DETECT_RE = re.compile(r'[·]{3,}[①②③④⑤]')
-# 역방향 파싱: 줄 끝의 "텍스트 ····① " 매칭 (· 또는 공백 3개 이상)
-_REVERSE_LINE_RE   = re.compile(r'(.+?)\s*[·\s]{3,}([①②③④⑤])\s*$', re.MULTILINE)
+# 역방향 분리: [·\s]{2,}[원번호] 를 구분자로 사용 (capturing group 포함)
+_REVERSE_SPLIT_RE  = re.compile(r'[·\s]{2,}([①②③④⑤])')
+# 첫 번째 세그먼트에서 발문 이후 선택지 시작 불릿 감지
+_CHOICE_BULLET_RE  = re.compile(r'(?:^|\n)\s*[◦•∙]\s*\S')
 _CIRCLE_ORDER      = {c: i for i, c in enumerate(CIRCLES)}
 _BULLET_RE         = re.compile(r'^[◦•◆◇▪▫・\-]\s*')
+_CIRCLE_SET        = set(CIRCLES)
 
 
 def clean_inline(text: str) -> str:
@@ -99,17 +102,48 @@ def _parse_standard(block: str) -> list:
 
 
 def _parse_reverse(block: str) -> list:
-    """역방향 레이아웃: text·····① (마커가 줄 끝, 점선 포함).
-    줄 단위로 매칭 → 불릿(◦ 등) 제거 → 원번호 순서로 정렬."""
-    matches = list(_REVERSE_LINE_RE.finditer(block))
-    if not matches:
+    """역방향 레이아웃: text·····① (마커가 텍스트 뒤, 점선 포함).
+
+    re.split(_REVERSE_SPLIT_RE) → [seg0, ①, seg1, ②, seg2, ③, ...]
+    - seg0: 발문+보기 포함 → 마지막 불릿 이후 텍스트만 추출
+    - seg1~: 전체 텍스트 사용 (섹션 헤더 [핵심 개념N] 포함 가능)
+    원번호 순서로 정렬 후 반환.
+    """
+    parts = _REVERSE_SPLIT_RE.split(block)
+    # parts = [seg0, '①', seg1, '②', seg2, ...]
+    if len(parts) < 3:
         return []
-    matches_sorted = sorted(matches, key=lambda m: _CIRCLE_ORDER.get(m.group(2), 99))
-    choices = []
-    for m in matches_sorted:
-        raw = _BULLET_RE.sub('', m.group(1).strip())  # 불릿 제거
-        choices.append(_cleanup_choice(raw))
-    return choices
+
+    choices_raw = []  # [(circle, text)]
+    for i in range(1, len(parts), 2):
+        if i >= len(parts):
+            break
+        circle = parts[i]
+        if circle not in _CIRCLE_SET:
+            continue
+        seg = parts[i - 1]
+
+        if i == 1:
+            # 첫 번째 세그먼트: 발문 포함 → 마지막 불릿 이후만 사용
+            bullet_matches = list(_CHOICE_BULLET_RE.finditer(seg))
+            if bullet_matches:
+                last_bm = bullet_matches[-1]
+                text = seg[last_bm.start():].lstrip('\n').strip()
+            else:
+                # 불릿 없으면 마지막 줄만
+                text = seg.rsplit('\n', 1)[-1].strip()
+        else:
+            text = seg.lstrip('\n').strip()
+
+        # 불릿 기호 제거 (줄 시작)
+        text = _BULLET_RE.sub('', text)
+        choices_raw.append((circle, text))
+
+    if len(choices_raw) < 3:
+        return []
+
+    choices_raw.sort(key=lambda x: _CIRCLE_ORDER.get(x[0], 99))
+    return [_cleanup_choice(text) for _, text in choices_raw]
 
 
 def parse_choices_from_block(block: str) -> list:
@@ -182,9 +216,18 @@ def list_to_choices(choices_list: list, original_was_dict: bool):
 
 def choices_similarity(old_list: list, new_list: list) -> float:
     """기존 choices 전체 텍스트 ↔ 새 choices 전체 텍스트 유사도 (0~1).
-    공통 부분 선택지만 비교 (길이 차이 자체는 무관)."""
+
+    - new > old (누락 선택지 복구): old 텍스트가 new 텍스트 안에 포함되는지 비교
+      → new_text 전체와 비교 (잘라내지 않음)
+    - 그 외: new 앞 len(old)개와 비교
+    """
+    if not old_list:
+        return 1.0
     old_text = ' '.join(old_list)
-    new_text = ' '.join(new_list[:len(old_list)])  # 비교 대상 길이 맞춤
+    if len(new_list) > len(old_list):
+        new_text = ' '.join(new_list)   # 전체 비교
+    else:
+        new_text = ' '.join(new_list[:len(old_list)])
     if not old_text and not new_text:
         return 1.0
     return difflib.SequenceMatcher(None, old_text, new_text).ratio()
