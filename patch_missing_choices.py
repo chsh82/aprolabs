@@ -64,9 +64,11 @@ def parse_choices_from_block(block: str) -> list:
     """①~⑤ 파싱 → list[str] (PDF 순서 기준, 재번호).
 
     추가 처리:
-    - [A:START/END], [B:START/END] 등 범위 마커 제거
-    - 줄바꿈 → 공백
-    - 페이지 헤더 침입 방지 (학년도/영역 패턴)
+    - [A:START/END], [B:START/END] 등 콜론 범위 마커 제거
+    - [18 ~ 22] 형태 지문 범위 마커 이후 텍스트 제거 (다음 지문 헤더 침입 방지)
+    - 말미의 독립 [A], [B] 레이아웃 마커 제거 (내용 중 [A]와 [B]는 보존)
+    - 말미의 고3/고2 페이지 헤더 제거
+    - 줄바꿈 → 공백, 학년도/영역 패턴 제거
     """
     positions = []
     for c in CIRCLES:
@@ -82,10 +84,16 @@ def parse_choices_from_block(block: str) -> list:
     for i, start in enumerate(positions):
         end = positions[i + 1] if i + 1 < len(positions) else len(block)
         raw = block[start + len(CIRCLES[i]):end]
-        raw = RANGE_MARKER_RE.sub('', raw)          # [A:START] 등 제거
+        raw = RANGE_MARKER_RE.sub('', raw)                              # [A:START] 등 제거
         raw = clean_inline(raw)
         raw = re.sub(r'\s*\d{4}학년도.*$', '', raw, flags=re.DOTALL).strip()
         raw = re.sub(r'\s*[가-힣]+영역.*$',  '', raw, flags=re.DOTALL).strip()
+        # [18 ~ 22] 형태 지문 번호 범위 이후 제거 (다음 지문 헤더 침입)
+        raw = re.sub(r'\s*\[\d+\s*[~～]\s*\d+\].*$', '', raw, flags=re.DOTALL).strip()
+        # 말미의 독립 [A] [B] [C] 마커 제거 (연속 등장할 경우 포함)
+        raw = re.sub(r'(\s*\[[A-Z]\])+\s*$', '', raw).strip()
+        # 말미의 고N 페이지 헤더 제거
+        raw = re.sub(r'\s*고\d+\s*$', '', raw).strip()
         choices.append(raw)
     return choices
 
