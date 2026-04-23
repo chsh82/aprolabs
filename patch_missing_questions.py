@@ -22,38 +22,38 @@ def get_all_page_text(pdf_path: str) -> dict:
     doc.close()
     return pages
 
-def find_raw_block(pages: dict, qnum: int, next_qnum: int | None) -> tuple[int, str]:
-    """'qnum.' 시작부터 'next_qnum.' 직전까지 원문 블록 반환.
-    페이지 경계를 넘을 수 있으므로 연결된 텍스트에서 탐색."""
-    # 전체 페이지를 이어붙인 텍스트 (페이지 구분자 삽입)
+def find_raw_block(pages: dict, qnum: int) -> tuple[int, str]:
+    """'qnum.' 시작부터 다음 문항 직전까지 원문 블록 반환.
+    next_qnum은 인자로 받지 않고 PDF 내에서 qnum+1, qnum+2... 순으로 직접 탐색.
+    → --questions 값과 완전 독립, 상태 오염 없음."""
     full = ''
-    page_starts = {}  # 누적 offset → 페이지번호
+    page_starts = {}
     offset = 0
     for pnum in sorted(pages):
         page_starts[offset] = pnum
         full += pages[pnum]
         offset += len(pages[pnum])
 
-    # qnum. 패턴 탐색
-    # \s 대신 [\s\u3000\u2002\u2003]로 전각/반각 공백 모두 허용
-    # '.'은 마침표(.) 또는 전각마침표(．) 허용
-    QPAT = lambda n: re.compile(
-        r'(?:^|\n)\s*' + str(n) + r'[.．][\s\u3000\u2002\u2003]'
-    )
+    # 전각/반각 공백, 전각마침표 모두 허용
+    def qpat(n):
+        return re.compile(
+            r'(?:^|\n)\s*' + str(n) + r'[.．][\s\u3000\u2002\u2003]'
+        )
 
-    m_start = QPAT(qnum).search(full)
+    m_start = qpat(qnum).search(full)
     if not m_start:
         return -1, ''
 
     block_start = m_start.start() + (1 if full[m_start.start()] == '\n' else 0)
 
-    if next_qnum:
-        m_end = QPAT(next_qnum).search(full, m_start.end())
-        block_end = m_end.start() if m_end else len(full)
-    else:
-        block_end = len(full)
+    # 종료 경계: qnum+1부터 qnum+15까지 순서대로 탐색 (to_patch와 무관)
+    block_end = len(full)
+    for next_n in range(qnum + 1, qnum + 16):
+        m_end = qpat(next_n).search(full, m_start.end())
+        if m_end:
+            block_end = m_end.start()
+            break
 
-    # 페이지 번호 추정
     pnum = 1
     for off, p in sorted(page_starts.items()):
         if off <= block_start:
@@ -197,15 +197,8 @@ def main():
     choices_as_dict = isinstance(sample.get('choices'), dict) if sample else True
 
     patches = []
-    for i, qnum in enumerate(to_patch):
-        next_qnum = to_patch[i + 1] if i + 1 < len(to_patch) else None
-        # next_qnum이 없으면 DB에서 다음 번호 추정
-        if not next_qnum:
-            all_db = sorted(existing_nums(qs))
-            bigger = [n for n in all_db if n > qnum]
-            next_qnum = bigger[0] if bigger else None
-
-        pnum, raw = find_raw_block(pages, qnum, next_qnum)
+    for qnum in to_patch:
+        pnum, raw = find_raw_block(pages, qnum)
         if not raw:
             print(f"\nQ{qnum}: PDF에서 텍스트 찾지 못함 — 수동 확인 필요")
             continue
