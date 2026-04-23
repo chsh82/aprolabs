@@ -1,0 +1,146 @@
+[
+  {
+    "job_id": "effcacc7-f3a4-4462-839f-7b47ee3ee669",
+    "filename": "2025 7월 학력평가 국어(화작) 문제.pdf",
+    "pages_analyzed": 16,
+    "summary": {
+      "total_issues": 5,
+      "bogi_mismatch": 5,
+      "image_missing": 0,
+      "stem_mismatch": 3,
+      "question_missing": 0
+    },
+    "cost": {
+      "input_tokens": 32512,
+      "output_tokens": 6197,
+      "est_usd": 0.1905
+    },
+    "elapsed_sec": 124.1,
+    "mismatches": [
+      {
+        "question_number": 3,
+        "page": 1,
+        "issues": [
+          {
+            "field": "stem",
+            "issue": "발문 불일치 (sim=0.42)",
+            "vision": "다음은 학생의 독서 일지 중 일부이다. 윗글을 바탕으로 ⓐ~ⓔ를 이해한 내용으로 적절하지 않은 것은?",
+            "db": "3. 다음은 학생의 독서 일지 <u>중 일부이다.</u> 윗글을 바탕으로 ⓐ~ⓔ를 　이해한 내용으로 적절하지 <u>않은</u> 것은? [3점] "
+          },
+          {
+            "field": "bogi",
+            "issue": "보기 유무 불일치",
+            "vision": true,
+            "db": false
+          }
+        ],
+        "vision_raw": {
+          "number": 3,
+          "stem": "다음은 학생의 독서 일지 중 일부이다. 윗글을 바탕으로 ⓐ~ⓔ를 이해한 내용으로 적절하지 않은 것은?",
+          "has_bogi": true,
+          "bogi_summary": "심리학 책 읽으며 질문 제기, 여러 책 비교, 연구 보고서 주제 질문 도출 과정",
+          "choice_count": 5,
+          "has_image": false,
+          "image_location": null
+        }
+      },
+      {
+        "question_number": 36,
+        "page": 13,
+        "issues": [
+          {
+            "field": "bogi",
+            "issue": "보기 유무 불일치",
+            "vision": true,
+            "db": false
+          }
+        ],
+        "vision_raw": {
+          "number": 36,
+          "stem": "다음은 발표자가 발표에 활용한 자료의 목록이다. 발표 내용을 고려할 때, 자료 활용에 대한 설명으로 적절하지 않은 것은?",
+          "has_bogi": true,
+          "bogi_summary": "석굴암 계격 과정 동영상, 천장 하중 분산 사진, 외부 공기 응축 동영상, 화강암 틈 사진, 석굴암 입구 일출 방향 사진 등 자료 목록",
+          "choice_count": 5,
+          "has_image": false,
+          "image_location": null
+        }
+      },
+      {
+        "question_number": 42,
+        "page": 15,
+        "issues": [
+          {
+            "field": "stem",
+            "issue": "발문 불일치 (sim=0.34)",
+            "vision": "다음은 (나)의 마지막 문단에 대한 선생님의 조언과 이를 반영한 마지막 문단이다. ㉮에 들어갈 내용으로 가장 적절한 것은?",
+            "db": "42. 다음은 (나)의 <u>마지막 문단에</u> 대한 선생님의 조언과 이를 반영 　한 마지막 문단이다. <u>㉮</u> 에 들어갈 내용으로 가"
+          },
+          {
+            "field": "bogi",
+            "issue": "보기 유무 불일치",
+            "vision": true,
+            "db": false
+          }
+        ],
+        "vision_raw": {
+          "number": 42,
+          "stem": "다음은 (나)의 마지막 문단에 대한 선생님의 조언과 이를 반영한 마지막 문단이다. ㉮에 들어갈 내용으로 가장 적절한 것은?",
+          "has_bogi": true,
+          "bogi_summary": "선생님 조언: 마지막 문단에 금융 이해력을 갖추었을 때 기대효과를 추가 제안. 마지막 문단 내용 포함.",
+          "choice_count": 5,
+          "has_image": false,
+          "image_location": null
+        }
+      },
+      {
+        "question_number": 43,
+        "page": 15,
+        "issues": [
+          {
+            "field": "stem",
+            "issue": "발문 불일치 (sim=0.24)",
+            "vision": "다음은 작문 상황과 이를 바탕으로 하여 학생이 작성한 초고의 일부이다. 물음에 답하시오.",
+            "db": "43. 초고에 반영된 글쓰기 계획으로 가장 적절한 것은?"
+          },
+          {
+            "field": "bogi",
+            "issue": "보기 유무 불일치",
+            "vision": true,
+            "db": false
+          }
+        ],
+        "vision_raw": {
+          "number": 43,
+          "stem": "다음은 작문 상황과 이를 바탕으로 하여 학생이 작성한 초고의 일부이다. 물음에 답하시오.",
+          "has_bogi": true,
+          "bogi_summary": "작문 상황: ○○지역 신문 독자란에 빈집 활용 방안 관련 글 작성. 학생 초고: 빈집 재활용 방안 제안 글.",
+          "choice_count": 0,
+          "has_image": false,
+          "image_location": null
+        }
+      },
+      {
+        "question_number": 44,
+        "page": 16,
+        "issues": [
+          {
+            "field": "bogi",
+            "issue": "보기 유무 불일치",
+            "vision": true,
+            "db": false
+          }
+        ],
+        "vision_raw": {
+          "number": 44,
+          "stem": "다음은 학생이 초고를 작성할 때 떠올린 생각이다. 이를 고려할 때 [A]에 작성할 내용으로 가장 적절한 것은?",
+          "has_bogi": true,
+          "bogi_summary": "글을 마무리할 때는 글에서 제시한 두 가지 빈집 재활용 방안을 쓰고, 빈집 재활용의 의의를 밝혀야겠어.",
+          "choice_count": 5,
+          "has_image": false,
+          "image_location": null
+        }
+      }
+    ],
+    "timestamp": "2026-04-23T13:19:38.800145"
+  }
+]

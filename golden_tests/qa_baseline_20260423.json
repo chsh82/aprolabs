@@ -1,0 +1,1758 @@
+{
+  "created_at": "2026-04-23T04:23:35",
+  "git_commit": "3f3a1ac",
+  "git_message": "1차 최적화 완료: 경고 145→101건 (-44건)",
+  "git_date": "2026-04-21 11:48:25 +0000",
+  "files": [
+    {
+      "filename": "2024학년도 수능_국어(언매) 문제 (1).pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 0,
+        "image_missing": 0,
+        "stem_mismatch": 1,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 35,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "",
+          "db": "40. (가)에 나타난 정보 전달 방식으로 가장 적절한 것은?"
+        },
+        {
+          "q": 40,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2024학년도 수능_국어(화작) 문제.pdf",
+      "report_ts": "20260423_022347",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260423_022347.json",
+      "summary": {
+        "bogi_mismatch": 0,
+        "image_missing": 0,
+        "stem_mismatch": 0,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [],
+      "known_issues": []
+    },
+    {
+      "filename": "2025  국어() 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 11,
+        "image_missing": 0,
+        "stem_mismatch": 14,
+        "choices_mismatch": 3,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 1,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 2,
+          "field": "stem",
+          "vision": "다음은 윗글을 바탕으로 학생이 요약하기를 한 결과이다. 요약하는 과정에서 학생이 떠올린 생각으로 적절하지 않은 것은?",
+          "db": "2. 다음은 윗글을 바탕으로 학생이 <u>요약하기를 한</u> 결과이다. 요약하는 과정에서 학생이 떠올린 생각으로 적절하지 <u>않은</u> 것"
+        },
+        {
+          "q": 2,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 8,
+          "field": "missing",
+          "vision": "8",
+          "db": "None"
+        },
+        {
+          "q": 9,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 19,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 37,
+          "field": "stem",
+          "vision": "<학습 활동>을 수행한 결과로 적절한 것은?",
+          "db": "37. 발표 내용을 <u>바탕으로 할</u> 때, <보기>에 나타난 학생들의 반응에 <u>대한 이해로 적절하지 않은 것은?</u>"
+        },
+        {
+          "q": 38,
+          "field": "stem",
+          "vision": "<보기>의 ㉠이 사용된 문장으로 적절한 것은?",
+          "db": "38. (가)의 '학생 1'에 대한 설명으로 가장 적절한 것은?"
+        },
+        {
+          "q": 38,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 39,
+          "field": "stem",
+          "vision": "<보기>를 바탕으로 중세 국어의 특징을 탐구한 내용으로 적절하지 않은 것은?",
+          "db": "39. [A]와 [B]에 대한 설명으로 가장 적절한 것은?"
+        },
+        {
+          "q": 39,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "(가)는 텔레비전 뉴스이고, (나)는 이 뉴스를 시청한 학생의 메모이다. 물음에 답하시오.",
+          "db": "40. 다음은 (가)를 반영하여 <u>(나)를 작성하기</u> 위한 글쓰기 계획이다.\n(나)에 반영된 내용으로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 40,
+          "field": "bogi",
+          "vision": "False",
+          "db": "True"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "[A] ~ [C]에 대한 설명으로 적절하지 않은 것은?",
+          "db": "40. 다음은 (가)를 반영하여 <u>(나)를 작성하기</u> 위한 글쓰기 계획이다.\n(나)에 반영된 내용으로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 40,
+          "field": "bogi",
+          "vision": "False",
+          "db": "True"
+        },
+        {
+          "q": 41,
+          "field": "stem",
+          "vision": "다음은 (가)에 대한 시청자 게시판의 내용이다. 시청자의 수용 양상에 대한 설명으로 가장 적절한 것은?",
+          "db": "41. 다음은 (가)에 대한 시청자 게시판의 내용이다. 시청자의 수용 양 상에 대한 설명으로 가장 적절한 것은?\n\n<img src=\"/uploa"
+        },
+        {
+          "q": 41,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 35,
+          "field": "stem",
+          "vision": "위 발표자의 말하기 방식으로 가장 적절한 것은?",
+          "db": "35. 윗글을 이해한 내용으로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 36,
+          "field": "stem",
+          "vision": "다음은 발표자가 위 발표를 준비하면서 작성한 메모이다. 발표 내용에 반영되지 않은 것은?",
+          "db": "36. 윗글을 바탕으로 <보기>의 ㉠~ ㉤을 이해한 내용으로 적절한 <u>것은? [3점]</u>"
+        },
+        {
+          "q": 41,
+          "field": "stem",
+          "vision": "'학생 2'가 다음의 점검 기준에 따라 (나)를 점검한다고 할 때, 그 내용으로 적절하지 않은 것은?",
+          "db": "41. 다음은 (가)에 대한 시청자 게시판의 내용이다. 시청자의 수용 양 상에 대한 설명으로 가장 적절한 것은?\n\n<img src=\"/uploa"
+        },
+        {
+          "q": 41,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 42,
+          "field": "stem",
+          "vision": "<조건>을 반영하여 (나)의 제목을 작성한 것으로 가장 적절한 것은?",
+          "db": "42. ㉠~ ㉤에 대한 설명으로 가장 적절한 것은?"
+        },
+        {
+          "q": 42,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 43,
+          "field": "stem",
+          "vision": "'초고'에 활용된 글쓰기 방식으로 가장 적절한 것은?",
+          "db": "43. 다음은 (나)에 <u>따라 제작한</u> 슬라이드이다. 제작 과정에서 고려한 내용으로 적절하지 <u>않은</u> 것은? [3점]"
+        },
+        {
+          "q": 43,
+          "field": "bogi",
+          "vision": "False",
+          "db": "True"
+        },
+        {
+          "q": 44,
+          "field": "stem",
+          "vision": "<보기>는 '초고'를 읽은 교사의 조언이다. 이를 반영하여 [A]를 작성한다고 할 때, 가장 적절한 것은?",
+          "db": "44. (가)의 ㉠~ ㉤에 드러난 매체 활용 방식으로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 44,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 45,
+          "field": "stem",
+          "vision": "<보기>는 학생이 '초고'를 보완하기 위해 추가로 수집한 자료이다. 자료 활용 방안으로 적절하지 않은 것은?",
+          "db": "45. (가)의 <u>대화 내용이</u> (나)에 반영되었다고 할 때, (나)에 대한 이 해로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 45,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 45,
+          "field": "image",
+          "vision": "보기안",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2025 10월 학력평가 국어(언매) 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 10,
+        "image_missing": 0,
+        "stem_mismatch": 11,
+        "choices_mismatch": 3,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 2,
+          "field": "stem",
+          "vision": "다음은 학생이 자신의 읽기 과정을 기록한 글이다. 윗글을 바탕으로 ⓐ～ⓔ를 이해한 내용으로 적절하지 않은 것은?",
+          "db": "2. 편안하게 독서할 수 있는 넓은 공간\n\n<img src=\"/uploads/suneung/48654b73-a689-43fb-8313-58596"
+        },
+        {
+          "q": 2,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 8,
+          "field": "stem",
+          "vision": "윗글을 바탕으로 <보기>의 '니체'를 이해한 내용으로 적절하지 않은 것은?",
+          "db": "8. 윗글을 바탕으로 <보기>의 '니체'를 이해한 내용으로 적절하 　<u>지 않은 것은? [3점]</u> 　< 보 기 > 　니체는 예술가가 자기"
+        },
+        {
+          "q": 8,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 13,
+          "field": "stem",
+          "vision": "윗글을 바탕으로 <보기>를 이해한 내용으로 적절하지 않은 것은?",
+          "db": "13. 윗글을 바탕으로 <보기>를 이해한 내용으로 적절하지 <u>않은</u> <u>것은? [3점]</u> 　< 보 기 > 　주식회사 A는 경영 "
+        },
+        {
+          "q": 13,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 16,
+          "field": "stem",
+          "vision": "윗글을 바탕으로 <보기>에 대해 이해한 내용으로 적절하지 않은 것은? [3점]",
+          "db": "16. 윗글을 바탕으로 <보기>에 대해 이해한 내용으로 적절하지 <u>않은 것은? [3점]</u> 　< 보 기 > 　열 폭주 현상을 제어하는 소"
+        },
+        {
+          "q": 16,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 17,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 19,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 (가)~(다)를 감상한 내용으로 적절하지 않은 것은?",
+          "db": "19. <보기>를 참고하여 (가)~(다)를 감상한 내용으로 적절하지 <u>않은 것은? [3점]</u> 　< 보 기 > 　(가)~(다)의 주체인 "
+        },
+        {
+          "q": 19,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 22,
+          "field": "stem",
+          "vision": "다음은 학생이 (다)를 읽고 작성한 감상문의 일부이다. ⓐ～ⓔ 중 적절하지 않은 것은?",
+          "db": "22. 다음은 학생이 (다)를 읽고 작성한 감상문의 일부이다. ⓐ~ ⓔ 　중 적절하지 <u>않은</u> 것은?\n\n<img src=\"/upload"
+        },
+        {
+          "q": 22,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 26,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 윗글을 감상한 내용으로 적절하지 않은 것은? [3점]",
+          "db": "26. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> 　<u>것은? [3점]</u> 　< 보 기 > 　1942년에 발표된"
+        },
+        {
+          "q": 26,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 29,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 윗글을 감상한 내용으로 적절하지 않은 것은?",
+          "db": "29. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> <u>것은? [3점]</u> 　< 보 기 > 　「월선헌십육경가」의 "
+        },
+        {
+          "q": 29,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 32,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 34,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 윗글을 감상한 내용으로 적절하지 않은 것은?",
+          "db": "34. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> <u>것은? [3점]</u> 　< 보 기 > 　「낙천등운」의 주인공"
+        },
+        {
+          "q": 34,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 36,
+          "field": "missing",
+          "vision": "36",
+          "db": "None"
+        },
+        {
+          "q": 37,
+          "field": "missing",
+          "vision": "37",
+          "db": "None"
+        },
+        {
+          "q": 38,
+          "field": "stem",
+          "vision": "<보기>의 ㉠~㉤에 대한 이해로 적절하지 않은 것은?",
+          "db": "38. <보기>의 ㉠~ ㉤에 대한 이해로 적절하지 <u>않은</u> 것은? 　< 보 기 > 어근과 어근이 결합하여 만들어진 단어인 합성어는 품사"
+        },
+        {
+          "q": 38,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 39,
+          "field": "choices",
+          "vision": "5",
+          "db": "3"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "",
+          "db": "40. (가)의 '진행자'에 대한 설명으로 가장 적절한 것은?"
+        },
+        {
+          "q": 40,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 41,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 45,
+          "field": "image",
+          "vision": "보기안",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2025 10월 학력평가 국어(언매) 정답해설.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 0,
+        "image_missing": 0,
+        "stem_mismatch": 0,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 1,
+          "field": "missing",
+          "vision": "1",
+          "db": "None"
+        },
+        {
+          "q": 2,
+          "field": "missing",
+          "vision": "2",
+          "db": "None"
+        },
+        {
+          "q": 3,
+          "field": "missing",
+          "vision": "3",
+          "db": "None"
+        },
+        {
+          "q": 4,
+          "field": "missing",
+          "vision": "4",
+          "db": "None"
+        },
+        {
+          "q": 5,
+          "field": "missing",
+          "vision": "5",
+          "db": "None"
+        },
+        {
+          "q": 6,
+          "field": "missing",
+          "vision": "6",
+          "db": "None"
+        },
+        {
+          "q": 7,
+          "field": "missing",
+          "vision": "7",
+          "db": "None"
+        },
+        {
+          "q": 8,
+          "field": "missing",
+          "vision": "8",
+          "db": "None"
+        },
+        {
+          "q": 9,
+          "field": "missing",
+          "vision": "9",
+          "db": "None"
+        },
+        {
+          "q": 10,
+          "field": "missing",
+          "vision": "10",
+          "db": "None"
+        },
+        {
+          "q": 11,
+          "field": "missing",
+          "vision": "11",
+          "db": "None"
+        },
+        {
+          "q": 12,
+          "field": "missing",
+          "vision": "12",
+          "db": "None"
+        },
+        {
+          "q": 13,
+          "field": "missing",
+          "vision": "13",
+          "db": "None"
+        },
+        {
+          "q": 14,
+          "field": "missing",
+          "vision": "14",
+          "db": "None"
+        },
+        {
+          "q": 15,
+          "field": "missing",
+          "vision": "15",
+          "db": "None"
+        },
+        {
+          "q": 16,
+          "field": "missing",
+          "vision": "16",
+          "db": "None"
+        },
+        {
+          "q": 17,
+          "field": "missing",
+          "vision": "17",
+          "db": "None"
+        },
+        {
+          "q": 18,
+          "field": "missing",
+          "vision": "18",
+          "db": "None"
+        },
+        {
+          "q": 19,
+          "field": "missing",
+          "vision": "19",
+          "db": "None"
+        },
+        {
+          "q": 20,
+          "field": "missing",
+          "vision": "20",
+          "db": "None"
+        },
+        {
+          "q": 21,
+          "field": "missing",
+          "vision": "21",
+          "db": "None"
+        },
+        {
+          "q": 22,
+          "field": "missing",
+          "vision": "22",
+          "db": "None"
+        },
+        {
+          "q": 23,
+          "field": "missing",
+          "vision": "23",
+          "db": "None"
+        },
+        {
+          "q": 24,
+          "field": "missing",
+          "vision": "24",
+          "db": "None"
+        },
+        {
+          "q": 25,
+          "field": "missing",
+          "vision": "25",
+          "db": "None"
+        },
+        {
+          "q": 26,
+          "field": "missing",
+          "vision": "26",
+          "db": "None"
+        },
+        {
+          "q": 27,
+          "field": "missing",
+          "vision": "27",
+          "db": "None"
+        },
+        {
+          "q": 28,
+          "field": "missing",
+          "vision": "28",
+          "db": "None"
+        },
+        {
+          "q": 29,
+          "field": "missing",
+          "vision": "29",
+          "db": "None"
+        },
+        {
+          "q": 30,
+          "field": "missing",
+          "vision": "30",
+          "db": "None"
+        },
+        {
+          "q": 31,
+          "field": "missing",
+          "vision": "31",
+          "db": "None"
+        },
+        {
+          "q": 32,
+          "field": "missing",
+          "vision": "32",
+          "db": "None"
+        },
+        {
+          "q": 33,
+          "field": "missing",
+          "vision": "33",
+          "db": "None"
+        },
+        {
+          "q": 34,
+          "field": "missing",
+          "vision": "34",
+          "db": "None"
+        },
+        {
+          "q": 35,
+          "field": "missing",
+          "vision": "35",
+          "db": "None"
+        },
+        {
+          "q": 36,
+          "field": "missing",
+          "vision": "36",
+          "db": "None"
+        },
+        {
+          "q": 37,
+          "field": "missing",
+          "vision": "37",
+          "db": "None"
+        },
+        {
+          "q": 38,
+          "field": "missing",
+          "vision": "38",
+          "db": "None"
+        },
+        {
+          "q": 39,
+          "field": "missing",
+          "vision": "39",
+          "db": "None"
+        },
+        {
+          "q": 40,
+          "field": "missing",
+          "vision": "40",
+          "db": "None"
+        },
+        {
+          "q": 41,
+          "field": "missing",
+          "vision": "41",
+          "db": "None"
+        },
+        {
+          "q": 42,
+          "field": "missing",
+          "vision": "42",
+          "db": "None"
+        },
+        {
+          "q": 43,
+          "field": "missing",
+          "vision": "43",
+          "db": "None"
+        },
+        {
+          "q": 44,
+          "field": "missing",
+          "vision": "44",
+          "db": "None"
+        },
+        {
+          "q": 45,
+          "field": "missing",
+          "vision": "45",
+          "db": "None"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2025 10월 학력평가 국어(화작) 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 9,
+        "image_missing": 0,
+        "stem_mismatch": 9,
+        "choices_mismatch": 4,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 2,
+          "field": "missing",
+          "vision": "2",
+          "db": "None"
+        },
+        {
+          "q": 8,
+          "field": "stem",
+          "vision": "윗글을 바탕으로 <보기>의 '니체'를 이해한 내용으로 적절하지 않은 것은?",
+          "db": "8. 윗글을 바탕으로 <보기>의 '니체'를 이해한 내용으로 적절하 　<u>지 않은 것은? [3점]</u> 　< 보 기 > 　니체는 예술가가 자기"
+        },
+        {
+          "q": 8,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 13,
+          "field": "stem",
+          "vision": "윗글을 바탕으로 <보기>를 이해한 내용으로 적절하지 않은 것은? [3점]",
+          "db": "13. 윗글을 바탕으로 <보기>를 이해한 내용으로 적절하지 <u>않은</u> <u>것은? [3점]</u> 　< 보 기 > 　주식회사 A는 경영 "
+        },
+        {
+          "q": 13,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 16,
+          "field": "stem",
+          "vision": "윗글을 바탕으로 <보기>에 대해 이해한 내용으로 적절하지 않은 것은? [3점]",
+          "db": "16. 윗글을 바탕으로 <보기>에 대해 이해한 내용으로 적절하지 <u>않은 것은? [3점]</u> 　< 보 기 > 　열 폭주 현상을 제어하는 소"
+        },
+        {
+          "q": 16,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 17,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 19,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 (가)~(다)를 감상한 내용으로 적절하지 않은 것은?",
+          "db": "19. <보기>를 참고하여 (가)~(다)를 감상한 내용으로 적절하지 <u>않은 것은? [3점]</u> 　< 보 기 > 　(가)~(다)의 주체인 "
+        },
+        {
+          "q": 19,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 22,
+          "field": "stem",
+          "vision": "다음은 학생이 (다)를 읽고 작성한 감상문의 일부이다. ⓐ ~ ⓔ 중 적절하지 않은 것은?",
+          "db": "22. 다음은 학생이 (다)를 읽고 작성한 감상문의 일부이다. ⓐ~ ⓔ 　중 적절하지 <u>않은</u> 것은?\n\n<img src=\"/upload"
+        },
+        {
+          "q": 22,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 26,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 윗글을 감상한 내용으로 적절하지 않은 것은? [3점]",
+          "db": "26. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> 　<u>것은? [3점]</u> 　< 보 기 > 　1942년에 발표된"
+        },
+        {
+          "q": 26,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 29,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 윗글을 감상한 내용으로 적절하지 않은 것은?",
+          "db": "29. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> <u>것은? [3점]</u> 　< 보 기 > 　「월선헌십육경가」의 "
+        },
+        {
+          "q": 29,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 32,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 34,
+          "field": "stem",
+          "vision": "<보기>를 참고하여 윗글을 감상한 내용으로 적절하지 않은 것은?",
+          "db": "34. <보기>를 참고하여 윗글을 감상한 내용으로 적절하지 <u>않은</u> <u>것은? [3점]</u> 　< 보 기 > 　「낙천등운」의 주인공"
+        },
+        {
+          "q": 34,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 36,
+          "field": "missing",
+          "vision": "36",
+          "db": "None"
+        },
+        {
+          "q": 37,
+          "field": "stem",
+          "vision": "<보기>에 나타난 학생들의 반응을 이해한 내용으로 적절하지 않은 것은?",
+          "db": "37. <보기>에 나타난 학생들의 반응을 이해한 내용으로 적절하지 　<u>않은 것은?</u> 　< 보 기 > 　◦학생1 : 궁서체는 궁체를 본떠"
+        },
+        {
+          "q": 37,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 38,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 41,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2025 7월 학력평가 국어(언매) 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 3,
+        "image_missing": 0,
+        "stem_mismatch": 4,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 2,
+          "field": "missing",
+          "vision": "2",
+          "db": "None"
+        },
+        {
+          "q": 3,
+          "field": "stem",
+          "vision": "다음은 학생의 독서 일지 중 일부이다. 윗글을 바탕으로 ⓐ~ⓔ를 이해한 내용으로 적절하지 않은 것은?",
+          "db": "3. 다음은 학생의 독서 일지 <u>중 일부이다.</u> 윗글을 바탕으로 ⓐ~ⓔ를 　이해한 내용으로 적절하지 <u>않은</u> 것은? [3점] "
+        },
+        {
+          "q": 3,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 6,
+          "field": "stem",
+          "vision": "다음은 갑과 을이 나눈 대화의 일부이다. 윗글을 바탕으로 할 때, ㉠에 들어갈 내용으로 가장 적절한 것은?",
+          "db": "6. 다음은 갑과 을이 나눈 대화의 일부이다. 윗글을 바탕으로 할 때, 　<u>㉮에 들어갈 내용으로 가장</u> 적절한 <u>것은?</u> <i"
+        },
+        {
+          "q": 6,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 8,
+          "field": "missing",
+          "vision": "8",
+          "db": "None"
+        },
+        {
+          "q": 19,
+          "field": "missing",
+          "vision": "19",
+          "db": "None"
+        },
+        {
+          "q": 25,
+          "field": "missing",
+          "vision": "25",
+          "db": "None"
+        },
+        {
+          "q": 30,
+          "field": "missing",
+          "vision": "30",
+          "db": "None"
+        },
+        {
+          "q": 36,
+          "field": "missing",
+          "vision": "36",
+          "db": "None"
+        },
+        {
+          "q": 37,
+          "field": "stem",
+          "vision": "다음은 수업의 일부이다. ㉠, ㉡에 들어갈 말로 적절한 것은?",
+          "db": "37. 다음은 수업의 일부이다. ㉠, ㉡에 들어갈 말로 적절한 것은? 　선생님: 국어의 음절 유형을 크게 분류하면 '모음, 자음 　+ 모음,"
+        },
+        {
+          "q": 37,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 38,
+          "field": "missing",
+          "vision": "38",
+          "db": "None"
+        },
+        {
+          "q": 39,
+          "field": "missing",
+          "vision": "39",
+          "db": "None"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "",
+          "db": "40. (가)에 나타난 진행자의 의사소통 방식으로 적절하지 <u>않은</u> 　것은?"
+        },
+        {
+          "q": 40,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 42,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 44,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 45,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2025 7월 학력평가 국어(화작) 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 5,
+        "image_missing": 0,
+        "stem_mismatch": 4,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 2,
+          "field": "missing",
+          "vision": "2",
+          "db": "None"
+        },
+        {
+          "q": 3,
+          "field": "stem",
+          "vision": "다음은 학생의 독서 일지 중 일부이다. 윗글을 바탕으로 ⓐ~ⓔ를 이해한 내용으로 적절하지 않은 것은?",
+          "db": "3. 다음은 학생의 독서 일지 <u>중 일부이다.</u> 윗글을 바탕으로 ⓐ~ⓔ를 　이해한 내용으로 적절하지 <u>않은</u> 것은? [3점] "
+        },
+        {
+          "q": 3,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 6,
+          "field": "stem",
+          "vision": "다음은 갑과 을이 나눈 대화의 일부이다. 윗글을 바탕으로 할 때, ㉠에 들어갈 내용으로 가장 적절한 것은?",
+          "db": "6. 다음은 갑과 을이 나눈 대화의 일부이다. 윗글을 바탕으로 할 때, 　<u>㉮에 들어갈 내용으로 가장</u> 적절한 <u>것은?</u> <i"
+        },
+        {
+          "q": 6,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 8,
+          "field": "missing",
+          "vision": "8",
+          "db": "None"
+        },
+        {
+          "q": 19,
+          "field": "missing",
+          "vision": "19",
+          "db": "None"
+        },
+        {
+          "q": 25,
+          "field": "missing",
+          "vision": "25",
+          "db": "None"
+        },
+        {
+          "q": 30,
+          "field": "missing",
+          "vision": "30",
+          "db": "None"
+        },
+        {
+          "q": 36,
+          "field": "missing",
+          "vision": "36",
+          "db": "None"
+        },
+        {
+          "q": 42,
+          "field": "stem",
+          "vision": "다음은 (나)의 마지막 문단에 대한 선생님의 조언과 이를 반영한 마지막 문단이다. ㉮에 들어갈 내용으로 가장 적절한 것은?",
+          "db": "42. 다음은 (나)의 <u>마지막 문단에</u> 대한 선생님의 조언과 이를 반영 　한 마지막 문단이다. <u>㉮</u> 에 들어갈 내용으로 가"
+        },
+        {
+          "q": 42,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 43,
+          "field": "stem",
+          "vision": "다음은 작문 상황과 이를 바탕으로 하여 학생이 작성한 초고의 일부이다. 물음에 답하시오.",
+          "db": "43. 초고에 반영된 글쓰기 계획으로 가장 적절한 것은?"
+        },
+        {
+          "q": 43,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 44,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2026 6월 모의평가 국어() 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 9,
+        "image_missing": 0,
+        "stem_mismatch": 16,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 36,
+          "field": "stem",
+          "vision": "다음은 발표자가 제시한 자료이다. 발표자의 자료 활용에 대한 설명으로 가장 적절한 것은?",
+          "db": "36. 다음은 발표자가 제시한 자료이다. 발표자의 자료 활용에 대한 설명으로 가장 적절한 것은?\n\n<img src=\"/uploads/suneun"
+        },
+        {
+          "q": 36,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "다음은 '학생 1'과 '학생 2'가 면접 질문을 준비하기 위해 (가)를 읽고 작성한 메모이다. 이를 활용해 만든 (나)의 질문에 대한 설명으로 ",
+          "db": "40. 다음은 '학생 1'과 '학생 2'가 면접 질문을 준비하기 위해 (가)를\n읽고 작성한 메모이다. 이를 활용해 만든 (나)의 질문에 대한 설"
+        },
+        {
+          "q": 40,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 42,
+          "field": "stem",
+          "vision": "<답변 전략>을 고려할 때, ⓐ에 들어갈 답변으로 가장 적절한 것은?",
+          "db": "42."
+        },
+        {
+          "q": 42,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 43,
+          "field": "stem",
+          "vision": "다음은 '초고'를 쓰기 위해 학생이 세운 계획의 일부이다. ①~⑪ 중 '초고'에 반영되지 않은 것은?",
+          "db": "43. 다음은 '초고'를 쓰기 위해 학생이 세운 계획의 일부이다. ㉠~㉤ 중 '초고'에 반영되지 <u>않은</u> 것은?\n\n<img src=\"/"
+        },
+        {
+          "q": 43,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 35,
+          "field": "stem",
+          "vision": "윗글을 이해한 내용으로 적절한 것은?",
+          "db": "35. 위 발표자의 말하기 방식으로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 36,
+          "field": "stem",
+          "vision": "다음은 학생이 '음운 변동'을 중심으로 [A]를 요약한 것이다. ㉠~㉣에 대해 이해한 내용으로 적절하지 않은 것은?",
+          "db": "36. 다음은 발표자가 제시한 자료이다. 발표자의 자료 활용에 대한 설명으로 가장 적절한 것은?\n\n<img src=\"/uploads/suneun"
+        },
+        {
+          "q": 36,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 37,
+          "field": "stem",
+          "vision": "<학습 활동>을 수행한 결과로 적절하지 않은 것은? [3점]",
+          "db": "37. 발표 내용을 바탕으로 할 때, <보기>에 나타난 학생들의 반응에 대한 이해로 가장 적절한 것은?"
+        },
+        {
+          "q": 38,
+          "field": "stem",
+          "vision": "<보기>의 ㉠, ㉡의 예로 적절하지 않은 것은?",
+          "db": "38. (가)에 활용된 글쓰기 방식으로 가장 적절한 것은?"
+        },
+        {
+          "q": 38,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 39,
+          "field": "stem",
+          "vision": "다음은 중세 국어 목적격 조사의 사용에 대한 수업의 일부이다. ㉠~㉣에 대한 설명으로 적절한 것은?",
+          "db": "39. 다음은 (가)의 4문단의 초고이다. 4문단에 반영된 수정 사항\n으로 적절하지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 39,
+          "field": "image",
+          "vision": "보기안",
+          "db": "False"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "",
+          "db": "40. 다음은 '학생 1'과 '학생 2'가 면접 질문을 준비하기 위해 (가)를\n읽고 작성한 메모이다. 이를 활용해 만든 (나)의 질문에 대한 설"
+        },
+        {
+          "q": 40,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "(가), (나)에 나타난 매체 활용에 대한 이해로 적절하지 않은 것은?",
+          "db": "40. 다음은 '학생 1'과 '학생 2'가 면접 질문을 준비하기 위해 (가)를\n읽고 작성한 메모이다. 이를 활용해 만든 (나)의 질문에 대한 설"
+        },
+        {
+          "q": 41,
+          "field": "stem",
+          "vision": "(가)의 [A]에 대하여 (나)의 학생들이 보인 소통 양상으로 가장 적절한 것은?",
+          "db": "41. [A]의 발화에 대한 설명으로 가장 적절한 것은?"
+        },
+        {
+          "q": 42,
+          "field": "stem",
+          "vision": "㉠~㉤에 대한 설명으로 적절하지 않은 것은?",
+          "db": "42."
+        },
+        {
+          "q": 43,
+          "field": "stem",
+          "vision": "(나)를 반영하여 아래와 같이 (가)의 내용이 재구성되었다고 할 때, 이에 대한 설명으로 적절하지 않은 것은? [3점]",
+          "db": "43. 다음은 '초고'를 쓰기 위해 학생이 세운 계획의 일부이다. ㉠~㉤ 중 '초고'에 반영되지 <u>않은</u> 것은?\n\n<img src=\"/"
+        },
+        {
+          "q": 43,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 44,
+          "field": "stem",
+          "vision": "㉠~㉤에 대한 설명으로 적절하지 않은 것은?",
+          "db": "44. <보기>를 반영하여 '초고'의 제목을 작성한다고 할 때, 가장 적절한 것은?"
+        },
+        {
+          "q": 44,
+          "field": "bogi",
+          "vision": "False",
+          "db": "True"
+        },
+        {
+          "q": 45,
+          "field": "stem",
+          "vision": "다음은 (나)의 의견을 바탕으로 제작한 결과물이다. 포스터의 정보 제시 및 구성 방식에 대한 이해로 적절하지 않은 것은?",
+          "db": "45. <보기>는 학생이 '초고'를 보완하기 위해 추가로 수집한 자료이다. 자료의 활용 방안으로 적절하지 <u>않은</u> 것은? [3점]"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2026 9월 모의평가 국어(언매) 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 1,
+        "image_missing": 0,
+        "stem_mismatch": 2,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "",
+          "db": "40. (가)를 제작하기 위해 세운 계획 중 방송에 반영되지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 40,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 41,
+          "field": "stem",
+          "vision": "다음은 (가)의 시청자 게시판 내용이다. 시청자의 수용 양상에 대한 설명으로 가장 적절한 것은?",
+          "db": "41. 다음은 (가)의 시청자 게시판 내용이다. 시청자의 수용 양상에 　대한 설명으로 가장 적절한 것은?\n\n<img src=\"/uploads/s"
+        },
+        {
+          "q": 41,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 42,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 44,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        },
+        {
+          "q": 45,
+          "field": "image",
+          "vision": "지문안",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2026 9월 모의평가 국어(화작) 문제.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 3,
+        "image_missing": 0,
+        "stem_mismatch": 2,
+        "choices_mismatch": 1,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 36,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 39,
+          "field": "image",
+          "vision": "보기안",
+          "db": "False"
+        },
+        {
+          "q": 41,
+          "field": "stem",
+          "vision": "다음은 '학생2'가 (나)를 읽고 작성한 동료 평가와 그에 대한 '학생1'의 반응이다. '학생1'의 반응으로 적절하지 않은 것은?",
+          "db": "41. 다음은 '학생2'가 (나)를 읽고 작성한 동료 평가와 그에 대한 　'학생1'의 반응이다. '학생1'의 반응으로 적절하지 <u>않은</u>"
+        },
+        {
+          "q": 41,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 42,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        },
+        {
+          "q": 43,
+          "field": "stem",
+          "vision": "다음을 읽고 물음에 답하시오. (43~45 지문 제시)",
+          "db": "43. (다)를 작성하기 위해 세운 글쓰기 계획 중 글에 반영되지 <u>않은</u> 것은?"
+        },
+        {
+          "q": 43,
+          "field": "bogi",
+          "vision": "True",
+          "db": "False"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2026 수능 국어(언매) 문제.pdf",
+      "report_ts": "20260423_040500",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260423_040500.json",
+      "summary": {
+        "bogi_mismatch": 0,
+        "image_missing": 0,
+        "stem_mismatch": 1,
+        "choices_mismatch": 1,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 16,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "vision": "",
+          "db": "40. (가)와 (나)에 대한 설명으로 가장 적절한 것은?"
+        }
+      ],
+      "known_issues": [
+        {
+          "q": 16,
+          "field": "choices",
+          "type": "구조적한계",
+          "desc": "학습 활동지 표 형식 → segmenter가 선택지 번호만 추출, 내용 없음 (4/5건)"
+        },
+        {
+          "q": 40,
+          "field": "stem",
+          "type": "Gemini비결정성",
+          "desc": "Gemini가 stem 빈 값 반환 (오탐), DB 정상"
+        }
+      ]
+    },
+    {
+      "filename": "2026 수능 국어(언매) 정답해설.pdf",
+      "report_ts": "20260422_061622",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260422_061622.json",
+      "summary": {
+        "bogi_mismatch": 0,
+        "image_missing": 0,
+        "stem_mismatch": 0,
+        "choices_mismatch": 0,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 1,
+          "field": "missing",
+          "vision": "1",
+          "db": "None"
+        },
+        {
+          "q": 2,
+          "field": "missing",
+          "vision": "2",
+          "db": "None"
+        },
+        {
+          "q": 9,
+          "field": "missing",
+          "vision": "9",
+          "db": "None"
+        },
+        {
+          "q": 10,
+          "field": "missing",
+          "vision": "10",
+          "db": "None"
+        },
+        {
+          "q": 11,
+          "field": "missing",
+          "vision": "11",
+          "db": "None"
+        },
+        {
+          "q": 12,
+          "field": "missing",
+          "vision": "12",
+          "db": "None"
+        },
+        {
+          "q": 13,
+          "field": "missing",
+          "vision": "13",
+          "db": "None"
+        },
+        {
+          "q": 14,
+          "field": "missing",
+          "vision": "14",
+          "db": "None"
+        },
+        {
+          "q": 15,
+          "field": "missing",
+          "vision": "15",
+          "db": "None"
+        },
+        {
+          "q": 16,
+          "field": "missing",
+          "vision": "16",
+          "db": "None"
+        },
+        {
+          "q": 18,
+          "field": "missing",
+          "vision": "18",
+          "db": "None"
+        },
+        {
+          "q": 19,
+          "field": "missing",
+          "vision": "19",
+          "db": "None"
+        },
+        {
+          "q": 20,
+          "field": "missing",
+          "vision": "20",
+          "db": "None"
+        },
+        {
+          "q": 21,
+          "field": "missing",
+          "vision": "21",
+          "db": "None"
+        },
+        {
+          "q": 22,
+          "field": "missing",
+          "vision": "22",
+          "db": "None"
+        },
+        {
+          "q": 23,
+          "field": "missing",
+          "vision": "23",
+          "db": "None"
+        },
+        {
+          "q": 24,
+          "field": "missing",
+          "vision": "24",
+          "db": "None"
+        },
+        {
+          "q": 25,
+          "field": "missing",
+          "vision": "25",
+          "db": "None"
+        },
+        {
+          "q": 26,
+          "field": "missing",
+          "vision": "26",
+          "db": "None"
+        },
+        {
+          "q": 27,
+          "field": "missing",
+          "vision": "27",
+          "db": "None"
+        },
+        {
+          "q": 28,
+          "field": "missing",
+          "vision": "28",
+          "db": "None"
+        },
+        {
+          "q": 29,
+          "field": "missing",
+          "vision": "29",
+          "db": "None"
+        },
+        {
+          "q": 30,
+          "field": "missing",
+          "vision": "30",
+          "db": "None"
+        },
+        {
+          "q": 31,
+          "field": "missing",
+          "vision": "31",
+          "db": "None"
+        },
+        {
+          "q": 32,
+          "field": "missing",
+          "vision": "32",
+          "db": "None"
+        },
+        {
+          "q": 33,
+          "field": "missing",
+          "vision": "33",
+          "db": "None"
+        },
+        {
+          "q": 34,
+          "field": "missing",
+          "vision": "34",
+          "db": "None"
+        },
+        {
+          "q": 35,
+          "field": "missing",
+          "vision": "35",
+          "db": "None"
+        },
+        {
+          "q": 36,
+          "field": "missing",
+          "vision": "36",
+          "db": "None"
+        },
+        {
+          "q": 37,
+          "field": "missing",
+          "vision": "37",
+          "db": "None"
+        },
+        {
+          "q": 37,
+          "field": "missing",
+          "vision": "37",
+          "db": "None"
+        },
+        {
+          "q": 38,
+          "field": "missing",
+          "vision": "38",
+          "db": "None"
+        },
+        {
+          "q": 39,
+          "field": "missing",
+          "vision": "39",
+          "db": "None"
+        },
+        {
+          "q": 40,
+          "field": "missing",
+          "vision": "40",
+          "db": "None"
+        },
+        {
+          "q": 41,
+          "field": "missing",
+          "vision": "41",
+          "db": "None"
+        },
+        {
+          "q": 42,
+          "field": "missing",
+          "vision": "42",
+          "db": "None"
+        },
+        {
+          "q": 43,
+          "field": "missing",
+          "vision": "43",
+          "db": "None"
+        },
+        {
+          "q": 44,
+          "field": "missing",
+          "vision": "44",
+          "db": "None"
+        },
+        {
+          "q": 45,
+          "field": "missing",
+          "vision": "45",
+          "db": "None"
+        }
+      ],
+      "known_issues": []
+    },
+    {
+      "filename": "2026 수능 국어(화작) 문제.pdf",
+      "report_ts": "20260423_022809",
+      "report_path": "/home/chsh82/aprolabs/golden_tests/qa_report_20260423_022809.json",
+      "summary": {
+        "bogi_mismatch": 0,
+        "image_missing": 0,
+        "stem_mismatch": 0,
+        "choices_mismatch": 1,
+        "question_missing": 0
+      },
+      "mismatch_details": [
+        {
+          "q": 16,
+          "field": "choices",
+          "vision": "5",
+          "db": "4"
+        }
+      ],
+      "known_issues": []
+    }
+  ],
+  "global_known_limitations": [
+    "**Gemini Vision 비결정성**: 발문불일치 metric이 실행마다 0~16건으로 변동. 신뢰 불가.",
+    "**segmenter `<보기>` 잘림 버그**: 2026-04-20 fix 시도 후 당일 revert (오매칭 위험). 패치 스크립트로 개별 처리.",
+    "**학습 활동지 표 형식 선택지**: segmenter가 선택지 번호만 추출, 내용 없음 (2026 언매 Q16류).",
+    "**bracket 텍스트 불일치**: auto_review.py가 PDF bracket 원문을 AI에 미전달 → 자동 판정 불가.",
+    "**Reset→Start 재처리 시 패치 소실**: patch_empty_stem / patch_bogi_hwajak 결과가 segments 재생성으로 사라짐."
+  ],
+  "today_changes": [
+    {
+      "no": 1,
+      "what": "`auto_qa_agent.py` `_normalize_stem()` 추가 (문항번호 prefix 제거)",
+      "scope": "전체",
+      "effect": "발문불일치 오탐 제거"
+    },
+    {
+      "no": 2,
+      "what": "`patch_bogi_hwajak.py` 범용화 (`--file`, `--targets`)",
+      "scope": "2024/2026 화작, 2026 언매 Q16/21/41/42",
+      "effect": "보기불일치 해소"
+    },
+    {
+      "no": 3,
+      "what": "`patch_empty_stem.py` 신규 작성 (bogi→stem 재구성)",
+      "scope": "2024 화작 12건, 2026 언매 11건",
+      "effect": "빈 stem → 정상화"
+    },
+    {
+      "no": 4,
+      "what": "`apply_structure_to_text()` used_labels 추적 로직 추가",
+      "scope": "vision_analyzer.py",
+      "effect": "레이블 충돌 방지"
+    },
+    {
+      "no": 5,
+      "what": "STRUCTURE_PROMPT \"시각적 박스\" 조항 추가 → **롤백**",
+      "scope": "vision_analyzer.py",
+      "effect": "발문불일치 악화 방지 (3→17건 악화 확인 후 롤백)"
+    }
+  ],
+  "totals": {
+    "bogi": 51,
+    "img": 0,
+    "stem": 64,
+    "choices": 13,
+    "q_miss": 0
+  }
+}

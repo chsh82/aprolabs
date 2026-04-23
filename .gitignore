@@ -1,26 +1,46 @@
-# 환경 변수
-.env
+# SSH keys - NEVER commit
+*.pub
+aprolabs_deploy*
+:USERPROFILE*
+**/.ssh/
+
+# Databases
+*.db
+*.db.bak*
+*.sqlite
+*.sqlite3
+
+# Temp files
+nul
+*.tmp
+analyze_*_out.txt
+warnings_dump_*.csv
+
+# Old scripts (keep latest only)
+resegment.py
+resegment_v2.py
+revert_segments.py
 
 # Python
 __pycache__/
 *.pyc
-*.pyo
 venv/
-.venv/
 
-# 데이터 (서버에서 영구 보존)
-aprolabs.db
+# QA reports - keep baselines, exclude intermediate reports
+golden_tests/qa_report_*.json
+!golden_tests/qa_baseline_*.json
+
+# Environment variables
+.env
+.env.local
+
+# Uploads directory
 uploads/
 
-# 로그 / 임시
-output.txt
-*.log
+# Backup files
+backup_*.json
+aprolabs.db.bak_*
 
-# 테스트 파일
-test_*.json
-diagnose_font.py
-extract_segments.py
-
-# IDE
-.vscode/
-.idea/
+# Internal reports (not for repo)
+golden_tests/resegment_report.json
+golden_tests/stem_bogi_before.json
