@@ -8,7 +8,7 @@ run_patches.py — patch_bogi_hwajak 자동 스캔 + dry-run / apply
 import sqlite3, json, re, argparse
 
 DB = '/home/chsh82/aprolabs/aprolabs.db'
-STEM_END_RE = re.compile(r'것은\?(?:\s*\[\d점\])?\s*\n\n', re.DOTALL)
+STEM_END_RE = re.compile(r'(것은\?(?:\s*\[\d점\])?)\s*\n\n', re.DOTALL)
 
 SEARCH_TERMS = [
     '2024학년도 수능_국어(언매)',
