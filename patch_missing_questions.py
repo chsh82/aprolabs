@@ -34,17 +34,21 @@ def find_raw_block(pages: dict, qnum: int, next_qnum: int | None) -> tuple[int, 
         full += pages[pnum]
         offset += len(pages[pnum])
 
-    # qnum. 패턴 탐색 (줄 시작 또는 앞에 공백/줄바꿈)
-    start_pat = re.compile(r'(?:^|\n)' + str(qnum) + r'\.\s')
-    m_start = start_pat.search(full)
+    # qnum. 패턴 탐색
+    # \s 대신 [\s\u3000\u2002\u2003]로 전각/반각 공백 모두 허용
+    # '.'은 마침표(.) 또는 전각마침표(．) 허용
+    QPAT = lambda n: re.compile(
+        r'(?:^|\n)\s*' + str(n) + r'[.．][\s\u3000\u2002\u2003]'
+    )
+
+    m_start = QPAT(qnum).search(full)
     if not m_start:
         return -1, ''
 
     block_start = m_start.start() + (1 if full[m_start.start()] == '\n' else 0)
 
     if next_qnum:
-        end_pat = re.compile(r'(?:^|\n)' + str(next_qnum) + r'\.\s')
-        m_end = end_pat.search(full, m_start.end())
+        m_end = QPAT(next_qnum).search(full, m_start.end())
         block_end = m_end.start() if m_end else len(full)
     else:
         block_end = len(full)
