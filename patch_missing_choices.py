@@ -56,46 +56,74 @@ def find_raw_block(pages: dict, qnum: int) -> tuple:
 
 # ── 선택지 파싱 ───────────────────────────────────────────────────────────────
 
+# 역방향 레이아웃 감지: 점선(·) 3개 이상 + 원번호가 줄 끝에 오는 패턴
+_REVERSE_DETECT_RE = re.compile(r'[·]{3,}[①②③④⑤]')
+# 역방향 파싱: 줄 끝의 "텍스트 ····① " 매칭 (· 또는 공백 3개 이상)
+_REVERSE_LINE_RE   = re.compile(r'(.+?)\s*[·\s]{3,}([①②③④⑤])\s*$', re.MULTILINE)
+_CIRCLE_ORDER      = {c: i for i, c in enumerate(CIRCLES)}
+_BULLET_RE         = re.compile(r'^[◦•◆◇▪▫・\-]\s*')
+
+
 def clean_inline(text: str) -> str:
     return re.sub(r'\s*\n\s*', ' ', text).strip()
 
 
-def parse_choices_from_block(block: str) -> list:
-    """①~⑤ 파싱 → list[str] (PDF 순서 기준, 재번호).
+def _cleanup_choice(raw: str) -> str:
+    """선택지 텍스트 공통 후처리 (두 레이아웃 공용)."""
+    raw = RANGE_MARKER_RE.sub('', raw)                              # [A:START] 등 제거
+    raw = clean_inline(raw)
+    raw = re.sub(r'\s*\d{4}학년도.*$', '', raw, flags=re.DOTALL).strip()
+    raw = re.sub(r'\s*[가-힣]+영역.*$',  '', raw, flags=re.DOTALL).strip()
+    raw = re.sub(r'\s*\[\d+\s*[~～]\s*\d+\].*$', '', raw, flags=re.DOTALL).strip()
+    raw = re.sub(r'\s*고\d+\s*$', '', raw).strip()                 # 고N 헤더
+    raw = re.sub(r'(\s*\[[A-Z]\])+\s*$', '', raw).strip()         # 말미 [A][B]
+    return raw
 
-    추가 처리:
-    - [A:START/END], [B:START/END] 등 콜론 범위 마커 제거
-    - [18 ~ 22] 형태 지문 범위 마커 이후 텍스트 제거 (다음 지문 헤더 침입 방지)
-    - 말미의 독립 [A], [B] 레이아웃 마커 제거 (내용 중 [A]와 [B]는 보존)
-    - 말미의 고3/고2 페이지 헤더 제거
-    - 줄바꿈 → 공백, 학년도/영역 패턴 제거
-    """
+
+def _parse_standard(block: str) -> list:
+    """표준 레이아웃: ①text②text... (마커가 텍스트 앞)."""
     positions = []
     for c in CIRCLES:
         idx = block.find(c)
         if idx >= 0:
             positions.append(idx)
     positions.sort()
-
     if not positions:
         return []
-
     choices = []
     for i, start in enumerate(positions):
         end = positions[i + 1] if i + 1 < len(positions) else len(block)
         raw = block[start + len(CIRCLES[i]):end]
-        raw = RANGE_MARKER_RE.sub('', raw)                              # [A:START] 등 제거
-        raw = clean_inline(raw)
-        raw = re.sub(r'\s*\d{4}학년도.*$', '', raw, flags=re.DOTALL).strip()
-        raw = re.sub(r'\s*[가-힣]+영역.*$',  '', raw, flags=re.DOTALL).strip()
-        # [18 ~ 22] 형태 지문 번호 범위 이후 제거 (다음 지문 헤더 침입)
-        raw = re.sub(r'\s*\[\d+\s*[~～]\s*\d+\].*$', '', raw, flags=re.DOTALL).strip()
-        # 말미의 고N 페이지 헤더 먼저 제거 (제거 후 [A][B]가 말미로 드러남)
-        raw = re.sub(r'\s*고\d+\s*$', '', raw).strip()
-        # 말미의 독립 [A] [B] [C] 마커 제거 (연속 등장할 경우 포함)
-        raw = re.sub(r'(\s*\[[A-Z]\])+\s*$', '', raw).strip()
-        choices.append(raw)
+        choices.append(_cleanup_choice(raw))
     return choices
+
+
+def _parse_reverse(block: str) -> list:
+    """역방향 레이아웃: text·····① (마커가 줄 끝, 점선 포함).
+    줄 단위로 매칭 → 불릿(◦ 등) 제거 → 원번호 순서로 정렬."""
+    matches = list(_REVERSE_LINE_RE.finditer(block))
+    if not matches:
+        return []
+    matches_sorted = sorted(matches, key=lambda m: _CIRCLE_ORDER.get(m.group(2), 99))
+    choices = []
+    for m in matches_sorted:
+        raw = _BULLET_RE.sub('', m.group(1).strip())  # 불릿 제거
+        choices.append(_cleanup_choice(raw))
+    return choices
+
+
+def parse_choices_from_block(block: str) -> list:
+    """①~⑤ 파싱 → list[str] (PDF 순서 기준).
+
+    레이아웃 자동 감지:
+    - 역방향 우선 시도: text·····① 패턴 감지 시 (_REVERSE_DETECT_RE 매칭)
+    - 표준 fallback: ①text②text...
+    """
+    if _REVERSE_DETECT_RE.search(block):
+        choices = _parse_reverse(block)
+        if len(choices) >= 3:
+            return choices
+    return _parse_standard(block)
 
 
 def build_content(stem: str, bogi: str, choices: list) -> str:
