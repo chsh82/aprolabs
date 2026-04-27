@@ -19,6 +19,7 @@ def segment_text(ocr_text: str, job_id: str = None, question_hints: list = None)
     # 페이지 구분자 제거
     clean = re.sub(r"--- 페이지 \d+ ---\n?", "", ocr_text)
     clean = re.sub(r"\n{3,}", "\n\n", clean).strip()
+    clean = _normalize_whitespace(clean)
 
     # 문항 위치 탐색
     q_positions = _find_question_positions(clean, question_hints or [])
@@ -292,12 +293,14 @@ def _extract_passage_from_block(block: str) -> str | None:
 def _parse_choices(text: str) -> dict | None:
     """
     ①②③④⑤ 선택지 파싱.
-    - 선택지 범위(① ~ ⑤ 끝)를 먼저 특정 후 파싱 (다음 지문 내용 혼입 방지)
-    - 각 선택지 최대 250자 제한 (초과 시 첫 빈 줄 또는 250자에서 절단)
+    - 범위 마커([A:START] 등) 제거 후 파싱
+    - 끝 경계: 다음 문항번호 패턴 또는 \n\n + 긴 텍스트 중 먼저
+    - 위치 기반 슬라이싱 (re 캡처 대신)으로 역방향 레이아웃도 대응
+    - 각 선택지 최대 250자 제한
     """
     circle_map = {"①": "1", "②": "2", "③": "3", "④": "4", "⑤": "5"}
 
-    # 첫 ① 위치 확인
+    # 첫 선택지 마커 위치
     first_pos = min(
         (text.find(c) for c in circle_map if text.find(c) >= 0),
         default=-1,
@@ -305,62 +308,185 @@ def _parse_choices(text: str) -> dict | None:
     if first_pos < 0:
         return None
 
-    # 마지막 선택지(⑤) 이후 지문 내용 잘라내기
-    # \n\n + 긴 텍스트 시작 = 다음 지문/보기 시작점
     choices_text = text[first_pos:]
+
+    # Step 1: 범위 마커 제거 (선택지 파싱 방해 방지)
+    choices_text = re.sub(r'\[[A-Z]:(START|END)\]\n?', '', choices_text)
+
+    # Step 2: 끝 경계 — 다음 문항번호 또는 \n\n + 긴 텍스트 중 먼저
+    end_pos = len(choices_text)
+
+    next_q_m = re.search(r'\n[ \t]*\d{1,2}[.．。][ \t\n]', choices_text)
+    if next_q_m:
+        end_pos = min(end_pos, next_q_m.start())
+
     last_c_pos = max((choices_text.rfind(c) for c in "①②③④⑤"), default=0)
     after_last = choices_text[last_c_pos:]
     cut_m = re.search(r'\n\n(?=\S.{60,})', after_last, re.DOTALL)
     if cut_m:
-        choices_text = choices_text[:last_c_pos + cut_m.start()]
+        end_pos = min(end_pos, last_c_pos + cut_m.start())
+
+    choices_text = choices_text[:end_pos]
+
+    # Step 3: 위치 기반 슬라이싱
+    positions = sorted(
+        [(c, choices_text.find(c)) for c in circle_map if choices_text.find(c) >= 0],
+        key=lambda x: x[1],
+    )
+    if not positions:
+        return None
 
     choices = {}
-    for circle, num in circle_map.items():
-        m = re.search(rf'{re.escape(circle)}(.+?)(?=[①②③④⑤]|$)',
-                      choices_text, re.DOTALL)
-        if m:
-            val = m.group(1).strip()
-            # 선택지별 길이 상한: 빈 줄 이전 또는 250자
-            if len(val) > 250:
-                cut = val.find('\n\n')
-                val = val[:cut].strip() if 0 < cut < 250 else val[:250].strip()
-            # 편집상 줄바꿈 → 공백 (#16: 선지 내 \n이 넓은 공란으로 표시되는 문제)
-            val = re.sub(r'\n+', ' ', val).strip()
-            choices[num] = val
+    for i, (circle, pos) in enumerate(positions):
+        next_pos = positions[i + 1][1] if i + 1 < len(positions) else len(choices_text)
+        val = choices_text[pos + len(circle):next_pos].strip()
+        if len(val) > 250:
+            cut = val.find('\n\n')
+            val = val[:cut].strip() if 0 < cut < 250 else val[:250].strip()
+        val = re.sub(r'\n+', ' ', val).strip()
+        choices[circle_map[circle]] = val
 
     return choices if choices else None
 
 
 # 발문 앞에 나타날 수 있는 박스 마커 (발문 범위 경계)
+# <보기>는 인라인 참조(발문 문장 중간)와 독립 박스를 구분하므로 여기에 포함하지 않음
 _STEM_BOX_MARKERS = [
-    "①", "<보기>", "<조건>", "<작성 조건>",
+    "①", "<조건>", "<작성 조건>",
     "<답변 전략>", "<표현 전략>", "<작문 계획>",
 ]
+
+# <보기> 독립 박스: 줄 시작 위치에 등장 (앞이 줄바꿈이거나 텍스트 시작)
+# 인라인 참조:      문장 중간에 등장 (예: "바탕으로 <보기>에 대한...")
+# OCR 오류: "<보기>" → "보 기" (꺾쇠 탈락) 도 허용
+_BOGI_STANDALONE_RE = re.compile(
+    r'(?:(?<=\n)|^)[ \t]*(?:<보기>|보\s+기)[ \t]*\n',
+    re.MULTILINE
+)
+
+# <보기> 공백 변형 (OCR 오류: "< 보 기 >", "< 보기>")
+_BOGI_VARIANT_RE = re.compile(r'<\s*보\s*기\s*>')
 
 
 def _extract_stem(text: str) -> str:
     """
     발문 추출.
-    ①, <보기>, <조건>, <답변 전략> 등 박스 마커 이전까지만 잡음.
+    ①, <조건> 등 박스 마커 이전까지만 잡음.
+
+    <보기> 처리:
+    - 독립 박스 형태(줄 시작에 등장): stem 경계로 사용
+    - 인라인 참조(문장 중간): stem에 포함하되,
+      이후 [[IMG:...]] 마커([A:START] 포함)가 있으면 그 위치가 stem 경계
     """
     earliest = len(text)
     for marker in _STEM_BOX_MARKERS:
         idx = text.find(marker)
         if 0 < idx < earliest:
             earliest = idx
+
+    # <보기> 독립 박스 여부 판별
+    m = _BOGI_STANDALONE_RE.search(text)
+    if m and 0 < m.start() < earliest:
+        earliest = m.start()
+
+    # [A:START] 글상자 경계
+    a_start = re.search(r'\[A:START\]', text)
+    if a_start and 0 < a_start.start() < earliest:
+        earliest = a_start.start()
+
+    # 인라인 <보기> 참조 + [[IMG:...]] 마커 → 이미지 위치가 stem 경계
+    bogi_ref = _BOGI_VARIANT_RE.search(text[:earliest])
+    if bogi_ref:
+        after = text[bogi_ref.end():earliest]
+        img_m = re.search(r'\[\[IMG:[^\]]+\]\]', after)
+        if img_m:
+            img_abs = bogi_ref.end() + img_m.start()
+            if 0 < img_abs < earliest:
+                earliest = img_abs
+
     return text[:earliest].strip() if earliest < len(text) else text[:300].strip()
 
 
 def _extract_bogi(text: str) -> str | None:
-    """<보기> 내용 추출"""
-    m = re.search(r"<보기>(.*?)(?:①|$)", text, re.DOTALL)
+    """
+    <보기> 내용 추출.
+
+    패턴 1 (독립 박스): 줄 시작 <보기> 직후 ~ 첫 선택지 전
+    패턴 2 (인라인 참조 + 이미지/[A]박스): <보기>가 발문 중간에 있고
+        선택지 전에 [A:START]...[A:END] 블록 또는 이미지 마커가 있는 경우
+    """
+    # 첫 선택지 위치
+    first_choice = min(
+        (text.find(c) for c in '①②③④⑤' if text.find(c) >= 0),
+        default=len(text),
+    )
+    pre = text[:first_choice]
+
+    # 패턴 1: 줄 시작 독립 박스
+    m = _BOGI_STANDALONE_RE.search(pre)
     if m:
-        return m.group(1).strip()
+        return pre[m.end():].strip()
+
+    # 패턴 2: [A:START]...[A:END] 박스 (pre 내에 완결)
+    bracket = re.search(r'\[A:START\](.*?)\[A:END\]', pre, re.DOTALL)
+    if bracket:
+        return bracket.group(1).strip()
+
+    # 패턴 2b: [A:START]가 pre에 있지만 [A:END]가 선택지 이후에 잘못 배치된 경우
+    # (Gemini가 [A:END]를 선택지 텍스트 중간에 삽입한 오류)
+    # → pre 내 [A:START] 이후의 이미지/내용만 추출
+    a_start_m = re.search(r'\[A:START\]', pre)
+    if a_start_m and '[A:END]' not in pre:
+        after_start = pre[a_start_m.end():]
+        img_m = re.search(r'\[\[IMG:[^\]]+\]\]', after_start)
+        if img_m:
+            return after_start[img_m.start():].strip()
+
+    # 패턴 3: 인라인 참조 이후 이미지 마커만 있는 경우
+    # (PDF에서 보기 내용이 이미지로 처리된 경우)
+    bogi_ref = _BOGI_VARIANT_RE.search(pre)
+    if bogi_ref:
+        after_bogi = pre[bogi_ref.end():]
+        img_m = re.search(r'\[\[IMG:[^\]]+\]\]', after_bogi)
+        if img_m:
+            return after_bogi[img_m.start():].strip()
+
     return None
 
 
 def _clean(text: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def _normalize_whitespace(text: str) -> str:
+    """PDF 추출 시 발생하는 불필요한 다중 공백 정규화.
+
+    - [[IMG:...]] / <img ...> 마커 보존
+    - 줄바꿈(\\n)은 그대로 유지 (PDF 단락 구조 보존)
+    - 각 줄 내의 다중 공백(2개 이상) → 단일 공백
+    """
+    # 보호할 마커를 플레이스홀더로 치환
+    protected: list[str] = []
+
+    def protect(m: re.Match) -> str:
+        protected.append(m.group(0))
+        return f"\x00PROT{len(protected)-1}\x00"
+
+    text = re.sub(r'\[\[IMG:[^\]]+\]\]', protect, text)
+    text = re.sub(r'<img\b[^>]*>', protect, text, flags=re.IGNORECASE)
+
+    # <img> 태그 내 줄바꿈 정리 (속성 사이 개행 → 공백)
+    text = re.sub(r'<img\b[\s\S]*?>', lambda m: m.group(0).replace('\n', ' '), text, flags=re.IGNORECASE)
+
+    # 각 줄 내의 다중 공백만 단일 공백으로 정규화 (줄바꿈은 보존)
+    lines = text.split('\n')
+    lines = [re.sub(r'[ \t]{2,}', ' ', ln) for ln in lines]
+    text = '\n'.join(lines)
+
+    # 마커 복원
+    text = re.sub(r'\x00PROT(\d+)\x00', lambda m: protected[int(m.group(1))], text)
+
+    return text
 
 
 # ─────────────────────────────────────────
