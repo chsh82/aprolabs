@@ -107,7 +107,7 @@ async def crawl_search(request: Request):
                 return JSONResponse({"ok": False, "error": str(e)})
 
     if year_filter:
-        posts = [p for p in posts if p.get("year") == year_filter]
+        posts = [p for p in posts if _calc_academic_year(p.get("year", ""), p.get("exam_type", "")) == year_filter]
     posts = [p for p in posts if _is_korean_related(p.get("title", ""))]
 
     async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
@@ -275,16 +275,17 @@ def _parse_post_files(html: str, post_url: str,
         display_title = f"{file_year} {file_exam} {subject}({sub_type}) {filetype}" if file_year else raw_name
 
         files.append({
-            "title":     display_title,
-            "filename":  raw_name,
-            "pdf_url":   pdf_url,
-            "year":      file_year,
-            "exam_type": file_exam,
-            "grade":     grade,
-            "subject":   subject,
-            "sub_type":  sub_type,
-            "file_type": filetype,
-            "post_url":  post_url,
+            "title":         display_title,
+            "filename":      raw_name,
+            "pdf_url":       pdf_url,
+            "year":          file_year,
+            "academic_year": _calc_academic_year(file_year, file_exam),
+            "exam_type":     file_exam,
+            "grade":         grade,
+            "subject":       subject,
+            "sub_type":      sub_type,
+            "file_type":     filetype,
+            "post_url":      post_url,
         })
 
     return files
@@ -323,6 +324,19 @@ def _extract_sub_type(filename: str) -> str:
 def _is_korean_related(title: str) -> bool:
     keywords = ["수능", "모의고사", "모의평가", "학력평가", "국어"]
     return any(k in title for k in keywords)
+
+
+def _calc_academic_year(year_str: str, exam_type: str) -> str:
+    """시행 연도 + 시험 유형 → 학년도 계산.
+    수능/모의평가: 학년도 = 시행연도 + 1
+    학력평가: 학년도 = 시행연도
+    """
+    if not year_str or not str(year_str).isdigit():
+        return year_str or ""
+    year = int(year_str)
+    if exam_type and any(k in exam_type for k in ("수능", "모의", "모평")):
+        return str(year + 1)
+    return str(year)
 
 
 def _extract_year(text: str) -> str:
