@@ -39,7 +39,7 @@ def run(baseline_path: str) -> bool:
     failures = []
 
     for filename, bdata in baseline["files"].items():
-        file_path = bdata.get("file_path")
+        file_path = (bdata.get("file_path") or "").replace("\\", "/")
         if not file_path or not os.path.exists(file_path):
             print(f"  {_SKIP} {filename} (PDF 없음: {file_path})")
             continue

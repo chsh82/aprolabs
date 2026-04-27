@@ -58,6 +58,8 @@ def main():
             segments = json.loads(segments)
 
         questions = segments.get("questions", [])
+        if isinstance(questions, str):
+            questions = json.loads(questions)
         q_snapshots = []
         for q in sorted(questions, key=lambda x: x.get("number") or 0):
             stem = (q.get("stem") or "").strip()
