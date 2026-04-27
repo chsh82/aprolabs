@@ -141,6 +141,9 @@ def apply_structure_to_text(raw_text: str, structure: dict) -> str:
     # 이미 PyMuPDF geometric 탐지로 적용된 레이블 수집
     used_labels = set(re.findall(r'\[([A-Z]):START\]', text))
 
+    # 선택지 영역(①~⑤) 위치 계산 — 마커가 겹치면 skip
+    choice_zones = _find_choice_zones(text)
+
     def _next_free_label(used: set) -> str | None:
         for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
             if c not in used:
@@ -173,6 +176,8 @@ def apply_structure_to_text(raw_text: str, structure: dict) -> str:
 
             if start_m and end_m and start_m.start() < end_m.end():
                 sp, ep = start_m.start(), end_m.end()
+                if _overlaps_choice_zone(sp, ep, choice_zones):
+                    continue
                 text = (text[:sp]
                         + f"[{actual_label}:START]\n"
                         + text[sp:ep]
@@ -183,6 +188,34 @@ def apply_structure_to_text(raw_text: str, structure: dict) -> str:
             continue
 
     return text
+
+
+def _find_choice_zones(text: str) -> list:
+    """①~⑤ 선택지 그룹의 (start, end) 위치 목록 반환."""
+    positions = sorted(
+        m.start() for c in "①②③④⑤" for m in re.finditer(re.escape(c), text)
+    )
+    if not positions:
+        return []
+
+    zones = []
+    group_start = positions[0]
+    group_end = positions[0]
+
+    for pos in positions[1:]:
+        if pos - group_end <= 800:
+            group_end = pos
+        else:
+            zones.append((group_start, group_end + 100))
+            group_start = pos
+            group_end = pos
+    zones.append((group_start, group_end + 100))
+    return zones
+
+
+def _overlaps_choice_zone(start: int, end: int, zones: list) -> bool:
+    """(start, end) 범위가 선택지 영역과 겹치는지 확인."""
+    return any(s < end and start < e for s, e in zones)
 
 
 def _log_usage(job_id, input_tokens, output_tokens):
