@@ -59,7 +59,7 @@ def _create_admin():
         if not db.query(User).filter(User.email == "admin@aprolabs.co.kr").first():
             admin = User(
                 email="admin@aprolabs.co.kr",
-                hashed_pw=hash_password("admin0890@"),
+                hashed_pw=hash_password("apro0914@"),
                 is_admin=True,
             )
             db.add(admin)
