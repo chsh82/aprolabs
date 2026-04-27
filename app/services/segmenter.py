@@ -367,16 +367,25 @@ _BOGI_STANDALONE_RE = re.compile(
 # <보기> 공백 변형 (OCR 오류: "< 보 기 >", "< 보기>")
 _BOGI_VARIANT_RE = re.compile(r'<\s*보\s*기\s*>')
 
+# 발문 종결 패턴 — 이 패턴 이후 20자+ 텍스트가 있으면 bogi
+_STEM_TERMINATION_RE = re.compile(
+    r'(?:것은|것인가|않은\s*것은|옳은\s*것은|맞는\s*것은|틀린\s*것은)\s*\?'
+    r'|고르시오\s*\.'
+    r'|\[[23]점\]',
+)
+
 
 def _extract_stem(text: str) -> str:
     """
     발문 추출.
     ①, <조건> 등 박스 마커 이전까지만 잡음.
 
-    <보기> 처리:
-    - 독립 박스 형태(줄 시작에 등장): stem 경계로 사용
-    - 인라인 참조(문장 중간): stem에 포함하되,
-      이후 [[IMG:...]] 마커([A:START] 포함)가 있으면 그 위치가 stem 경계
+    개선 (F-2):
+    - [A:START] 이후 종결 패턴이 있으면 [A:START]를 stem 경계로 쓰지 않음
+      (F-4 이전 잘못 삽입된 마커 대응)
+    - earliest >= 400 (bogi가 있을 가능성) 일 때만 종결 패턴 적용:
+      종결 패턴 + 첫 \\n\\n + 실질 텍스트 50자+ → 빈 줄 직전을 stem 경계로
+      (bogi가 마커 없이 이어지는 케이스 대응, 정상 문항 오탐 방지)
     """
     earliest = len(text)
     for marker in _STEM_BOX_MARKERS:
@@ -390,9 +399,11 @@ def _extract_stem(text: str) -> str:
         earliest = m.start()
 
     # [A:START] 글상자 경계
+    # — [A:START] 이후 종결 패턴이 있으면 잘못 삽입된 것 → skip
     a_start = re.search(r'\[A:START\]', text)
     if a_start and 0 < a_start.start() < earliest:
-        earliest = a_start.start()
+        if not _STEM_TERMINATION_RE.search(text[a_start.end():]):
+            earliest = a_start.start()
 
     # 인라인 <보기> 참조 + [[IMG:...]] 마커 → 이미지 위치가 stem 경계
     bogi_ref = _BOGI_VARIANT_RE.search(text[:earliest])
@@ -403,6 +414,23 @@ def _extract_stem(text: str) -> str:
             img_abs = bogi_ref.end() + img_m.start()
             if 0 < img_abs < earliest:
                 earliest = img_abs
+
+    # 종결 패턴 적용: earliest >= 400 (bogi 있는 구조)일 때만
+    # 종결 직후 \n\n + 실질 텍스트 50자+ → 빈 줄 직전을 stem 경계로
+    if earliest >= 400:
+        last_split = 0
+        for m in _STEM_TERMINATION_RE.finditer(text[:earliest]):
+            after_term = text[m.end():earliest]
+            nn_m = re.search(r'\n\n', after_term)
+            if nn_m:
+                text_after = after_term[nn_m.end():]
+                text_only = re.sub(r'\[\[IMG:[^\]]+\]\]', '', text_after).strip()
+                if len(text_only) >= 50:
+                    split_pos = m.end() + nn_m.start()
+                    if split_pos > last_split:
+                        last_split = split_pos
+        if last_split > 0:
+            earliest = last_split
 
     return text[:earliest].strip() if earliest < len(text) else text[:300].strip()
 
@@ -450,6 +478,16 @@ def _extract_bogi(text: str) -> str | None:
         img_m = re.search(r'\[\[IMG:[^\]]+\]\]', after_bogi)
         if img_m:
             return after_bogi[img_m.start():].strip()
+
+    # 패턴 4: 종결 패턴 이후 ~ ① 사이 텍스트 (마커 없는 bogi)
+    last_term_end = 0
+    for m in _STEM_TERMINATION_RE.finditer(pre):
+        if m.end() > last_term_end:
+            last_term_end = m.end()
+    if last_term_end > 0:
+        candidate = pre[last_term_end:].strip()
+        if len(candidate) >= 20 or '[[IMG:' in candidate:
+            return candidate
 
     return None
 
