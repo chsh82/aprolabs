@@ -389,6 +389,44 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
                      border-radius:5px;background:white;cursor:pointer;color:#6b7280;">
         [[IMG]]
       </button>
+      <button onclick="toggleImgPanel()" id="img-panel-btn"
+              style="height:24px;padding:0 8px;font-size:11px;border:1px solid #c7d2fe;
+                     border-radius:5px;background:#eef2ff;cursor:pointer;color:#4338ca;font-weight:500;">
+        🖼 이미지
+      </button>
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      <span style="font-size:10px;color:#9ca3af;margin-right:2px;">서식</span>
+      <button onclick="toggleBold()" title="볼드 (선택 영역)"
+              style="height:24px;padding:0 9px;font-size:13px;font-weight:700;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;line-height:1;">B</button>
+      <button onclick="toggleItalic()" title="이탤릭 (선택 영역)"
+              style="height:24px;padding:0 9px;font-size:13px;font-style:italic;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;line-height:1;font-family:serif;">I</button>
+
+      <span style="color:#d1d5db;margin:0 3px;">│</span>
+      <span style="font-size:10px;color:#9ca3af;margin-right:2px;">정렬</span>
+      <button onclick="applyAlign('left')" title="왼쪽 정렬"
+              style="width:28px;height:24px;border:1px solid #e5e7eb;border-radius:5px;
+                     background:white;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;">
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round">
+          <line x1="0" y1="1" x2="14" y2="1"/><line x1="0" y1="5" x2="9" y2="5"/><line x1="0" y1="9" x2="14" y2="9"/>
+        </svg>
+      </button>
+      <button onclick="applyAlign('center')" title="가운데 정렬"
+              style="width:28px;height:24px;border:1px solid #e5e7eb;border-radius:5px;
+                     background:white;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;">
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round">
+          <line x1="0" y1="1" x2="14" y2="1"/><line x1="2.5" y1="5" x2="11.5" y2="5"/><line x1="0" y1="9" x2="14" y2="9"/>
+        </svg>
+      </button>
+      <button onclick="applyAlign('right')" title="오른쪽 정렬"
+              style="width:28px;height:24px;border:1px solid #e5e7eb;border-radius:5px;
+                     background:white;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;">
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="#374151" stroke-width="1.5" stroke-linecap="round">
+          <line x1="0" y1="1" x2="14" y2="1"/><line x1="5" y1="5" x2="14" y2="5"/><line x1="0" y1="9" x2="14" y2="9"/>
+        </svg>
+      </button>
 
       {# 찾기/바꾸기 — 우측 #}
       <button onclick="toggleFR()"
@@ -617,7 +655,14 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
 
         {# 보기 #}
         <div id="bogi-section-{{ qi }}"{% if not q.bogi %} style="display:none;"{% endif %}>
-          <label style="font-size:10px;font-weight:500;color:#9ca3af;display:block;margin-bottom:3px;">&lt;보기&gt;</label>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <label style="font-size:10px;font-weight:500;color:#9ca3af;">&lt;보기&gt;</label>
+            <button onclick="openBogiModal({{ qi }})"
+                    style="height:20px;padding:0 7px;font-size:10px;border:1px solid #93c5fd;
+                           border-radius:4px;background:#eff6ff;color:#3b82f6;cursor:pointer;">
+              ✂ 편집/분리
+            </button>
+          </div>
           {% if q.bogi %}
           <div style="margin-bottom:5px;padding:7px 10px;background:#eff6ff;border:1px solid #dbeafe;
                       border-radius:7px;font-size:12px;line-height:1.7;white-space:pre-wrap;word-break:break-word;">
@@ -653,10 +698,10 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
         {# 빠른 추가 버튼 #}
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           {% if not q.bogi %}
-          <button onclick="addBogi({{ qi }})"
+          <button onclick="openBogiModal({{ qi }})"
                   style="height:24px;padding:0 10px;font-size:11px;border:1px dashed #93c5fd;
                          border-radius:6px;background:#eff6ff;color:#3b82f6;cursor:pointer;">
-            + 보기 추가
+            ✂ 보기 추가/분리
           </button>
           {% endif %}
           {% if not q.choices %}
@@ -693,6 +738,133 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
   {% endif %}{# end if job.segments #}
 </div>{# end right panel #}
 </div>{# end split #}
+
+{# ══ 보기 편집/분리 모달 ══ #}
+<div id="bogi-modal"
+     style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);
+            align-items:center;justify-content:center;"
+     onclick="if(event.target===this)closeBogiModal()">
+  <div style="background:white;border-radius:14px;width:700px;max-width:96vw;max-height:90vh;
+              overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+
+    {# 헤더 #}
+    <div style="padding:12px 18px;background:#eff6ff;border-bottom:1px solid #bfdbfe;
+                display:flex;align-items:center;gap:10px;flex-shrink:0;">
+      <span id="bogi-modal-title" style="font-size:14px;font-weight:700;color:#1e40af;flex:1;"></span>
+      <button onclick="closeBogiModal()"
+              style="width:28px;height:28px;border:none;background:transparent;
+                     font-size:18px;cursor:pointer;color:#6b7280;border-radius:6px;">✕</button>
+    </div>
+
+    {# 바디 #}
+    <div style="overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;flex:1;">
+
+      {# ── 탭 ── #}
+      <div style="display:flex;border-bottom:2px solid #e5e7eb;gap:2px;">
+        <button id="bogi-tab-split" onclick="bogiSwitchTab('split')"
+                style="padding:6px 14px;font-size:12px;font-weight:600;border:none;cursor:pointer;
+                       border-bottom:2px solid #2563eb;margin-bottom:-2px;
+                       background:none;color:#2563eb;">
+          ✂ 발문에서 분리
+        </button>
+        <button id="bogi-tab-direct" onclick="bogiSwitchTab('direct')"
+                style="padding:6px 14px;font-size:12px;font-weight:500;border:none;cursor:pointer;
+                       border-bottom:2px solid transparent;margin-bottom:-2px;
+                       background:none;color:#6b7280;">
+          ✏ 직접 편집
+        </button>
+      </div>
+
+      {# ── 탭 1: 발문에서 분리 ── #}
+      <div id="bogi-pane-split" style="display:flex;flex-direction:column;gap:10px;">
+        <p style="font-size:11px;color:#6b7280;margin:0;">
+          발문 텍스트에서 보기 시작 위치에 커서를 클릭하세요. 커서 위치 이후 텍스트가 &lt;보기&gt;로 분리됩니다.
+        </p>
+
+        {# 발문 textarea (클릭으로 커서 위치 설정) #}
+        <div>
+          <label style="font-size:10px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">
+            발문 텍스트 (분리 위치 클릭)
+          </label>
+          <textarea id="bogi-stem-ta"
+                    style="width:100%;padding:8px 10px;border:2px solid #93c5fd;border-radius:8px;
+                           font-size:12px;font-family:monospace;resize:vertical;outline:none;
+                           box-sizing:border-box;line-height:1.7;background:#f0f9ff;"
+                    rows="5"
+                    onclick="bogiMarkSplit(this)"
+                    onkeyup="bogiMarkSplit(this)"
+                    placeholder="발문 텍스트가 없습니다."></textarea>
+          <p id="bogi-split-hint" style="font-size:10px;color:#9ca3af;margin:3px 0 0;">
+            커서 위치: — &nbsp;|&nbsp; 분리 위치 미지정
+          </p>
+        </div>
+
+        {# 미리보기 #}
+        <div id="bogi-split-preview" style="display:none;gap:8px;display:flex;flex-direction:column;">
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;">
+              <div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:4px;">새 발문</div>
+              <div id="bogi-preview-stem"
+                   style="padding:8px 10px;background:#f9fafb;border:1px solid #e5e7eb;
+                          border-radius:7px;font-size:11px;line-height:1.7;
+                          white-space:pre-wrap;word-break:break-word;max-height:120px;overflow-y:auto;
+                          color:#1f2937;"></div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:10px;font-weight:700;color:#3b82f6;margin-bottom:4px;">새 &lt;보기&gt;</div>
+              <div id="bogi-preview-bogi"
+                   style="padding:8px 10px;background:#eff6ff;border:1px solid #bfdbfe;
+                          border-radius:7px;font-size:11px;line-height:1.7;
+                          white-space:pre-wrap;word-break:break-word;max-height:120px;overflow-y:auto;
+                          color:#1e40af;"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;">
+            <span id="bogi-split-warn" style="font-size:11px;color:#d97706;display:none;">
+              ⚠ 기존 보기가 대체됩니다
+            </span>
+            <button onclick="bogiApplySplit()"
+                    style="padding:7px 18px;background:#2563eb;color:white;border:none;
+                           border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">
+              적용 →
+            </button>
+          </div>
+        </div>
+
+        {# 분리 버튼 #}
+        <button onclick="bogiDoSplit()"
+                style="padding:8px 0;background:#eff6ff;color:#3b82f6;border:1px solid #93c5fd;
+                       border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">
+          여기서 분리 미리보기
+        </button>
+      </div>
+
+      {# ── 탭 2: 직접 편집 ── #}
+      <div id="bogi-pane-direct" style="display:none;flex-direction:column;gap:10px;">
+        <p style="font-size:11px;color:#6b7280;margin:0;">보기 내용을 직접 입력하거나 수정합니다.</p>
+        <div>
+          <label style="font-size:10px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">
+            &lt;보기&gt; 내용
+          </label>
+          <textarea id="bogi-direct-ta"
+                    style="width:100%;padding:8px 10px;border:2px solid #bfdbfe;border-radius:8px;
+                           font-size:12px;font-family:monospace;resize:vertical;outline:none;
+                           box-sizing:border-box;line-height:1.7;"
+                    rows="6"
+                    placeholder="보기 내용을 입력하세요..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;">
+          <button onclick="bogiApplyDirect()"
+                  style="padding:7px 18px;background:#2563eb;color:white;border:none;
+                         border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;">
+            적용 →
+          </button>
+        </div>
+      </div>
+
+    </div>{# end body #}
+  </div>
+</div>
 
 {# 해설 모달 #}
 <div id="expl-modal"
@@ -768,6 +940,28 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
 .preset-btn:hover { background:#f3f4f6; }
 .tb-char:hover { background:#f0f9ff !important; border-color:#93c5fd !important; }
 </style>
+
+{# ── 이미지 삽입 패널 (floating) ── #}
+<div id="img-panel"
+     style="display:none;position:fixed;top:110px;right:12px;z-index:300;
+            width:270px;max-height:500px;background:white;
+            border:1px solid #c7d2fe;border-radius:10px;
+            box-shadow:0 4px 24px rgba(0,0,0,0.13);flex-direction:column;overflow:hidden;">
+  <div style="padding:8px 12px;background:#eef2ff;border-bottom:1px solid #c7d2fe;
+              display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <span style="font-size:12px;font-weight:600;color:#4338ca;">추출 이미지</span>
+    <button onclick="toggleImgPanel()"
+            style="width:20px;height:20px;border:none;background:none;cursor:pointer;
+                   font-size:14px;color:#6b7280;line-height:1;padding:0;">✕</button>
+  </div>
+  <div id="img-panel-body"
+       style="overflow-y:auto;padding:8px;display:flex;flex-wrap:wrap;gap:6px;flex:1;min-height:0;">
+    <p id="img-panel-loading"
+       style="font-size:11px;color:#9ca3af;width:100%;text-align:center;padding:20px 0;">
+      불러오는 중…
+    </p>
+  </div>
+</div>
 
 <script>
 {% if job.segments %}
@@ -903,6 +1097,95 @@ function insertBracket(type) {
   const letter = document.getElementById('bracket-letter').value;
   const text = type === 'START' ? `[${letter}:START]\n` : `[${letter}:END]`;
   insertChar(text);
+}
+
+// ─── 볼드 토글 ───────────────────────────────
+function toggleBold() {
+  const el = getTarget();
+  if (!el || el.tagName !== 'TEXTAREA') return;
+  const s = el.selectionStart, e = el.selectionEnd;
+  const sel = el.value.slice(s, e);
+  if (sel.startsWith('<b>') && sel.endsWith('</b>')) {
+    pushUndo(el);
+    const inner = sel.slice(3, sel.length - 4);
+    el.value = el.value.slice(0, s) + inner + el.value.slice(e);
+    el.selectionStart = s; el.selectionEnd = s + inner.length;
+    el.focus(); el.dispatchEvent(new Event('input')); return;
+  }
+  const bef3 = el.value.slice(Math.max(0, s - 3), s);
+  const aft4 = el.value.slice(e, e + 4);
+  if (bef3 === '<b>' && aft4 === '</b>') {
+    pushUndo(el);
+    el.value = el.value.slice(0, s - 3) + sel + el.value.slice(e + 4);
+    el.selectionStart = s - 3; el.selectionEnd = s - 3 + sel.length;
+    el.focus(); el.dispatchEvent(new Event('input')); return;
+  }
+  wrapSel('<b>', '</b>');
+  el.dispatchEvent(new Event('input'));
+}
+
+// ─── 이탤릭 토글 ─────────────────────────────
+function toggleItalic() {
+  const el = getTarget();
+  if (!el || el.tagName !== 'TEXTAREA') return;
+  const s = el.selectionStart, e = el.selectionEnd;
+  const sel = el.value.slice(s, e);
+  if (sel.startsWith('<i>') && sel.endsWith('</i>')) {
+    pushUndo(el);
+    const inner = sel.slice(3, sel.length - 4);
+    el.value = el.value.slice(0, s) + inner + el.value.slice(e);
+    el.selectionStart = s; el.selectionEnd = s + inner.length;
+    el.focus(); el.dispatchEvent(new Event('input')); return;
+  }
+  const bef3 = el.value.slice(Math.max(0, s - 3), s);
+  const aft4 = el.value.slice(e, e + 4);
+  if (bef3 === '<i>' && aft4 === '</i>') {
+    pushUndo(el);
+    el.value = el.value.slice(0, s - 3) + sel + el.value.slice(e + 4);
+    el.selectionStart = s - 3; el.selectionEnd = s - 3 + sel.length;
+    el.focus(); el.dispatchEvent(new Event('input')); return;
+  }
+  wrapSel('<i>', '</i>');
+  el.dispatchEvent(new Event('input'));
+}
+
+// ─── 정렬 적용 ───────────────────────────────
+function applyAlign(direction) {
+  const el = getTarget();
+  if (!el || el.tagName !== 'TEXTAREA') return;
+  pushUndo(el);
+  const s = el.selectionStart, e = el.selectionEnd;
+  const openTag  = `<div style="text-align:${direction}">`;
+  const closeTag = `</div>`;
+
+  // 이미 같은 정렬로 감싸져 있으면 제거
+  const sel = el.value.slice(s, e);
+  if (sel.startsWith(openTag) && sel.endsWith(closeTag)) {
+    const inner = sel.slice(openTag.length, sel.length - closeTag.length);
+    el.value = el.value.slice(0, s) + inner + el.value.slice(e);
+    el.selectionStart = s; el.selectionEnd = s + inner.length;
+    el.focus(); el.dispatchEvent(new Event('input')); return;
+  }
+
+  // 선택 없으면 현재 줄 전체에 적용
+  let lineStart = s, lineEnd = e;
+  if (s === e) {
+    lineStart = el.value.lastIndexOf('\n', s - 1) + 1;
+    const nl  = el.value.indexOf('\n', s);
+    lineEnd   = nl === -1 ? el.value.length : nl;
+  }
+
+  // 기존 정렬 래퍼가 있으면 교체, 없으면 추가
+  let region = el.value.slice(lineStart, lineEnd);
+  const existRe = /^<div style="text-align:(?:left|center|right)">([\s\S]*?)<\/div>$/;
+  const match   = region.match(existRe);
+  const inner   = match ? match[1] : region;
+  const wrapped = openTag + inner + closeTag;
+  el.value = el.value.slice(0, lineStart) + wrapped + el.value.slice(lineEnd);
+  el.selectionStart = lineStart;
+  el.selectionEnd   = lineStart + wrapped.length;
+  el.focus();
+  el.dispatchEvent(new Event('input'));
 }
 
 // ─── 탭 전환 ─────────────────────────────────
@@ -1386,15 +1669,42 @@ function livePreview(idx) {
   const preview = document.getElementById(`p-preview-${idx}`);
   if (!ta || !preview) return;
 
-  // 1) HTML 이스케이프
-  let text = ta.value
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let text = ta.value;
+
+  // 0) HTML 태그를 플레이스홀더로 보존 (이스케이프 전)
+  const saved = [];
+  const save  = tag => { saved.push(tag); return `\x00S${saved.length-1}\x00`; };
+
+  // <img> 태그 (속성 사이 줄바꿈 포함 multi-line 대응)
+  text = text.replace(/<img\b[\s\S]*?>/gi, m => save(m.replace(/\n/g, ' ')));
+
+  // <u>, <b>, <i> 쌍 태그를 placeholder로 보존 (이스케이프 전)
+  text = text.replace(/<(u|b|i)>([\s\S]*?)<\/\1>/gi, (m, tag, inner) => {
+    const innerEsc = inner
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br>');
+    return save(`<${tag}>${innerEsc}</${tag}>`);
+  });
+
+  // alignment <div> (내용 포함) — 내용도 이스케이프 후 저장
+  text = text.replace(/<div style="text-align:(left|center|right)">([\s\S]*?)<\/div>/gi,
+    (_, align, content) => {
+      const ec = content
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\n/g,'<br>');
+      return save(`<div style="text-align:${align}">${ec}</div>`);
+    });
+
+  // 1) HTML 이스케이프 (placeholder로 저장된 태그 제외)
+  text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
   // 2) \n → <br> (pre-wrap 없이도 줄바꿈 보장)
   text = text.replace(/\n/g, '<br>');
 
-  // 3) <u>...</u> 복원
+  // 3) 이스케이프된 인라인 서식 복원 (dangling/unpaired 태그 fallback)
   text = text.replace(/&lt;u&gt;([\s\S]*?)&lt;\/u&gt;/g, '<u>$1</u>');
+  text = text.replace(/&lt;b&gt;([\s\S]*?)&lt;\/b&gt;/g, '<b>$1</b>');
+  text = text.replace(/&lt;i&gt;([\s\S]*?)&lt;\/i&gt;/g, '<i>$1</i>');
 
   // 4) [X:START] / [X:END] 마커
   text = text.replace(/\[([A-E]):START\]/g,
@@ -1409,6 +1719,9 @@ function livePreview(idx) {
   // 6) [[IMG:...]] 마커
   text = text.replace(/\[\[IMG:(.*?)\]\]/g,
     '<span style="background:#fce7f3;color:#be185d;padding:0 4px;border-radius:3px;font-size:10px;">🖼 $1</span>');
+
+  // 7) 플레이스홀더 복원
+  text = text.replace(/\x00S(\d+)\x00/g, (_, i) => saved[parseInt(i)]);
 
   preview.innerHTML = text;
   preview.style.whiteSpace = 'normal';  // <br> 사용하므로 pre-wrap 불필요
@@ -1603,7 +1916,172 @@ function closeExplModal() {
 }
 
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape') closeExplModal();
+  if (ev.key === 'Escape') { closeExplModal(); closeBogiModal(); }
 });
+
+// ─── 보기 모달 ───────────────────────────────
+let _bogiModalQi = -1;
+let _bogiSplitPos = -1;
+
+function openBogiModal(qi) {
+  _bogiModalQi = qi;
+  _bogiSplitPos = -1;
+  const q = segments.questions[qi];
+  const num = q ? q.number : qi + 1;
+  document.getElementById('bogi-modal-title').textContent = `${num}번 보기 편집/분리`;
+  // stem textarea
+  const stemTa = document.getElementById('bogi-stem-ta');
+  const stemEl = document.querySelector(`[data-type="question"][data-idx="${qi}"][data-field="stem"]`);
+  stemTa.value = stemEl ? stemEl.value : (q && q.stem || '');
+  // direct edit textarea
+  const directTa = document.getElementById('bogi-direct-ta');
+  const bogiEl = document.querySelector(`[data-type="question"][data-idx="${qi}"][data-field="bogi"]`);
+  directTa.value = bogiEl ? bogiEl.value : (q && q.bogi || '');
+  // reset split UI
+  document.getElementById('bogi-split-hint').textContent = '커서 위치: — | 분리 위치 미지정';
+  document.getElementById('bogi-split-preview').style.display = 'none';
+  // existing bogi warning
+  const warn = document.getElementById('bogi-split-warn');
+  if (warn) warn.style.display = (q && q.bogi) ? 'inline' : 'none';
+  bogiSwitchTab('split');
+  document.getElementById('bogi-modal').style.display = 'flex';
+}
+
+function closeBogiModal() {
+  document.getElementById('bogi-modal').style.display = 'none';
+  _bogiModalQi = -1;
+  _bogiSplitPos = -1;
+}
+
+function bogiSwitchTab(tab) {
+  const isSplit = tab === 'split';
+  document.getElementById('bogi-pane-split').style.display = isSplit ? 'flex' : 'none';
+  document.getElementById('bogi-pane-direct').style.display = isSplit ? 'none' : 'flex';
+  const ts = document.getElementById('bogi-tab-split');
+  const td = document.getElementById('bogi-tab-direct');
+  ts.style.color = isSplit ? '#2563eb' : '#6b7280';
+  ts.style.fontWeight = isSplit ? '600' : '500';
+  ts.style.borderBottom = isSplit ? '2px solid #2563eb' : '2px solid transparent';
+  td.style.color = isSplit ? '#6b7280' : '#2563eb';
+  td.style.fontWeight = isSplit ? '500' : '600';
+  td.style.borderBottom = isSplit ? '2px solid transparent' : '2px solid #2563eb';
+}
+
+function bogiMarkSplit(ta) {
+  _bogiSplitPos = ta.selectionStart;
+  document.getElementById('bogi-split-hint').textContent =
+    `커서 위치: ${_bogiSplitPos}자 | 클릭 후 "여기서 분리 미리보기" 클릭`;
+}
+
+function bogiDoSplit() {
+  const ta = document.getElementById('bogi-stem-ta');
+  const pos = ta.selectionStart;
+  if (pos <= 0 || pos >= ta.value.length) {
+    alert('분리 위치를 발문 텍스트 중간에 지정해주세요.');
+    return;
+  }
+  _bogiSplitPos = pos;
+  const newStem = ta.value.slice(0, pos).trim();
+  const newBogi = ta.value.slice(pos).trim();
+  document.getElementById('bogi-preview-stem').textContent = newStem;
+  document.getElementById('bogi-preview-bogi').textContent = newBogi;
+  document.getElementById('bogi-split-preview').style.display = 'flex';
+}
+
+async function bogiApplySplit() {
+  if (_bogiSplitPos <= 0 || _bogiModalQi < 0) {
+    alert('먼저 "여기서 분리 미리보기"를 클릭해 분리 위치를 확인하세요.');
+    return;
+  }
+  const ta = document.getElementById('bogi-stem-ta');
+  const newStem = ta.value.slice(0, _bogiSplitPos).trim();
+  const newBogi = ta.value.slice(_bogiSplitPos).trim();
+  await _applyBogiChange(newStem, newBogi);
+}
+
+async function bogiApplyDirect() {
+  if (_bogiModalQi < 0) return;
+  const stemEl = document.querySelector(`[data-type="question"][data-idx="${_bogiModalQi}"][data-field="stem"]`);
+  const newStem = stemEl ? stemEl.value : (segments.questions[_bogiModalQi] && segments.questions[_bogiModalQi].stem || '');
+  const newBogi = document.getElementById('bogi-direct-ta').value.trim();
+  await _applyBogiChange(newStem, newBogi);
+}
+
+async function _applyBogiChange(newStem, newBogi) {
+  const qi = _bogiModalQi;
+  // update stem textarea in main UI
+  const stemEl = document.querySelector(`[data-type="question"][data-idx="${qi}"][data-field="stem"]`);
+  if (stemEl) stemEl.value = newStem;
+  // show and update bogi section
+  const bogiSec = document.getElementById(`bogi-section-${qi}`);
+  if (bogiSec) bogiSec.style.display = 'block';
+  const bogiEl = document.querySelector(`[data-type="question"][data-idx="${qi}"][data-field="bogi"]`);
+  if (bogiEl) bogiEl.value = newBogi;
+  // update in-memory segments
+  if (segments.questions[qi]) {
+    segments.questions[qi].stem = newStem;
+    segments.questions[qi].bogi = newBogi || null;
+  }
+  markDirty();
+  closeBogiModal();
+  await saveSegments();
+  showToast('보기 저장됨 ✓', 2000);
+}
+
+// ─── 이미지 삽입 패널 ─────────────────────────
+let imgPanelLoaded = false;
+
+function toggleImgPanel() {
+  const panel = document.getElementById('img-panel');
+  const btn   = document.getElementById('img-panel-btn');
+  const isOpen = panel.style.display === 'flex';
+  panel.style.display = isOpen ? 'none' : 'flex';
+  if (btn) {
+    btn.style.background   = isOpen ? '#eef2ff' : '#4338ca';
+    btn.style.color        = isOpen ? '#4338ca' : 'white';
+    btn.style.borderColor  = isOpen ? '#c7d2fe' : '#4338ca';
+  }
+  if (!isOpen && !imgPanelLoaded) loadImgPanel();
+}
+
+async function loadImgPanel() {
+  const body = document.getElementById('img-panel-body');
+  try {
+    const res  = await fetch('/suneung/review/{{ job.id }}/extracted-images');
+    const urls = await res.json();
+    body.innerHTML = '';
+    if (!urls.length) {
+      body.innerHTML = '<p style="font-size:11px;color:#9ca3af;width:100%;text-align:center;padding:20px 0;">추출된 이미지가 없습니다.</p>';
+      imgPanelLoaded = true;
+      return;
+    }
+    urls.forEach(url => {
+      const fname = url.split('/').pop();
+      const wrap  = document.createElement('div');
+      wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:3px;width:calc(50% - 3px);';
+      wrap.innerHTML = `
+        <img src="${url}" alt="${fname}"
+             style="width:100%;max-height:80px;object-fit:contain;
+                    border:1px solid #e5e7eb;border-radius:5px;cursor:pointer;background:#f9fafb;"
+             onclick="insertExtractedImg('${url}')" title="${fname}">
+        <button onclick="insertExtractedImg('${url}')"
+                style="width:100%;height:20px;font-size:10px;border:1px solid #bfdbfe;
+                       background:#eff6ff;color:#2563eb;border-radius:4px;cursor:pointer;
+                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;"
+                title="${fname}">삽입</button>
+      `;
+      body.appendChild(wrap);
+    });
+    imgPanelLoaded = true;
+  } catch(e) {
+    body.innerHTML = '<p style="font-size:11px;color:#dc2626;width:100%;text-align:center;padding:20px 0;">로드 실패</p>';
+  }
+}
+
+function insertExtractedImg(url) {
+  const fname = url.split('/').pop();
+  insertChar(`<img src="${url}" alt="${fname}" style="max-width:100%;">`);
+  showToast('이미지 삽입됨 ✓', 1500);
+}
 </script>
 {% endblock %}

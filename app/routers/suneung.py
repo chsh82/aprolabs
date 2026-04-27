@@ -760,6 +760,21 @@ def get_page_images(job_id: str):
     return JSONResponse([])
 
 
+@router.get("/review/{job_id}/extracted-images")
+def get_extracted_images(job_id: str):
+    """PDF에서 추출된 이미지 목록 반환 (images/ 디렉토리)."""
+    img_dir = os.path.join(UPLOAD_DIR, job_id, "images")
+    if not os.path.exists(img_dir):
+        return JSONResponse([])
+    files = sorted(
+        f for f in os.listdir(img_dir)
+        if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp'))
+    )
+    return JSONResponse([
+        f"/uploads/suneung/{job_id}/images/{f}" for f in files
+    ])
+
+
 _AI_TO_ENG = {'오탐': 'odam', '실제오류': 'real_error', '보류': 'pending'}
 
 
