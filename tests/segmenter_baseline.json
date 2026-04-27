@@ -1,0 +1,741 @@
+{
+  "created_at": "2026-04-28T00:48:29.419408",
+  "commit": "bd02457",
+  "total_files": 2,
+  "files": {
+    "2024학년도 수능_국어(언매) 문제 (1).pdf": {
+      "job_id": "75342ce6-953d-486f-9aa8-d53355f0bfbf",
+      "file_path": "uploads/suneung\\75342ce6-953d-486f-9aa8-d53355f0bfbf.pdf",
+      "question_count": 45,
+      "questions": [
+        {
+          "number": 1,
+          "stem_length": 34,
+          "stem_preview": "1. 윗글을 이해한 내용으로 적절하지 <u>않은</u>",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 250
+        },
+        {
+          "number": 2,
+          "stem_length": 31,
+          "stem_preview": "2. [A]에서 알 수 있는 내용으로 가장 적절한 것은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 441
+        },
+        {
+          "number": 3,
+          "stem_length": 221,
+          "stem_preview": "3. <보기>는 윗글을 읽은 학생이 독서 중 떠올린 생",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 389
+        },
+        {
+          "number": 4,
+          "stem_length": 24,
+          "stem_preview": "4. ㉠에 대한 설명으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 328
+        },
+        {
+          "number": 5,
+          "stem_length": 38,
+          "stem_preview": "5. 윗글에서 알 수 있는 내용으로 적절하지 <u>않은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 449
+        },
+        {
+          "number": 6,
+          "stem_length": 44,
+          "stem_preview": "6. ㉡과 관련하여 ⓐ와 ⓑ의 입장에 대한 반응으로 가",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 536
+        },
+        {
+          "number": 7,
+          "stem_length": 192,
+          "stem_preview": "7. ㉮～㉰에 따라 <보기>에 대한 언론 보도를 평가한",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 681
+        },
+        {
+          "number": 8,
+          "stem_length": 34,
+          "stem_preview": "8. 윗글을 이해한 내용으로 적절하지 <u>않은</u>",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 367
+        },
+        {
+          "number": 9,
+          "stem_length": 31,
+          "stem_preview": "9. 윗글을 참고할 때, ㉠의 이유로 가장 적절한 것은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 265
+        },
+        {
+          "number": 10,
+          "stem_length": 197,
+          "stem_preview": "10. ㉡과 관련하여 윗글의 A 기법과 <보기>의 B ",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 648
+        },
+        {
+          "number": 11,
+          "stem_length": 30,
+          "stem_preview": "11. 문맥상 ⓐ～ⓔ와 바꿔 쓰기에 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 100
+        },
+        {
+          "number": 12,
+          "stem_length": 32,
+          "stem_preview": "12. (가), (나)에 대한 설명으로 가장 적절한 것",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 356
+        },
+        {
+          "number": 13,
+          "stem_length": 40,
+          "stem_preview": "13. (가)에 제시된 한비자의 견해로 적절하지 <u>",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 403
+        },
+        {
+          "number": 14,
+          "stem_length": 27,
+          "stem_preview": "14. ㉠과 ㉡에 대한 이해로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 640
+        },
+        {
+          "number": 15,
+          "stem_length": 258,
+          "stem_preview": "15. (나)의 왕안석과 오징의 입장에서 다음의 ㄱ～ㄹ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 379
+        },
+        {
+          "number": 16,
+          "stem_length": 215,
+          "stem_preview": "16. <보기>를 참고할 때, (가), (나)의 사상가",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 874
+        },
+        {
+          "number": 17,
+          "stem_length": 25,
+          "stem_preview": "17. ⓐ와 문맥상 의미가 가장 가까운 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 165
+        },
+        {
+          "number": 18,
+          "stem_length": 35,
+          "stem_preview": "18. [A]의 서술상 특징에 대한 설명으로 가장 적절",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 209
+        },
+        {
+          "number": 19,
+          "stem_length": 43,
+          "stem_preview": "19. ㉠과 관련하여 윗글을 이해한 내용으로 적절하지 ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 362
+        },
+        {
+          "number": 20,
+          "stem_length": 27,
+          "stem_preview": "20. ⓐ～ⓓ에 대한 설명으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 296
+        },
+        {
+          "number": 21,
+          "stem_length": 189,
+          "stem_preview": "21. <보기>를 참고하여 윗글을 감상한 내용으로 적절",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 646
+        },
+        {
+          "number": 22,
+          "stem_length": 31,
+          "stem_preview": "22. (가)～(다)에 대한 설명으로 가장 적절한 것은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 290
+        },
+        {
+          "number": 23,
+          "stem_length": 185,
+          "stem_preview": "23. <보기>를 참고하여 (가)를 감상한 내용으로 적",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 791
+        },
+        {
+          "number": 24,
+          "stem_length": 26,
+          "stem_preview": "24. (나)에 대한 이해로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 396
+        },
+        {
+          "number": 25,
+          "stem_length": 35,
+          "stem_preview": "25. ⓐ～ⓔ에 대한 설명으로 적절하지 <u>않은</u",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 468
+        },
+        {
+          "number": 26,
+          "stem_length": 27,
+          "stem_preview": "26. ㉠과 ㉡에 대한 이해로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 382
+        },
+        {
+          "number": 27,
+          "stem_length": 195,
+          "stem_preview": "27. <보기>를 참고하여 (나), (다)를 감상한 내",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 663
+        },
+        {
+          "number": 28,
+          "stem_length": 26,
+          "stem_preview": "28. 윗글에 대한 설명으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 250
+        },
+        {
+          "number": 29,
+          "stem_length": 39,
+          "stem_preview": "29. [A]～[C]에 대한 설명으로 적절하지 <u>않",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 533
+        },
+        {
+          "number": 30,
+          "stem_length": 35,
+          "stem_preview": "30. 집주름 영감과 양 서방에 대한 이해로 가장 적절",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 405
+        },
+        {
+          "number": 31,
+          "stem_length": 191,
+          "stem_preview": "31. <보기>를 참고하여 ㉠～㉤을 이해한 내용으로 적",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 634
+        },
+        {
+          "number": 32,
+          "stem_length": 40,
+          "stem_preview": "32. (가), (나)의 표현상 특징에 대한 설명으로 ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 277
+        },
+        {
+          "number": 33,
+          "stem_length": 38,
+          "stem_preview": "33. [A]～[C]에 대한 이해로 적절하지 <u>않은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 523
+        },
+        {
+          "number": 34,
+          "stem_length": 196,
+          "stem_preview": "34. <보기>를 참고하여 (가), (나)를 감상한 내",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 648
+        },
+        {
+          "number": 35,
+          "stem_length": 22,
+          "stem_preview": "35. 윗글에 대한 이해로 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 415
+        },
+        {
+          "number": 36,
+          "stem_length": 58,
+          "stem_preview": "36. 윗글을 바탕으로 중세 국어 단어의 변화 양상을 ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 357
+        },
+        {
+          "number": 37,
+          "stem_length": 200,
+          "stem_preview": "37. <보기>를 바탕으로 ‘ㅎ’ 말음 용언의 활용 유",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 497
+        },
+        {
+          "number": 38,
+          "stem_length": 169,
+          "stem_preview": "38. <보기>의 ㉠～㉨에 대한 설명으로 적절한 것은?",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 310
+        },
+        {
+          "number": 39,
+          "stem_length": 409,
+          "stem_preview": "39. <학습 활동>을 수행한 결과로 적절한 것은? [",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 651
+        },
+        {
+          "number": 40,
+          "stem_length": 34,
+          "stem_preview": "40. (가)에 나타난 정보 전달 방식으로 가장 적절한",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 344
+        },
+        {
+          "number": 41,
+          "stem_length": 35,
+          "stem_preview": "41. (나)에 대한 설명으로 적절하지 <u>않은</u",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 368
+        },
+        {
+          "number": 42,
+          "stem_length": 59,
+          "stem_preview": "42. (가)에 대해 (나)의 학생들이 보인 수용 태도",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 529
+        },
+        {
+          "number": 43,
+          "stem_length": 35,
+          "stem_preview": "43. ㉠～㉤에 대한 설명으로 적절하지 <u>않은</u",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 368
+        },
+        {
+          "number": 44,
+          "stem_length": 47,
+          "stem_preview": "44. ㉠～㉤에 드러난 의사소통 방식에 대한 이해로 적",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 283
+        },
+        {
+          "number": 45,
+          "stem_length": 223,
+          "stem_preview": "45. (나)의 대화 내용을 반영하여 (가)를 아래와 ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 707
+        }
+      ]
+    },
+    "2024학년도 수능_국어(화작) 문제.pdf": {
+      "job_id": "1ac4bb4e-6844-4b64-9d91-9015643f66fa",
+      "file_path": "uploads/suneung\\1ac4bb4e-6844-4b64-9d91-9015643f66fa.pdf",
+      "question_count": 45,
+      "questions": [
+        {
+          "number": 1,
+          "stem_length": 34,
+          "stem_preview": "1. 윗글을 이해한 내용으로 적절하지 <u>않은</u>",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 250
+        },
+        {
+          "number": 2,
+          "stem_length": 31,
+          "stem_preview": "2. [A]에서 알 수 있는 내용으로 가장 적절한 것은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 441
+        },
+        {
+          "number": 3,
+          "stem_length": 221,
+          "stem_preview": "3. <보기>는 윗글을 읽은 학생이 독서 중 떠올린 생",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 389
+        },
+        {
+          "number": 4,
+          "stem_length": 24,
+          "stem_preview": "4. ㉠에 대한 설명으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 328
+        },
+        {
+          "number": 5,
+          "stem_length": 38,
+          "stem_preview": "5. 윗글에서 알 수 있는 내용으로 적절하지 <u>않은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 449
+        },
+        {
+          "number": 6,
+          "stem_length": 44,
+          "stem_preview": "6. ㉡과 관련하여 ⓐ와 ⓑ의 입장에 대한 반응으로 가",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 536
+        },
+        {
+          "number": 7,
+          "stem_length": 192,
+          "stem_preview": "7. ㉮～㉰에 따라 <보기>에 대한 언론 보도를 평가한",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 681
+        },
+        {
+          "number": 8,
+          "stem_length": 34,
+          "stem_preview": "8. 윗글을 이해한 내용으로 적절하지 <u>않은</u>",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 367
+        },
+        {
+          "number": 9,
+          "stem_length": 31,
+          "stem_preview": "9. 윗글을 참고할 때, ㉠의 이유로 가장 적절한 것은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 265
+        },
+        {
+          "number": 10,
+          "stem_length": 197,
+          "stem_preview": "10. ㉡과 관련하여 윗글의 A 기법과 <보기>의 B ",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 648
+        },
+        {
+          "number": 11,
+          "stem_length": 30,
+          "stem_preview": "11. 문맥상 ⓐ～ⓔ와 바꿔 쓰기에 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 100
+        },
+        {
+          "number": 12,
+          "stem_length": 32,
+          "stem_preview": "12. (가), (나)에 대한 설명으로 가장 적절한 것",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 356
+        },
+        {
+          "number": 13,
+          "stem_length": 40,
+          "stem_preview": "13. (가)에 제시된 한비자의 견해로 적절하지 <u>",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 403
+        },
+        {
+          "number": 14,
+          "stem_length": 27,
+          "stem_preview": "14. ㉠과 ㉡에 대한 이해로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 640
+        },
+        {
+          "number": 15,
+          "stem_length": 258,
+          "stem_preview": "15. (나)의 왕안석과 오징의 입장에서 다음의 ㄱ～ㄹ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 379
+        },
+        {
+          "number": 16,
+          "stem_length": 215,
+          "stem_preview": "16. <보기>를 참고할 때, (가), (나)의 사상가",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 874
+        },
+        {
+          "number": 17,
+          "stem_length": 25,
+          "stem_preview": "17. ⓐ와 문맥상 의미가 가장 가까운 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 165
+        },
+        {
+          "number": 18,
+          "stem_length": 35,
+          "stem_preview": "18. [A]의 서술상 특징에 대한 설명으로 가장 적절",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 209
+        },
+        {
+          "number": 19,
+          "stem_length": 43,
+          "stem_preview": "19. ㉠과 관련하여 윗글을 이해한 내용으로 적절하지 ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 362
+        },
+        {
+          "number": 20,
+          "stem_length": 27,
+          "stem_preview": "20. ⓐ～ⓓ에 대한 설명으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 296
+        },
+        {
+          "number": 21,
+          "stem_length": 189,
+          "stem_preview": "21. <보기>를 참고하여 윗글을 감상한 내용으로 적절",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 646
+        },
+        {
+          "number": 22,
+          "stem_length": 31,
+          "stem_preview": "22. (가)～(다)에 대한 설명으로 가장 적절한 것은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 290
+        },
+        {
+          "number": 23,
+          "stem_length": 185,
+          "stem_preview": "23. <보기>를 참고하여 (가)를 감상한 내용으로 적",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 791
+        },
+        {
+          "number": 24,
+          "stem_length": 26,
+          "stem_preview": "24. (나)에 대한 이해로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 396
+        },
+        {
+          "number": 25,
+          "stem_length": 35,
+          "stem_preview": "25. ⓐ～ⓔ에 대한 설명으로 적절하지 <u>않은</u",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 468
+        },
+        {
+          "number": 26,
+          "stem_length": 27,
+          "stem_preview": "26. ㉠과 ㉡에 대한 이해로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 382
+        },
+        {
+          "number": 27,
+          "stem_length": 195,
+          "stem_preview": "27. <보기>를 참고하여 (나), (다)를 감상한 내",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 663
+        },
+        {
+          "number": 28,
+          "stem_length": 26,
+          "stem_preview": "28. 윗글에 대한 설명으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 250
+        },
+        {
+          "number": 29,
+          "stem_length": 39,
+          "stem_preview": "29. [A]～[C]에 대한 설명으로 적절하지 <u>않",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 533
+        },
+        {
+          "number": 30,
+          "stem_length": 35,
+          "stem_preview": "30. 집주름 영감과 양 서방에 대한 이해로 가장 적절",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 405
+        },
+        {
+          "number": 31,
+          "stem_length": 191,
+          "stem_preview": "31. <보기>를 참고하여 ㉠～㉤을 이해한 내용으로 적",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 634
+        },
+        {
+          "number": 32,
+          "stem_length": 40,
+          "stem_preview": "32. (가), (나)의 표현상 특징에 대한 설명으로 ",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 277
+        },
+        {
+          "number": 33,
+          "stem_length": 38,
+          "stem_preview": "33. [A]～[C]에 대한 이해로 적절하지 <u>않은",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 523
+        },
+        {
+          "number": 34,
+          "stem_length": 196,
+          "stem_preview": "34. <보기>를 참고하여 (가), (나)를 감상한 내",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 648
+        },
+        {
+          "number": 35,
+          "stem_length": 30,
+          "stem_preview": "35. 위 발표자의 말하기 방식으로 가장 적절한 것은?",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 212
+        },
+        {
+          "number": 36,
+          "stem_length": 294,
+          "stem_preview": "36. 다음은 발표를 준비하며 참고한 내용이다. ㉠～㉢",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 739
+        },
+        {
+          "number": 37,
+          "stem_length": 205,
+          "stem_preview": "37. 발표 내용을 바탕으로 할 때, <보기>에 나타난",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 434
+        },
+        {
+          "number": 38,
+          "stem_length": 34,
+          "stem_preview": "38. (가)의 ‘학생1’에 대한 설명으로 가장 적절한",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 221
+        },
+        {
+          "number": 39,
+          "stem_length": 56,
+          "stem_preview": "39. [A], [B]에서 나타나는 의사소통 방식에 대",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 464
+        },
+        {
+          "number": 40,
+          "stem_length": 233,
+          "stem_preview": "40. 다음은 (가)에서 ‘학생1’이 대화의 내용과 자",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 569
+        },
+        {
+          "number": 41,
+          "stem_length": 35,
+          "stem_preview": "41. (나)의 글쓰기 방식에 대한 설명으로 가장 적절",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 371
+        },
+        {
+          "number": 42,
+          "stem_length": 222,
+          "stem_preview": "42. 다음은 (나)의 마지막 문단을 고쳐 쓴 것이다.",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 477
+        },
+        {
+          "number": 43,
+          "stem_length": 55,
+          "stem_preview": "43. ‘작문 상황’을 고려하여 구상한 글쓰기 내용으로",
+          "has_bogi": false,
+          "choices_count": 5,
+          "content_length": 342
+        },
+        {
+          "number": 44,
+          "stem_length": 200,
+          "stem_preview": "44. <보기>는 초고를 읽은 교사의 조언이다. 이를 ",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 402
+        },
+        {
+          "number": 45,
+          "stem_length": 210,
+          "stem_preview": "45. <보기>는 초고를 보완하기 위해 추가로 수집한 ",
+          "has_bogi": true,
+          "choices_count": 5,
+          "content_length": 710
+        }
+      ]
+    }
+  }
+}
