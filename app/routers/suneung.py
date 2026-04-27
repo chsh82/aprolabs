@@ -33,11 +33,105 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 _BRACKET_RENDER_RE = re.compile(r'\[([A-Z]):START\](.*?)\[([A-Z]):END\]', re.DOTALL)
 
+# <img> 태그 내 줄바꿈 정규화
+_IMG_NORMALIZE_RE = re.compile(r'<img\b[\s\S]*?>', re.IGNORECASE)
 
-def _render_brackets(text: str) -> str:
-    """[A:START]...[A:END] 마커를 시각적 HTML 블록으로 변환"""
+# 허용할 태그/속성 화이트리스트
+_ALLOWED_TAGS = {'img', 'b', 'i', 'u', 'br', 'span', 'div', 'p', 'sub', 'sup'}
+_ALLOWED_ATTRS = {
+    'img':  {'src', 'alt', 'style', 'width', 'height'},
+    'span': {'style', 'class'},
+    'div':  {'style', 'class'},
+    'p':    {'style'},
+}
+_SAFE_STYLE_RE = re.compile(
+    r'^(text-align:(left|center|right)'
+    r'|max-width:[^;]{0,30}'
+    r'|display:(block|inline|inline-block)'
+    r'|margin:[^;]{0,20}'
+    r'|padding:[^;]{0,20}'
+    r'|border-left:[^;]{0,40}'
+    r'|background:[^;]{0,30}'
+    r'|border-radius:[^;]{0,20}'
+    r'|white-space:[^;]{0,20}'
+    r'|color:[^;]{0,20}'
+    r'|font-[^:]{0,20}:[^;]{0,20}'
+    r')(;\s*|$)',
+    re.IGNORECASE,
+)
+_TAG_RE = re.compile(r'<(/?)(\w+)([^>]*)>', re.DOTALL)
+_ATTR_RE = re.compile(r'(\w[\w-]*)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+)))?')
+
+
+def _safe_style(style_str: str) -> str:
+    """style 속성에서 안전한 선언만 유지"""
+    parts = [s.strip() for s in style_str.split(';') if s.strip()]
+    safe = []
+    for p in parts:
+        if _SAFE_STYLE_RE.match(p + ';'):
+            safe.append(p)
+    return '; '.join(safe)
+
+
+def _sanitize_html(text: str) -> str:
+    """<img> 등 허용 태그는 유지하고 <script> 등 위험 태그는 제거"""
     if not text:
         return text
+
+    # 먼저 img 태그 내 줄바꿈 정규화
+    text = _IMG_NORMALIZE_RE.sub(lambda m: m.group(0).replace('\n', ' '), text)
+
+    def handle_tag(m: re.Match) -> str:
+        closing = m.group(1)   # '/' if closing tag
+        tag = m.group(2).lower()
+        attrs_raw = m.group(3)
+
+        if tag not in _ALLOWED_TAGS:
+            return ''          # 위험 태그 제거
+
+        if closing:
+            return f'</{tag}>'
+
+        # self-closing 태그 (img, br)
+        if tag in ('img', 'br'):
+            allowed_attr_names = _ALLOWED_ATTRS.get(tag, set())
+            safe_attrs = []
+            for am in _ATTR_RE.finditer(attrs_raw):
+                name = am.group(1).lower()
+                val = am.group(2) or am.group(3) or am.group(4) or ''
+                if name not in allowed_attr_names:
+                    continue
+                if name == 'style':
+                    val = _safe_style(val)
+                # src: 허용 경로만 (상대경로 or /uploads/)
+                if name == 'src' and not (val.startswith('/uploads/') or val.startswith('http')):
+                    continue
+                safe_attrs.append(f'{name}="{val}"')
+            return f'<{tag} {" ".join(safe_attrs)}>' if safe_attrs else f'<{tag}>'
+
+        # 일반 태그
+        allowed_attr_names = _ALLOWED_ATTRS.get(tag, set())
+        safe_attrs = []
+        for am in _ATTR_RE.finditer(attrs_raw):
+            name = am.group(1).lower()
+            val = am.group(2) or am.group(3) or am.group(4) or ''
+            if name not in allowed_attr_names:
+                continue
+            if name == 'style':
+                val = _safe_style(val)
+            safe_attrs.append(f'{name}="{val}"')
+        return f'<{tag} {" ".join(safe_attrs)}>' if safe_attrs else f'<{tag}>'
+
+    return _TAG_RE.sub(handle_tag, text)
+
+
+def _render_brackets(text: str) -> str:
+    """[A:START]...[A:END] 마커를 시각적 HTML 블록으로 변환 + HTML sanitize"""
+    if not text:
+        return text
+
+    # 허용 태그 보존 후 sanitize
+    text = _sanitize_html(text)
 
     def replace(m):
         label = m.group(1)
@@ -266,6 +360,30 @@ def run_pipeline(job_id: str, pdf_path: str):
         questions_data = segments.get("questions", [])
         attach_passage_idx(passages_data, questions_data)
 
+        # Phase 3: 자동 QA
+        job.status = "qa_checking"
+        db.commit()
+
+        from app.services.qa_validator import validate_segments as _validate_segs
+        from app.services.auto_patcher import auto_patch as _auto_patch_segs
+        qa_result = _validate_segs({"questions": questions_data}, pdf_path)
+
+        # Phase 4: 자동 패치
+        qa_patch_result = None
+        if qa_result["issues"]:
+            qa_patch_result = _auto_patch_segs(
+                {"questions": questions_data},
+                qa_result["issues"],
+                pdf_path,
+            )
+            _patched_qs = qa_patch_result["segments"].get("questions", [])
+            if isinstance(_patched_qs, str):
+                import json as _qjson
+                _patched_qs = _qjson.loads(_patched_qs)
+            questions_data = _patched_qs
+            # Phase 5: 재검증
+            qa_result = _validate_segs({"questions": questions_data}, pdf_path)
+
         job.raw_result = {
             "passages": passages_data,
             "questions": questions_data,
@@ -324,12 +442,21 @@ def run_pipeline(job_id: str, pdf_path: str):
                         q["explanation"] = answer_key[num]["explanation"]
 
         job.segments = {"passages": passages_data, "questions": questions_data}
-        # 교정 내역을 raw_result에 보존
         job.raw_result = {
             **(job.raw_result or {}),
             "verify_corrections": verify_corrections,
+            "qa_report": {
+                "passed": qa_result["passed"],
+                "stats": qa_result["stats"],
+                "issues": qa_result["issues"],
+                "patch_log": qa_patch_result["segments"].get("_patch_log", []) if qa_patch_result else [],
+            },
         }
         job.status = "reviewing"
+        if qa_patch_result and qa_patch_result["patched"]:
+            job.status = "reviewing (auto-patched)"
+        if not qa_result["passed"]:
+            job.status = "needs_attention"
         db.commit()
 
     except Exception as e:
