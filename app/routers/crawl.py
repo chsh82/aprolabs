@@ -451,6 +451,46 @@ def _parse_post_files(html: str, post_url: str,
             "post_url":      post_url,
         })
 
+    # ── fallback: 옛날 게시글 (daumcdn 직접 <a> 링크) ──────────────────
+    if not files:
+        for a in soup.select("a[href]"):
+            href = a.get("href", "")
+            text = a.get_text(strip=True)
+            if not any(d in href for d in ["daumcdn", "kakaocdn"]):
+                continue
+            if not text.lower().endswith(".pdf"):
+                continue
+
+            subject  = _extract_subject_label(text)
+            sub_type = _extract_sub_type(text)
+            filetype = _extract_filetype(text)
+            file_year = _extract_year(text) or year
+            file_exam = _extract_exam_type(text) or exam_type
+
+            if subj_filter and subj_filter not in subject:
+                continue
+            if filetype_filter and filetype != filetype_filter:
+                continue
+
+            grade = _extract_grade(text, file_exam) or _extract_grade(page_title, file_exam)
+            is_combined = subject == "국어" and not sub_type
+
+            files.append({
+                "title":         text,
+                "filename":      text,
+                "pdf_url":       href,
+                "year":          file_year,
+                "academic_year": _calc_academic_year(file_year, file_exam, text),
+                "exam_type":     file_exam,
+                "grade":         grade,
+                "subject":       subject,
+                "sub_type":      sub_type or ("통합" if is_combined else ""),
+                "file_type":     filetype,
+                "is_combined":   is_combined,
+                "is_duplicate":  False,
+                "post_url":      post_url,
+            })
+
     return files
 
 
