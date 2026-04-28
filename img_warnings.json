@@ -1,0 +1,37 @@
+[
+  {
+    "file": "2024학년도 수능_국어(화작) 문제.pdf",
+    "location": "지문8",
+    "message": "JSON에 <img> 1개 존재하나 Gemini가 [그림]을 감지하지 못함 — 재추출 시 확인",
+    "has_img": true,
+    "img_count": 1
+  },
+  {
+    "file": "2024학년도 수능_국어(언매) 문제 (1).pdf",
+    "location": "지문3",
+    "message": "JSON에 <img> 1개 존재하나 Gemini가 [그림]을 감지하지 못함 — 재추출 시 확인",
+    "has_img": true,
+    "img_count": 1
+  },
+  {
+    "file": "2024학년도 수능_국어(언매) 문제 (1).pdf",
+    "location": "지문8",
+    "message": "JSON에 <img> 1개 존재하나 Gemini가 [그림]을 감지하지 못함 — 재추출 시 확인",
+    "has_img": true,
+    "img_count": 1
+  },
+  {
+    "file": "2024학년도 수능_국어(언매) 문제 (1).pdf",
+    "location": "지문9",
+    "message": "Gemini가 [그림] 4개를 감지했으나 JSON에 <img> 없음 — 이미지 삽입 누락 확인 필요",
+    "has_img": true,
+    "img_count": 5
+  },
+  {
+    "file": "2024학년도 수능_국어(언매) 문제 (1).pdf",
+    "location": "지문10",
+    "message": "Gemini가 [그림] 1개를 감지했으나 JSON에 <img> 없음 — 이미지 삽입 누락 확인 필요",
+    "has_img": true,
+    "img_count": 2
+  }
+]

@@ -1,0 +1,8 @@
+{"kind": "warning", "location": "지문2", "message": "JSON의 <u> 태그가 PDF에서 미확인: '여론조사보도준칙」은' — 수동 확인 필요"}
+{"kind": "warning", "location": "지문2", "message": "JSON의 <u> 태그가 PDF에서 미확인: '㉡「공직선거법」의' — 수동 확인 필요"}
+{"kind": "warning", "location": "지문3", "message": "PDF 밑줄 텍스트를 지문에서 찾지 못함: '이상치를 포함하는 데이터에서 직선 L'"}
+{"kind": "warning", "location": "지문6", "message": "[A] 범위 내 텍스트 불일치 — 수동 확인 필요"}
+{"kind": "warning", "location": "지문6", "message": "[B] 범위 내 텍스트 불일치 — 수동 확인 필요"}
+{"kind": "warning", "location": "지문7", "message": "[B] 시작 위치는 찾았으나 끝 위치 특정 불가 — 수동 삽입 필요"}
+{"kind": "warning", "location": "지문8", "message": "JSON에 <img> 1개 존재하나 Gemini가 [그림]을 감지하지 못함 — 재추출 시 확인"}
+{"kind": "warning", "location": "지문11", "message": "대응하는 PDF 지문을 찾지 못했습니다. 수동 확인 필요"}

@@ -680,8 +680,8 @@ class VerifyAgent:
         if ratio >= threshold:
             # 신뢰도 충분 → 부분 교정 적용
             if use_stripped:
-                # 원본에서도 헤더를 제거한 버전으로 패치 적용
-                base_for_patch = _strip_passage_header(extracted)
+                # 헤더 텍스트만 제거하되 <img> 태그는 보존 (이미지 손실 방지)
+                base_for_patch = _strip_passage_header_keep_img(extracted)
                 corrected = _apply_text_patches(base_for_patch, stripped_ext, stripped_pdf)
             else:
                 corrected = _apply_text_patches(extracted, clean_ext, clean_pdf)
@@ -1553,10 +1553,29 @@ def _save_cache(pdf_path: Path, extracts: list) -> None:
         pass
 
 
+def _strip_passage_header_keep_img(text: str) -> str:
+    """<img> 태그를 보존하면서 헤더 텍스트만 제거.
+    패치 적용 기반 텍스트(base_for_patch)용 — 이미지를 살려야 할 때 사용.
+    """
+    t = text.strip()
+    # <img> 태그는 제거하지 않음
+    _TILDE_PAT = r'[~～∼\u223C\uFF5E]'
+    t = re.sub(rf'^\[?\d+{_TILDE_PAT}\d+\]?\s*다음[^\n]*물음에 답하시오\.?\s*\n+', '', t, flags=re.MULTILINE)
+    t = re.sub(r'^다음[^\n]*물음에 답하시오\.?\s*\n+', '', t, flags=re.MULTILINE)
+    _TILDE_PAT2 = r'[~～∼\u223C\uFF5E]'
+    t = re.sub(rf'^\[?\d+{_TILDE_PAT2}\d+\]?[^\n]*\n+', '', t, flags=re.MULTILINE)
+    t = re.sub(r'^다음은[^\n]+(?:이다|이다\.)\s*\n+', '', t, flags=re.MULTILINE)
+    t = re.sub(r'\*\s*확인 사항.*', '', t, flags=re.DOTALL)
+    t = re.sub(r'◦\s*답안지의 해당란.*', '', t, flags=re.DOTALL)
+    t = re.sub(r'^\((?:화법과 작문|언어와 매체)\)\s*\n+', '', t, flags=re.MULTILINE)
+    return t.strip()
+
+
 def _strip_passage_header(text: str) -> str:
     """
     수능 지문 앞의 헤더와 이미지·확인사항 등 Gemini가 추출하지 않는 부분 제거.
     Gemini는 순수 지문 본문만 추출하므로, 이를 제거해야 유사도가 정확해진다.
+    비교(유사도 계산)용으로만 사용. 패치 기반으로 쓸 때는 _strip_passage_header_keep_img 사용.
     """
     t = text.strip()
     # <img ...> 태그 제거

@@ -124,6 +124,10 @@ for fname, segments_raw, raw_json in rows:
             if isinstance(seg, dict):
                 seg_passages = seg.get('passages', []) or []
                 seg_questions = seg.get('questions', []) or []
+                if isinstance(seg_passages, str):
+                    seg_passages = json.loads(seg_passages)
+                if isinstance(seg_questions, str):
+                    seg_questions = json.loads(seg_questions)
         except Exception:
             pass
 
