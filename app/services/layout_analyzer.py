@@ -1011,6 +1011,13 @@ def is_digital_pdf(text: str, num_pages: int) -> bool:
     return (chars / num_pages) >= MIN_CHARS_PER_PAGE
 
 
+def _is_low_quality_text(text: str) -> bool:
+    """공백 비율 3% 미만 → 폰트 인코딩 문제로 띄어쓰기가 손실된 저품질 텍스트."""
+    if len(text) < 100:
+        return False
+    return text.count(' ') / len(text) < 0.03
+
+
 # ─────────────────────────────────────────
 # 스캔 PDF Fallback: Gemini OCR
 # ─────────────────────────────────────────

@@ -21,7 +21,7 @@ from app.database import get_db
 from app.models.question import Question, CATEGORIES, SUBCATEGORIES
 from app.models.passage import Passage, PipelineJob, ExamPaper
 from app.services.pdf_parser import pdf_to_images
-from app.services.layout_analyzer import extract_pdf_text, is_digital_pdf, ocr_all_pages
+from app.services.layout_analyzer import extract_pdf_text, is_digital_pdf, ocr_all_pages, _is_low_quality_text
 from app.services.segmenter import segment_text, attach_passage_idx
 from app.services.tagger import tag_all
 from app.services.vision_analyzer import analyze_all_pages, apply_structure_to_text
@@ -365,11 +365,20 @@ def run_pipeline(job_id: str, pdf_path: str):
 
         page_images = []
         if is_digital_pdf(raw_text, num_pages):
-            # 디지털 PDF: 텍스트 추출 성공, 구조 분석용 페이지 이미지 렌더링
-            job.status = f"analyzing (digital {num_pages}p)"
-            db.commit()
-            page_dir = os.path.join(UPLOAD_DIR, job_id, "pages")
-            page_images = pdf_to_images(pdf_path, page_dir, dpi=120)
+            if _is_low_quality_text(raw_text):
+                # 공백 비율 3% 미만 → 폰트 인코딩 문제 → Gemini OCR 재추출
+                scan_dir = os.path.join(UPLOAD_DIR, job_id, "pages")
+                page_images = pdf_to_images(pdf_path, scan_dir)
+                job.page_image_paths = page_images
+                job.status = f"analyzing (ocr-fallback 0/{len(page_images)})"
+                db.commit()
+                raw_text, _ = ocr_all_pages(page_images, job_id=job_id)
+            else:
+                # 정상 디지털 PDF: 구조 분석용 페이지 이미지 렌더링
+                job.status = f"analyzing (digital {num_pages}p)"
+                db.commit()
+                page_dir = os.path.join(UPLOAD_DIR, job_id, "pages")
+                page_images = pdf_to_images(pdf_path, page_dir, dpi=120)
         else:
             # 스캔 PDF: Gemini OCR fallback
             scan_dir = os.path.join(UPLOAD_DIR, job_id, "pages")
