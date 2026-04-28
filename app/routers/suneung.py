@@ -262,7 +262,7 @@ async def upload_pdf(
         async with aiofiles.open(answer_path, "wb") as f:
             await f.write(await answer_file.read())
 
-    for file in files[:20]:  # 최대 20개
+    for file in files[:100]:  # 최대 100개
         if not file.filename:
             continue
 

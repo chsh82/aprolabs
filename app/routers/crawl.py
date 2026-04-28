@@ -148,7 +148,7 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
 
     created = []
     async with httpx.AsyncClient(timeout=60, follow_redirects=True, headers=_HEADERS) as client:
-        for f in files[:20]:
+        for f in files[:100]:
             pdf_url   = f.get("pdf_url", "").strip()
             title     = f.get("title", "untitled")
             year      = f.get("year")
