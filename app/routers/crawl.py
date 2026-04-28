@@ -94,21 +94,17 @@ async def crawl_search(request: Request, db: Session = Depends(get_db)):
             )
         return JSONResponse({"ok": True, "files": all_files, "total": len(all_files)})
 
-    # ── 카테고리 스캔 ───────────────────────────────────────────────────
+    # ── 카테고리 스캔 (하위 카테고리 재귀 탐색) ────────────────────────
     category_url = source_url if source_url else CATEGORY_URL
 
     posts = []
     async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
-        for page_num in range(1, pages_to_scan + 1):
-            url = category_url + (f"?page={page_num}" if page_num > 1 else "")
-            try:
-                resp = await client.get(url)
-                page_posts = _parse_category_page(resp.text)
-                if not page_posts:
-                    break
-                posts.extend(page_posts)
-            except Exception as e:
-                return JSONResponse({"ok": False, "error": str(e)})
+        try:
+            posts = await _scan_category_recursive(
+                client, category_url, pages_to_scan, depth=0, visited=set(),
+            )
+        except Exception as e:
+            return JSONResponse({"ok": False, "error": str(e)})
 
     if year_filter:
         posts = [p for p in posts if _calc_academic_year(p.get("year", ""), p.get("exam_type", "")) == year_filter]
@@ -222,6 +218,98 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
             created.append({"title": title, "ok": True, "job_id": job_id})
 
     return JSONResponse({"ok": True, "created": created})
+
+
+# ─────────────────────────────────────────────
+# 카테고리 재귀 탐색
+# ─────────────────────────────────────────────
+def _extract_subcategory_urls(html: str, current_url: str) -> list[str]:
+    """카테고리 페이지에서 하위 카테고리 링크 추출."""
+    soup = BeautifulSoup(html, "html.parser")
+    urls = []
+    seen = set()
+    for a in soup.select("a[href*='/category/']"):
+        href = a.get("href", "").strip()
+        if not href:
+            continue
+        if href.startswith("/"):
+            href = "https://legendstudy.com" + href
+        if not href.startswith("http"):
+            continue
+        # 현재 URL과 동일하거나 상위 카테고리인 경우 제외
+        if href == current_url or href in seen:
+            continue
+        # 현재 URL이 href의 prefix이면 (하위 카테고리) 포함
+        # 현재 URL이 href의 prefix가 아니어도 /category/ 포함이면 포함
+        seen.add(href)
+        urls.append(href)
+    return urls
+
+
+async def _scan_category_recursive(
+    client,
+    url: str,
+    pages_to_scan: int,
+    depth: int = 0,
+    max_depth: int = 2,
+    visited: set = None,
+) -> list[dict]:
+    """
+    카테고리 페이지를 재귀적으로 탐색하여 게시글 목록 반환.
+    - 게시글이 있으면 pages_to_scan 페이지까지 수집 후 반환
+    - 게시글이 없고 하위 카테고리가 있으면 각 하위 카테고리 재귀 탐색
+    """
+    import asyncio
+    if visited is None:
+        visited = set()
+    if url in visited or depth > max_depth:
+        return []
+    visited.add(url)
+
+    # 1페이지 fetch
+    resp = await client.get(url)
+    html = resp.text
+    posts = _parse_category_page(html)
+
+    if posts:
+        # 게시글 발견 → 나머지 페이지도 수집
+        all_posts = list(posts)
+        for page_num in range(2, pages_to_scan + 1):
+            paged_url = url + (f"?page={page_num}" if "?" not in url else f"&page={page_num}")
+            if paged_url in visited:
+                break
+            visited.add(paged_url)
+            try:
+                r = await client.get(paged_url)
+                page_posts = _parse_category_page(r.text)
+                if not page_posts:
+                    break
+                all_posts.extend(page_posts)
+            except Exception:
+                break
+        return all_posts
+
+    # 게시글 없음 → 하위 카테고리 탐색
+    if depth >= max_depth:
+        return []
+
+    sub_urls = _extract_subcategory_urls(html, url)
+    if not sub_urls:
+        return []
+
+    sub_results = await asyncio.gather(
+        *[
+            _scan_category_recursive(client, su, pages_to_scan, depth + 1, max_depth, visited)
+            for su in sub_urls
+        ],
+        return_exceptions=True,
+    )
+
+    all_posts = []
+    for r in sub_results:
+        if isinstance(r, list):
+            all_posts.extend(r)
+    return all_posts
 
 
 # ─────────────────────────────────────────────
