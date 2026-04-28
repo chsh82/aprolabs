@@ -88,6 +88,7 @@ async def crawl_search(request: Request, db: Session = Depends(get_db)):
                                               subj_filter, filetype_filter)
             except Exception as e:
                 return JSONResponse({"ok": False, "error": str(e)})
+        all_files = _dedup_files(all_files)
         for f in all_files:
             f["is_duplicate"] = _check_duplicate(
                 db, f.get("academic_year"), f.get("exam_type"), f.get("sub_type"),
@@ -123,6 +124,7 @@ async def crawl_search(request: Request, db: Session = Depends(get_db)):
         for files in results:
             all_files.extend(files)
 
+    all_files = _dedup_files(all_files)
     for f in all_files:
         f["is_duplicate"] = _check_duplicate(
             db, f.get("academic_year"), f.get("exam_type"), f.get("sub_type"),
@@ -270,6 +272,7 @@ async def _scan_category_recursive(
     resp = await client.get(url)
     html = resp.text
     posts = _parse_category_page(html)
+    print(f"[crawl] 카테고리 {url} (depth={depth}): 게시글 {len(posts)}개 발견")
 
     if posts:
         # 게시글 발견 → 나머지 페이지도 수집
@@ -282,11 +285,13 @@ async def _scan_category_recursive(
             try:
                 r = await client.get(paged_url)
                 page_posts = _parse_category_page(r.text)
+                print(f"[crawl]   page={page_num}: {len(page_posts)}개")
                 if not page_posts:
                     break
                 all_posts.extend(page_posts)
             except Exception:
                 break
+        print(f"[crawl] 총 수집: {len(all_posts)}개 게시글")
         return all_posts
 
     # 게시글 없음 → 하위 카테고리 탐색
@@ -294,6 +299,7 @@ async def _scan_category_recursive(
         return []
 
     sub_urls = _extract_subcategory_urls(html, url)
+    print(f"[crawl] 하위 카테고리: {len(sub_urls)}개 → {sub_urls[:5]}")
     if not sub_urls:
         return []
 
@@ -535,6 +541,18 @@ def _extract_grade(text: str, exam_type: str = "") -> str:
     if "고3" in text or "3학년" in text:
         return "고3"
     return _EXAM_TO_GRADE.get(exam_type, "")
+
+
+def _dedup_files(files: list[dict]) -> list[dict]:
+    """pdf_url 기준 중복 제거."""
+    seen = set()
+    result = []
+    for f in files:
+        key = f.get("pdf_url", "")
+        if key and key not in seen:
+            seen.add(key)
+            result.append(f)
+    return result
 
 
 def _check_duplicate(db, academic_year, exam_type: str, sub_type: str) -> bool:
