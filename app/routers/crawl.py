@@ -201,7 +201,7 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
                 continue
 
             job_id   = str(uuid.uuid4())
-            filename = f"{title}.pdf"
+            filename = title if title.lower().endswith(".pdf") else f"{title}.pdf"
             pdf_path = os.path.join(UPLOAD_DIR, f"{job_id}.pdf")
 
             with open(pdf_path, "wb") as fp:
