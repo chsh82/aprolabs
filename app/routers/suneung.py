@@ -398,39 +398,39 @@ def run_pipeline(job_id: str, pdf_path: str):
         except Exception:
             pass
 
-        # Phase 3.5: verify_agent — PDF 이미지 vs JSON 자동 교정
+        # Phase 3.5: verify_agent — ANTHROPIC_API_KEY 없으면 skip
         verify_corrections = []
-        try:
-            import sys, pathlib
-            sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
-            from verify_agent import run as verify_run
+        if os.getenv("ANTHROPIC_API_KEY", ""):
+            try:
+                import sys, pathlib
+                sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
+                from verify_agent import run as verify_run
 
-            job.status = "verifying"
-            db.commit()
+                job.status = "verifying"
+                db.commit()
 
-            result = verify_run(
-                pdf_path=pdf_path,
-                segments_json={"passages": passages_data, "questions": questions_data},
-                dpi=120,
-                verbose=False,
-            )
+                result = verify_run(
+                    pdf_path=pdf_path,
+                    segments_json={"passages": passages_data, "questions": questions_data},
+                    dpi=120,
+                    verbose=False,
+                )
 
-            # 교정된 지문 내용 반영
-            for i, corrected_p in enumerate(result.segments.passages):
-                if i < len(passages_data):
-                    passages_data[i]["content"] = corrected_p.content
+                for i, corrected_p in enumerate(result.segments.passages):
+                    if i < len(passages_data):
+                        passages_data[i]["content"] = corrected_p.content
 
-            verify_corrections = [
-                {"kind": c.kind, "location": c.location, "message": c.message}
-                for c in result.corrections
-            ]
-        except Exception as ve:
-            import traceback
-            verify_corrections = [{
-                "kind": "error",
-                "location": "verify_agent",
-                "message": f"{ve}\n{traceback.format_exc()[-300:]}",
-            }]
+                verify_corrections = [
+                    {"kind": c.kind, "location": c.location, "message": c.message}
+                    for c in result.corrections
+                ]
+            except Exception as ve:
+                import traceback
+                verify_corrections = [{
+                    "kind": "error",
+                    "location": "verify_agent",
+                    "message": f"{ve}\n{traceback.format_exc()[-300:]}",
+                }]
 
         # Phase 4: 정답/해설 파싱 (파일이 있는 경우)
         if job.answer_file_path and os.path.exists(job.answer_file_path):
