@@ -60,7 +60,7 @@ def crawl_page(request: Request):
 # POST /crawl/search  — 글 목록 수집
 # ─────────────────────────────────────────────
 @router.post("/search")
-async def crawl_search(request: Request):
+async def crawl_search(request: Request, db: Session = Depends(get_db)):
     """카테고리 페이지 스캔 → 각 글에서 PDF 수집.
     source_url이 단일 글 URL(/숫자)이면 해당 페이지만 파싱.
     source_url이 비어있으면 기본 CATEGORY_URL 스캔.
@@ -88,6 +88,10 @@ async def crawl_search(request: Request):
                                               subj_filter, filetype_filter)
             except Exception as e:
                 return JSONResponse({"ok": False, "error": str(e)})
+        for f in all_files:
+            f["is_duplicate"] = _check_duplicate(
+                db, f.get("academic_year"), f.get("exam_type"), f.get("sub_type"),
+            )
         return JSONResponse({"ok": True, "files": all_files, "total": len(all_files)})
 
     # ── 카테고리 스캔 ───────────────────────────────────────────────────
@@ -123,6 +127,10 @@ async def crawl_search(request: Request):
         for files in results:
             all_files.extend(files)
 
+    for f in all_files:
+        f["is_duplicate"] = _check_duplicate(
+            db, f.get("academic_year"), f.get("exam_type"), f.get("sub_type"),
+        )
     return JSONResponse({"ok": True, "files": all_files, "total": len(all_files)})
 
 
@@ -272,6 +280,7 @@ def _parse_post_files(html: str, post_url: str,
             continue
 
         grade = _extract_grade(raw_name, file_exam) or _extract_grade(page_title, file_exam)
+        is_combined = subject == "국어" and not sub_type
         display_title = f"{file_year} {file_exam} {subject}({sub_type}) {filetype}" if file_year else raw_name
 
         files.append({
@@ -285,6 +294,7 @@ def _parse_post_files(html: str, post_url: str,
             "subject":       subject,
             "sub_type":      sub_type,
             "file_type":     filetype,
+            "is_combined":   is_combined,
             "post_url":      post_url,
         })
 
@@ -399,3 +409,18 @@ def _extract_grade(text: str, exam_type: str = "") -> str:
     if "고3" in text or "3학년" in text:
         return "고3"
     return _EXAM_TO_GRADE.get(exam_type, "")
+
+
+def _check_duplicate(db, academic_year, exam_type: str, sub_type: str) -> bool:
+    """동일 학년도+시험+선택과목 조합이 이미 DB에 존재하는지 확인."""
+    from app.models.passage import PipelineJob
+    if not academic_year or not str(academic_year).isdigit():
+        return False
+    results = db.query(PipelineJob).filter(
+        PipelineJob.source_year == int(academic_year)
+    ).all()
+    for job in results:
+        if exam_type and exam_type in (job.exam_type or ""):
+            if sub_type and sub_type in (job.filename or ""):
+                return True
+    return False
