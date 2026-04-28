@@ -218,7 +218,7 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
             )
             if subject == "국어" and sub_type == "통합":
                 from app.services.split_combined_pdf import is_combined_exam, split_combined_exam
-                if is_combined_exam(pdf_path):
+                if False:  # 합본 분할 임시 비활성화 (UUID 파일명 버그)
                     splits = split_combined_exam(pdf_path, UPLOAD_DIR)
                     if splits:
                         for sp in splits:
