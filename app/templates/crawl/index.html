@@ -180,6 +180,7 @@ function renderFiles(list) {
   }
 
   list.forEach((f, i) => {
+    const origIdx = allFiles.indexOf(f);  // filtered 순번이 아닌 allFiles 원본 인덱스
     const isAnswer = f.file_type === '정답해설';
     const isDup    = !!f.is_duplicate;
     const isComb   = !!f.is_combined;
@@ -196,7 +197,7 @@ function renderFiles(list) {
 
     tr.innerHTML = `
       <td class="py-2.5 px-4">
-        <input type="checkbox" class="file-chk rounded" data-idx="${i}"
+        <input type="checkbox" class="file-chk rounded" data-idx="${origIdx}"
                ${isDup ? 'disabled' : (isAnswer ? '' : 'checked')}>
       </td>
       <td class="py-2.5 px-4 text-xs text-gray-700">
