@@ -317,6 +317,9 @@ async def upload_pdf(
 # ─────────────────────────────────────────
 def run_pipeline(job_id: str, pdf_path: str):
     """PDF → 텍스트 추출 → 세그멘테이션 → 태깅"""
+    USE_ANTHROPIC = bool(os.getenv("ANTHROPIC_API_KEY")) and \
+                    os.getenv("ENABLE_ANTHROPIC", "false").lower() == "true"
+
     from app.database import SessionLocal
 
     db = SessionLocal()
@@ -398,15 +401,16 @@ def run_pipeline(job_id: str, pdf_path: str):
         job.status = "tagging"
         db.commit()
 
-        # Phase 3: 사고력 태깅 (Claude, ANTHROPIC_API_KEY 없으면 skip)
-        try:
-            tag_all(passages_data, questions_data, job_id=job_id)
-        except Exception:
-            pass
+        # Phase 3: 사고력 태깅 (Claude — ENABLE_ANTHROPIC=true 일 때만)
+        if USE_ANTHROPIC:
+            try:
+                tag_all(passages_data, questions_data, job_id=job_id)
+            except Exception:
+                pass
 
-        # Phase 3.5: verify_agent — ANTHROPIC_API_KEY 없으면 skip
+        # Phase 3.5: verify_agent — ENABLE_ANTHROPIC=true 일 때만
         verify_corrections = []
-        if os.getenv("ANTHROPIC_API_KEY", ""):
+        if USE_ANTHROPIC:
             try:
                 import sys, pathlib
                 sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
