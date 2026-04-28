@@ -1,9 +1,9 @@
 """
-Phase 3: 사고력 유형 태깅 (Claude) - 전체 문항 일괄 처리
+Phase 3: 사고력 유형 태깅 (Claude) - 현재 비활성화, Anthropic API 미사용 환경
+태깅이 필요한 경우 나중에 별도 재분류 배치로 실행 예정.
 """
 import os
 import json
-import anthropic
 
 THINKING_TYPES = [
     "이항대립", "전제추론", "유추", "인과관계", "비교대조",
@@ -11,24 +11,17 @@ THINKING_TYPES = [
 ]
 
 
-def _log(job_id, input_tokens, output_tokens):
-    try:
-        from app.database import SessionLocal
-        from app.models.api_usage import ApiUsage, calc_cost
-        db = SessionLocal()
-        db.add(ApiUsage(
-            service="claude", model="claude-sonnet-4-6", purpose="tag",
-            job_id=job_id, input_tokens=input_tokens, output_tokens=output_tokens,
-            cost_usd=calc_cost("claude-sonnet-4-6", input_tokens, output_tokens),
-        ))
-        db.commit()
-        db.close()
-    except Exception:
-        pass
-
-
 def tag_all(passages_data: list, questions_data: list, job_id: str = None) -> None:
-    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    """Claude API를 이용한 태깅. ANTHROPIC_API_KEY 없으면 skip."""
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return
+
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+    except Exception:
+        return
 
     passages_summary = [
         {"idx": i, "content_preview": (p.get("content") or "")[:300]}
@@ -67,12 +60,30 @@ def tag_all(passages_data: list, questions_data: list, job_id: str = None) -> No
 
 JSON 외 다른 텍스트는 출력하지 마세요."""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=4096,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    _log(job_id, message.usage.input_tokens, message.usage.output_tokens)
+    try:
+        message = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            messages=[{"role": "user", "content": prompt}]
+        )
+    except Exception:
+        return
+
+    try:
+        from app.database import SessionLocal
+        from app.models.api_usage import ApiUsage, calc_cost
+        db = SessionLocal()
+        db.add(ApiUsage(
+            service="claude", model="claude-sonnet-4-6", purpose="tag",
+            job_id=job_id,
+            input_tokens=message.usage.input_tokens,
+            output_tokens=message.usage.output_tokens,
+            cost_usd=calc_cost("claude-sonnet-4-6", message.usage.input_tokens, message.usage.output_tokens),
+        ))
+        db.commit()
+        db.close()
+    except Exception:
+        pass
 
     text = message.content[0].text.strip()
     if "```" in text:

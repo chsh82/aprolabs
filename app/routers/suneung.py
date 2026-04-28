@@ -392,8 +392,11 @@ def run_pipeline(job_id: str, pdf_path: str):
         job.status = "tagging"
         db.commit()
 
-        # Phase 3: 사고력 태깅 (Claude, 일괄 1회)
-        tag_all(passages_data, questions_data, job_id=job_id)
+        # Phase 3: 사고력 태깅 (Claude, ANTHROPIC_API_KEY 없으면 skip)
+        try:
+            tag_all(passages_data, questions_data, job_id=job_id)
+        except Exception:
+            pass
 
         # Phase 3.5: verify_agent — PDF 이미지 vs JSON 자동 교정
         verify_corrections = []
@@ -773,6 +776,22 @@ def get_extracted_images(job_id: str):
     return JSONResponse([
         f"/uploads/suneung/{job_id}/images/{f}" for f in files
     ])
+
+
+@router.get("/review/{job_id}/images")
+def list_job_images(job_id: str):
+    """검수 UI용: images/ 디렉토리 이미지 목록 반환."""
+    img_dir = os.path.join(UPLOAD_DIR, job_id, "images")
+    if not os.path.isdir(img_dir):
+        return JSONResponse({"images": []})
+    images = []
+    for f in sorted(os.listdir(img_dir)):
+        if f.lower().endswith(('.png', '.jpg', '.jpeg')):
+            images.append({
+                "filename": f,
+                "url": f"/uploads/suneung/{job_id}/images/{f}",
+            })
+    return JSONResponse({"images": images})
 
 
 _AI_TO_ENG = {'오탐': 'odam', '실제오류': 'real_error', '보류': 'pending'}

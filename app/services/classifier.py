@@ -1,12 +1,19 @@
 import os
 import json
-import anthropic
-
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 
 async def classify_question(content: str, category: str = "") -> dict:
-    """문항 텍스트를 분석해서 자동 분류"""
+    """문항 텍스트를 분석해서 자동 분류. ANTHROPIC_API_KEY 없으면 빈 dict 반환."""
+    api_key = os.getenv("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return {}
+
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+    except Exception:
+        return {}
+
     category_hint = f"\n대분류는 '{category}'로 지정되어 있습니다." if category else ""
 
     prompt = f"""다음 시험 문항을 분석해서 JSON으로 분류해주세요.{category_hint}
@@ -27,18 +34,17 @@ async def classify_question(content: str, category: str = "") -> dict:
 
 판단이 어려우면 null로 응답하세요."""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=512,
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    text = message.content[0].text.strip()
-    if "```" in text:
-        text = text.split("```")[1]
-        if text.startswith("json"):
-            text = text[4:]
     try:
+        message = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=512,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        text = message.content[0].text.strip()
+        if "```" in text:
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
         return json.loads(text)
     except Exception:
         return {}
