@@ -73,7 +73,11 @@
         {% if job.job_number %}
         <span class="text-xs font-mono font-bold text-gray-400 flex-shrink-0">#{{ '%04d'|format(job.job_number) }}</span>
         {% endif %}
-        <span class="text-sm font-semibold text-gray-800 truncate">{{ job.filename }}</span>
+        {% if job.status in ['reviewing', 'reviewing (auto-patched)', 'verifying', 'needs_attention', 'done'] %}
+        <a href="/suneung/review/{{ job.id }}" class="text-sm font-semibold text-gray-800 hover:text-blue-600 hover:underline truncate">{{ job.filename }}</a>
+        {% else %}
+        <span class="text-sm font-semibold text-gray-400 truncate">{{ job.filename }}</span>
+        {% endif %}
         <span class="text-xs px-2 py-0.5 rounded-full {{ style }} font-medium status-badge">{{ label }}</span>
       </div>
       <div class="flex gap-3 text-xs text-gray-400 items-center">
