@@ -178,21 +178,45 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
             with open(pdf_path, "wb") as fp:
                 fp.write(r.content)
 
-            max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
-            job = PipelineJob(
-                id=job_id,
-                job_number=max_num + 1,
-                filename=filename,
-                file_path=pdf_path,
+            # 합본 감지 → 분할 후 2개 job 등록
+            common_meta = dict(
                 source=title,
                 source_year=int(year) if str(year).isdigit() else None,
                 exam_type=exam_type,
                 subject=subject,
-                sub_type=sub_type or None,
                 grade=grade or None,
                 status="ready",
             )
-            db.add(job)
+            if subject == "국어" and sub_type == "통합":
+                from app.services.split_combined_pdf import is_combined_exam, split_combined_exam
+                if is_combined_exam(pdf_path):
+                    splits = split_combined_exam(pdf_path, UPLOAD_DIR)
+                    if splits:
+                        for sp in splits:
+                            sp_id = str(uuid.uuid4())
+                            max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
+                            db.add(PipelineJob(
+                                id=sp_id,
+                                job_number=max_num + 1,
+                                filename=sp["filename"],
+                                file_path=sp["path"],
+                                sub_type=sp["sub_type"],
+                                **common_meta,
+                            ))
+                            db.commit()
+                        created.append({"title": title, "ok": True, "split": True,
+                                        "job_ids": [s["filename"] for s in splits]})
+                        continue  # 원본 합본 job skip
+
+            max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
+            db.add(PipelineJob(
+                id=job_id,
+                job_number=max_num + 1,
+                filename=filename,
+                file_path=pdf_path,
+                sub_type=sub_type or None,
+                **common_meta,
+            ))
             db.commit()
 
             created.append({"title": title, "ok": True, "job_id": job_id})

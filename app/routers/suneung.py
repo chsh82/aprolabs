@@ -290,6 +290,34 @@ async def upload_pdf(
         if not resolved_sub_type and subject == "국어":
             resolved_sub_type = "통합"
 
+        # 합본 감지 → 분할 후 2개 job 등록, 원본 skip
+        if subject == "국어" and resolved_sub_type == "통합":
+            from app.services.split_combined_pdf import is_combined_exam, split_combined_exam
+            if is_combined_exam(pdf_path):
+                splits = split_combined_exam(pdf_path, UPLOAD_DIR)
+                if splits:
+                    for sp in splits:
+                        sp_id = str(uuid.uuid4())
+                        max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
+                        sp_job = PipelineJob(
+                            id=sp_id,
+                            job_number=max_num + 1,
+                            filename=sp["filename"],
+                            file_path=sp["path"],
+                            source=source or None,
+                            source_year=int(source_year) if source_year.isdigit() else None,
+                            exam_type=exam_type,
+                            subject=subject,
+                            sub_type=sp["sub_type"],
+                            grade=resolved_grade,
+                            answer_file_path=answer_path,
+                            status="ready",
+                        )
+                        db.add(sp_job)
+                        db.commit()
+                        background_tasks.add_task(run_pipeline, sp_id, sp["path"])
+                    continue  # 원본 합본 job 생성 skip
+
         job = PipelineJob(
             id=job_id,
             job_number=max_num + 1,
