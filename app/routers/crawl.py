@@ -154,6 +154,7 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
             year      = f.get("year")
             exam_type = f.get("exam_type", "")
             subject   = f.get("subject", "국어")
+            sub_type  = f.get("sub_type", "") or ""
             file_type = f.get("file_type", "문제")
             grade     = f.get("grade", "") or _extract_grade("", exam_type)
 
@@ -187,6 +188,7 @@ async def crawl_import(request: Request, db: Session = Depends(get_db)):
                 source_year=int(year) if str(year).isdigit() else None,
                 exam_type=exam_type,
                 subject=subject,
+                sub_type=sub_type or None,
                 grade=grade or None,
                 status="ready",
             )
@@ -281,6 +283,8 @@ def _parse_post_files(html: str, post_url: str,
 
         grade = _extract_grade(raw_name, file_exam) or _extract_grade(page_title, file_exam)
         is_combined = subject == "국어" and not sub_type
+        if is_combined:
+            sub_type = "통합"
         display_title = f"{file_year} {file_exam} {subject}({sub_type}) {filetype}" if file_year else raw_name
 
         files.append({

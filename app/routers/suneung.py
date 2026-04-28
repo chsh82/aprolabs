@@ -274,7 +274,7 @@ async def upload_pdf(
             await f.write(await file.read())
 
         from sqlalchemy import func
-        from app.routers.crawl import _extract_grade
+        from app.routers.crawl import _extract_grade, _extract_sub_type
         max_num = db.query(func.max(PipelineJob.job_number)).scalar() or 0
 
         # 학년 자동 추출: 폼 입력 → 파일명 → 시험유형 규칙
@@ -285,6 +285,11 @@ async def upload_pdf(
             or None
         )
 
+        # sub_type 자동 설정: 파일명에서 추출, 국어이면서 비어있으면 "통합"
+        resolved_sub_type = _extract_sub_type(file.filename)
+        if not resolved_sub_type and subject == "국어":
+            resolved_sub_type = "통합"
+
         job = PipelineJob(
             id=job_id,
             job_number=max_num + 1,
@@ -294,6 +299,7 @@ async def upload_pdf(
             source_year=int(source_year) if source_year.isdigit() else None,
             exam_type=exam_type,
             subject=subject,
+            sub_type=resolved_sub_type or None,
             grade=resolved_grade,
             answer_file_path=answer_path,
             status="parsing",
