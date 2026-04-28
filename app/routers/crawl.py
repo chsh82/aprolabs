@@ -71,58 +71,89 @@ async def crawl_search(request: Request, db: Session = Depends(get_db)):
     pages_to_scan   = int(body.get("pages", 2))
     subj_filter     = body.get("subject", "")
     filetype_filter = body.get("filetype", "")
-    source_url      = str(body.get("source_url", "")).strip()
 
-    # source_url 정규화
-    if source_url and not source_url.startswith("http"):
-        source_url = "https://legendstudy.com/" + source_url.lstrip("/")
+    # source_urls 리스트 또는 단일 source_url 모두 수용
+    raw_urls = body.get("source_urls") or []
+    if not raw_urls:
+        single = str(body.get("source_url", "")).strip()
+        if single:
+            raw_urls = [single]
+
+    # 정규화 + 최대 20개
+    def _normalize_url(u: str) -> str:
+        u = u.strip()
+        if u and not u.startswith("http"):
+            u = "https://legendstudy.com/" + u.lstrip("/")
+        return u
+
+    source_urls = [_normalize_url(u) for u in raw_urls if u.strip()][:20]
 
     all_files = []
 
-    # ── 단일 글 URL인 경우 (예: legendstudy.com/1700) ──────────────────
-    if source_url and re.search(r"legendstudy\.com/\d+$", source_url):
-        async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
+    async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
+
+        # ── URL이 주어진 경우 ────────────────────────────────────────────
+        if source_urls:
+            post_urls   = [u for u in source_urls if re.search(r"legendstudy\.com/\d+$", u)]
+            cat_urls    = [u for u in source_urls if u not in post_urls]
+
+            # 개별 글 URL: 병렬 파싱
+            if post_urls:
+                async def fetch_post(url):
+                    try:
+                        r = await client.get(url)
+                        return _parse_post_files(r.text, url, subj_filter, filetype_filter)
+                    except Exception:
+                        return []
+                post_results = await asyncio.gather(*[fetch_post(u) for u in post_urls])
+                for files in post_results:
+                    all_files.extend(files)
+
+            # 카테고리 URL: 재귀 스캔 병렬
+            for cat_url in cat_urls:
+                try:
+                    posts = await _scan_category_recursive(
+                        client, cat_url, pages_to_scan, depth=0, visited=set(),
+                    )
+                    if year_filter:
+                        posts = [p for p in posts
+                                 if _calc_academic_year(p.get("year", ""), p.get("exam_type", "")) == year_filter]
+                    posts = [p for p in posts if _is_korean_related(p.get("title", ""))]
+                    async def fetch_files(post):
+                        try:
+                            resp = await client.get(post["url"])
+                            return _parse_post_files(resp.text, post["url"], subj_filter, filetype_filter)
+                        except Exception:
+                            return []
+                    cat_results = await asyncio.gather(*[fetch_files(p) for p in posts])
+                    for files in cat_results:
+                        all_files.extend(files)
+                except Exception as e:
+                    return JSONResponse({"ok": False, "error": str(e)})
+
+        # ── URL 없음 → 기본 카테고리 스캔 ──────────────────────────────
+        else:
             try:
-                resp = await client.get(source_url)
-                all_files = _parse_post_files(resp.text, source_url,
-                                              subj_filter, filetype_filter)
+                posts = await _scan_category_recursive(
+                    client, CATEGORY_URL, pages_to_scan, depth=0, visited=set(),
+                )
             except Exception as e:
                 return JSONResponse({"ok": False, "error": str(e)})
-        all_files = _dedup_files(all_files)
-        for f in all_files:
-            f["is_duplicate"] = _check_duplicate(
-                db, f.get("academic_year"), f.get("exam_type"), f.get("sub_type"),
-            )
-        return JSONResponse({"ok": True, "files": all_files, "total": len(all_files)})
 
-    # ── 카테고리 스캔 (하위 카테고리 재귀 탐색) ────────────────────────
-    category_url = source_url if source_url else CATEGORY_URL
+            if year_filter:
+                posts = [p for p in posts
+                         if _calc_academic_year(p.get("year", ""), p.get("exam_type", "")) == year_filter]
+            posts = [p for p in posts if _is_korean_related(p.get("title", ""))]
 
-    posts = []
-    async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
-        try:
-            posts = await _scan_category_recursive(
-                client, category_url, pages_to_scan, depth=0, visited=set(),
-            )
-        except Exception as e:
-            return JSONResponse({"ok": False, "error": str(e)})
-
-    if year_filter:
-        posts = [p for p in posts if _calc_academic_year(p.get("year", ""), p.get("exam_type", "")) == year_filter]
-    posts = [p for p in posts if _is_korean_related(p.get("title", ""))]
-
-    async with httpx.AsyncClient(timeout=20, follow_redirects=True, headers=_HEADERS) as client:
-        async def fetch_files(post):
-            try:
-                resp = await client.get(post["url"])
-                return _parse_post_files(resp.text, post["url"],
-                                         subj_filter, filetype_filter)
-            except Exception:
-                return []
-
-        results = await asyncio.gather(*[fetch_files(p) for p in posts])
-        for files in results:
-            all_files.extend(files)
+            async def fetch_files_default(post):
+                try:
+                    resp = await client.get(post["url"])
+                    return _parse_post_files(resp.text, post["url"], subj_filter, filetype_filter)
+                except Exception:
+                    return []
+            results = await asyncio.gather(*[fetch_files_default(p) for p in posts])
+            for files in results:
+                all_files.extend(files)
 
     all_files = _dedup_files(all_files)
     for f in all_files:

@@ -10,10 +10,22 @@
 {# ── 검색 필터 ── #}
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
   <div class="flex flex-wrap gap-4 items-end">
-    <div class="w-full sm:w-auto">
-      <label class="block text-xs font-semibold text-gray-500 mb-1">페이지 URL <span class="font-normal text-gray-400">(비우면 기본 카테고리 스캔)</span></label>
-      <input id="inp-url" type="text" placeholder="예: https://legendstudy.com/1700"
-             class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    <div class="w-full">
+      <div class="flex items-center gap-2 mb-1">
+        <label class="text-xs font-semibold text-gray-500">페이지 URL</label>
+        <span class="text-xs text-gray-400">(비우면 기본 카테고리 스캔 · 최대 20개)</span>
+        <button onclick="addUrlRow()" id="btn-add-url"
+                class="ml-1 text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition">
+          + URL 추가
+        </button>
+      </div>
+      <div id="url-list" class="flex flex-col gap-1.5">
+        <div class="url-row flex items-center gap-1.5">
+          <input type="text" placeholder="예: https://legendstudy.com/1700"
+                 class="url-inp border border-gray-200 rounded-lg px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <button onclick="removeUrlRow(this)" class="text-gray-300 hover:text-red-400 text-lg leading-none hidden">✕</button>
+        </div>
+      </div>
     </div>
 
     <div>
@@ -132,22 +144,56 @@
 <script>
 let allFiles = [];
 
+function getUrls() {
+  return Array.from(document.querySelectorAll('.url-inp'))
+    .map(el => el.value.trim()).filter(Boolean);
+}
+
+function addUrlRow() {
+  const list = document.getElementById('url-list');
+  if (list.children.length >= 20) { showToast('URL은 최대 20개까지 입력할 수 있습니다.', 3000); return; }
+  const row = document.createElement('div');
+  row.className = 'url-row flex items-center gap-1.5';
+  row.innerHTML = `
+    <input type="text" placeholder="예: https://legendstudy.com/1700"
+           class="url-inp border border-gray-200 rounded-lg px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    <button onclick="removeUrlRow(this)" class="text-gray-300 hover:text-red-400 text-lg leading-none">✕</button>`;
+  list.appendChild(row);
+  _syncRemoveButtons();
+  row.querySelector('input').focus();
+}
+
+function removeUrlRow(btn) {
+  const list = document.getElementById('url-list');
+  if (list.children.length <= 1) { btn.closest('.url-row').querySelector('input').value = ''; return; }
+  btn.closest('.url-row').remove();
+  _syncRemoveButtons();
+}
+
+function _syncRemoveButtons() {
+  const rows = document.querySelectorAll('.url-row');
+  rows.forEach((row, i) => {
+    const btn = row.querySelector('button');
+    if (btn) btn.classList.toggle('hidden', rows.length === 1 && i === 0);
+  });
+}
+
 async function doSearch() {
   const year     = document.getElementById('sel-year').value;
   const subject  = document.getElementById('sel-subj').value;
   const filetype = document.getElementById('sel-filetype').value;
   const pages    = document.getElementById('sel-pages').value;
+  const source_urls = getUrls();
 
   document.getElementById('files-area').classList.add('hidden');
   document.getElementById('empty-msg').classList.add('hidden');
   document.getElementById('loading-msg').classList.remove('hidden');
 
   try {
-    const source_url = document.getElementById('inp-url').value.trim();
     const res = await fetch('/crawl/search', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({year, subject, filetype, pages: parseInt(pages), source_url}),
+      body: JSON.stringify({year, subject, filetype, pages: parseInt(pages), source_urls}),
     });
     const data = await res.json();
     document.getElementById('loading-msg').classList.add('hidden');
