@@ -288,7 +288,7 @@ def _parse_post_files(html: str, post_url: str,
             "filename":      raw_name,
             "pdf_url":       pdf_url,
             "year":          file_year,
-            "academic_year": _calc_academic_year(file_year, file_exam),
+            "academic_year": _calc_academic_year(file_year, file_exam, raw_name),
             "exam_type":     file_exam,
             "grade":         grade,
             "subject":       subject,
@@ -336,13 +336,16 @@ def _is_korean_related(title: str) -> bool:
     return any(k in title for k in keywords)
 
 
-def _calc_academic_year(year_str: str, exam_type: str) -> str:
+def _calc_academic_year(year_str: str, exam_type: str, raw_name: str = "") -> str:
     """시행 연도 + 시험 유형 → 학년도 계산.
+    파일명에 '학년도'가 이미 포함된 경우 추출 연도가 곧 학년도이므로 +1 생략.
     수능/모의평가: 학년도 = 시행연도 + 1
     학력평가: 학년도 = 시행연도
     """
     if not year_str or not str(year_str).isdigit():
         return year_str or ""
+    if "학년도" in raw_name:
+        return year_str
     year = int(year_str)
     if exam_type and any(k in exam_type for k in ("수능", "모의", "모평")):
         return str(year + 1)
@@ -350,19 +353,26 @@ def _calc_academic_year(year_str: str, exam_type: str) -> str:
 
 
 def _extract_year(text: str) -> str:
+    # 4자리 연도 (학년도/년 접미사 우선)
     m = re.search(r"(20\d{2})(?:학년도|년)", text)
     if m:
         return m.group(1)
     m = re.search(r"(20\d{2})", text)
-    return m.group(1) if m else ""
+    if m:
+        return m.group(1)
+    # 2자리 연도: "25학년도" → "2025"
+    m = re.search(r"(\d{2})학년도", text)
+    if m:
+        return str(2000 + int(m.group(1)))
+    return ""
 
 
 def _extract_exam_type(text: str) -> str:
     if "수능" in text:
         return "수능"
-    if "9월" in text and ("모의" in text or "평가" in text):
+    if "9월" in text and ("모의" in text or "평가" in text or "_" in text):
         return "9월 모의평가"
-    if "6월" in text and ("모의" in text or "평가" in text):
+    if "6월" in text and ("모의" in text or "평가" in text or "_" in text):
         return "6월 모의평가"
     if "3월" in text:
         return "3월 학력평가"
