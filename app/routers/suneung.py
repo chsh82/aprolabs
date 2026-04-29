@@ -1031,6 +1031,24 @@ async def save_segments(job_id: str, request: Request, db: Session = Depends(get
     return JSONResponse({"ok": True})
 
 
+@router.post("/review/{job_id}/correct")
+async def correct_text(job_id: str, db: Session = Depends(get_db)):
+    """2차 AI 텍스트 교정 실행"""
+    from app.services.text_corrector import correct_job
+    try:
+        result = correct_job(job_id, db)
+        if "error" in result:
+            return JSONResponse({"ok": False, "error": result["error"]})
+        return JSONResponse({
+            "ok": True,
+            "corrected": result.get("corrected", 0),
+            "total": result.get("total", 0),
+            "results": result.get("results", []),
+        })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)})
+
+
 @router.post("/review/{job_id}/rerun-agent")
 async def rerun_agent(job_id: str, db: Session = Depends(get_db)):
     """verify_agent 만 재실행해서 교정 결과를 갱신"""

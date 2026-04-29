@@ -116,6 +116,11 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
                      border:1px solid #fcd34d;border-radius:8px;cursor:pointer;font-weight:500;">
         🤖 에이전트 재실행
       </button>
+      <button id="correct-btn" onclick="runCorrection()"
+              style="padding:6px 12px;font-size:12px;background:#f3e8ff;color:#7e22ce;
+                     border:1px solid #d8b4fe;border-radius:8px;cursor:pointer;font-weight:500;">
+        ✨ AI 텍스트 교정
+      </button>
       <button onclick="saveSegments()"
               style="padding:6px 12px;font-size:12px;background:#f3f4f6;color:#374151;
                      border:none;border-radius:8px;cursor:pointer;font-weight:500;">
@@ -1519,6 +1524,31 @@ async function rerunAgent() {
     alert('요청 실패: ' + e);
     btn.disabled = false;
     btn.textContent = '🤖 에이전트 재실행';
+    btn.style.opacity = '1';
+  }
+}
+
+// ─── AI 텍스트 교정 ──────────────────────────
+async function runCorrection() {
+  if (!confirm('Gemini Vision으로 텍스트를 교정합니다. 비용이 발생합니다. 진행하시겠습니까?')) return;
+  const btn = document.getElementById('correct-btn');
+  btn.disabled = true;
+  btn.textContent = '교정 중...';
+  btn.style.opacity = '0.6';
+  try {
+    const resp = await fetch('/suneung/review/{{ job.id }}/correct', {method: 'POST'});
+    const data = await resp.json();
+    if (data.ok) {
+      alert(`교정 완료: ${data.corrected}/${data.total}개 문항 수정됨`);
+      location.reload();
+    } else {
+      alert('교정 실패: ' + (data.error || '알 수 없는 오류'));
+    }
+  } catch (e) {
+    alert('교정 요청 실패: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ AI 텍스트 교정';
     btn.style.opacity = '1';
   }
 }
