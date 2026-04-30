@@ -227,7 +227,7 @@ def _extract_passages(text: str, positions: dict, sorted_nums: list) -> list:
 
     # 텍스트에서 가장 먼저 등장하는 문항 이전이 지문
     first_pos = pos_sorted[0][1]
-    pre = text[:first_pos].strip()
+    pre = _strip_passage_intro(text[:first_pos].strip())
     if len(pre) > 30:
         passages.append({
             "id": "p1",
@@ -242,20 +242,15 @@ def _extract_passages(text: str, positions: dict, sorted_nums: list) -> list:
         next_pos = pos_sorted[i + 1][1]
         block = text[pos:next_pos]
         chunk = _extract_passage_from_block(block)
-        # 30자 이상이면 보존 (너무 짧은 노이즈만 제외)
         if chunk and len(chunk) > 30:
-            # 지문 범위 안내문("다음 글을 읽고 물음에 답하시오")만 있는 경우 제외
-            stripped = re.sub(
-                r'^\s*\[?\s*\d+\s*[～~∼]\s*\d+\s*\]?\s*다음.*?답하시오[.\s]*',
-                '', chunk, flags=re.DOTALL
-            ).strip()
-            if len(stripped) < 30:
+            cleaned = _strip_passage_intro(chunk)
+            if len(cleaned) < 30:
                 continue
             passages.append({
                 "id": f"p{len(passages) + 1}",
                 "question_range": None,
-                "content": _clean(chunk),
-                "short": len(chunk) <= 150,
+                "content": _clean(cleaned),
+                "short": len(cleaned) <= 150,
             })
 
     # 수능 국어 최대 지문 수: 12개 초과 시 짧은 지문부터 제거 (오탐 방지)
@@ -494,6 +489,26 @@ def _extract_bogi(text: str) -> str | None:
 
 def _clean(text: str) -> str:
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+# ─────────────────────────────────────────
+# 제시문 앞 안내문 + 소개 이미지 제거
+# ─────────────────────────────────────────
+
+_INTRO_RE = re.compile(
+    r'^\s*\[?\s*\d+\s*[～~∼\-]\s*\d+\s*\]?\s*다음.*?(?:물음에\s*)?답하시오[.．。]?\s*'
+    r'|^\s*다음\s+글을\s+읽고\s+(?:물음에\s+)?답하시오[.．。]?\s*',
+    re.DOTALL,
+)
+_GAP_IMG_RE = re.compile(r'\[\[IMG:[^\]]*(?:gapR|gapL)[^\]]*\]\]\s*')
+
+
+def _strip_passage_intro(text: str) -> str:
+    """제시문 앞 안내문 및 소개용 gap 이미지 제거."""
+    text = _INTRO_RE.sub('', text).strip()
+    # 앞 200자 이내 gapR/gapL 이미지만 제거 (본문 중간 이미지는 유지)
+    prefix = _GAP_IMG_RE.sub('', text[:200])
+    return (prefix + text[200:]).strip()
 
 
 def _normalize_whitespace(text: str) -> str:
