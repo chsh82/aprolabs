@@ -104,7 +104,11 @@
             파이프라인 시작 →
           </button>
         </form>
-        {% elif job.status == 'reviewing' %}
+        {% elif job.status in ['reviewing', 'reviewing (auto-patched)', 'needs_attention'] %}
+        <button onclick="runCorrection('{{ job.id }}', this)"
+                class="px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white text-xs font-medium rounded-lg transition">
+          ✨ 교정
+        </button>
         <a href="/suneung/review/{{ job.id }}"
            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
           검수하기 →
@@ -205,6 +209,30 @@ function onCheck() {
 function toggleAll(checked) {
   document.querySelectorAll('.job-chk').forEach(c => c.checked = checked);
   onCheck();
+}
+
+async function runCorrection(jobId, btn) {
+  btn.disabled = true;
+  btn.textContent = '교정 중...';
+  btn.style.opacity = '0.6';
+  try {
+    const resp = await fetch('/suneung/review/' + jobId + '/correct', {method: 'POST'});
+    const data = await resp.json();
+    if (data.ok) {
+      btn.textContent = '✅ ' + data.corrected + '건 교정';
+      btn.classList.remove('bg-purple-500', 'hover:bg-purple-600');
+      btn.classList.add('bg-green-500');
+      btn.style.opacity = '1';
+    } else {
+      btn.textContent = '❌ 실패';
+      btn.style.opacity = '1';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    btn.textContent = '❌ 오류';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+  }
 }
 
 async function bulkStart() {
