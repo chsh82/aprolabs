@@ -497,10 +497,10 @@ def _clean(text: str) -> str:
 # ─────────────────────────────────────────
 
 _INTRO_RE = re.compile(
-    r'^\s*\[?\s*\d+\s*[～~∼\-]\s*\d+\s*\]?\s*다음.{0,60}?(?:물음에\s*)?답하시오[.．。]?\s*'
-    r'|^\s*다음\s+글을\s+읽고\s+(?:물음에\s+)?답하시오[.．。]?\s*'
-    r'|^\s*\(가\)와\s*\(나\)는.{0,80}?답하시오[.．。]?\s*',
-    re.DOTALL | re.MULTILINE,
+    r'\[?\s*\d+\s*[～~∼\-]\s*\d+\s*\]?\s*다음.{0,80}?(?:물음에\s*)?답하시오[.．。]?\s*'
+    r'|\s*다음\s+(?:글을|대화를|토론을|발표를|강연을|글과\s*자료를).{0,80}?(?:물음에\s*)?답하시오[.．。]?\s*'
+    r'|\s*\(가\)(?:는|와).{0,80}?답하시오[.．。]?\s*',
+    re.DOTALL,
 )
 _GAP_IMG_RE = re.compile(r'\[\[IMG:[^\]]*(?:gapR|gapL)[^\]]*\]\]\s*')
 
@@ -514,13 +514,26 @@ def _strip_passage_intro(text: str) -> str:
 
 
 _DIALOGUE_RE = re.compile(
-    r'([.!?…」』])\s*((?:사회자|찬성\s*\d?|반대\s*\d?|면장|장녀|학생\s*\d?|선생님|교사|사회)\s*:)'
+    r'([.!?…」』。])[ \t　]*((?:'
+    r'사회자|진행자|발표자|토론자|사회'
+    r'|찬성\s*\d?|반대\s*\d?'
+    r'|청중\s*\d?|패널\s*\d?'
+    r'|[ABC]'
+    r'|면장|장녀|차녀|장남|차남|아들|딸|아버지|어머니|할머니|할아버지'
+    r'|학생\s*\d?|선생님|교사'
+    r')\s*:)'
+)
+
+_PRESENTATION_RE = re.compile(
+    r'([.!?…」』。])[ \t　]+(\((?:자료를|사진을|영상을|화면을|그림을|표를|그래프를)\s*[^)]{0,20}\))'
 )
 
 
 def _fix_dialogue_linebreaks(text: str) -> str:
-    """대화체 화자 표시 앞에 줄바꿈 삽입 (문장 끝 + 화자: 패턴)."""
-    return _DIALOGUE_RE.sub(r'\1\n\2', text)
+    """대화체 화자·발표 지시문 앞에 줄바꿈 삽입."""
+    text = _DIALOGUE_RE.sub(r'\1\n\2', text)
+    text = _PRESENTATION_RE.sub(r'\1\n\2', text)
+    return text
 
 
 def _normalize_whitespace(text: str) -> str:
