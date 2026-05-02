@@ -4,38 +4,76 @@
 """
 import os
 import re
+import sys
 import json
 
-STRUCTURE_PROMPT = """이 PDF 페이지는 수능 국어 시험지의 한 페이지입니다.
-페이지의 구조를 분석하여 JSON으로 출력하세요.
+STRUCTURE_PROMPT = """당신은 시험지 PDF 페이지의 메타구조를 인식하는 분석기입니다.
+본문 텍스트를 추출하지 마세요. **위치와 분류 정보만** 반환하세요.
 
-## 인식할 요소
+## 출력 형식 (JSON 객체, 배열 아님)
 
-1. **지문(passage)**: 문항 묶음의 본문
-   - 안내문("[15~17] 다음 글을 읽고 물음에 답하시오." 등)이 있다면 intro_text에 포함
-   - (가)/(나)/(다) 라벨이 있으면 passage_label에 표시
-   - 본문 첫 5~10단어를 first_words에 기록
-   - 어떤 문항들에 해당하는지 covers_questions에 배열로 기록
+{
+  "passages": [
+    {
+      "id": "p1",
+      "intro_snippet": "[15~17] 다음 글을...",
+      "first_5_words": "옛날 어느 마을에 한",
+      "covers_questions": [15, 16, 17],
+      "position": "top-left"
+    }
+  ],
+  "questions": [
+    {
+      "number": 15,
+      "first_5_words": "윗글에 대한 설명으로 적절한",
+      "has_visual": false,
+      "position": "mid-left"
+    }
+  ],
+  "visuals": [
+    {
+      "type": "bogi_box",
+      "belongs_to_question": 17,
+      "position": "bottom-right"
+    }
+  ]
+}
 
-2. **문항(question)**: 1~45번 문항
-   - 발문 첫 5~10단어를 first_words에 기록
-   - 보기/그림/표가 있으면 has_visual=true, visual_type 명시
-   - 보기가 없으면 has_visual=false
+## 규칙
 
-3. **시각 요소(visuals)**: <보기> 박스, 표, 그래프, 그림
-   - 어느 문항에 속하는지 belongs_to에 표시
-   - 종류를 type에 명시 (bogi_box / table / graph / diagram)
+1. 본문 텍스트 전체를 복사하지 마세요. first_5_words는 정확히 5단어만.
+2. passages/questions/visuals는 모두 **객체의 배열**이어야 합니다. 문자열 배열 금지.
+3. 페이지에 해당 요소가 없으면 빈 배열 [].
+4. position은 "top/mid/bottom" + "-left/-center/-right" 조합.
+5. 헤더, 푸터, 페이지번호 무시.
+6. JSON만 출력. 설명, 마크다운 코드블록 모두 금지."""
 
-## bbox_hint 작성법
-페이지를 9등분(상/중/하 × 좌/중/우)했을 때 위치를 자연어로 기술
-예: "top-left", "mid-right", "bottom-center"
+_EMPTY = {"passages": [], "questions": [], "visuals": []}
 
-## 주의사항
-- 헤더/푸터/페이지번호는 무시
-- 문항번호가 명시된 것만 question으로 인식
-- 정확한 좌표가 아닌 대략적 위치만 표시 (bbox_hint)
 
-JSON만 출력하세요. 설명 없이."""
+def _parse_response(raw: str) -> dict:
+    """마크다운 코드블록 제거 후 JSON 파싱. 실패 시 빈 구조 반환."""
+    text = raw.strip()
+    text = re.sub(r'^```(?:json)?\s*', '', text)
+    text = re.sub(r'\s*```\s*$', '', text)
+    text = text.strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        print(f"[vision_structure] JSON 파싱 실패. 응답 앞 200자:\n{text[:200]}", file=sys.stderr)
+        return {}
+
+
+def _validate_array(arr: list, field: str) -> list:
+    """배열의 각 항목이 dict인지 검증. 문자열 등 비정상 항목은 경고 후 제거."""
+    valid = []
+    for item in arr:
+        if isinstance(item, dict):
+            valid.append(item)
+        else:
+            print(f"[vision_structure] {field} 항목이 dict가 아님(무시): {repr(item)[:80]}", file=sys.stderr)
+    return valid
 
 
 def analyze_page_structure(page_image_path: str, page_num: int) -> dict:
@@ -47,29 +85,26 @@ def analyze_page_structure(page_image_path: str, page_num: int) -> dict:
         "page": 1,
         "passages": [
             {
-                "id": "p1_1",
-                "intro_text": "[15~17] 다음 글을 읽고 물음에 답하시오.",
-                "first_words": "옛날 한 마을에...",
-                "passage_label": "(가)",   # 없으면 null
+                "id": "p1",
+                "intro_snippet": "[15~17] 다음 글을...",
+                "first_5_words": "옛날 어느 마을에 한",
                 "covers_questions": [15, 16, 17],
-                "bbox_hint": "top-left to mid-right"
+                "position": "top-left"
             }
         ],
         "questions": [
             {
                 "number": 15,
-                "first_words": "윗글에 대한 설명으로",
+                "first_5_words": "윗글에 대한 설명으로 적절한",
                 "has_visual": false,
-                "visual_type": null,   # "table", "graph", "diagram", "bogi_box"
-                "bbox_hint": "mid-right"
+                "position": "mid-left"
             }
         ],
         "visuals": [
             {
                 "type": "bogi_box",
-                "belongs_to": "question_17",
-                "bbox_hint": "bottom-right",
-                "description": "토론 자료 제시 박스"
+                "belongs_to_question": 17,
+                "position": "bottom-right"
             }
         ]
     }
@@ -85,20 +120,15 @@ def analyze_page_structure(page_image_path: str, page_num: int) -> dict:
         contents=[STRUCTURE_PROMPT, img],
     )
 
-    raw = response.text.strip()
-    # 마크다운 코드블록 제거
-    raw = re.sub(r'^```[a-z]*\n?', '', raw, flags=re.MULTILINE)
-    raw = re.sub(r'\n?```$', '', raw, flags=re.MULTILINE)
-    raw = raw.strip()
+    if not response.text:
+        print(f"[vision_structure] 빈 응답 (page {page_num})", file=sys.stderr)
+        return {"page": page_num, **_EMPTY}
 
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        data = {}
+    data = _parse_response(response.text)
 
     return {
         "page": page_num,
-        "passages": data.get("passages", []),
-        "questions": data.get("questions", []),
-        "visuals": data.get("visuals", []),
+        "passages": _validate_array(data.get("passages", []), "passages"),
+        "questions": _validate_array(data.get("questions", []), "questions"),
+        "visuals":   _validate_array(data.get("visuals", []),   "visuals"),
     }
