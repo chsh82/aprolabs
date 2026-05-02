@@ -496,9 +496,10 @@ def _clean(text: str) -> str:
 # ─────────────────────────────────────────
 
 _INTRO_RE = re.compile(
-    r'^\s*\[?\s*\d+\s*[～~∼\-]\s*\d+\s*\]?\s*다음.*?(?:물음에\s*)?답하시오[.．。]?\s*'
-    r'|^\s*다음\s+글을\s+읽고\s+(?:물음에\s+)?답하시오[.．。]?\s*',
-    re.DOTALL,
+    r'^\s*\[?\s*\d+\s*[～~∼\-]\s*\d+\s*\]?\s*다음.{0,60}?(?:물음에\s*)?답하시오[.．。]?\s*'
+    r'|^\s*다음\s+글을\s+읽고\s+(?:물음에\s+)?답하시오[.．。]?\s*'
+    r'|^\s*\(가\)와\s*\(나\)는.{0,80}?답하시오[.．。]?\s*',
+    re.DOTALL | re.MULTILINE,
 )
 _GAP_IMG_RE = re.compile(r'\[\[IMG:[^\]]*(?:gapR|gapL)[^\]]*\]\]\s*')
 
@@ -531,10 +532,18 @@ def _normalize_whitespace(text: str) -> str:
     # <img> 태그 내 줄바꿈 정리 (속성 사이 개행 → 공백)
     text = re.sub(r'<img\b[\s\S]*?>', lambda m: m.group(0).replace('\n', ' '), text, flags=re.IGNORECASE)
 
-    # 각 줄 내의 다중 공백만 단일 공백으로 정규화 (줄바꿈은 보존)
+    # 각 줄 내 전각 공백·다중 공백 정규화 (줄바꿈 보존)
+    # 줄 시작 단일 　은 들여쓰기 마커로 유지, 나머지는 반각 공백으로 변환
     lines = text.split('\n')
-    lines = [re.sub(r'[ \t]{2,}', ' ', ln) for ln in lines]
-    text = '\n'.join(lines)
+    normalized = []
+    for ln in lines:
+        if ln.startswith('　'):
+            ln = '　' + ln[1:].replace('　', ' ')
+        else:
+            ln = ln.replace('　', ' ')
+        ln = re.sub(r'[ \t]{2,}', ' ', ln)
+        normalized.append(ln)
+    text = '\n'.join(normalized)
 
     # 마커 복원
     text = re.sub(r'\x00PROT(\d+)\x00', lambda m: protected[int(m.group(1))], text)
