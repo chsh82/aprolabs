@@ -10,7 +10,7 @@ import re
 import fitz  # PyMuPDF
 
 MIN_CHARS_PER_PAGE = 80
-MIN_GAP_PX = 30
+MIN_GAP_PX = 45
 
 # ── 제외 키워드 ───────────────────────────────
 SKIP_KEYWORDS = ['수험번호', '성명란', '제한시간', '홀수형', '짝수형',
@@ -203,9 +203,11 @@ def _extract_page_columns(page, page_num: int = None, img_save_dir: str = None) 
 
             all_items.append((x0, y0, x1, y1, text))
 
-    # 이미지 캡처: bogi → box → gap 순서로 실행하여 gap이 이미 처리된 영역을 중복 캡처하지 않도록
+    # 갭 기반 이미지 캡처 (벡터 그래픽)
     if img_save_dir and page_num:
-        # <보기> 섹션 이미지화 (먼저 실행)
+        gap_items = _capture_gaps(page, page_num, all_items, page_width, img_save_dir)
+        all_items.extend(gap_items)
+        # <보기> 섹션 이미지화
         all_items = _capture_bogi_as_images(page, page_num, all_items, mid_x, img_save_dir)
         # 레이블 없는 콘텐츠 박스 이미지화 (Q15, Q36 등)
         content_boxes = _collect_content_boxes(page, bracket_boxes)
@@ -213,9 +215,6 @@ def _extract_page_columns(page, page_num: int = None, img_save_dir: str = None) 
             all_items = _capture_boxes_as_images(
                 page, page_num, all_items, mid_x, content_boxes, img_save_dir
             )
-        # 갭 기반 이미지 캡처 (이미 이미지화된 영역 제외됨)
-        gap_items = _capture_gaps(page, page_num, all_items, page_width, img_save_dir)
-        all_items.extend(gap_items)
 
     # 2단 레이아웃 — (x0, y0, x1, y1, text) 5-튜플
     full_width, left_col, right_col = [], [], []
@@ -726,32 +725,11 @@ def _find_containing_box_bottom(page, x0: float, y0: float, x1: float, y1: float
                     return r.y1
     except Exception:
         pass
-
-    # 4개 별도 드로잉으로 구성된 박스 감지 (각 변이 독립적인 경우)
-    # bogi 하단 근처 수평선 중 x범위가 bogi를 포함하는 것의 최대 y 탐색
-    try:
-        bottom_lines = []
-        for d in page.get_drawings():
-            for item in d.get("items", []):
-                if item[0] == "l":
-                    p1, p2 = item[1], item[2]
-                    dx = abs(p1.x - p2.x)
-                    dy = abs(p1.y - p2.y)
-                    if dx > (x1 - x0) * 0.5 and dy < 4:
-                        ly = (p1.y + p2.y) / 2
-                        lx0 = min(p1.x, p2.x)
-                        lx1 = max(p1.x, p2.x)
-                        if lx0 <= x0 + 20 and lx1 >= x1 - 20 and y1 - 10 <= ly <= y1 + 60:
-                            bottom_lines.append(ly)
-        if bottom_lines:
-            return max(bottom_lines)
-    except Exception:
-        pass
     return None
 
 
 def _find_nearest_hline_below(page, y_ref: float, x0: float, x1: float,
-                               max_dist: float = 60) -> float | None:
+                               max_dist: float = 35) -> float | None:
     """
     y_ref 아래 max_dist 이내에 있는 수평선 중 가장 가까운 것의 y 좌표.
     <보기> 박스 하단선을 정확히 포함하기 위해 사용.
@@ -986,22 +964,6 @@ def _capture_boxes_as_images(page, page_num: int, all_items: list, mid_x: float,
     return result
 
 
-def _has_vector_drawings(page, y0: float, y1: float, x0: float, x1: float,
-                          min_items: int = 8) -> bool:
-    """지정 영역에 벡터 드로잉(선분/도형) 밀도가 높으면 True 반환."""
-    count = 0
-    try:
-        for d in page.get_drawings():
-            r = d.get("rect")
-            if r and r.x0 < x1 and r.x1 > x0 and r.y0 < y1 and r.y1 > y0:
-                count += len(d.get("items", []))
-                if count >= min_items:
-                    return True
-    except Exception:
-        pass
-    return False
-
-
 def _capture_gaps(page, page_num: int, items: list, page_width: float, img_save_dir: str) -> list:
     if not items:
         return []
@@ -1009,11 +971,6 @@ def _capture_gaps(page, page_num: int, items: list, page_width: float, img_save_
     page_height = page.rect.height
     y_top_limit = page_height * 0.05
     y_bot_limit = page_height * 0.90
-    # 이미 이미지화된 영역 Y범위 수집 (중복 캡처 방지)
-    img_y_ranges = [(it[1], it[3]) for it in items if it[4].startswith('[[IMG:')]
-
-    def _already_captured(gy0, gy1):
-        return any(iy0 <= gy0 + 5 and iy1 >= gy1 - 5 for iy0, iy1 in img_y_ranges)
 
     gap_items = []
     for col_tag, x_min, x_max in [
@@ -1028,16 +985,16 @@ def _capture_gaps(page, page_num: int, items: list, page_width: float, img_save_
         for it in col_items[1:]:
             y0_next = it[1]
             gap = y0_next - prev_y1
-            gy0, gy1 = prev_y1 + 2, y0_next - 2
-            # 최소 갭 또는 벡터 드로잉이 있는 작은 갭도 캡처
-            has_vector = (gap >= 15 and _has_vector_drawings(page, gy0, gy1, x_min, x_max))
-            if gap >= MIN_GAP_PX or has_vector:
-                if gy0 >= y_top_limit and gy1 <= y_bot_limit and not _already_captured(gy0, gy1):
-                    url = _save_crop(page, page_num, f"gap{col_tag}{int(gy0)}",
-                                     x_min, gy0, x_max, gy1, img_save_dir)
-                    if url:
-                        gap_items.append((x_min, (gy0 + gy1) / 2, x_max, gy1,
-                                          f"[[IMG:{url}]]"))
+            if gap >= MIN_GAP_PX:
+                gy0, gy1 = prev_y1 + 2, y0_next - 2
+                if gy0 < y_top_limit or gy1 > y_bot_limit:
+                    prev_y1 = max(prev_y1, it[3])
+                    continue
+                url = _save_crop(page, page_num, f"gap{col_tag}{int(gy0)}",
+                                 x_min, gy0, x_max, gy1, img_save_dir)
+                if url:
+                    gap_items.append((x_min, (gy0 + gy1) / 2, x_max, gy1,
+                                      f"[[IMG:{url}]]"))
             prev_y1 = max(prev_y1, it[3])
     return gap_items
 
