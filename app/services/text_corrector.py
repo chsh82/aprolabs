@@ -61,6 +61,19 @@ def _validate_correction(original: str, corrected: str) -> tuple[bool, str]:
     return True, "ok"
 
 
+def _find_page_for_question(question: dict, page_images: list) -> int:
+    """문항번호 기반으로 해당 페이지 인덱스를 추정."""
+    page_num = question.get("page")
+    if page_num and 0 <= page_num - 1 < len(page_images):
+        return page_num - 1
+    num = question.get("number", 1)
+    n = len(page_images)
+    # 수능 국어 45문항 기준: 1~15번(앞부분), 16~45번(뒷부분)
+    if num <= 15:
+        return min(n - 1, (num - 1) * n // 45)
+    return min(n - 1, num * n // 45)
+
+
 def correct_question(page_image_path: str, question: dict) -> dict:
     """한 문항의 텍스트를 Gemini Vision으로 교정."""
     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY", ""))
@@ -130,7 +143,7 @@ def correct_job(job_id: str, db_session) -> dict:
     corrected_count = 0
 
     for q in questions:
-        page_idx = min(len(page_images) - 1, (q.get("number", 1) - 1) // 3)
+        page_idx = _find_page_for_question(q, page_images)
         try:
             result = correct_question(page_images[page_idx], q)
             if result["changes"]:

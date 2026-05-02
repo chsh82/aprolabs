@@ -152,7 +152,7 @@ def apply_structure_to_text(raw_text: str, structure: dict) -> str:
 
     for rng in structure.get("labeled_ranges", []):
         proposed = (rng.get("label") or "A").strip().upper()[:1]
-        if not proposed:
+        if not proposed or not ('A' <= proposed <= 'Z'):
             proposed = "A"
 
         if proposed in used_labels:
@@ -177,6 +177,9 @@ def apply_structure_to_text(raw_text: str, structure: dict) -> str:
             if start_m and end_m and start_m.start() < end_m.end():
                 sp, ep = start_m.start(), end_m.end()
                 if _overlaps_choice_zone(sp, ep, choice_zones):
+                    continue
+                # 전체 텍스트의 50% 초과 범위는 오탐으로 간주하고 스킵
+                if (ep - sp) > len(text) * 0.5:
                     continue
                 text = (text[:sp]
                         + f"[{actual_label}:START]\n"

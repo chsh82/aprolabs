@@ -20,6 +20,7 @@ def segment_text(ocr_text: str, job_id: str = None, question_hints: list = None)
     clean = re.sub(r"--- 페이지 \d+ ---\n?", "", ocr_text)
     clean = re.sub(r"\n{3,}", "\n\n", clean).strip()
     clean = _normalize_whitespace(clean)
+    clean = _fix_dialogue_linebreaks(clean)
 
     # 문항 위치 탐색
     q_positions = _find_question_positions(clean, question_hints or [])
@@ -510,6 +511,16 @@ def _strip_passage_intro(text: str) -> str:
     # 앞 200자 이내 gapR/gapL 이미지만 제거 (본문 중간 이미지는 유지)
     prefix = _GAP_IMG_RE.sub('', text[:200])
     return (prefix + text[200:]).strip()
+
+
+_DIALOGUE_RE = re.compile(
+    r'([.!?…」』])\s*((?:사회자|찬성\s*\d?|반대\s*\d?|면장|장녀|학생\s*\d?|선생님|교사|사회)\s*:)'
+)
+
+
+def _fix_dialogue_linebreaks(text: str) -> str:
+    """대화체 화자 표시 앞에 줄바꿈 삽입 (문장 끝 + 화자: 패턴)."""
+    return _DIALOGUE_RE.sub(r'\1\n\2', text)
 
 
 def _normalize_whitespace(text: str) -> str:
