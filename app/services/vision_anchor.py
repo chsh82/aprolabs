@@ -126,14 +126,25 @@ def _find_text_position(pdf_path: str, page_num: int, search_text: str) -> tuple
 
 
 # ─────────────────────────────────────────
-# Step 3: 앵커 → 영역 확장
+# Step 3: 컬럼 판정 + 영역 확장
 # ─────────────────────────────────────────
 
+def _detect_column(anchor_pos: tuple, page_width: float) -> str:
+    """앵커 x 좌표로 좌측/우측 컬럼 판정."""
+    x0, _, _, _ = anchor_pos
+    return "left" if x0 < page_width * 0.5 else "right"
+
+
 def _expand_to_region(pdf_path: str, page_num: int, anchor_pos: tuple,
-                      next_anchor_pos: tuple | None) -> tuple:
+                      current_column: str,
+                      all_anchors_with_column: list,
+                      anchor_index: int) -> tuple:
     """
-    앵커 시작점에서 다음 앵커 직전까지를 영역으로 확장.
-    다음 앵커 없으면 페이지 하단(푸터 50pt 제외)까지.
+    같은 컬럼 안에서 다음 앵커까지 영역 확장.
+
+    Args:
+        all_anchors_with_column: [(pos, column, idx), ...] 정렬됨
+        anchor_index: 현재 앵커의 인덱스
     반환: (x0, y0, x1, y1)
     """
     doc = fitz.open(pdf_path)
@@ -143,12 +154,22 @@ def _expand_to_region(pdf_path: str, page_num: int, anchor_pos: tuple,
     doc.close()
 
     _, y0, _, _ = anchor_pos
+    mid_x = page_width * 0.5
 
-    if next_anchor_pos:
-        next_y = next_anchor_pos[1]
-        return (0, y0, page_width, max(y0 + 1, next_y - 5))
+    if current_column == "left":
+        col_x0, col_x1 = 30, mid_x - 5
     else:
-        return (0, y0, page_width, page_height - 50)
+        col_x0, col_x1 = mid_x + 5, page_width - 30
+
+    # 같은 컬럼의 다음 앵커 y 탐색
+    next_y = page_height - 50
+    for i in range(anchor_index + 1, len(all_anchors_with_column)):
+        next_pos, next_col, _ = all_anchors_with_column[i]
+        if next_col == current_column:
+            next_y = next_pos[1] - 5
+            break
+
+    return (col_x0, y0, col_x1, max(y0 + 1, next_y))
 
 
 # ─────────────────────────────────────────
@@ -208,14 +229,28 @@ def extract_structure_with_anchors(pdf_path: str, page_image_path: str, page_num
             elem["anchor_found"] = False
             elem["bbox"] = None
 
-    # 3. y좌표 순 정렬 후 영역 확장
+    # 3. 페이지 폭 가져오기
+    doc = fitz.open(pdf_path)
+    page_width = doc[page_num - 1].rect.width
+    doc.close()
+
+    # 4. 컬럼 판정 + (좌측 컬럼 먼저, y) 순으로 정렬
     found = [e for e in elements if e.get("anchor_found")]
-    found.sort(key=lambda e: e["_anchor_pos"][1])
+    for elem in found:
+        elem["_column"] = _detect_column(elem["_anchor_pos"], page_width)
+
+    found.sort(key=lambda e: (0 if e["_column"] == "left" else 1, e["_anchor_pos"][1]))
+
+    anchors_meta = [(e["_anchor_pos"], e["_column"], i) for i, e in enumerate(found)]
 
     for i, elem in enumerate(found):
-        next_pos = found[i + 1]["_anchor_pos"] if i + 1 < len(found) else None
-        elem["bbox"] = list(_expand_to_region(pdf_path, page_num, elem["_anchor_pos"], next_pos))
+        elem["bbox"] = list(_expand_to_region(
+            pdf_path, page_num,
+            elem["_anchor_pos"], elem["_column"],
+            anchors_meta, i,
+        ))
         del elem["_anchor_pos"]
+        del elem["_column"]
 
     total = max(len(elements), 1)
     success_count = sum(1 for e in elements if e.get("anchor_found"))
