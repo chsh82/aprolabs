@@ -475,6 +475,11 @@ def _smart_join_col(col: list, brackets: list = None) -> str:
     short_count = sum(1 for _, _, x1, _, _ in col if col_right > 0 and x1 < col_right * 0.80)
     is_poem_like = len(col) >= 3 and short_count / len(col) > 0.55
 
+    # 평균 줄 간격 계산 (문단 간격 판단 기준)
+    gaps = [col[i][1] - col[i - 1][3] for i in range(1, len(col))]
+    normal_gaps = [g for g in gaps if 0 < g < 50]
+    avg_gap = sum(normal_gaps) / len(normal_gaps) if normal_gaps else 10
+
     def _bracket_label(y0, y1):
         # 중점이 아닌 overlap 기반: 블록이 브라켓 범위와 조금이라도 겹치면 포함
         for b in brackets:
@@ -486,6 +491,12 @@ def _smart_join_col(col: list, brackets: list = None) -> str:
         px0, py0, px1, py1, ptxt = prev_item
         gap = curr_y0 - py1
         if _QUESTION_START_RE.match(curr_text):
+            return "\n\n"
+        # 들여쓰기(전각 공백)로 시작하면 새 문단
+        if curr_text.startswith('　'):
+            return "\n\n"
+        # 줄 간격이 평균의 1.8배 이상이면 문단 구분
+        if gap > avg_gap * 1.8 and gap > 8:
             return "\n\n"
         if gap > 15:
             return "\n\n"
