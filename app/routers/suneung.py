@@ -841,6 +841,66 @@ def list_job_images(job_id: str):
     return JSONResponse({"images": images})
 
 
+@router.post("/review/{job_id}/crop")
+async def crop_page_image(job_id: str, request: Request, db: Session = Depends(get_db)):
+    """PDF 페이지 이미지를 크롭하여 저장하고 URL 반환."""
+    job = db.get(PipelineJob, job_id)
+    if not job:
+        return JSONResponse({"ok": False, "error": "job not found"})
+
+    data = await request.json()
+    page = int(data.get("page", 0))
+    x    = int(data.get("x", 0))
+    y    = int(data.get("y", 0))
+    w    = int(data.get("w", 0))
+    h    = int(data.get("h", 0))
+
+    if w < 10 or h < 10:
+        return JSONResponse({"ok": False, "error": "영역이 너무 작습니다"})
+
+    job_root = os.path.join(UPLOAD_DIR, job_id)
+    page_images = []
+    for dir_name in ("pages", "images"):
+        dir_path = os.path.join(job_root, dir_name)
+        if not os.path.isdir(dir_path):
+            continue
+        files = sorted(f for f in os.listdir(dir_path)
+                       if f.lower().endswith(('.png', '.jpg', '.jpeg')))
+        if files:
+            page_images = [os.path.join(dir_path, f) for f in files]
+            break
+
+    if not page_images:
+        return JSONResponse({"ok": False, "error": "페이지 이미지를 찾을 수 없습니다"})
+    if page >= len(page_images):
+        return JSONResponse({"ok": False, "error": f"page {page} out of range"})
+
+    from PIL import Image as PILImage
+
+    img = PILImage.open(page_images[page])
+    x = max(0, min(x, img.width - 1))
+    y = max(0, min(y, img.height - 1))
+    w = min(w, img.width  - x)
+    h = min(h, img.height - y)
+
+    if w < 5 or h < 5:
+        return JSONResponse({"ok": False, "error": "크롭 후 이미지가 너무 작습니다"})
+
+    cropped  = img.crop((x, y, x + w, y + h))
+    img_dir  = os.path.join(UPLOAD_DIR, job_id, "images")
+    os.makedirs(img_dir, exist_ok=True)
+
+    filename  = f"crop_{uuid.uuid4().hex[:8]}.png"
+    save_path = os.path.join(img_dir, filename)
+    cropped.save(save_path)
+
+    return JSONResponse({
+        "ok": True,
+        "image_url": f"/uploads/suneung/{job_id}/images/{filename}",
+        "filename": filename,
+    })
+
+
 _AI_TO_ENG = {'오탐': 'odam', '실제오류': 'real_error', '보류': 'pending'}
 
 
