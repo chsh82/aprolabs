@@ -272,11 +272,11 @@ def _extract_passage_from_block(block: str) -> str | None:
     if last_choice < 0:
         return None
     after = block[last_choice:]
-    m = re.search(r'\n\n(\S.{80,})', after, re.DOTALL)
+    m = re.search(r'\n(\S.{80,})', after, re.DOTALL)
     if m:
         candidate = m.group(1).strip()
         # 단일 블록 텍스트 조각 방지: \n\n이 1개 이상 있어야 passage로 인정
-        if "\n\n" not in candidate:
+        if "\n" not in candidate:
             return None
         return candidate
     return None

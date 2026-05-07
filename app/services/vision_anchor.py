@@ -74,7 +74,7 @@ def _call_gemini_for_anchors(page_image_path: str) -> dict:
     img = Image.open(page_image_path)
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-pro",
         contents=[ANCHOR_PROMPT, img],
     )
 

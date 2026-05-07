@@ -293,7 +293,7 @@ async def upload_pdf(
         # 합본 감지 → 분할 후 2개 job 등록, 원본 skip
         if subject == "국어" and resolved_sub_type == "통합":
             from app.services.split_combined_pdf import is_combined_exam, split_combined_exam
-            if False:  # 합본 분할 임시 비활성화 (UUID 파일명 버그)
+            if is_combined_exam(pdf_path):  # 합본 분할 활성화
                 splits = split_combined_exam(pdf_path, UPLOAD_DIR)
                 if splits:
                     for sp in splits:

@@ -492,14 +492,14 @@ def _smart_join_col(col: list, brackets: list = None) -> str:
         gap = curr_y0 - py1
         if _QUESTION_START_RE.match(curr_text):
             return "\n\n"
-        # 들여쓰기(전각 공백)로 시작하면 새 문단
-        if curr_text.startswith('　'):
-            return "\n\n"
+        # 들여쓰기(전각 공백)로 시작하면 새 문단 (빈 줄 없이 줄바꿈만)
+        if curr_text.startswith('　'):  # 줄바꿈만
+            return "\n"
         # 줄 간격이 평균의 1.8배 이상이면 문단 구분
         if gap > avg_gap * 1.8 and gap > 8:
-            return "\n\n"
-        if gap > 15:
-            return "\n\n"
+            return "\n"
+        if gap > 15:  # 큰 간격도 줄바꿈만
+            return "\n"
         # 시 구조: 짧은 줄은 의도적 줄바꿈으로 처리
         if is_poem_like and col_right > 0 and px1 < col_right * 0.80:
             return "\n"
