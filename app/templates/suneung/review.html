@@ -1644,17 +1644,25 @@ function pdfZoomReset() { pdfZoom = 1.0; applyZoom(); }
 // ─── 이미지 크롭 캡처 ────────────────────────
 let cropMode = false;
 let cropStart = null;
+let cropTargetEl = null;  // 크롭 모드 진입 시 고정된 삽입 대상
 
 function toggleCropMode() {
   cropMode = !cropMode;
   const btn = document.getElementById('btn-crop-mode');
   const img = document.getElementById('pdf-current-img');
   if (cropMode) {
+    cropTargetEl = getTarget();
+    if (!cropTargetEl) {
+      cropMode = false;
+      showToast('먼저 텍스트 필드를 클릭하세요', 2000);
+      return;
+    }
     btn.style.background   = '#dbeafe';
     btn.style.borderColor  = '#3b82f6';
     if (img) img.style.cursor = 'crosshair';
     showToast('드래그로 캡처할 영역을 선택하세요', 2000);
   } else {
+    cropTargetEl = null;
     btn.style.background  = 'white';
     btn.style.borderColor = '#e5e7eb';
     if (img) img.style.cursor = 'default';
@@ -1742,7 +1750,18 @@ async function doCrop(cropData) {
       showToast('크롭 실패: ' + (result.error || ''), 2500);
       return;
     }
-    insertImgTag(result.image_url, result.filename || 'crop');
+    const tag = `<img src="${result.image_url}" alt="${result.filename || 'crop'}" style="max-width:100%;display:block;margin:8px 0">`;
+    if (cropTargetEl) {
+      pushUndo(cropTargetEl);
+      const s = cropTargetEl.selectionStart != null ? cropTargetEl.selectionStart : cropTargetEl.value.length;
+      cropTargetEl.value = cropTargetEl.value.slice(0, s) + '\n' + tag + '\n' + cropTargetEl.value.slice(s);
+      cropTargetEl.focus();
+      markDirty();
+      showToast('이미지 삽입됨 ✓', 1500);
+    } else {
+      await navigator.clipboard.writeText(tag);
+      showToast('이미지 태그 클립보드 복사됨', 2000);
+    }
     toggleCropMode();
   } catch(err) {
     showToast('크롭 오류: ' + err.message, 2500);
