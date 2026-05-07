@@ -10,6 +10,7 @@
 import os
 import re
 import uuid
+import json
 import aiofiles
 from typing import List
 from fastapi import APIRouter, Depends, Request, UploadFile, File, Form, BackgroundTasks
@@ -839,6 +840,52 @@ def list_job_images(job_id: str):
                 "url": f"/uploads/suneung/{job_id}/images/{f}",
             })
     return JSONResponse({"images": images})
+
+
+def _categorize_image(filename: str) -> str:
+    if "bogi"  in filename: return "보기"
+    if "gapL"  in filename: return "좌측 갭"
+    if "gapR"  in filename: return "우측 갭"
+    if "gap"   in filename: return "갭"
+    if "box"   in filename: return "박스"
+    if "img"   in filename: return "래스터"
+    return "기타"
+
+
+@router.get("/review/{job_id}/unused-images")
+def get_unused_images(job_id: str, db: Session = Depends(get_db)):
+    """segments에 삽입되지 않은 이미지 목록 반환 (crop_ 제외)."""
+    job = db.get(PipelineJob, job_id)
+    if not job:
+        return JSONResponse({"ok": False, "error": "job not found"})
+
+    img_dir = os.path.join(UPLOAD_DIR, job_id, "images")
+    all_images = []
+    if os.path.isdir(img_dir):
+        all_images = sorted(
+            f for f in os.listdir(img_dir)
+            if f.lower().endswith('.png') and not f.startswith('crop_')
+        )
+
+    used_images: set = set()
+    if job.segments:
+        seg_str = json.dumps(job.segments) if isinstance(job.segments, dict) else str(job.segments)
+        used_images = set(re.findall(r'images/([^"\']+\.png)', seg_str))
+
+    unused = [f for f in all_images if f not in used_images]
+    return JSONResponse({
+        "ok": True,
+        "unused": [
+            {
+                "filename": f,
+                "url": f"/uploads/suneung/{job_id}/images/{f}",
+                "category": _categorize_image(f),
+            }
+            for f in unused
+        ],
+        "total_saved": len(all_images),
+        "total_used": len(used_images),
+    })
 
 
 @router.post("/review/{job_id}/crop")

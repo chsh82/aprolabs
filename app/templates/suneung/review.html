@@ -279,7 +279,7 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
             style="padding:7px 14px;font-size:12px;font-weight:500;border:none;
                    border-bottom:2px solid transparent;margin-bottom:-2px;
                    background:none;color:#6b7280;cursor:pointer;">
-      이미지
+      이미지 (<span id="unused-count">…</span>)
     </button>
   </div>
 
@@ -759,6 +759,21 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
   <div id="panel-images"
        style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;
               padding:16px;background:#dbe4f0;">
+    <div id="img-stats-bar"
+         style="display:none;justify-content:space-between;align-items:center;
+                margin-bottom:10px;padding:7px 10px;background:white;
+                border-radius:8px;border:1px solid #e5e7eb;font-size:12px;color:#6b7280;">
+      <span>
+        저장 <span id="img-total-saved">0</span>개 &middot;
+        삽입 <span id="img-total-used">0</span>개 &middot;
+        <b style="color:#1f2937;">미사용 <span id="img-unused-count">0</span>개</b>
+      </span>
+      <button onclick="loadImgGallery(true)"
+              style="font-size:11px;padding:3px 8px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;color:#6b7280;">
+        새로고침
+      </button>
+    </div>
     <div id="img-gallery-loading"
          style="font-size:12px;color:#9ca3af;text-align:center;padding:40px 0;">
       불러오는 중…
@@ -1972,6 +1987,12 @@ window.addEventListener('beforeunload', e=>{
 document.getElementById('right-panel').style.overflowY = 'hidden';
 loadPages();
 
+// 미사용 이미지 카운트 미리 표시 (탭 전환 전에도 숫자 보이도록)
+fetch('/suneung/review/{{ job.id }}/unused-images')
+  .then(r => r.json())
+  .then(d => { if (d.ok) document.getElementById('unused-count').textContent = d.unused.length; })
+  .catch(() => { document.getElementById('unused-count').textContent = '?'; });
+
 // ─── 경고 판정 버튼 ───────────────────────────
 const WARN_BTN_ACTIVE = {
   odam:       { border:'#bbf7d0', bg:'#dcfce7', color:'#15803d' },
@@ -2256,31 +2277,49 @@ async function loadImgGallery(force) {
   const grid    = document.getElementById('img-gallery-grid');
   const loading = document.getElementById('img-gallery-loading');
   const empty   = document.getElementById('img-gallery-empty');
+  const statsBar = document.getElementById('img-stats-bar');
   if (!grid) return;
   grid.innerHTML = '';
-  if (loading) loading.style.display = 'block';
-  if (empty)   empty.style.display   = 'none';
+  if (loading)  loading.style.display  = 'block';
+  if (empty)    empty.style.display    = 'none';
+  if (statsBar) statsBar.style.display = 'none';
   try {
-    const res  = await fetch('/suneung/review/{{ job.id }}/images');
+    const res  = await fetch('/suneung/review/{{ job.id }}/unused-images');
     const data = await res.json();
-    const imgs = data.images || [];
     if (loading) loading.style.display = 'none';
+    if (!data.ok) { grid.innerHTML = '<p style="font-size:11px;color:#dc2626;">로드 실패</p>'; return; }
+
+    // 통계 바 업데이트
+    document.getElementById('img-total-saved').textContent  = data.total_saved;
+    document.getElementById('img-total-used').textContent   = data.total_used;
+    document.getElementById('img-unused-count').textContent = data.unused.length;
+    document.getElementById('unused-count').textContent     = data.unused.length;
+    if (statsBar) statsBar.style.display = 'flex';
+
+    const imgs = data.unused || [];
     if (!imgs.length) { if (empty) empty.style.display = 'block'; return; }
-    imgs.forEach(({ url, filename }) => {
+
+    imgs.forEach(({ url, filename, category }) => {
       const card = document.createElement('div');
       card.style.cssText = 'width:calc(25% - 9px);display:flex;flex-direction:column;gap:4px;';
+      const safeUrl  = url.replace(/'/g, "\\'");
+      const safeName = filename.replace(/'/g, "\\'");
       card.innerHTML = `
-        <img src="${url}" alt="${filename}"
-             style="width:100%;max-height:120px;object-fit:contain;border:1px solid #e5e7eb;
-                    border-radius:6px;background:white;cursor:pointer;"
-             onclick="insertImgTag('${url}','${filename}')"
-             title="${filename}">
+        <div style="position:relative;">
+          <img src="${url}" alt="${filename}"
+               style="width:100%;max-height:120px;object-fit:contain;border:1px solid #e5e7eb;
+                      border-radius:6px;background:white;cursor:pointer;"
+               onclick="window.open('${safeUrl}','_blank','width=600,height=400')"
+               title="${filename}">
+          <span style="position:absolute;top:4px;left:4px;font-size:9px;padding:1px 5px;
+                       background:rgba(0,0,0,0.55);color:white;border-radius:4px;">${category}</span>
+        </div>
         <div style="display:flex;gap:3px;">
-          <button onclick="insertImgTag('${url}','${filename}')"
+          <button onclick="insertUnusedImage('${safeUrl}','${safeName}',this)"
                   style="flex:1;height:22px;font-size:10px;font-weight:600;
                          border:1px solid #86efac;border-radius:4px;
                          background:#f0fdf4;color:#16a34a;cursor:pointer;">삽입</button>
-          <button onclick="copyImgTag('${url}','${filename}',this)"
+          <button onclick="copyImgTag('${safeUrl}','${safeName}',this)"
                   style="flex:1;height:22px;font-size:10px;border:1px solid #e5e7eb;
                          border-radius:4px;background:white;color:#6b7280;cursor:pointer;">복사</button>
         </div>
@@ -2293,6 +2332,21 @@ async function loadImgGallery(force) {
     if (loading) loading.style.display = 'none';
     if (grid) grid.innerHTML = '<p style="font-size:11px;color:#dc2626;">이미지 로드 실패</p>';
   }
+}
+
+function insertUnusedImage(url, filename, btn) {
+  const el = getTarget();
+  if (!el) { showToast('먼저 텍스트 필드를 클릭하세요', 2000); return; }
+  pushUndo(el);
+  const tag = `<img src="${url}" alt="${filename}" style="max-width:100%;display:block;margin:8px 0">`;
+  const s = el.selectionStart != null ? el.selectionStart : el.value.length;
+  el.value = el.value.slice(0, s) + '\n' + tag + '\n' + el.value.slice(s);
+  el.focus();
+  markDirty();
+  showToast('이미지 삽입됨 ✓', 1500);
+  // 해당 카드를 시각적으로 숨김 (저장 전이므로 실제 새로고침은 수동)
+  const card = btn.closest('[style*="calc(25%"]');
+  if (card) card.style.display = 'none';
 }
 
 function insertImgTag(url, fname) {
