@@ -803,23 +803,40 @@ def _capture_bogi_as_images(page, page_num: int, all_items: list, mid_x: float,
         for j, (jx0, jy0, jx1, jy1, jtext) in same_col_after:
             if re.match(r'^①', jtext.strip()) or _QUESTION_START_RE.match(jtext):
                 break
-            if jy0 - by1 > 100:
+            if jy0 - by1 > 200:
                 break
             consumed.add(j)
             bx0 = min(bx0, jx0)
             bx1 = max(bx1, jx1)
             by1 = max(by1, jy1)
 
-        # 박스 하단선 탐지: 감싸는 박스 우선, 없으면 가장 가까운 수평선, 없으면 +20px
+        # 박스 하단선 탐지: 감싸는 박스 우선, 없으면 가장 가까운 수평선, 없으면 다음 문항 위치
         box_bot = _find_containing_box_bottom(page, bx0, by0, bx1, by1)
         if box_bot is None:
             box_bot = _find_nearest_hline_below(page, by1, bx0, bx1, max_dist=35)
-            crop_bot = (box_bot + 3) if box_bot else (by1 + 20)
+            if box_bot:
+                crop_bot = box_bot + 3
+            else:
+                next_item_y = None
+                for j, (jx0, jy0, jx1, jy1, jtext) in same_col_after:
+                    if j not in consumed:
+                        if re.match(r'^①', jtext.strip()) or _QUESTION_START_RE.match(jtext):
+                            next_item_y = jy0 - 5
+                            break
+                crop_bot = next_item_y if next_item_y else (by1 + 80)
         else:
             crop_bot = box_bot + 3
 
+        page_width = page.rect.width
+        if is_left:
+            crop_x0 = max(20, bx0 - 20)
+            crop_x1 = min(mid_x - 5, bx1 + 20)
+        else:
+            crop_x0 = max(mid_x + 5, bx0 - 20)
+            crop_x1 = min(page_width - 20, bx1 + 20)
+
         url = _save_crop(page, page_num, f"bogi{int(by0)}",
-                         bx0 - 15, by0 - 8, bx1 + 15, crop_bot, img_save_dir)
+                         crop_x0, by0 - 8, crop_x1, crop_bot, img_save_dir)
         if url:
             result.append((bx0, by0, bx1, by1, f"[[IMG:{url}]]"))
         else:
