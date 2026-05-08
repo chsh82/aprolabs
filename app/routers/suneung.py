@@ -679,7 +679,7 @@ async def bulk_start_jobs(request: Request, background_tasks: BackgroundTasks,
     body = await request.json()
     ids = body.get("ids", [])
     started = 0
-    for job_id in ids[:20]:
+    for job_id in ids:
         job = db.get(PipelineJob, job_id)
         if not job or job.status != "ready":
             continue
