@@ -963,8 +963,18 @@ def get_unused_images(job_id: str, db: Session = Depends(get_db)):
                 "filename": f,
                 "url": f"/uploads/suneung/{job_id}/images/{f}",
                 "category": _categorize_image(f),
+                "used": False,
             }
             for f in unused
+        ],
+        "all": [
+            {
+                "filename": f,
+                "url": f"/uploads/suneung/{job_id}/images/{f}",
+                "category": _categorize_image(f),
+                "used": f in used_images,
+            }
+            for f in all_images
         ],
         "total_saved": len(all_images),
         "total_used": len(used_images),

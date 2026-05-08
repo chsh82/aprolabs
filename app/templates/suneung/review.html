@@ -541,7 +541,14 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
         {% endfor %}
         {% if p.get('complexity_score') is not none %}
         <span style="font-size:10px;color:#f59e0b;margin-left:auto;">복잡도 {{ "%.2f"|format(p.get('complexity_score')) }}</span>
+        {% else %}
+        <span style="margin-left:auto;"></span>
         {% endif %}
+        <button onclick="deletePassage({{ loop.index0 }})"
+                style="height:22px;padding:0 7px;font-size:11px;border:1px solid #fecaca;
+                       border-radius:20px;background:white;color:#ef4444;cursor:pointer;">
+          삭제
+        </button>
       </div>
 
       {# 2단 본문: 미리보기 | 실제 데이터 #}
@@ -768,11 +775,19 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
         삽입 <span id="img-total-used">0</span>개 &middot;
         <b style="color:#1f2937;">미사용 <span id="img-unused-count">0</span>개</b>
       </span>
-      <button onclick="loadImgGallery(true)"
-              style="font-size:11px;padding:3px 8px;border:1px solid #e5e7eb;
-                     border-radius:5px;background:white;cursor:pointer;color:#6b7280;">
-        새로고침
-      </button>
+      <div style="display:flex;gap:5px;align-items:center;">
+        <div style="display:flex;border:1px solid #e5e7eb;border-radius:5px;overflow:hidden;font-size:11px;">
+          <button id="btn-filter-unused" onclick="setImgFilter('unused')"
+                  style="padding:2px 8px;cursor:pointer;background:#2563eb;color:white;border:none;">미사용</button>
+          <button id="btn-filter-all" onclick="setImgFilter('all')"
+                  style="padding:2px 8px;cursor:pointer;background:white;color:#6b7280;border:none;">전체</button>
+        </div>
+        <button onclick="loadImgGallery(true)"
+                style="font-size:11px;padding:3px 8px;border:1px solid #e5e7eb;
+                       border-radius:5px;background:white;cursor:pointer;color:#6b7280;">
+          새로고침
+        </button>
+      </div>
     </div>
     <div id="img-gallery-loading"
          style="font-size:12px;color:#9ca3af;text-align:center;padding:40px 0;">
@@ -1397,6 +1412,24 @@ function undoDelete(qi) {
   hideToast();
 }
 
+// ─── 제시문 삭제 ──────────────────────────────
+function deletePassage(idx) {
+  if (!confirm(`지문 ${idx + 1}을 삭제하시겠습니까?\n(저장 전까지 되돌릴 수 있습니다)`)) return;
+  segments.passages[idx]._deleted = true;
+  const card = document.getElementById(`p-card-${idx}`);
+  if (card) { card.style.opacity = '0.35'; card.style.pointerEvents = 'none'; }
+  showToast(`지문 ${idx + 1} 삭제됨 — <a href="#" onclick="undoDeletePassage(${idx});return false;"
+             style="color:#bbf7d0;text-decoration:underline;">되돌리기</a>`, 4000);
+  markDirty();
+}
+
+function undoDeletePassage(idx) {
+  segments.passages[idx]._deleted = false;
+  const card = document.getElementById(`p-card-${idx}`);
+  if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
+  hideToast();
+}
+
 // ─── 문항 이동 ───────────────────────────────
 function jumpToQ(num) {
   if (!num || isNaN(num)) return;
@@ -1495,7 +1528,7 @@ function collectSegments() {
     }
   });
   return {
-    passages:  segments.passages,
+    passages:  segments.passages.filter(p => !p._deleted),
     questions: segments.questions.filter(q => !q._deleted),
   };
 }
@@ -1866,11 +1899,7 @@ function prevPassage() { showPassage(passageIdx - 1); }
 function nextPassage() { showPassage(passageIdx + 1); }
 
 async function saveCurrentPassage() {
-  collectSegments();
-  const data = {
-    passages:  segments.passages,
-    questions: segments.questions.filter(q => !q._deleted),
-  };
+  const data = collectSegments();
   await fetch('/suneung/review/{{ job.id }}/save', {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify(data),
@@ -2286,6 +2315,61 @@ function insertBox() {
 
 // ─── 이미지 갤러리 탭 ─────────────────────────
 let imgGalleryLoaded = false;
+let imgFilterMode = 'unused';  // 'unused' | 'all'
+let imgGalleryData = null;
+
+function setImgFilter(mode) {
+  imgFilterMode = mode;
+  document.getElementById('btn-filter-unused').style.background = mode === 'unused' ? '#2563eb' : 'white';
+  document.getElementById('btn-filter-unused').style.color      = mode === 'unused' ? 'white'   : '#6b7280';
+  document.getElementById('btn-filter-all').style.background    = mode === 'all'    ? '#2563eb' : 'white';
+  document.getElementById('btn-filter-all').style.color         = mode === 'all'    ? 'white'   : '#6b7280';
+  if (imgGalleryData) renderImgGallery(imgGalleryData);
+}
+
+function renderImgGallery(data) {
+  const grid  = document.getElementById('img-gallery-grid');
+  const empty = document.getElementById('img-gallery-empty');
+  if (!grid) return;
+  grid.innerHTML = '';
+  const imgs = imgFilterMode === 'all' ? (data.all || []) : (data.unused || []);
+  if (!imgs.length) { if (empty) empty.style.display = 'block'; return; }
+  if (empty) empty.style.display = 'none';
+  imgs.forEach(({ url, filename, category, used }) => {
+    const card = document.createElement('div');
+    card.style.cssText = 'width:calc(25% - 9px);display:flex;flex-direction:column;gap:4px;';
+    const safeUrl  = url.replace(/'/g, "\\'");
+    const safeName = filename.replace(/'/g, "\\'");
+    const usedBadge = used
+      ? `<span style="position:absolute;top:4px;right:4px;font-size:9px;padding:1px 5px;
+                      background:rgba(37,99,235,0.75);color:white;border-radius:4px;">사용중</span>`
+      : '';
+    card.innerHTML = `
+      <div style="position:relative;">
+        <img src="${url}" alt="${filename}"
+             style="width:100%;max-height:120px;object-fit:contain;border:1px solid #e5e7eb;
+                    border-radius:6px;background:white;cursor:pointer;"
+             onclick="window.open('${safeUrl}','_blank','width=600,height=400')"
+             title="${filename}">
+        <span style="position:absolute;top:4px;left:4px;font-size:9px;padding:1px 5px;
+                     background:rgba(0,0,0,0.55);color:white;border-radius:4px;">${category}</span>
+        ${usedBadge}
+      </div>
+      <div style="display:flex;gap:3px;">
+        <button onclick="insertUnusedImage('${safeUrl}','${safeName}',this)"
+                style="flex:1;height:22px;font-size:10px;font-weight:600;
+                       border:1px solid #86efac;border-radius:4px;
+                       background:#f0fdf4;color:#16a34a;cursor:pointer;">삽입</button>
+        <button onclick="copyImgTag('${safeUrl}','${safeName}',this)"
+                style="flex:1;height:22px;font-size:10px;border:1px solid #e5e7eb;
+                       border-radius:4px;background:white;color:#6b7280;cursor:pointer;">복사</button>
+      </div>
+      <p style="font-size:9px;color:#9ca3af;margin:0;overflow:hidden;text-overflow:ellipsis;
+                white-space:nowrap;" title="${filename}">${filename}</p>
+    `;
+    grid.appendChild(card);
+  });
+}
 
 async function loadImgGallery(force) {
   if (imgGalleryLoaded && !force) return;
@@ -2312,38 +2396,8 @@ async function loadImgGallery(force) {
     document.getElementById('unused-count').textContent     = data.unused.length;
     if (statsBar) statsBar.style.display = 'flex';
 
-    const imgs = data.unused || [];
-    if (!imgs.length) { if (empty) empty.style.display = 'block'; return; }
-
-    imgs.forEach(({ url, filename, category }) => {
-      const card = document.createElement('div');
-      card.style.cssText = 'width:calc(25% - 9px);display:flex;flex-direction:column;gap:4px;';
-      const safeUrl  = url.replace(/'/g, "\\'");
-      const safeName = filename.replace(/'/g, "\\'");
-      card.innerHTML = `
-        <div style="position:relative;">
-          <img src="${url}" alt="${filename}"
-               style="width:100%;max-height:120px;object-fit:contain;border:1px solid #e5e7eb;
-                      border-radius:6px;background:white;cursor:pointer;"
-               onclick="window.open('${safeUrl}','_blank','width=600,height=400')"
-               title="${filename}">
-          <span style="position:absolute;top:4px;left:4px;font-size:9px;padding:1px 5px;
-                       background:rgba(0,0,0,0.55);color:white;border-radius:4px;">${category}</span>
-        </div>
-        <div style="display:flex;gap:3px;">
-          <button onclick="insertUnusedImage('${safeUrl}','${safeName}',this)"
-                  style="flex:1;height:22px;font-size:10px;font-weight:600;
-                         border:1px solid #86efac;border-radius:4px;
-                         background:#f0fdf4;color:#16a34a;cursor:pointer;">삽입</button>
-          <button onclick="copyImgTag('${safeUrl}','${safeName}',this)"
-                  style="flex:1;height:22px;font-size:10px;border:1px solid #e5e7eb;
-                         border-radius:4px;background:white;color:#6b7280;cursor:pointer;">복사</button>
-        </div>
-        <p style="font-size:9px;color:#9ca3af;margin:0;overflow:hidden;text-overflow:ellipsis;
-                  white-space:nowrap;" title="${filename}">${filename}</p>
-      `;
-      grid.appendChild(card);
-    });
+    imgGalleryData = data;
+    renderImgGallery(data);
   } catch(e) {
     if (loading) loading.style.display = 'none';
     if (grid) grid.innerHTML = '<p style="font-size:11px;color:#dc2626;">이미지 로드 실패</p>';
