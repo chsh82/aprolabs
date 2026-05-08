@@ -15,8 +15,17 @@ jobs:
           username: ${{ secrets.GCP_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
+
             cd ~/aprolabs
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
+
             source venv/bin/activate
             pip install -r requirements.txt --quiet
+
+            sudo fuser -k 8000/tcp 2>/dev/null || true
+            sleep 1
             sudo systemctl restart aprolabs
+            sleep 2
+            sudo systemctl is-active aprolabs
