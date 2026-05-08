@@ -78,70 +78,80 @@
 <div class="space-y-3">
   {% for p in passages %}
   {% set q_count = passage_q_counts.get(p.id, 0) %}
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition">
-    <div class="flex items-start justify-between gap-4">
-      <div class="flex-1 min-w-0">
-        {# 메타 태그 줄 #}
-        <div class="flex flex-wrap gap-2 mb-2">
-          {% if p.source_year %}
-          <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
-            {{ p.source_year }}
-          </span>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer select-none"
+       onclick="toggleCard(this)">
+    <div class="p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1 min-w-0">
+          {# 메타 태그 줄 #}
+          <div class="flex flex-wrap gap-2 mb-2">
+            {% if p.source_year %}
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+              {{ p.source_year }}
+            </span>
+            {% endif %}
+            {% if p.exam_type %}
+            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full">
+              {{ p.exam_type }}
+            </span>
+            {% endif %}
+            {% if p.question_range %}
+            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+              {{ p.question_range }}번
+            </span>
+            {% endif %}
+            {% if p.subject %}
+            <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded-full">
+              {{ p.subject }}
+            </span>
+            {% endif %}
+            <span class="px-2 py-0.5 {% if q_count > 0 %}bg-violet-50 text-violet-700{% else %}bg-gray-100 text-gray-400{% endif %} text-xs rounded-full">
+              문항 {{ q_count }}개
+            </span>
+          </div>
+
+          {# 개념 태그 #}
+          {% if p.concepts %}
+          <div class="flex flex-wrap gap-1.5 mb-2">
+            {% for c in p.concepts %}
+            <span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs border border-amber-200 rounded">
+              {{ c }}
+            </span>
+            {% endfor %}
+          </div>
           {% endif %}
-          {% if p.exam_type %}
-          <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full">
-            {{ p.exam_type }}
-          </span>
+
+          {# 본문 미리보기 #}
+          {% if p.content %}
+          <p class="text-sm text-gray-600 leading-relaxed line-clamp-3 preview-text">
+            {{ p.content | striptags | truncate(200) }}
+          </p>
+          {% else %}
+          <p class="text-sm text-gray-400 italic">본문 없음</p>
           {% endif %}
-          {% if p.question_range %}
-          <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
-            {{ p.question_range }}번
-          </span>
-          {% endif %}
-          {% if p.subject %}
-          <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded-full">
-            {{ p.subject }}
-          </span>
-          {% endif %}
-          <span class="px-2 py-0.5 {% if q_count > 0 %}bg-violet-50 text-violet-700{% else %}bg-gray-100 text-gray-400{% endif %} text-xs rounded-full">
-            문항 {{ q_count }}개
-          </span>
         </div>
 
-        {# 개념 태그 #}
-        {% if p.concepts %}
-        <div class="flex flex-wrap gap-1.5 mb-2">
-          {% for c in p.concepts %}
-          <span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs border border-amber-200 rounded">
-            {{ c }}
-          </span>
-          {% endfor %}
+        {# 우측 액션 #}
+        <div class="flex flex-col gap-2 flex-shrink-0 text-right">
+          <span class="text-xs text-gray-400 font-mono">{{ p.id[:8] }}</span>
+          {% if q_count > 0 %}
+          <a href="/suneung/db?tab=questions&passage_id={{ p.id }}"
+             onclick="event.stopPropagation()"
+             class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+            문항 보기 →
+          </a>
+          {% endif %}
+          <span class="text-gray-300 chevron text-lg leading-none">▾</span>
         </div>
-        {% endif %}
-
-        {# 본문 미리보기 #}
-        {% if p.content %}
-        <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
-          {{ p.content | striptags | truncate(200) }}
-        </p>
-        {% else %}
-        <p class="text-sm text-gray-400 italic">본문 없음</p>
-        {% endif %}
-      </div>
-
-      {# 우측 액션 #}
-      <div class="flex flex-col gap-2 flex-shrink-0 text-right">
-        <span class="text-xs text-gray-400 font-mono">
-          {{ p.id[:8] }}
-        </span>
-        {% if q_count > 0 %}
-        <a href="/suneung/db?tab=questions&passage_id={{ p.id }}"
-           class="text-xs text-blue-600 hover:text-blue-800 font-medium">
-          문항 보기 →
-        </a>
-        {% endif %}
       </div>
     </div>
+
+    {# 펼쳐지는 전체 본문 #}
+    {% if p.content %}
+    <div class="detail-section hidden border-t border-gray-100 px-5 py-4">
+      <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">{{ p.content | striptags }}</p>
+    </div>
+    {% endif %}
   </div>
   {% endfor %}
 </div>
@@ -162,63 +172,87 @@
 {% if questions %}
 <div class="space-y-2">
   {% for q_item in questions %}
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition">
-    <div class="flex items-start gap-4">
-      {# 번호 #}
-      <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-        <span class="text-sm font-bold text-blue-700">{{ q_item.question_number or '?' }}</span>
-      </div>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition cursor-pointer select-none"
+       onclick="toggleCard(this)">
+    <div class="p-4">
+      <div class="flex items-start gap-4">
+        {# 번호 #}
+        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+          <span class="text-sm font-bold text-blue-700">{{ q_item.question_number or '?' }}</span>
+        </div>
 
-      <div class="flex-1 min-w-0">
-        {# 메타 #}
-        <div class="flex flex-wrap gap-2 mb-1.5">
-          {% if q_item.source_year %}
-          <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
-            {{ q_item.source_year }}
-          </span>
+        <div class="flex-1 min-w-0">
+          {# 메타 #}
+          <div class="flex flex-wrap gap-2 mb-1.5">
+            {% if q_item.source_year %}
+            <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+              {{ q_item.source_year }}
+            </span>
+            {% endif %}
+            {% if q_item.exam_type %}
+            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs rounded-full">
+              {{ q_item.exam_type }}
+            </span>
+            {% endif %}
+            {% if q_item.difficulty %}
+            {% set diff_color = {'상':'red','중':'amber','하':'green'}.get(q_item.difficulty, 'gray') %}
+            <span class="px-2 py-0.5 bg-{{ diff_color }}-50 text-{{ diff_color }}-700 text-xs rounded-full">
+              난이도: {{ q_item.difficulty }}
+            </span>
+            {% endif %}
+            {% if q_item.answer %}
+            <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
+              정답 {{ q_item.answer }}
+            </span>
+            {% endif %}
+          </div>
+
+          {# 발문 #}
+          {% if q_item.stem %}
+          <p class="text-sm text-gray-800 font-medium leading-snug line-clamp-2 mb-1">
+            {{ q_item.stem | striptags | truncate(120) }}
+          </p>
           {% endif %}
-          {% if q_item.exam_type %}
-          <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs rounded-full">
-            {{ q_item.exam_type }}
-          </span>
-          {% endif %}
-          {% if q_item.difficulty %}
-          {% set diff_color = {'상':'red','중':'amber','하':'green'}.get(q_item.difficulty, 'gray') %}
-          <span class="px-2 py-0.5 bg-{{ diff_color }}-50 text-{{ diff_color }}-700 text-xs rounded-full">
-            난이도: {{ q_item.difficulty }}
-          </span>
-          {% endif %}
-          {% if q_item.answer %}
-          <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
-            정답 {{ q_item.answer }}
-          </span>
+
+          {# 사고유형 + 태그 #}
+          {% set all_tags = (q_item.thinking_types or []) + (q_item.tags or []) %}
+          {% if all_tags %}
+          <div class="flex flex-wrap gap-1 mt-1">
+            {% for t in all_tags %}
+            <span class="px-1.5 py-0.5 bg-violet-50 text-violet-700 text-xs border border-violet-200 rounded">
+              {{ t }}
+            </span>
+            {% endfor %}
+          </div>
           {% endif %}
         </div>
 
-        {# 발문 #}
-        {% if q_item.stem %}
-        <p class="text-sm text-gray-800 font-medium leading-snug line-clamp-2 mb-1">
-          {{ q_item.stem | striptags | truncate(120) }}
-        </p>
-        {% endif %}
-
-        {# 사고유형 + 태그 #}
-        {% set all_tags = (q_item.thinking_types or []) + (q_item.tags or []) %}
-        {% if all_tags %}
-        <div class="flex flex-wrap gap-1 mt-1">
-          {% for t in all_tags %}
-          <span class="px-1.5 py-0.5 bg-violet-50 text-violet-700 text-xs border border-violet-200 rounded">
-            {{ t }}
-          </span>
-          {% endfor %}
+        {# 우측 #}
+        <div class="flex flex-col items-end gap-1 flex-shrink-0">
+          <span class="text-xs text-gray-400 font-mono">{{ q_item.id[:8] }}</span>
+          <span class="text-gray-300 chevron text-lg leading-none">▾</span>
         </div>
-        {% endif %}
       </div>
+    </div>
 
-      {# 우측 #}
-      <div class="flex-shrink-0 text-xs text-gray-400 font-mono text-right">
-        {{ q_item.id[:8] }}
+    {# 펼쳐지는 상세 #}
+    <div class="detail-section hidden border-t border-gray-100 px-4 py-4 space-y-3">
+      {% if q_item.stem %}
+      <p class="text-sm text-gray-800 leading-relaxed">{{ q_item.stem | striptags }}</p>
+      {% endif %}
+      {% if q_item.choices %}
+      <ol class="space-y-1">
+        {% for num in q_item.choices.keys()|sort %}
+        <li class="text-sm text-gray-700">{{ q_item.choices[num] | striptags }}</li>
+        {% endfor %}
+      </ol>
+      {% endif %}
+      {% if q_item.explanation %}
+      <div class="mt-2 p-3 bg-blue-50 rounded-lg">
+        <p class="text-xs font-semibold text-blue-700 mb-1">해설</p>
+        <p class="text-sm text-blue-800 leading-relaxed">{{ q_item.explanation | striptags }}</p>
       </div>
+      {% endif %}
     </div>
   </div>
   {% endfor %}
@@ -258,4 +292,15 @@
 {% endif %}
 
 {% endif %}{# end tab #}
+
+<script>
+function toggleCard(card) {
+  const detail = card.querySelector('.detail-section');
+  const chevron = card.querySelector('.chevron');
+  if (!detail) return;
+  const isOpen = !detail.classList.contains('hidden');
+  detail.classList.toggle('hidden', isOpen);
+  if (chevron) chevron.textContent = isOpen ? '▾' : '▴';
+}
+</script>
 {% endblock %}
