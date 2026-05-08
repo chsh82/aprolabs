@@ -719,6 +719,18 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
                    oninput="markDirty()" onfocus="onFocus(this)" onblur="onBlur(this)">
           </div>
           {% endfor %}
+          {# 빠진 선택지 추가 버튼 #}
+          {% set existing_keys = q.choices.keys()|list %}
+          {% set circle_map = {'1':'①','2':'②','3':'③','4':'④','5':'⑤'} %}
+          {% for k in ['1','2','3','4','5'] %}
+          {% if k not in existing_keys %}
+          <button onclick="addSingleChoice({{ qi }}, '{{ k }}')"
+                  style="font-size:11px;padding:2px 8px;border:1px dashed #f59e0b;color:#f59e0b;
+                         border-radius:5px;background:white;cursor:pointer;margin:2px;">
+            + {{ circle_map[k] }} 추가
+          </button>
+          {% endif %}
+          {% endfor %}
           {% endif %}
         </div>
 
@@ -1387,6 +1399,56 @@ function addChoices(qi) {
   });
   const addBtn = document.querySelector(`#q-card-${qi} button[onclick="addChoices(${qi})"]`);
   if (addBtn) addBtn.style.display = 'none';
+  markDirty();
+}
+
+// ─── 빠진 선택지 개별 추가 ────────────────────
+function addSingleChoice(qi, choiceKey) {
+  const cmap = {'1':'①','2':'②','3':'③','4':'④','5':'⑤'};
+  const sec = document.getElementById(`choices-section-${qi}`);
+  if (!sec) return;
+
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:7px;margin-bottom:4px;';
+
+  const sp = document.createElement('span');
+  sp.textContent = cmap[choiceKey];
+  sp.style.cssText = 'font-size:13px;color:#6b7280;flex-shrink:0;width:18px;text-align:center;';
+
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.style.cssText = 'flex:1;padding:4px 9px;border:1px solid #f59e0b;border-radius:7px;font-size:12px;outline:none;';
+  inp.placeholder = `${cmap[choiceKey]} 선택지 내용 입력`;
+  inp.dataset.type  = 'question';
+  inp.dataset.idx   = qi;
+  inp.dataset.field = `choices.${choiceKey}`;
+  inp.addEventListener('input', markDirty);
+  inp.addEventListener('focus', () => onFocus(inp));
+
+  row.appendChild(sp);
+  row.appendChild(inp);
+
+  // 번호 순서에 맞는 위치에 삽입
+  const existingRows = sec.querySelectorAll('div[style*="display:flex"]');
+  let insertBefore = null;
+  for (const r of existingRows) {
+    const field = r.querySelector('input, textarea')?.dataset?.field;
+    if (field && field.startsWith('choices.')) {
+      const existKey = field.replace('choices.', '');
+      if (parseInt(existKey) > parseInt(choiceKey)) { insertBefore = r; break; }
+    }
+  }
+  if (insertBefore) sec.insertBefore(row, insertBefore);
+  else sec.appendChild(row);
+
+  // 이 버튼 숨기기
+  event.target.style.display = 'none';
+
+  // segments 반영
+  if (!segments.questions[qi].choices) segments.questions[qi].choices = {};
+  segments.questions[qi].choices[choiceKey] = '';
+
+  inp.focus();
   markDirty();
 }
 
