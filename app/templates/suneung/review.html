@@ -1911,6 +1911,15 @@ function livePreview(idx) {
       return save(`<div style="text-align:${align}">${ec}</div>`);
     });
 
+  // 기타 스타일 <div> (네모 박스, border 등) — 위에서 미처리된 것
+  text = text.replace(/<div style="([^"]*)">([\s\S]*?)<\/div>/gi,
+    (_, style, content) => {
+      const ec = content
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\n/g,'<br>');
+      return save(`<div style="${style}">${ec}</div>`);
+    });
+
   // 1) HTML 이스케이프 (placeholder로 저장된 태그 제외)
   text = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 

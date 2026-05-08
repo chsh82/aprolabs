@@ -52,11 +52,13 @@ _SAFE_STYLE_RE = re.compile(
     r'|margin:[^;]{0,20}'
     r'|padding:[^;]{0,20}'
     r'|border-left:[^;]{0,40}'
-    r'|background:[^;]{0,30}'
+    r'|border:[^;]{0,60}'
     r'|border-radius:[^;]{0,20}'
+    r'|background:[^;]{0,30}'
     r'|white-space:[^;]{0,20}'
     r'|color:[^;]{0,20}'
     r'|font-[^:]{0,20}:[^;]{0,20}'
+    r'|width:[^;]{0,20}'
     r')(;\s*|$)',
     re.IGNORECASE,
 )
