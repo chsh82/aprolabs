@@ -1335,29 +1335,15 @@ def approve(job_id: str, db: Session = Depends(get_db)):
 
     created_passage_ids = []
 
-    # 기존 지문/문항 번호 확인 (중복 방지)
-    existing_passage_seqs = {
-        p.paper_seq for p in
-        db.query(Passage).filter(Passage.paper_code == paper_code).all()
-        if p.paper_seq is not None
-    }
-    existing_q_nums = {
-        q.question_number for q in
-        db.query(Question).filter(Question.paper_code == paper_code).all()
-        if q.question_number is not None
-    }
-    # 기존 지문 id 맵 (passage_idx 연결용)
-    existing_passage_id_map = {
-        p.paper_seq: p.id for p in
-        db.query(Passage).filter(Passage.paper_code == paper_code).all()
-        if p.paper_seq is not None
-    }
+    # 기존 지문/문항 삭제 (재승인 시 덮어쓰기)
+    for old_q in db.query(Question).filter(Question.paper_code == paper_code).all():
+        db.delete(old_q)
+    for old_p in db.query(Passage).filter(Passage.paper_code == paper_code).all():
+        db.delete(old_p)
+    db.flush()
 
-    # 지문 저장 (이미 있는 seq는 스킵)
+    # 지문 저장
     for seq, p in enumerate(passages_data, start=1):
-        if seq in existing_passage_seqs:
-            created_passage_ids.append(existing_passage_id_map.get(seq))
-            continue
         passage = Passage(
             paper_code=paper_code,
             paper_seq=seq,
@@ -1375,11 +1361,9 @@ def approve(job_id: str, db: Session = Depends(get_db)):
         db.flush()
         created_passage_ids.append(passage.id)
 
-    # 문항 저장 (이미 있는 question_number는 스킵)
+    # 문항 저장
     for q in questions_data:
         q_num = q.get("number")
-        if q_num and q_num in existing_q_nums:
-            continue
         pidx = q.get("passage_idx")
         passage_id = created_passage_ids[pidx] if pidx is not None and pidx < len(created_passage_ids) else None
 

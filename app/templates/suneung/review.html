@@ -131,9 +131,10 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
         임시 저장
       </button>
       <button onclick="approveJob()"
-              style="padding:6px 12px;font-size:12px;background:#2563eb;color:white;
-                     border:none;border-radius:8px;cursor:pointer;font-weight:500;">
-        DB 확정 저장 →
+              style="padding:6px 12px;font-size:12px;color:white;
+                     border:none;border-radius:8px;cursor:pointer;font-weight:500;
+                     background:{% if job.status == 'done' %}#7c3aed{% else %}#2563eb{% endif %};">
+        {% if job.status == 'done' %}DB 재확정 →{% else %}DB 확정 저장 →{% endif %}
       </button>
     </div>
   </div>
@@ -712,11 +713,12 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
           <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
             <span style="font-size:13px;color:#6b7280;flex-shrink:0;width:18px;text-align:center;">
               {{ cmap.get(k,k) }}</span>
-            <input type="text" value="{{ v }}"
-                   style="flex:1;padding:4px 9px;border:1px solid #e5e7eb;border-radius:7px;
-                          font-size:12px;outline:none;"
-                   data-type="question" data-idx="{{ qi }}" data-field="choices.{{ k }}"
-                   oninput="markDirty()" onfocus="onFocus(this)" onblur="onBlur(this)">
+            <textarea style="flex:1;padding:4px 9px;border:1px solid #e5e7eb;border-radius:7px;
+                             font-size:12px;outline:none;resize:none;min-height:28px;
+                             font-family:monospace;line-height:1.5;overflow:hidden;box-sizing:border-box;"
+                      data-type="question" data-idx="{{ qi }}" data-field="choices.{{ k }}"
+                      oninput="markDirty();autoResize(this)" onfocus="onFocus(this)" onblur="onBlur(this)"
+                      rows="1">{{ v }}</textarea>
           </div>
           {% endfor %}
           {# 빠진 선택지 추가 버튼 #}
@@ -1108,6 +1110,11 @@ function getTarget() {
 
 function markDirty() { dirty = true; }
 
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.max(28, el.scrollHeight) + 'px';
+}
+
 // ─── 특수문자 삽입 ────────────────────────────
 function insertChar(ch) {
   const el = getTarget();
@@ -1415,14 +1422,15 @@ function addSingleChoice(qi, choiceKey) {
   sp.textContent = cmap[choiceKey];
   sp.style.cssText = 'font-size:13px;color:#6b7280;flex-shrink:0;width:18px;text-align:center;';
 
-  const inp = document.createElement('input');
-  inp.type = 'text';
-  inp.style.cssText = 'flex:1;padding:4px 9px;border:1px solid #f59e0b;border-radius:7px;font-size:12px;outline:none;';
+  const inp = document.createElement('textarea');
+  inp.rows = 1;
+  inp.style.cssText = 'flex:1;padding:4px 9px;border:1px solid #f59e0b;border-radius:7px;font-size:12px;' +
+    'outline:none;resize:none;min-height:28px;font-family:monospace;line-height:1.5;overflow:hidden;box-sizing:border-box;';
   inp.placeholder = `${cmap[choiceKey]} 선택지 내용 입력`;
   inp.dataset.type  = 'question';
   inp.dataset.idx   = qi;
   inp.dataset.field = `choices.${choiceKey}`;
-  inp.addEventListener('input', markDirty);
+  inp.addEventListener('input', () => { markDirty(); autoResize(inp); });
   inp.addEventListener('focus', () => onFocus(inp));
 
   row.appendChild(sp);
@@ -2094,6 +2102,11 @@ window.addEventListener('beforeunload', e=>{
 // 초기 passages 탭 — right panel 스크롤 비활성화
 document.getElementById('right-panel').style.overflowY = 'hidden';
 loadPages();
+
+// 선택지 textarea 초기 높이 맞춤
+document.querySelectorAll('[data-field^="choices."]').forEach(el => {
+  if (el.tagName === 'TEXTAREA') autoResize(el);
+});
 
 // 미사용 이미지 카운트 미리 표시 (탭 전환 전에도 숫자 보이도록)
 fetch('/suneung/review/{{ job.id }}/unused-images')
