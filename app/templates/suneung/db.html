@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block title %}수능국어DB{% endblock %}
+
+{% block content %}
+<div class="mb-5 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">수능국어DB</h2>
+    <p class="text-sm text-gray-400 mt-1">
+      제시문 {{ total_passages }}개 &middot; 문항 {{ total_questions }}개
+    </p>
+  </div>
+  <a href="/suneung/jobs"
+     class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition font-medium">
+    파이프라인 →
+  </a>
+</div>
+
+{# ── 검색/필터 바 ── #}
+<form method="get" action="/suneung/db"
+      class="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-4 mb-5 flex flex-wrap gap-3 items-end">
+  <input type="hidden" name="tab" value="{{ tab }}">
+
+  <div class="flex flex-col gap-1">
+    <label class="text-xs font-semibold text-gray-500">연도</label>
+    <select name="year"
+            class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for y in years %}
+      <option value="{{ y }}" {% if year|string == y|string %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label class="text-xs font-semibold text-gray-500">시험 종류</label>
+    <select name="exam_type"
+            class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for et in exam_types %}
+      <option value="{{ et }}" {% if exam_type == et %}selected{% endif %}>{{ et }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="flex flex-col gap-1 flex-1 min-w-48">
+    <label class="text-xs font-semibold text-gray-500">키워드 검색</label>
+    <input name="q" value="{{ q }}" placeholder="본문 / 발문 키워드"
+           class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+  </div>
+
+  <button type="submit"
+          class="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+    검색
+  </button>
+  {% if q or year or exam_type %}
+  <a href="/suneung/db?tab={{ tab }}"
+     class="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg transition">
+    초기화
+  </a>
+  {% endif %}
+</form>
+
+{# ── 탭 ── #}
+<div class="flex gap-1 border-b border-gray-200 mb-4">
+  <a href="/suneung/db?tab=passages&year={{ year }}&exam_type={{ exam_type }}&q={{ q }}"
+     class="px-5 py-2 text-sm font-{% if tab=='passages' %}bold text-blue-600 border-b-2 border-blue-600{% else %}medium text-gray-500 hover:text-gray-700{% endif %} -mb-px">
+    제시문 ({{ total_passages }})
+  </a>
+  <a href="/suneung/db?tab=questions&year={{ year }}&exam_type={{ exam_type }}&q={{ q }}"
+     class="px-5 py-2 text-sm font-{% if tab=='questions' %}bold text-blue-600 border-b-2 border-blue-600{% else %}medium text-gray-500 hover:text-gray-700{% endif %} -mb-px">
+    문항 ({{ total_questions }})
+  </a>
+</div>
+
+{# ══════════════════ 제시문 탭 ══════════════════ #}
+{% if tab == 'passages' %}
+{% if passages %}
+<div class="space-y-3">
+  {% for p in passages %}
+  {% set q_count = passage_q_counts.get(p.id, 0) %}
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex-1 min-w-0">
+        {# 메타 태그 줄 #}
+        <div class="flex flex-wrap gap-2 mb-2">
+          {% if p.source_year %}
+          <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+            {{ p.source_year }}
+          </span>
+          {% endif %}
+          {% if p.exam_type %}
+          <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full">
+            {{ p.exam_type }}
+          </span>
+          {% endif %}
+          {% if p.question_range %}
+          <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+            {{ p.question_range }}번
+          </span>
+          {% endif %}
+          {% if p.subject %}
+          <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded-full">
+            {{ p.subject }}
+          </span>
+          {% endif %}
+          <span class="px-2 py-0.5 {% if q_count > 0 %}bg-violet-50 text-violet-700{% else %}bg-gray-100 text-gray-400{% endif %} text-xs rounded-full">
+            문항 {{ q_count }}개
+          </span>
+        </div>
+
+        {# 개념 태그 #}
+        {% if p.concepts %}
+        <div class="flex flex-wrap gap-1.5 mb-2">
+          {% for c in p.concepts %}
+          <span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs border border-amber-200 rounded">
+            {{ c }}
+          </span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {# 본문 미리보기 #}
+        {% if p.content %}
+        <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">
+          {{ p.content | striptags | truncate(200) }}
+        </p>
+        {% else %}
+        <p class="text-sm text-gray-400 italic">본문 없음</p>
+        {% endif %}
+      </div>
+
+      {# 우측 액션 #}
+      <div class="flex flex-col gap-2 flex-shrink-0 text-right">
+        <span class="text-xs text-gray-400 font-mono">
+          {{ p.id[:8] }}
+        </span>
+        {% if q_count > 0 %}
+        <a href="/suneung/db?tab=questions&passage_id={{ p.id }}"
+           class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+          문항 보기 →
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20 text-gray-400">
+  <p class="text-lg mb-2">제시문이 없습니다.</p>
+  <p class="text-sm">파이프라인에서 DB 승인을 완료하면 여기에 표시됩니다.</p>
+  <a href="/suneung/jobs" class="mt-4 inline-block text-sm text-blue-600 hover:underline">파이프라인으로 →</a>
+</div>
+{% endif %}
+
+{# ── 페이지네이션 ── #}
+{% set total_pages = ((total_passages - 1) // page_size + 1) if total_passages > 0 else 1 %}
+{% include 'suneung/_db_pagination.html' ignore missing %}
+
+{# ══════════════════ 문항 탭 ══════════════════ #}
+{% else %}
+{% if questions %}
+<div class="space-y-2">
+  {% for q_item in questions %}
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition">
+    <div class="flex items-start gap-4">
+      {# 번호 #}
+      <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+        <span class="text-sm font-bold text-blue-700">{{ q_item.question_number or '?' }}</span>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        {# 메타 #}
+        <div class="flex flex-wrap gap-2 mb-1.5">
+          {% if q_item.source_year %}
+          <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+            {{ q_item.source_year }}
+          </span>
+          {% endif %}
+          {% if q_item.exam_type %}
+          <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs rounded-full">
+            {{ q_item.exam_type }}
+          </span>
+          {% endif %}
+          {% if q_item.difficulty %}
+          {% set diff_color = {'상':'red','중':'amber','하':'green'}.get(q_item.difficulty, 'gray') %}
+          <span class="px-2 py-0.5 bg-{{ diff_color }}-50 text-{{ diff_color }}-700 text-xs rounded-full">
+            난이도: {{ q_item.difficulty }}
+          </span>
+          {% endif %}
+          {% if q_item.answer %}
+          <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
+            정답 {{ q_item.answer }}
+          </span>
+          {% endif %}
+        </div>
+
+        {# 발문 #}
+        {% if q_item.stem %}
+        <p class="text-sm text-gray-800 font-medium leading-snug line-clamp-2 mb-1">
+          {{ q_item.stem | striptags | truncate(120) }}
+        </p>
+        {% endif %}
+
+        {# 사고유형 + 태그 #}
+        {% set all_tags = (q_item.thinking_types or []) + (q_item.tags or []) %}
+        {% if all_tags %}
+        <div class="flex flex-wrap gap-1 mt-1">
+          {% for t in all_tags %}
+          <span class="px-1.5 py-0.5 bg-violet-50 text-violet-700 text-xs border border-violet-200 rounded">
+            {{ t }}
+          </span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {# 우측 #}
+      <div class="flex-shrink-0 text-xs text-gray-400 font-mono text-right">
+        {{ q_item.id[:8] }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20 text-gray-400">
+  <p class="text-lg mb-2">문항이 없습니다.</p>
+  <p class="text-sm">파이프라인 검수 후 DB 승인하면 여기에 표시됩니다.</p>
+  <a href="/suneung/jobs" class="mt-4 inline-block text-sm text-blue-600 hover:underline">파이프라인으로 →</a>
+</div>
+{% endif %}
+
+{# ── 페이지네이션 ── #}
+{% set total_pages = ((total_questions - 1) // page_size + 1) if total_questions > 0 else 1 %}
+
+{% if total_pages > 1 %}
+<div class="flex justify-center gap-1 mt-6">
+  {% if page > 1 %}
+  <a href="/suneung/db?tab={{ tab }}&year={{ year }}&exam_type={{ exam_type }}&q={{ q }}&page={{ page - 1 }}"
+     class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">◀</a>
+  {% endif %}
+  {% for pn in range(1, total_pages + 1) %}
+  {% if pn == page %}
+  <span class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg font-semibold">{{ pn }}</span>
+  {% elif pn <= 2 or pn >= total_pages - 1 or (pn >= page - 2 and pn <= page + 2) %}
+  <a href="/suneung/db?tab={{ tab }}&year={{ year }}&exam_type={{ exam_type }}&q={{ q }}&page={{ pn }}"
+     class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">{{ pn }}</a>
+  {% elif pn == 3 or pn == total_pages - 2 %}
+  <span class="px-2 py-1.5 text-sm text-gray-400">…</span>
+  {% endif %}
+  {% endfor %}
+  {% if page < total_pages %}
+  <a href="/suneung/db?tab={{ tab }}&year={{ year }}&exam_type={{ exam_type }}&q={{ q }}&page={{ page + 1 }}"
+     class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">▶</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endif %}{# end tab #}
+{% endblock %}

@@ -69,6 +69,10 @@
         <a href="/suneung/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
           📄 수능 PDF 업로드
         </a>
+        <a href="/suneung/db" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                {% if request.url.path.startswith('/suneung/db') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+          🗄️ 수능국어DB
+        </a>
         <a href="/suneung/jobs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
           ⚙️ 파이프라인 작업
         </a>

@@ -528,6 +528,87 @@ def run_pipeline(job_id: str, pdf_path: str):
 # ─────────────────────────────────────────
 # 작업 목록
 # ─────────────────────────────────────────
+@router.get("/db", response_class=HTMLResponse)
+def db_list(
+    request: Request,
+    db: Session = Depends(get_db),
+    tab: str = "passages",
+    year: str = "",
+    exam_type: str = "",
+    q: str = "",
+    page: int = 1,
+):
+    """수능국어DB — 제시문/문항 목록 + 검색"""
+    from sqlalchemy import or_, func as sa_func
+
+    PAGE_SIZE = 20
+
+    # ── 제시문 쿼리 ──────────────────────────────
+    pq = db.query(Passage)
+    if year:
+        pq = pq.filter(Passage.source_year == int(year))
+    if exam_type:
+        pq = pq.filter(Passage.exam_type == exam_type)
+    if q:
+        pq = pq.filter(Passage.content.ilike(f"%{q}%"))
+    total_passages = pq.count()
+    passages = (pq.order_by(Passage.source_year.desc().nullslast(),
+                            Passage.paper_seq)
+                  .offset((page - 1) * PAGE_SIZE)
+                  .limit(PAGE_SIZE)
+                  .all())
+
+    # 제시문별 문항 수 집계
+    passage_q_counts = {
+        row[0]: row[1]
+        for row in db.query(Question.passage_id, sa_func.count(Question.id))
+                     .filter(Question.passage_id.isnot(None))
+                     .group_by(Question.passage_id)
+                     .all()
+    }
+
+    # ── 문항 쿼리 ──────────────────────────────
+    qq = db.query(Question).filter(Question.subcategory == "수능국어DB")
+    if year:
+        qq = qq.filter(Question.source_year == int(year))
+    if exam_type:
+        qq = qq.filter(Question.exam_type == exam_type)
+    if q:
+        qq = qq.filter(or_(
+            Question.stem.ilike(f"%{q}%"),
+            Question.content.ilike(f"%{q}%"),
+        ))
+    total_questions = qq.count()
+    questions = (qq.order_by(Question.source_year.desc().nullslast(),
+                             Question.question_number)
+                   .offset((page - 1) * PAGE_SIZE)
+                   .limit(PAGE_SIZE)
+                   .all())
+
+    # ── 필터 선택지 ──────────────────────────────
+    years = [r[0] for r in db.query(Passage.source_year)
+                              .filter(Passage.source_year.isnot(None))
+                              .distinct()
+                              .order_by(Passage.source_year.desc())
+                              .all()]
+    exam_types = [r[0] for r in db.query(Passage.exam_type)
+                                   .filter(Passage.exam_type.isnot(None))
+                                   .distinct()
+                                   .order_by(Passage.exam_type)
+                                   .all()]
+
+    ctx = _base_ctx(
+        db, request=request,
+        tab=tab, q=q, year=year, exam_type=exam_type, page=page,
+        passages=passages, total_passages=total_passages,
+        passage_q_counts=passage_q_counts,
+        questions=questions, total_questions=total_questions,
+        years=years, exam_types=exam_types,
+        page_size=PAGE_SIZE,
+    )
+    return templates.TemplateResponse("suneung/db.html", ctx)
+
+
 @router.get("/jobs", response_class=HTMLResponse)
 def jobs_list(request: Request, db: Session = Depends(get_db)):
     jobs = db.query(PipelineJob).order_by(PipelineJob.created_at.desc()).all()
