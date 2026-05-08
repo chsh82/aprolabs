@@ -1902,6 +1902,14 @@ function livePreview(idx) {
     return save(`<${tag}>${innerEsc}</${tag}>`);
   });
 
+  // <span style="..."> 인라인 박스 — 줄바꿈 없이 텍스트 흐름 유지
+  text = text.replace(/<span style="([^"]*)">([\s\S]*?)<\/span>/gi,
+    (_, style, content) => {
+      const ec = content
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return save(`<span style="${style}">${ec}</span>`);
+    });
+
   // alignment <div> (내용 포함) — 내용도 이스케이프 후 저장
   text = text.replace(/<div style="text-align:(left|center|right)">([\s\S]*?)<\/div>/gi,
     (_, align, content) => {
@@ -2263,18 +2271,17 @@ async function _applyBogiChange(newStem, newBogi) {
 function insertBox() {
   const el = getTarget();
   if (!el) return;
-  const start    = el.selectionStart;
-  const end      = el.selectionEnd;
-  const selected = el.value.slice(start, end);
-  const inner    = selected || '';
-  const boxed    = `<div style="border:1px solid #000;padding:8px;margin:8px 0;">\n${inner}\n</div>`;
+  const s   = el.selectionStart;
+  const e   = el.selectionEnd;
+  const sel = el.value.slice(s, e);
+  if (!sel) { showToast('텍스트를 선택하세요', 1500); return; }
   pushUndo(el);
-  el.value = el.value.slice(0, start) + boxed + el.value.slice(end);
-  const cursor = start + boxed.length;
-  el.selectionStart = cursor;
-  el.selectionEnd   = cursor;
+  const boxed = `<span style="border:1px solid #000;padding:1px 4px">${sel}</span>`;
+  el.value = el.value.slice(0, s) + boxed + el.value.slice(e);
+  el.selectionStart = s;
+  el.selectionEnd   = s + boxed.length;
   el.focus();
-  el.dispatchEvent(new Event('input'));
+  markDirty();
 }
 
 // ─── 이미지 갤러리 탭 ─────────────────────────
