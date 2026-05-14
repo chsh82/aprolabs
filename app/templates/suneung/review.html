@@ -424,6 +424,11 @@ body > div  { flex: 1 1 0% !important; min-height: 0 !important; }
       <button onclick="toggleItalic()" title="이탤릭 (선택 영역)"
               style="height:24px;padding:0 9px;font-size:13px;font-style:italic;border:1px solid #e5e7eb;
                      border-radius:5px;background:white;cursor:pointer;line-height:1;font-family:serif;">I</button>
+      <button onclick="fixSpacing()" title="띄어쓰기 자동 교정"
+              style="height:24px;padding:0 9px;font-size:11px;border:1px solid #e5e7eb;
+                     border-radius:5px;background:white;cursor:pointer;color:#6b7280;line-height:1;">
+        띄어쓰기
+      </button>
 
       <span style="color:#d1d5db;margin:0 3px;">│</span>
       <span style="font-size:10px;color:#9ca3af;margin-right:2px;">정렬</span>
@@ -1232,6 +1237,52 @@ function toggleItalic() {
   }
   wrapSel('<i>', '</i>');
   el.dispatchEvent(new Event('input'));
+}
+
+// ─── 띄어쓰기 교정 ───────────────────────────
+// Python segmenter._fix_spacing 와 동일한 규칙 유지
+function fixSpacing() {
+  const el = getTarget();
+  if (!el || el.tagName !== 'TEXTAREA') {
+    showToast('텍스트 필드를 선택하세요', 1500);
+    return;
+  }
+  pushUndo(el);
+  let text = el.value;
+
+  // HTML 태그 보존
+  const saved = [];
+  text = text.replace(/<[^>]+>/g, m => { saved.push(m); return `\x00T${saved.length - 1}\x00`; });
+
+  // 1. 전각공백 → 반각 (줄 시작 들여쓰기는 보존)
+  text = text.split('\n').map(ln => {
+    if (ln.startsWith('　')) return '　' + ln.slice(1).replace(/　/g, ' ');
+    return ln.replace(/　/g, ' ');
+  }).join('\n');
+
+  // 2. 단어 잘림 복원
+  text = text.replace(/([가-힣]) (다|은|는|을|를|면|며|고|서|도|지|게|니|라|자|나)\b/g, '$1$2');
+  text = text.replace(/([가-힣]) (다\.|다,|다\)|까\?)/g, '$1$2');
+
+  // 3. 조사 앞 불필요 공백
+  text = text.replace(
+    /([가-힣]{2,}) (을|를|은|는|이|가|의|와|과|만|도|로|까지|부터|에서|으로|이라|처럼|만큼|보다|한테|에게)\b/g,
+    '$1$2'
+  );
+
+  // 4. 연속 공백
+  text = text.replace(/ {2,}/g, ' ');
+
+  // HTML 태그 복원
+  text = text.replace(/\x00T(\d+)\x00/g, (_, i) => saved[parseInt(i)]);
+
+  if (el.value !== text) {
+    el.value = text;
+    markDirty();
+    showToast('띄어쓰기 교정됨 ✓', 1500);
+  } else {
+    showToast('교정할 항목 없음', 1500);
+  }
 }
 
 // ─── 정렬 적용 ───────────────────────────────

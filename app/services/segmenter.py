@@ -35,6 +35,19 @@ def segment_text(ocr_text: str, job_id: str = None, question_hints: list = None)
     # [[IMG:url]] → <img> 변환
     _convert_img_markers(passages, questions)
 
+    # 띄어쓰기 교정
+    for p in passages:
+        if p.get("content"):
+            p["content"] = _fix_spacing(p["content"])
+    for q in questions:
+        for field in ("stem", "bogi", "content"):
+            if q.get(field):
+                q[field] = _fix_spacing(q[field])
+        if q.get("choices") and isinstance(q["choices"], dict):
+            for k, v in q["choices"].items():
+                if isinstance(v, str):
+                    q["choices"][k] = _fix_spacing(v)
+
     return {"passages": passages, "questions": questions}
 
 
@@ -571,6 +584,59 @@ def _normalize_whitespace(text: str) -> str:
 
     # 마커 복원
     text = re.sub(r'\x00PROT(\d+)\x00', lambda m: protected[int(m.group(1))], text)
+
+    return text
+
+
+# ─────────────────────────────────────────
+# 띄어쓰기 교정 (규칙 기반)
+# ─────────────────────────────────────────
+
+def _fix_spacing(text: str) -> str:
+    """규칙 기반 한국어 띄어쓰기 교정.
+
+    - PDF 줄바꿈 경계에서 잘린 어미·조사 복원
+    - HTML 태그(<img>, <u>, <b> 등)는 보존
+    - 줄 시작 전각공백(들여쓰기 마커)은 보존
+    """
+    if not text:
+        return text
+
+    # HTML 태그 보호
+    saved: list[str] = []
+
+    def _save_tag(m: re.Match) -> str:
+        saved.append(m.group(0))
+        return f'\x00T{len(saved) - 1}\x00'
+
+    text = re.sub(r'<[^>]+>', _save_tag, text)
+
+    # 1. 전각공백 → 반각 (줄 시작 들여쓰기는 보존)
+    lines = text.split('\n')
+    fixed_lines = []
+    for ln in lines:
+        if ln.startswith('　'):
+            ln = '　' + ln[1:].replace('　', ' ')
+        else:
+            ln = ln.replace('　', ' ')
+        fixed_lines.append(ln)
+    text = '\n'.join(fixed_lines)
+
+    # 2. 단어 잘림 복원 (어미·연결어미·전성어미)
+    text = re.sub(r'([가-힣]) (다|은|는|을|를|면|며|고|서|도|지|게|니|라|자|나)\b', r'\1\2', text)
+    text = re.sub(r'([가-힣]) (다\.|다,|다\)|까\?)', r'\1\2', text)
+
+    # 3. 조사 앞 불필요 공백 제거 (체언 가능성 높은 2자+ 한글 뒤)
+    text = re.sub(
+        r'([가-힣]{2,}) (을|를|은|는|이|가|의|와|과|만|도|로|까지|부터|에서|으로|이라|처럼|만큼|보다|한테|에게)\b',
+        r'\1\2', text
+    )
+
+    # 4. 연속 공백 정리
+    text = re.sub(r' {2,}', ' ', text)
+
+    # HTML 태그 복원
+    text = re.sub(r'\x00T(\d+)\x00', lambda m: saved[int(m.group(1))], text)
 
     return text
 
