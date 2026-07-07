@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}독서논술 검색 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-800">🔎 독서논술 통합 검색</h2>
+  <p class="text-sm text-gray-400 mt-1">어휘·OX·토론문항·글쓰기를 가로질러 키워드로 검색합니다.</p>
+</div>
+
+<form method="GET" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 space-y-3">
+  <div class="flex flex-wrap gap-3 items-end">
+    <div class="flex-1 min-w-52">
+      <label class="block text-xs font-medium text-gray-500 mb-1">검색어</label>
+      <input type="text" name="q" value="{{ filter_q }}" placeholder="예: 우정, 전쟁, 능력주의..."
+             class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">분기</label>
+      <select name="quarter" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+        <option value="">전체</option>
+        {% for qt in quarters %}
+        <option value="{{ qt }}" {% if filter_quarter == qt %}selected{% endif %}>{{ qt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">학년</label>
+      <select name="grade" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+        <option value="">전체</option>
+        {% for g in grades %}
+        <option value="{{ g }}" {% if filter_grade == g %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">계열</label>
+      <select name="family" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white">
+        <option value="">전체</option>
+        {% for fam in families %}
+        <option value="{{ fam }}" {% if filter_family == fam %}selected{% endif %}>{{ fam }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="text-xs font-medium text-gray-500">범위:</span>
+    {% for t, label in [('vocab','어휘'), ('ox','OX퀴즈'), ('discussion','토론문항'), ('writing','글쓰기')] %}
+    <label class="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer">
+      <input type="checkbox" name="types" value="{{ t }}" class="rounded border-gray-300" {% if t in filter_types %}checked{% endif %}>
+      {{ label }}
+    </label>
+    {% endfor %}
+    <button type="submit" class="ml-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">검색</button>
+  </div>
+</form>
+
+{% if results %}
+<p class="text-sm text-gray-400 mb-3">{{ total }}건</p>
+<div class="space-y-2">
+  {% for r in results %}
+  <a href="/reading-essay/{{ r.material.id }}" class="block bg-white rounded-xl border border-gray-100 hover:border-blue-200 hover:shadow-sm transition p-4">
+    <div class="flex items-center gap-2 mb-2 flex-wrap text-xs">
+      <span class="px-2 py-0.5 rounded-full font-medium
+        {% if r.type == 'vocab' %}bg-emerald-100 text-emerald-700
+        {% elif r.type == 'ox' %}bg-blue-100 text-blue-700
+        {% elif r.type == 'discussion' %}bg-purple-100 text-purple-700
+        {% else %}bg-amber-100 text-amber-700{% endif %}">
+        {% if r.type == 'vocab' %}📖 어휘{% elif r.type == 'ox' %}⭕ OX{% elif r.type == 'discussion' %}💬 토론{% else %}✍️ 글쓰기{% endif %}
+      </span>
+      <span class="px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">{{ r.material.template_family }}</span>
+      <span class="text-gray-400">{{ r.material.quarter }} · {{ r.material.grade }} · {{ r.material.title }}</span>
+    </div>
+
+    {% if r.type == 'vocab' %}
+    <p class="text-sm text-gray-800"><b>{{ r.item.word }}</b>{% if r.item.page %} <span class="text-gray-400 text-xs">({{ r.item.page }}p)</span>{% endif %} — {{ r.item.definition }}</p>
+    {% elif r.type == 'ox' %}
+    <p class="text-sm text-gray-800">
+      <span class="font-mono {% if r.item.answer in ['○','O'] %}text-blue-600{% else %}text-red-500{% endif %}">[{{ r.item.answer or '?' }}]</span>
+      {{ r.item.statement }}
+    </p>
+    {% elif r.type == 'discussion' %}
+    <p class="text-sm text-gray-800 mb-1">Q{{ r.item.question_no or '?' }}. {{ r.item.question_text or '(발문 없음)' }}</p>
+    {% if r.item.model_answer %}<p class="text-xs text-green-600">→ {{ r.item.model_answer[:150] }}</p>{% endif %}
+    {% if r.item.raw_tail %}<p class="text-xs text-amber-600">→ (원문) {{ r.item.raw_tail[:150] }}</p>{% endif %}
+    {% else %}
+    <p class="text-sm text-gray-800">{{ r.item.theme }}</p>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% elif filter_q or filter_quarter or filter_grade or filter_family %}
+<div class="bg-white rounded-xl border border-gray-100 py-16 text-center text-gray-400">
+  검색 결과가 없습니다.
+</div>
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 py-16 text-center text-gray-400">
+  검색어나 필터를 입력해 주세요.
+</div>
+{% endif %}
+{% endblock %}

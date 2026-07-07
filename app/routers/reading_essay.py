@@ -1,5 +1,6 @@
 """독서논술 문항 DB 라우터
 /reading-essay        -> 교재 목록 (분기/학년/계열/상태 필터)
+/reading-essay/search -> 어휘/OX/토론/글쓰기 통합 검색
 /reading-essay/scan    -> 배치 스캔(분기 폴더 훑어서 추출) 화면 + 실행
 /reading-essay/quality -> 추출 품질 검수 (계열별 결측치 집계 + 문제 교재 목록)
 /reading-essay/{id}    -> 교재 상세(추출 결과 검수)
@@ -15,6 +16,7 @@ from app.database import get_db
 from app.models.reading_essay import ReadingMaterial, TEMPLATE_FAMILIES, STATUSES
 from app.services.reading_essay.scanner import QUARTER_ROOTS, GRADES, scan, process_one
 from app.services.reading_essay.quality import family_stats, flagged_materials
+from app.services.reading_essay.search import search as search_reading_essay
 
 router = APIRouter(prefix="/reading-essay")
 templates = Jinja2Templates(directory="app/templates")
@@ -85,6 +87,27 @@ def run_scan(
     )
     ctx = _base_ctx(db, request=request, result=result)
     return templates.TemplateResponse("reading_essay/scan.html", ctx)
+
+
+@router.get("/search", response_class=HTMLResponse)
+def search_page(
+    request: Request, db: Session = Depends(get_db),
+    q: str = "", quarter: str = "", grade: str = "", family: str = "",
+    types: list[str] = None,
+):
+    content_types = set(types) if types else None
+    results = []
+    if q or quarter or grade or family or types:
+        results = search_reading_essay(
+            db, q=q, quarter=quarter or None, grade=grade or None,
+            family=family or None, content_types=content_types,
+        )
+    ctx = _base_ctx(
+        db, request=request, results=results, total=len(results),
+        filter_q=q, filter_quarter=quarter, filter_grade=grade, filter_family=family,
+        filter_types=content_types or {'vocab', 'ox', 'discussion', 'writing'},
+    )
+    return templates.TemplateResponse("reading_essay/search.html", ctx)
 
 
 @router.get("/quality", response_class=HTMLResponse)
