@@ -36,10 +36,11 @@ def find_section_bounds(pages_text):
         None
     )
     n = len(pages_text)
+    disc_end = idx_write if idx_write is not None else n
     return {
         'cover': (0, idx_vocab if idx_vocab is not None else n),
         'vocab': (idx_vocab, idx_disc) if idx_vocab is not None else None,
-        'discussion': (idx_disc, idx_write) if idx_disc is not None else None,
+        'discussion': (idx_disc, disc_end) if idx_disc is not None else None,
         'writing': (idx_write, n) if idx_write is not None else None,
     }
 

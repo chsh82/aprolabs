@@ -46,10 +46,11 @@ def find_section_bounds(pages_text):
     )
     n = len(pages_text)
     cover_end = idx_theory if idx_theory is not None else (idx_disc if idx_disc is not None else n)
+    disc_end = idx_write if idx_write is not None else n
     return {
         'cover': (0, cover_end),
         'theory_table': (idx_theory, idx_disc) if idx_theory is not None else None,
-        'discussion': (idx_disc, idx_write) if idx_disc is not None else None,
+        'discussion': (idx_disc, disc_end) if idx_disc is not None else None,
         'writing': (idx_write, n) if idx_write is not None else None,
     }
 

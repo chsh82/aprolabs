@@ -21,6 +21,12 @@ QUARTER_ROOTS = {
 GRADES = ['초1', '초2', '초3', '초4', '초5', '초6', '중1', '중2', '중3']
 
 
+def _bracket_tag(name):
+    import re
+    m = re.match(r'^\s*(\[[^\]]+\])', name)
+    return m.group(1) if m else None
+
+
 def find_student_pdf(teacher_path):
     """교사용 PDF 경로로부터 짝이 되는 학생용(베이직 아님) PDF를 추정."""
     p = Path(teacher_path)
@@ -32,14 +38,25 @@ def find_student_pdf(teacher_path):
         if c.exists():
             return c
 
+    non_basic = [
+        f for f in p.parent.glob('*학생용*.pdf')
+        if '베이직' not in f.name
+    ]
+
     # 정확한 치환이 안 맞으면 같은 폴더에서 "학생용"이 들어간 유사 파일 탐색
-    # (베이직-학생용은 난이도가 다른 별도 버전이라 제외)
     stem_prefix = p.stem.split('(')[0].strip()
-    for f in p.parent.glob('*학생용*.pdf'):
-        if '베이직' in f.name:
-            continue
+    for f in non_basic:
         if f.stem.split('(')[0].strip() == stem_prefix:
             return f
+
+    # 파일명 관례가 교사용/학생용마다 달라 위 방식도 실패하는 경우
+    # (예: "...1-1(교사용)" vs "...1권(학생용)") - 대괄호 주차 태그
+    # "[N분기 N주차]"가 같은 파일이 폴더에 정확히 1개뿐이면 그걸로 페어링.
+    tag = _bracket_tag(p.name)
+    if tag:
+        same_tag = [f for f in non_basic if _bracket_tag(f.name) == tag]
+        if len(same_tag) == 1:
+            return same_tag[0]
     return None
 
 

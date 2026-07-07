@@ -24,7 +24,7 @@ import fitz
 
 from .extract_a1 import norm, PAGE_MARKER_RE
 
-BRACKET_HEADER_RE = re.compile(r'^\[(.+)\]$')
+BRACKET_HEADER_RE = re.compile(r'^[\[<](.+)[\]>]$')
 WORK_TITLE_RE = re.compile(r'^<(.+)>$')
 NOTE_RE = re.compile(r'^\*\s*(.+)')
 QNUM_RE = re.compile(r'^(?:\[[^\]]*\]\s*)?(?:★\s*)?(\d+(?:-\d+)?)\.\s*(.*)')

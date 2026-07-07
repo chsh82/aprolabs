@@ -45,10 +45,15 @@ def find_section_bounds(pages_text):
         None
     )
     n = len(pages_text)
+    # 다음 구간의 시작 마커를 못 찾으면 구간 끝을 None이 아니라 문서 끝(n)으로
+    # 두어야 한다 - range(a, None)이 TypeError를 내기 때문 (예: 동시집이
+    # "글쓰기 내 글로 엮기" 대신 "동시 쓰기"를 씀 -> idx_write=None)
+    vocab_end = idx_disc if idx_disc is not None else n
+    disc_end = idx_write if idx_write is not None else n
     return {
         'cover': (0, idx_vocab if idx_vocab is not None else n),
-        'vocab_ox': (idx_vocab, idx_disc) if idx_vocab is not None else None,
-        'discussion': (idx_disc, idx_write) if idx_disc is not None else None,
+        'vocab_ox': (idx_vocab, vocab_end) if idx_vocab is not None else None,
+        'discussion': (idx_disc, disc_end) if idx_disc is not None else None,
         'writing': (idx_write, n) if idx_write is not None else None,
     }
 
