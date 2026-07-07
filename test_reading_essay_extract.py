@@ -373,7 +373,7 @@ def parse_writing(text):
             mode = 'step2'
             continue
         if mode == 'step1':
-            m = re.match(r'^\d+\.\s*(.*)', l)
+            m = re.match(r'^\d+\.\s*(.*)', l) or re.match(r'^[-+]\s*(.*)', l)
             if m:
                 step1.append(m.group(1))
         elif mode == 'step2':
