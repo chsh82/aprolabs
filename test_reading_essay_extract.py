@@ -29,6 +29,8 @@ READING_TYPE_RE = re.compile(r'^[가-힣]+(?:\s*/\s*[가-힣]+)*\s*독해$')
 PAGE_REF_RE = re.compile(r'^-p\.(\S+)')
 QNUM_RE = re.compile(r'^(\d+(?:-\d+)?)\.\s*(.*)')
 PAGE_MARKER_RE = re.compile(r'^-\s*\d+\s*-$')
+# PDF 줄바꿈으로 "페이지"가 "페\n이지"처럼 쪼개지는 경우가 있어 공백 허용
+PAGE_WORD = r'페\s*이\s*지'
 
 
 def norm(s):
@@ -72,22 +74,25 @@ def parse_cover(text):
     lines = [norm(l) for l in text.split('\n') if norm(l)]
     quotes = [l for l in lines if l.startswith('"') or l.startswith('“')]
 
+    # 제목이 여러 줄에 걸쳐 나올 수 있음: "빈센트 반 고흐,\n세상을 노랗게 물들이다"
     title = None
+    title_lines = []
     for l in lines:
-        if l == quarter or l in quotes:
+        is_boundary = (l == quarter or l in quotes or
+                       re.match(r'^LV\s*\d+$', l) or PAGE_MARKER_RE.match(l))
+        if is_boundary:
+            if title_lines:
+                break
             continue
-        if re.match(r'^LV\s*\d+$', l):
-            continue
-        if PAGE_MARKER_RE.match(l):
-            continue
-        tokens = l.split(' ')
+        title_lines.append(l)
+
+    if title_lines:
+        tokens = ' '.join(title_lines).split(' ')
         if len(tokens) > 1 and all(len(t) == 1 for t in tokens):
             # 한 글자씩 띄어 렌더링된 제목: "박 문 수 전" -> "박문수전"
             title = ''.join(tokens)
         else:
-            # 단어 단위 띄어쓰기 제목: "냄비와 국자 전쟁"
-            title = l
-        break
+            title = norm(' '.join(title_lines))
     return {'level': level, 'quarter': quarter, 'title': title, 'cover_quotes': quotes}
 
 
@@ -96,7 +101,7 @@ def parse_cover(text):
 # ────────────────────────────────────────────────
 
 def parse_vocab(text):
-    pattern = re.compile(r'([^\n(]+)\n\((\d+)페이지\)\n뜻\n(.+?)\n문장', re.DOTALL)
+    pattern = re.compile(r'([^\n(]+)\n\((\d+)' + PAGE_WORD + r'\)\n뜻\n(.+?)\n문장', re.DOTALL)
     items = []
     for m in pattern.finditer(text):
         items.append({
@@ -114,7 +119,7 @@ def parse_ox_statements(teacher_text):
     search_text = teacher_text[marker.end():] if marker else teacher_text
 
     pattern = re.compile(
-        r'([^()\n][\s\S]*?)\((\d+)페이지(?:[:：]\s*([^)]+))?\)\s*\n\S+\s*\nX',
+        r'([^()\n][\s\S]*?)\((\d+)' + PAGE_WORD + r'(?:[:：]\s*([^)]+))?\)\s*\n\S+\s*\nX',
         re.MULTILINE,
     )
     items = []

@@ -38,17 +38,25 @@ QUOTE_SEP_RE = re.compile(r'^~$')
 STAGE_HEADER_RE = re.compile(r'^\d\s*단계')
 
 
+_DISC_FALLBACK_RE = re.compile(r'^\d+\.\s*\[[가-힣]+(?:\s*/\s*[가-힣]+)*\s*독해\]$', re.MULTILINE)
+
+
 def find_section_bounds(pages_text):
     idx_theory = next((i for i, t in enumerate(pages_text) if '소설 구성의' in t or '소설의 3요소' in t), None)
     idx_disc = next((i for i, t in enumerate(pages_text) if '번째 이야기.' in t), None)
+    if idx_disc is None:
+        # "n번째 이야기" 작품 구분이 없는 단일 작품/비문학 교재
+        # (예: 철학·사회 이슈 도서) - 문항+독해유형 결합줄로 대신 탐지
+        idx_disc = next((i for i, t in enumerate(pages_text) if _DISC_FALLBACK_RE.search(t)), None)
     idx_write = next(
         (i for i, t in enumerate(pages_text)
          if re.search(r'주제\s*글쓰기|글쓰기\s*주제|내\s*글로\s*엮기', t) and (idx_disc is None or i > idx_disc)),
         None
     )
     n = len(pages_text)
+    cover_end = idx_theory if idx_theory is not None else (idx_disc if idx_disc is not None else n)
     return {
-        'cover': (0, idx_theory if idx_theory is not None else n),
+        'cover': (0, cover_end),
         'theory_table': (idx_theory, idx_disc) if idx_theory is not None else None,
         'discussion': (idx_disc, idx_write) if idx_disc is not None else None,
         'writing': (idx_write, n) if idx_write is not None else None,

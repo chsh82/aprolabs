@@ -11,7 +11,12 @@ import glob
 from pathlib import Path
 import fitz
 
-ROOT = Path(r"D:\26년 3분기 교재")
+ROOTS = {
+    '25년4분기': Path(r"D:\25년도 4분기 교재"),
+    '26년1분기': Path(r"D:\26년 1분기 교재"),
+    '26년2분기': Path(r"D:\26년 2분기 교재"),
+    '26년3분기': Path(r"D:\26년 3분기 교재"),
+}
 GRADES = ['초1', '초2', '초3', '초4', '초5', '초6', '중1', '중2', '중3']
 
 MARKERS = {
@@ -49,36 +54,46 @@ def scan_file(path):
 
 def main():
     rows = []
-    for grade in GRADES:
-        gdir = ROOT / grade
-        if not gdir.exists():
+    for quarter, root in ROOTS.items():
+        if not root.exists():
+            print(f'[SKIP] 폴더 없음: {root}', file=sys.stderr)
             continue
-        files = sorted(glob.glob(str(gdir / '*교사용*.pdf')))
-        for f in files:
-            info = scan_file(f)
-            rows.append({'grade': grade, 'file': Path(f).name, **info})
+        for grade in GRADES:
+            gdir = root / grade
+            if not gdir.exists():
+                continue
+            files = sorted(glob.glob(str(gdir / '*교사용*.pdf')))
+            for f in files:
+                info = scan_file(f)
+                rows.append({'quarter': quarter, 'grade': grade, 'file': Path(f).name, **info})
 
-    # 그룹핑: fingerprint -> [(grade, file), ...]
+    # 그룹핑: fingerprint -> [(quarter, grade, file), ...]
     groups = {}
     for r in rows:
-        groups.setdefault(r['fp'], []).append((r['grade'], r['file']))
+        groups.setdefault(r['fp'], []).append((r['quarter'], r['grade'], r['file']))
+
+    from collections import Counter
+    quarter_counts = Counter(r['quarter'] for r in rows)
+    counts_str = ', '.join(f'{q}:{quarter_counts[q]}' for q in ROOTS)
 
     out_lines = []
-    out_lines.append(f'총 파일: {len(rows)}건, 고유 지문(fingerprint) 종류: {len(groups)}개\n')
+    out_lines.append(f'총 파일: {len(rows)}건 ({counts_str}), 고유 지문(fingerprint) 종류: {len(groups)}개\n')
 
     for i, (fp, items) in enumerate(sorted(groups.items(), key=lambda kv: -len(kv[1])), 1):
-        grades_in_group = sorted(set(g for g, _ in items))
-        out_lines.append(f'--- 그룹 {i} ({len(items)}건) 학년: {grades_in_group} ---')
+        quarters_in_group = sorted(set(q for q, _, _ in items))
+        grades_in_group = sorted(set(g for _, g, _ in items))
+        out_lines.append(f'--- 그룹 {i} ({len(items)}건) 분기: {quarters_in_group} 학년: {grades_in_group} ---')
         out_lines.append('  마커: ' + ', '.join(fp) if fp else '  마커: (없음)')
-        for g, fn in items[:5]:
-            out_lines.append(f'    - [{g}] {fn}')
+        for q, g, fn in items[:5]:
+            out_lines.append(f'    - [{q}/{g}] {fn}')
         if len(items) > 5:
             out_lines.append(f'    ... 외 {len(items)-5}건')
         out_lines.append('')
 
     report = '\n'.join(out_lines)
     Path('template_scan_report.txt').write_text(report, encoding='utf-8')
-    print(report)
+    print(report[:2000])
+    print(f'\n... (전체 리포트는 template_scan_report.txt, {len(report)}자)')
 
 
 if __name__ == '__main__':
