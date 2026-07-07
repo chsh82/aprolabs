@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}독서논술 품질 검수 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-800">🔎 추출 품질 검수</h2>
+  <p class="text-sm text-gray-400 mt-1">계열별 결측치 집계 + 문제 있어 보이는 교재 목록</p>
+</div>
+
+<!-- 계열별 집계표 -->
+<div class="bg-white rounded-xl border border-gray-100 overflow-hidden mb-6">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+      <tr>
+        <th class="px-4 py-3 text-left">계열</th>
+        <th class="px-4 py-3 text-right">교재수</th>
+        <th class="px-4 py-3 text-left">제목없음</th>
+        <th class="px-4 py-3 text-left">어휘 0건</th>
+        <th class="px-4 py-3 text-left">OX 0건</th>
+        <th class="px-4 py-3 text-left">토론 0건</th>
+        <th class="px-4 py-3 text-left">글쓰기 없음</th>
+        <th class="px-4 py-3 text-left">어휘 정의누락</th>
+        <th class="px-4 py-3 text-left">OX 정답누락</th>
+        <th class="px-4 py-3 text-left">토론 답변누락</th>
+        <th class="px-4 py-3 text-left">raw_tail 있음</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for s in stats %}
+      <tr>
+        <td class="px-4 py-3 font-medium">
+          <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full">{{ s.family }}</span>
+        </td>
+        <td class="px-4 py-3 text-right text-gray-600">{{ s.count }}</td>
+        {% if s.count %}
+        <td class="px-4 py-3 {% if s.no_title %}text-red-500 font-medium{% else %}text-gray-400{% endif %}">{{ s.no_title }}/{{ s.count }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ s.no_vocab }}/{{ s.count }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ s.no_ox }}/{{ s.count }}</td>
+        <td class="px-4 py-3 {% if s.no_discussion %}text-red-500 font-medium{% else %}text-gray-400{% endif %}">{{ s.no_discussion }}/{{ s.count }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ s.no_writing }}/{{ s.count }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ s.vocab_no_def }}/{{ s.total_vocab }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ s.ox_no_answer }}/{{ s.total_ox }}</td>
+        <td class="px-4 py-3 {% if s.disc_no_answer %}text-amber-600 font-medium{% else %}text-gray-400{% endif %}">{{ s.disc_no_answer }}/{{ s.total_disc }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ s.disc_has_raw_tail }}</td>
+        {% else %}
+        <td class="px-4 py-3 text-gray-300" colspan="9">데이터 없음</td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- 문제 교재 필터 -->
+<div class="flex items-center justify-between mb-3">
+  <h3 class="font-semibold text-gray-700">⚠️ 검수 필요 교재 ({{ flagged|length }}건)</h3>
+  <form method="GET" class="flex gap-2">
+    <select name="family" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm bg-white">
+      <option value="">전체 계열</option>
+      {% for fam in families %}
+      <option value="{{ fam }}" {% if filter_family == fam %}selected{% endif %}>{{ fam }}</option>
+      {% endfor %}
+    </select>
+    <select name="issue" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm bg-white">
+      <option value="">전체 문제유형</option>
+      <option value="no_discussion" {% if filter_issue == 'no_discussion' %}selected{% endif %}>토론 문항 0건</option>
+      <option value="no_answer_majority" {% if filter_issue == 'no_answer_majority' %}selected{% endif %}>토론 답변 과반 누락</option>
+      <option value="no_writing" {% if filter_issue == 'no_writing' %}selected{% endif %}>글쓰기 없음</option>
+    </select>
+  </form>
+</div>
+
+{% if flagged %}
+<div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+      <tr>
+        <th class="px-4 py-3 text-left">분기/학년</th>
+        <th class="px-4 py-3 text-left">제목</th>
+        <th class="px-4 py-3 text-left">계열</th>
+        <th class="px-4 py-3 text-left">문제</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for f in flagged %}
+      <tr class="hover:bg-gray-50 cursor-pointer" onclick="location.href='/reading-essay/{{ f.material.id }}'">
+        <td class="px-4 py-3 text-gray-500 text-xs">{{ f.material.quarter }} / {{ f.material.grade }}</td>
+        <td class="px-4 py-3 font-medium text-gray-800">{{ f.material.title or '(제목 없음)' }}</td>
+        <td class="px-4 py-3">
+          <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full">{{ f.material.template_family }}</span>
+        </td>
+        <td class="px-4 py-3 text-xs text-amber-600">{{ f.reasons|join(', ') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 py-16 text-center text-gray-400">
+  조건에 맞는 문제 교재가 없습니다.
+</div>
+{% endif %}
+{% endblock %}

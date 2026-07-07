@@ -1,6 +1,7 @@
 """독서논술 문항 DB 라우터
 /reading-essay        -> 교재 목록 (분기/학년/계열/상태 필터)
 /reading-essay/scan    -> 배치 스캔(분기 폴더 훑어서 추출) 화면 + 실행
+/reading-essay/quality -> 추출 품질 검수 (계열별 결측치 집계 + 문제 교재 목록)
 /reading-essay/{id}    -> 교재 상세(추출 결과 검수)
 /reading-essay/{id}/reextract -> 단건 재추출
 /reading-essay/{id}/delete    -> 삭제
@@ -13,6 +14,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.reading_essay import ReadingMaterial, TEMPLATE_FAMILIES, STATUSES
 from app.services.reading_essay.scanner import QUARTER_ROOTS, GRADES, scan, process_one
+from app.services.reading_essay.quality import family_stats, flagged_materials
 
 router = APIRouter(prefix="/reading-essay")
 templates = Jinja2Templates(directory="app/templates")
@@ -83,6 +85,20 @@ def run_scan(
     )
     ctx = _base_ctx(db, request=request, result=result)
     return templates.TemplateResponse("reading_essay/scan.html", ctx)
+
+
+@router.get("/quality", response_class=HTMLResponse)
+def quality_page(
+    request: Request, db: Session = Depends(get_db),
+    family: str = "", issue: str = "",
+):
+    stats = family_stats(db)
+    flagged = flagged_materials(db, family=family or None, issue=issue or None)
+    ctx = _base_ctx(
+        db, request=request, stats=stats, flagged=flagged,
+        filter_family=family, filter_issue=issue,
+    )
+    return templates.TemplateResponse("reading_essay/quality.html", ctx)
 
 
 @router.get("/{material_id}", response_class=HTMLResponse)
