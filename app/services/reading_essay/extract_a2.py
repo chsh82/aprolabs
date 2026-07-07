@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-독서논술 교재 PDF(A2 계열: 초1~초2 그림책형) -> 문항 정보 JSON 추출 프로토타입.
+독서논술 교재 PDF(A2 계열: 초1~초2 그림책형) -> 문항 정보 추출.
 
-A1(test_reading_essay_extract.py)과 달리:
+A1과 달리:
   - 어휘가 "낱말-뜻 선잇기" 매칭 게임 + <보기> 빈칸채우기 (표 아님)
   - "질문과 토론"에 독해유형 라벨/색칠된 표 셀이 없음
   - 답변이 "- " 불릿 문단으로 오거나, 문장 안 빈칸에 바로 채워지는 형태
     (인라인 빈칸/글자별로 줄바꿈된 좁은 텍스트박스 등은 이번 프로토타입에서
     신뢰도 낮음 - 알려진 한계로 남김)
-
-사용법:
-    python test_reading_essay_extract_a2.py <학생용.pdf> <교사용.pdf> [output.json]
 """
 import re
 import sys
-import json
-from pathlib import Path
 
 import fitz
 
-from test_reading_essay_extract import (
+from .extract_a1 import (
     norm, PAGE_MARKER_RE, get_lines_with_bbox, find_ox_answers, parse_writing,
 )
 
@@ -255,24 +250,3 @@ def extract(student_path, teacher_path):
         'writing_prompt': writing,
         'source': {'student_pdf': str(student_path), 'teacher_pdf': str(teacher_path)},
     }
-
-
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print('사용법: python test_reading_essay_extract_a2.py <학생용.pdf> <교사용.pdf> [output.json]')
-        sys.exit(1)
-
-    student_path = Path(sys.argv[1])
-    teacher_path = Path(sys.argv[2])
-    out_path = Path(sys.argv[3]) if len(sys.argv) > 3 else Path('extract_output_a2.json')
-
-    result = extract(student_path, teacher_path)
-    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
-
-    print(f'완료 -> {out_path}')
-    print(f"  표지: {result['cover']}")
-    print(f"  어휘(매칭): {len(result['vocabulary_matching'])}건")
-    print(f"  어휘(빈칸): {len(result['vocabulary_fillblank'].get('items', []))}건")
-    print(f"  OX: {len(result['ox_quiz'])}건")
-    print(f"  토론 문항: {len(result['discussion_questions'])}건")
-    print(f"  글쓰기 Step1 질문: {len(result['writing_prompt'].get('step1_questions', []))}건")

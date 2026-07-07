@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-독서논술 교재 PDF(C 계열: 중3 소설이론표형) -> 문항 정보 JSON 추출 프로토타입.
+독서논술 교재 PDF(C 계열: 중3 소설이론표형) -> 문항 정보 추출.
 
 A1과 매우 비슷한 색칠된 표 셀(라벨+모범답안) 기법을 그대로 쓰지만:
   - 헤더 문구가 다름: "1 단계. 소설 구성의 3요소" / "3단계: 주제 글쓰기"
@@ -12,21 +12,13 @@ A1과 매우 비슷한 색칠된 표 셀(라벨+모범답안) 기법을 그대�
   - 인용문 페이지 표기가 "-p.NN"이 아니라 문장 끝 "(NN)"이고, 인용문이
     여러 개면 "~" 줄로 구분됨
   - 여러 작품을 한 교재에서 다루므로 "n번째 이야기. 제목 (연도)" 같은
-    작품 구분 줄이 있음
-
-사용법:
-    python test_reading_essay_extract_c.py <교사용.pdf> [output.json]
+    작품 구분 줄이 있음 (없으면 단일 작품/비문학 교재로 처리 - fallback)
 """
 import re
-import sys
-import json
-from pathlib import Path
 
 import fitz
 
-from test_reading_essay_extract import (
-    norm, PAGE_MARKER_RE, get_lines_with_bbox, find_cell_pairs,
-)
+from .extract_a1 import norm, PAGE_MARKER_RE, get_lines_with_bbox, find_cell_pairs
 
 STEP_RE = re.compile(r'^Step\s*(\d+)\.\s*(.*)', re.IGNORECASE)
 
@@ -36,7 +28,6 @@ READING_TYPE_RE = re.compile(r'^(\d+)\.\s*\[([가-힣]+(?:\s*/\s*[가-힣]+)*\s*
 EXCERPT_END_RE = re.compile(r'\(\d+(?:~\d+)?\)\s*$')
 QUOTE_SEP_RE = re.compile(r'^~$')
 STAGE_HEADER_RE = re.compile(r'^\d\s*단계')
-
 
 _DISC_FALLBACK_RE = re.compile(r'^\d+\.\s*\[[가-힣]+(?:\s*/\s*[가-힣]+)*\s*독해\]$', re.MULTILINE)
 
@@ -266,22 +257,3 @@ def extract(teacher_path):
         'writing_prompt': writing,
         'source': {'teacher_pdf': str(teacher_path)},
     }
-
-
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('사용법: python test_reading_essay_extract_c.py <교사용.pdf> [output.json]')
-        sys.exit(1)
-
-    teacher_path = Path(sys.argv[1])
-    out_path = Path(sys.argv[2]) if len(sys.argv) > 2 else Path('extract_output_c.json')
-
-    result = extract(teacher_path)
-    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
-
-    n_items = sum(len(w['items']) for w in result['works'])
-    print(f'완료 -> {out_path}')
-    print(f"  표지: {result['cover']}")
-    print(f"  이론표: {'raw_text만 보존' if result['theory_table'] else '없음'}")
-    print(f"  작품 구간: {len(result['works'])}개, 문항: {n_items}건")
-    print(f"  글쓰기 Step: {len(result['writing_prompt'].get('steps', []))}개")

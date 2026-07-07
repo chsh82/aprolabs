@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}{{ material.title or '교재' }} - 독서논술 DB{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-start justify-between">
+  <div>
+    <div class="flex items-center gap-2 mb-1">
+      <a href="/reading-essay" class="text-sm text-gray-400 hover:text-gray-600">← 목록</a>
+      <span class="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-medium">{{ material.template_family or '?' }}</span>
+      <span class="text-xs px-2 py-0.5 rounded-full
+        {% if material.status == 'extracted' %}bg-green-100 text-green-700
+        {% elif material.status == 'reviewed' %}bg-blue-100 text-blue-700
+        {% elif material.status == 'error' %}bg-red-100 text-red-700
+        {% else %}bg-gray-100 text-gray-500{% endif %}">
+        {{ material.status }}
+      </span>
+    </div>
+    <h2 class="text-2xl font-bold text-gray-800">{{ material.title or '(제목 없음)' }}</h2>
+    <p class="text-sm text-gray-400 mt-1">
+      {{ material.quarter or '-' }} · {{ material.grade or '-' }} · {{ material.week or '-' }}
+      {% if material.level %} · {{ material.level }}{% endif %}
+      {% if material.author %} · {{ material.author }}{% endif %}
+    </p>
+  </div>
+  <div class="flex gap-2">
+    <form method="POST" action="/reading-essay/{{ material.id }}/reextract">
+      <button type="submit" class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition">
+        🔄 재추출
+      </button>
+    </form>
+    <form method="POST" action="/reading-essay/{{ material.id }}/delete" onsubmit="return confirm('이 교재를 삭제하시겠습니까?')">
+      <button type="submit" class="text-sm px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition">
+        삭제
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if material.status == 'error' %}
+<div class="bg-red-50 border border-red-100 rounded-xl p-4 mb-5 text-sm text-red-600">
+  <b>오류:</b> {{ material.error_message }}
+</div>
+{% endif %}
+
+{% if material.cover_quotes %}
+<div class="bg-white rounded-xl border border-gray-100 p-4 mb-5 text-sm text-gray-500 italic">
+  {% for qt in material.cover_quotes %}<p>{{ qt }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<!-- 원본 파일 -->
+<div class="text-xs text-gray-400 mb-5 space-y-0.5">
+  {% if material.student_pdf_path %}<p>학생용: {{ material.student_pdf_path }}</p>{% endif %}
+  {% if material.teacher_pdf_path %}<p>교사용: {{ material.teacher_pdf_path }}</p>{% endif %}
+</div>
+
+<!-- 어휘 -->
+{% if material.vocabulary_items %}
+<div class="mb-6">
+  <h3 class="font-semibold text-gray-700 mb-2">📖 어휘 ({{ material.vocabulary_items|length }}건)</h3>
+  <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+        <tr>
+          <th class="px-4 py-2 text-left">단어</th>
+          <th class="px-4 py-2 text-left">페이지</th>
+          <th class="px-4 py-2 text-left">뜻</th>
+          <th class="px-4 py-2 text-left">매칭번호</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for v in material.vocabulary_items %}
+        <tr>
+          <td class="px-4 py-2 font-medium text-gray-800">{{ v.word }}</td>
+          <td class="px-4 py-2 text-gray-400">{{ v.page or '-' }}</td>
+          <td class="px-4 py-2 text-gray-600">{{ v.definition }}</td>
+          <td class="px-4 py-2 text-gray-400">{{ v.matched_definition_no or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- OX 퀴즈 -->
+{% if material.ox_items %}
+<div class="mb-6">
+  <h3 class="font-semibold text-gray-700 mb-2">⭕ O.X 퀴즈 ({{ material.ox_items|length }}건)</h3>
+  <div class="bg-white rounded-xl border border-gray-100 divide-y divide-gray-100">
+    {% for o in material.ox_items %}
+    <div class="p-3 flex items-start gap-3 text-sm">
+      <span class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs
+        {% if o.answer in ['○', 'O'] %}bg-blue-100 text-blue-600{% else %}bg-red-100 text-red-500{% endif %}">
+        {{ o.answer or '?' }}
+      </span>
+      <div class="flex-1">
+        <p class="text-gray-700">{{ o.statement }}{% if o.page %} <span class="text-gray-400 text-xs">({{ o.page }}페이지)</span>{% endif %}</p>
+        {% if o.wrong_explanation %}<p class="text-xs text-gray-400 mt-1">→ {{ o.wrong_explanation }}</p>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- 질문과 토론 -->
+{% if material.discussion_items %}
+<div class="mb-6">
+  <h3 class="font-semibold text-gray-700 mb-2">💬 질문과 토론 ({{ material.discussion_items|length }}건)</h3>
+  <div class="space-y-3">
+    {% for d in material.discussion_items %}
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
+      <div class="flex items-center gap-2 mb-2 flex-wrap">
+        <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full font-mono">Q{{ d.question_no or '?' }}</span>
+        {% if d.work_title %}<span class="text-xs px-2 py-0.5 bg-purple-50 text-purple-600 rounded-full">{{ d.work_title }}</span>{% endif %}
+        {% if d.reading_type %}<span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full">{{ d.reading_type }}</span>{% endif %}
+      </div>
+      {% if d.quotes %}
+      <div class="bg-gray-50 rounded-lg p-3 mb-2 text-xs text-gray-500 space-y-1">
+        {% for qt in d.quotes %}
+        <p>{% if qt is mapping %}{{ qt.text }}{% if qt.page_ref %} <span class="text-gray-400">(p.{{ qt.page_ref }})</span>{% endif %}{% else %}{{ qt }}{% endif %}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if d.question_text %}<p class="text-sm text-gray-800 mb-2">{{ d.question_text }}</p>{% endif %}
+      {% if d.sub_answers %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+        {% for sa in d.sub_answers %}
+        <div class="bg-green-50 rounded-lg p-2.5">
+          {% if sa.label %}<p class="text-xs font-semibold text-green-700 mb-1">{{ sa.label }}</p>{% endif %}
+          <p class="text-xs text-gray-600">{{ sa.answer }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif d.model_answer %}
+      <div class="bg-green-50 rounded-lg p-2.5 mt-2">
+        {% if d.label %}<p class="text-xs font-semibold text-green-700 mb-1">{{ d.label }}</p>{% endif %}
+        <p class="text-xs text-gray-600">{{ d.model_answer }}</p>
+      </div>
+      {% endif %}
+      {% if d.raw_tail %}
+      <details class="mt-2">
+        <summary class="text-xs text-amber-600 cursor-pointer">⚠️ 구조화 안 된 원문 (raw_tail)</summary>
+        <p class="text-xs text-gray-500 mt-1 bg-amber-50 rounded p-2">{{ d.raw_tail }}</p>
+      </details>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- 글쓰기 -->
+{% if material.writing_prompt %}
+<div class="mb-6">
+  <h3 class="font-semibold text-gray-700 mb-2">✍️ 글쓰기</h3>
+  <div class="bg-white rounded-xl border border-gray-100 p-4">
+    {% if material.writing_prompt.theme %}<p class="font-medium text-gray-800 mb-3">{{ material.writing_prompt.theme }}</p>{% endif %}
+    {% for step in material.writing_prompt.steps %}
+    <div class="flex gap-2 text-sm mb-1.5">
+      <span class="text-gray-400 font-mono flex-shrink-0">Step{{ step.step }}.</span>
+      <span class="text-gray-600">{{ step.text }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if not material.vocabulary_items and not material.ox_items and not material.discussion_items %}
+<div class="bg-white rounded-xl border border-gray-100 py-16 text-center text-gray-400">
+  추출된 내용이 없습니다.
+</div>
+{% endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-독서논술 교재 PDF(B 계열: 중1~중3/초6 소설·수필형) -> 문항 정보 JSON 추출 프로토타입.
+독서논술 교재 PDF(B 계열: 중1~중3/초6 소설·수필형) -> 문항 정보 추출.
 
 A1/A2와 달리:
   - 표지에 LV/분기 없이 "[제목_교사용]" 같은 대괄호 헤더로 시작
@@ -15,21 +15,14 @@ A1/A2와 달리:
 표 셀 없이 줄글로만 이어지는 경우, 라벨과 본문을 구분하지 못하고 answer
 필드에 통째로 들어간다 (A2와 동일한 근본적 한계).
 
-사용법:
-    python test_reading_essay_extract_b.py <교사용.pdf> [output.json]
-
 주의: B 계열은 학생용에 힌트/예시가 상당수 그대로 들어있는 경우가 많아
-(A2에서 확인된 패턴과 유사) 교사용 단독 파싱으로 설계함. 필요시 학생용을
-추가로 넘겨 답변 유무 diff를 낼 수 있으나 이번 프로토타입에는 미포함.
+(A2에서 확인된 패턴과 유사) 교사용 단독 파싱으로 설계함.
 """
 import re
-import sys
-import json
-from pathlib import Path
 
 import fitz
 
-from test_reading_essay_extract import norm, PAGE_MARKER_RE
+from .extract_a1 import norm, PAGE_MARKER_RE
 
 BRACKET_HEADER_RE = re.compile(r'^\[(.+)\]$')
 WORK_TITLE_RE = re.compile(r'^<(.+)>$')
@@ -167,23 +160,3 @@ def extract(teacher_path):
         'writing_prompt': writing,
         'source': {'teacher_pdf': str(teacher_path)},
     }
-
-
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('사용법: python test_reading_essay_extract_b.py <교사용.pdf> [output.json]')
-        sys.exit(1)
-
-    teacher_path = Path(sys.argv[1])
-    out_path = Path(sys.argv[2]) if len(sys.argv) > 2 else Path('extract_output_b.json')
-
-    result = extract(teacher_path)
-    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
-
-    n_items = sum(len(w['items']) for w in result['works'])
-    n_answered = sum(1 for w in result['works'] for it in w['items'] if it['answer'])
-    print(f'완료 -> {out_path}')
-    print(f"  문서 제목: {result['doc_title']}")
-    print(f"  작품 구간: {len(result['works'])}개")
-    print(f"  문항: {n_items}건 (답: 마커 있는 문항 {n_answered}건)")
-    print(f"  글쓰기 Step: {len(result['writing_prompt']['steps'])}개")

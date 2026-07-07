@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-독서논술 교재 PDF(학생용+교사용) -> 문항 정보 JSON 추출 프로토타입.
-
-사용법:
-    python test_reading_essay_extract.py <학생용.pdf> <교사용.pdf> [output.json]
+독서논술 교재 PDF(A1 계열: 초3~초6 챕터북형, 학생용+교사용) -> 문항 정보 추출.
 
 구조 가정 (Apro Harkness 독서논술 교재 템플릿):
   p1        표지 (LV, 분기/과목, 제목, 표지 문구)
@@ -21,9 +18,7 @@
 """
 import fitz
 import re
-import json
 import sys
-from pathlib import Path
 
 READING_TYPE_RE = re.compile(r'^[가-힣]+(?:\s*/\s*[가-힣]+)*\s*독해$')
 PAGE_REF_RE = re.compile(r'^-p\.(\S+)')
@@ -444,24 +439,3 @@ def extract(student_path, teacher_path):
             'teacher_pdf': str(teacher_path),
         },
     }
-
-
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print('사용법: python test_reading_essay_extract.py <학생용.pdf> <교사용.pdf> [output.json]')
-        sys.exit(1)
-
-    student_path = Path(sys.argv[1])
-    teacher_path = Path(sys.argv[2])
-    out_path = Path(sys.argv[3]) if len(sys.argv) > 3 else Path('extract_output.json')
-
-    result = extract(student_path, teacher_path)
-    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
-
-    print(f'완료 -> {out_path}')
-    print(f"  표지: {result['cover']}")
-    print(f"  어휘: {len(result['vocabulary'])}건")
-    print(f"  OX: {len(result['ox_quiz'])}건")
-    print(f"  토론블록: {len(result['discussion_questions'])}개, "
-          f"문항 수: {sum(len(b['items']) for b in result['discussion_questions'])}")
-    print(f"  글쓰기 Step1 질문: {len(result['writing_prompt'].get('step1_questions', []))}건")

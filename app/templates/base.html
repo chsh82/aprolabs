@@ -69,6 +69,14 @@
         <a href="/suneung/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
           📄 수능 PDF 업로드
         </a>
+        <a href="/reading-essay" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                {% if request.url.path.startswith('/reading-essay') and not request.url.path.startswith('/reading-essay/scan') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+          📚 독서논술 DB
+        </a>
+        <a href="/reading-essay/scan" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                {% if request.url.path.startswith('/reading-essay/scan') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+          🔍 독서논술 PDF 스캔
+        </a>
         <a href="/suneung/db" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
                 {% if request.url.path.startswith('/suneung/db') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
           🗄️ 수능국어DB
