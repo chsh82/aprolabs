@@ -1,0 +1,194 @@
+총 파일: 100건, 고유 지문(fingerprint) 종류: 37개
+
+--- 그룹 1 (21건) 학년: ['초3', '초4', '초5'] ---
+  마커: cover_LV, discussion_header, ox_pattern, reading_type_label, step1_label, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초3] [3분기 10주차] 박문수전(교사용).pdf
+    - [초3] [3분기 11주차] 얼굴 빨개지는 아이(교사용).pdf
+    - [초3] [3분기 12주차] 숨은 신발 찾기(교사용).pdf
+    - [초3] [3분기 13주차] 일주일의 학교(교사용).pdf
+    - [초3] [3분기 1주차] 냄비와 국자전쟁(교사용).pdf
+    ... 외 16건
+
+--- 그룹 2 (8건) 학년: ['초1', '초2'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, ox_pattern, step_numbered_v1, writing_header_v1
+    - [초1] [3분기 10주차] 에드와르도 세상에서 가장 못된 아이(교사용).pdf
+    - [초1] [3분기 11주차] 폭풍우 치는 밤에(교사용).pdf
+    - [초1] [3분기 13주차] 개구리네 한솥밥(교사용).pdf
+    - [초1] [3분기 7주차] 까만 아기 양(교사용).pdf
+    - [초1] [3분기 9주차] 이 세상에서 제일 예쁜 못난이(교사용).pdf
+    ... 외 3건
+
+--- 그룹 3 (7건) 학년: ['초1', '초2'] ---
+  마커: cover_LV, discussion_header, ox_pattern, step_numbered_v1, writing_header_v1
+    - [초1] [3분기 3주차] 학교에 간 공룡 앨리사우루스(교사용).pdf
+    - [초1] [3분기 5주차] 슈퍼 토끼(교사용).pdf
+    - [초1] [3분기 6주차] 프레드릭(교사용).pdf
+    - [초1] [3분기 8주차] 나는 개다(교사용).pdf
+    - [초2] [3분기 12주차] 미스 럼피우스(교사용).pdf
+    ... 외 2건
+
+--- 그룹 4 (6건) 학년: ['중1', '중2', '초6'] ---
+  마커: answer_colon, bullet_dash_answer, step_numbered_v1, step_numbered_v2, writing_header_v2
+    - [초6] [3분기 11주차] 의자를 신고 달리는 (교사용).pdf
+    - [초6] [3분기 12주차] 풀꽃, 나태주 대표 시선집 (교사용).pdf
+    - [중1] [3분기 10주차] 국어교과서여행 중2수필 1주차 (교사용).pdf
+    - [중2] [3분기 10주차] 청소년을 위한 고전 소설 에세이 1주차(교사용).pdf
+    - [중2] [3분기 11주차] 청소년을 위한 고전 소설 에세이 2주차(교사용).pdf
+    ... 외 1건
+
+--- 그룹 5 (6건) 학년: ['중3'] ---
+  마커: cover_LV, step1_label
+    - [중3] [3분기 11주차] 독짓는늙은이2주차 (교사용).pdf
+    - [중3] [3분기 12주차] 신경림의 시인을 찾아서 1주차 (교사용).pdf
+    - [중3] [3분기 13주차] 신경림의 시인을 찾아서 2주차 (교사용).pdf
+    - [중3] [3분기 6주차] 열하일기1주차 (교사용).pdf
+    - [중3] [3분기 7주차] 열하일기2주차 (교사용).pdf
+    ... 외 1건
+
+--- 그룹 6 (5건) 학년: ['초5', '초6'] ---
+  마커: cover_LV, discussion_header, ox_pattern, reading_type_label, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초5] [3분기 10주차] 긴긴밤(교사용).pdf
+    - [초5] [3분기 6주차] 안네의 일기 1주차(교사용).pdf
+    - [초6] [3분기 3주차] 운수 좋은 날 (교사용).pdf
+    - [초6] [3분기 4주차] 수난이대 (교사용).pdf
+    - [초6] [3분기 9주차] 최척전 (교사용).pdf
+
+--- 그룹 7 (5건) 학년: ['초5'] ---
+  마커: cover_LV, discussion_header, reading_type_label, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초5] [3분기 11주차] 모모 1주차(교사용).pdf
+    - [초5] [3분기 12주차] 모모 2주차(교사용).pdf
+    - [초5] [3분기 4주차] 별을 사랑하는 아이들아(교사용).pdf
+    - [초5] [3분기 8주차] 몽실 언니 1주차(교사용).pdf
+    - [초5] [3분기 9주차] 몽실 언니 2주차(교사용).pdf
+
+--- 그룹 8 (3건) 학년: ['초1', '초2'] ---
+  마커: cover_LV, discussion_header, step_numbered_v1, writing_header_v1
+    - [초1] [3분기 1주차] 책먹는여우(교사용).pdf
+    - [초1] [3분기 2주차] 윌리의 호주머니(교사용).pdf
+    - [초2] [3분기 2주차] 아빠사자와 행복한 아이들(교사용).pdf
+
+--- 그룹 9 (3건) 학년: ['중1', '중3'] ---
+  마커: cover_LV, step1_label, step_numbered_v1, step_numbered_v2
+    - [중1] [3분기 12주차] 문학 시간에 희곡 읽기2 1주차_(교사용)_최종답안.pdf
+    - [중1] [3분기 6주차] 우리들의 일그러진 영웅 (교사용).pdf
+    - [중3] [3분기 9주차] 만세전2주차 (교사용).pdf
+
+--- 그룹 10 (3건) 학년: ['중2'] ---
+  마커: answer_colon, bullet_dash_answer, writing_header_v2
+    - [중2] [3분기 13주차] 이토록 친절한 문학교과서 작품 읽기 2주차 (교사용).pdf
+    - [중2] [3분기 1주차] 꺼삐딴 리 (교사용).pdf
+    - [중2] [3분기 2주차] 무진기행 (교사용).pdf
+
+--- 그룹 11 (2건) 학년: ['초3', '초4'] ---
+  마커: cover_LV, discussion_header, reading_type_label, step_numbered_v1
+    - [초3] [3분기 4주차] 콩 너는 죽었다(교사용).pdf
+    - [초4] [3분기 13주차] 말대꾸하면 안돼요 (교사용).pdf
+
+--- 그룹 12 (2건) 학년: ['초4', '초5'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, reading_type_label, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초4] [3분기 1주차] 박씨부인전(교사용).pdf
+    - [초5] [3분기 3주차] 산새알 물새알(교사용).pdf
+
+--- 그룹 13 (2건) 학년: ['초5', '초6'] ---
+  마커: bullet_dash_answer, ox_pattern, step1_label, step_numbered_v1, step_numbered_v2, vocab_pattern, writing_header_v2
+    - [초5] [3분기 1주차] 김유정 소설집 1주차 (교사용).pdf
+    - [초6] [3분기 13주차] 국어교과서작품읽기 중1 수필 (교사용).pdf
+
+--- 그룹 14 (2건) 학년: ['중1', '초6'] ---
+  마커: answer_colon, bullet_dash_answer, step1_label, step_numbered_v1, step_numbered_v2, writing_header_v2
+    - [초6] [3분기 10주차] 금수회의록 (교사용).pdf
+    - [중1] [3분기 4주차] 금오신화 (교사용).pdf
+
+--- 그룹 15 (2건) 학년: ['중1'] ---
+  마커: bullet_dash_answer, step1_label, step_numbered_v1, step_numbered_v2, writing_header_v2
+    - [중1] [3분기 5주차] 양반전 허생전 (교사용).pdf
+    - [중1] [3분기 8주차] 국어교과서작품읽기 중2 시 (교사용).pdf
+
+--- 그룹 16 (2건) 학년: ['중2'] ---
+  마커: bullet_dash_answer, step1_label, writing_header_v2
+    - [중2] [3분기 8주차] 태평천하 1주차 (교사용).pdf
+    - [중2] [3분기 9주차] 태평천하 2주차 (교사용).pdf
+
+--- 그룹 17 (1건) 학년: ['초1'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, ox_pattern, step_numbered_v1
+    - [초1] [3분기 12주차] 생각을 모으는 사람(교사용).pdf
+
+--- 그룹 18 (1건) 학년: ['초1'] ---
+  마커: cover_LV, step_numbered_v1
+    - [초1] [3분기 4주차] 글자동물원(교사용).pdf
+
+--- 그룹 19 (1건) 학년: ['초2'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, ox_pattern, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초2] [3분기 10주차] 화해하기 보고서 (교사용).pdf
+
+--- 그룹 20 (1건) 학년: ['초2'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, step_numbered_v1, writing_header_v1
+    - [초2] [3분기 3주차] 한밤중의 고양이 손님(교사용).pdf
+
+--- 그룹 21 (1건) 학년: ['초2'] ---
+  마커: cover_LV, step1_label, step_numbered_v1
+    - [초2] [3분기 4주차] 첫말잇기 동시집(교사용).pdf
+
+--- 그룹 22 (1건) 학년: ['초2'] ---
+  마커: cover_LV, discussion_header, ox_pattern, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초2] [3분기 7주차] 제임스와 슈퍼복숭아 1주차(교사용).pdf
+
+--- 그룹 23 (1건) 학년: ['초2'] ---
+  마커: cover_LV, discussion_header, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초2] [3분기 9주차] 우리 교실에 온 괴물(교사용).pdf
+
+--- 그룹 24 (1건) 학년: ['초3'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, ox_pattern, reading_type_label, step1_label, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초3] [3분기 6주차] 찰리와 초콜릿 공장 1주차(교사용).pdf
+
+--- 그룹 25 (1건) 학년: ['초4'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, reading_type_label, step_numbered_v1, vocab_pattern
+    - [초4] [3분기 5주차] 봄 편지(교사용).pdf
+
+--- 그룹 26 (1건) 학년: ['초4'] ---
+  마커: cover_LV, discussion_header, reading_type_label, step_numbered_v1, vocab_pattern
+    - [초4] [3분기 6주차] 별똥 떨어진 곳(교사용).pdf
+
+--- 그룹 27 (1건) 학년: ['초5'] ---
+  마커: cover_LV, discussion_header, reading_type_label, vocab_pattern, writing_header_v1
+    - [초5] [3분기 13주차] 모모 3주차(교사용).pdf
+
+--- 그룹 28 (1건) 학년: ['초5'] ---
+  마커: answer_colon, bullet_dash_answer, ox_pattern, step1_label, step_numbered_v1, step_numbered_v2, vocab_pattern, writing_header_v2
+    - [초5] [3분기 2주차] 김유정 소설집 2주차 (교사용).pdf
+
+--- 그룹 29 (1건) 학년: ['초5'] ---
+  마커: bullet_dash_answer, cover_LV, discussion_header, ox_pattern, reading_type_label, step_numbered_v1, vocab_pattern, writing_header_v1
+    - [초5] [3분기 7주차] 안네의 일기 2주차(교사용).pdf
+
+--- 그룹 30 (1건) 학년: ['초6'] ---
+  마커: bullet_dash_answer, cover_LV, step1_label, step_numbered_v1, step_numbered_v2, vocab_pattern
+    - [초6] [3분기 7주차] 꿈 하늘 (교사용).pdf
+
+--- 그룹 31 (1건) 학년: ['초6'] ---
+  마커: answer_colon, bullet_dash_answer, ox_pattern, step1_label, vocab_pattern, writing_header_v2
+    - [초6] [3분기 8주차] 전우치전 (교사용).pdf
+
+--- 그룹 32 (1건) 학년: ['중1'] ---
+  마커: answer_colon, step_numbered_v1, step_numbered_v2, writing_header_v2
+    - [중1] [3분기 11주차] 국어교과서여행 중2수필 2주차 (교사용).pdf
+
+--- 그룹 33 (1건) 학년: ['중1'] ---
+  마커: cover_LV, step1_label, step_numbered_v1, step_numbered_v2, writing_header_v2
+    - [중1] [3분기 13주차] 문학 시간에 희곡 읽기2 2주차_(교사용)_최종답안_수정본.pdf
+
+--- 그룹 34 (1건) 학년: ['중1'] ---
+  마커: bullet_dash_answer, writing_header_v2
+    - [중1] [3분기 9주차] 정본 윤동주 전집 (교사용).pdf
+
+--- 그룹 35 (1건) 학년: ['중3'] ---
+  마커: cover_LV, novel_3elements_table, step1_label
+    - [중3] [3분기 10주차] 독짓는늙은이1주차 (교사용).pdf
+
+--- 그룹 36 (1건) 학년: ['중3'] ---
+  마커: bullet_dash_answer, cover_LV, novel_3elements_table, step1_label, step_numbered_v1
+    - [중3] [3분기 1주차] 한국 단편문학 1주차 (교사용).pdf
+
+--- 그룹 37 (1건) 학년: ['중3'] ---
+  마커: cover_LV, novel_3elements_table, step1_label, step_numbered_v1
+    - [중3] [3분기 2주차] 한국 단편문학 2주차 (교사용).pdf
