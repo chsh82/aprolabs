@@ -197,7 +197,7 @@ def main():
         print(f"  [{row[0]} {row[1]}번] {row[2][:40]}…")
         print(f"  정답: {first[:90]}…")
     con.close()
-    print(f"\n✓ {os.path.basename(DB)} — 세 교재를 정답까지 자동 적재 완료")
+    print(f"\n✓ {os.path.basename(DB)} — {len(MATERIALS)}개 교재를 정답까지 자동 적재 완료")
 
 
 if __name__ == "__main__":
