@@ -17,7 +17,10 @@ RE_OX = re.compile(r"O\s*[/.]\s*X")
 RE_VOCAB = re.compile(r"어휘|단어의\s*뜻|뜻\s*유추")
 RE_KEYWORD = re.compile(r"키워드.*정의|정의를\s*살펴")
 RE_ILLUST = re.compile(r"삽화|인상적이었던\s*그림")
-RE_MORE = re.compile(r"더\s*알아보기|작가\s*소개|글쓴이\s*소개")
+# 선행 불릿/장식 기호(◉ 등) + 공백은 있어도/없어도 매치되도록 옵션 그룹으로 포함.
+# parser.py/extract_teacher.py가 이 매치의 start()를 컷 지점으로 쓰므로,
+# 불릿이 있으면 그것까지 함께 잘려나가고 없으면(예: "작가 소개"로 바로 시작) 그대로 매치됨.
+RE_MORE = re.compile(r"(?:[◉●○■□▶◆♦※•]\s*)?(?:더\s*알아보기|작가\s*소개|글쓴이\s*소개)")
 
 
 def pdftext(path):
