@@ -14,7 +14,6 @@ jobs:
           host: ${{ secrets.GCP_HOST }}
           username: ${{ secrets.GCP_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          request_pty: true
           script: |
             set -e
 
