@@ -11,13 +11,15 @@ extract_teacher.py  —  교사용 PDF에서 '문항별 정답 텍스트'를 정
 """
 import re, subprocess
 
+from extract_blocks import RE_MORE
+
 # 문항 시작:  (★)? ([모모제외])? N. ...   /  N. (1) ... (금오신화식 하위표기)
 RE_QHEAD = re.compile(r"^\s*(\u2605\s*)?(\[모모제외\]\s*)?(\d+)\.\s*(?:\((\d+)\)\s*)?")
 RE_ANS   = re.compile(r"^\s*답\s*[:：]\s*(.*)$")
 RE_STAGE = re.compile(r"^\s*(\d)\s*(?:단계|단어|이해|질문|토론|글쓰기)")
 RE_STOP  = re.compile(r"(글쓰기\s*주제|주제\s*글쓰기|<\s*글쓰기|^\s*\[?글쓰기|^\s*3\s*글쓰기|내\s*글로\s*엮기|^Step\s*\d)")
 # β: 다음 문항의 지문은 유형 헤더로 시작 → 정답 꼬리에서 잘라낼 신호
-RE_NEXTHDR = re.compile(r"(사실적|추론적|분석적|비판적|적용|창의적|감상)\s*독해")
+RE_NEXTHDR = re.compile(rf"(사실적|추론적|분석적|비판적|적용|창의적|감상)\s*독해|{RE_MORE.pattern}")
 RE_PAGE  = re.compile(r"\((\d{1,3}(?:-\d{1,3})?)\s*쪽?\)|[-\u2013]?\s*p\.?\s*\d{1,3}", re.I)
 RE_QMARK = re.compile(r"[?\uff1f]")
 # 정답 끝단의 PDF 페이지 하단 마커(예: "- 4 -", 가운데정렬 페이지번호)만 제거.

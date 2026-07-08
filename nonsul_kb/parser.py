@@ -11,6 +11,8 @@ overlay/LLM(Tier 3): 표 라벨 정답, 참고박스 본문, 글쓰기 모범답
 import re
 import subprocess
 
+from extract_blocks import RE_MORE
+
 WORKS = {"만복사저포기", "이생규장전", "남염부주지"}
 TYPES = "사실적|추론적|분석적|비판적|적용적|적용|창의적|감상"
 
@@ -20,7 +22,7 @@ RE_SUB     = re.compile(r"^\s*\((\d+)\)\s*\S")          # (1) 뒤 내용 필수 
 RE_STAGE   = re.compile(rf"^\s*(\d)\s*(?:단계|단어|이해|질문|토론|글쓰기)")
 RE_QUOTE   = re.compile(r"[\u201c\"](.+?)[\u201d\"]", re.S)
 RE_TYPE    = re.compile(rf"({TYPES})")
-RE_STOP    = re.compile(r"(3\s*단계|글쓰기\s*주제|주제\s*글쓰기|<\s*글쓰기|^Step\s*\d)")
+RE_STOP    = re.compile(rf"(3\s*단계|글쓰기\s*주제|주제\s*글쓰기|<\s*글쓰기|^Step\s*\d|{RE_MORE.pattern})")
 RE_PAGE    = re.compile(
     r"\((\d{1,3}(?:-\d{1,3})?)\s*쪽?\)"
     r"|[-\u2013]?\s*p\.?\s*(\d{1,3})(?:\s*[~\u301c\uff5e\u2013-]\s*\d{1,3})?",
