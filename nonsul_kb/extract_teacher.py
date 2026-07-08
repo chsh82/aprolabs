@@ -20,6 +20,11 @@ RE_STOP  = re.compile(r"(글쓰기\s*주제|주제\s*글쓰기|<\s*글쓰기|^\s
 RE_NEXTHDR = re.compile(r"(사실적|추론적|분석적|비판적|적용|창의적|감상)\s*독해")
 RE_PAGE  = re.compile(r"\((\d{1,3}(?:-\d{1,3})?)\s*쪽?\)|[-\u2013]?\s*p\.?\s*\d{1,3}", re.I)
 RE_QMARK = re.compile(r"[?\uff1f]")
+# 정답 끝단의 PDF 페이지 하단 마커(예: "- 4 -", 가운데정렬 페이지번호)만 제거.
+# 앞에 공백이 있어야 매치되므로 본문 중 대화 줄표/목록 번호("1-2-3" 등)는 건드리지 않고,
+# 반드시 문자열 맨 끝(anchor $)에서 dash-숫자-dash로 끝나는 경우만 잡음.
+# RE_PAGE("p.NNN"/"(NNN쪽)" 인용 표기)와는 표기 형태가 달라 하나로 합치지 않음.
+RE_FOOTER_PAGENUM = re.compile(r"(?:\s+-\s*\d{1,3}\s*-\s*)+$")
 
 
 def pdftext(path):
@@ -115,7 +120,8 @@ def extract_answers(text, prompt_index=None):
         mnx = RE_NEXTHDR.search(raw_answer, 10)      # 앞 10자 이후의 유형 헤더 = 다음 문항 지문
         if mnx:
             raw_answer = raw_answer[:mnx.start()]
-        b["raw_answer"] = _clean(raw_answer); b["marker"] = marker
+        raw_answer = RE_FOOTER_PAGENUM.sub("", _clean(raw_answer)).strip()
+        b["raw_answer"] = raw_answer; b["marker"] = marker
         out.append(b)
     return out
 
