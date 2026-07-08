@@ -14,8 +14,17 @@ verify_overlay.py  —  --llm 로 구조화된 정답의 무결성 자동 검증
 
 사용:
   python verify_overlay.py                # momo_kb.db + materials.json 기준
-  python verify_overlay.py --min-overlap 0.5
+  python verify_overlay.py --min-overlap 0.55 --hard-overlap 0.25
 종료코드: 하드 오류(JSON깨짐/지어냄의심/빈정답)가 있으면 1 (CI 게이트용).
+
+원문 일치율 판정은 2단계:
+  ov < hard-overlap(기본 0.25)             → 지어냄의심 (하드오류, 종료코드에 반영)
+  hard-overlap <= ov < min-overlap(기본 0.55) → 검토권장 (경고만, 종료코드 무관)
+  ov >= min-overlap                         → 정상
+교사용 PDF가 두 칸짜리 표(예: 이유A/이유B, 긍정/부정 관점)를 한 줄씩 번갈아 뽑아내
+원문 자체가 뒤섞인 경우, LLM이 원문 그대로의 사실을 순서만 바로잡아 재구성해도
+n-gram 어순이 달라져 낮은 overlap이 나올 수 있다. 이런 경우를 하드오류로 잘못
+잡지 않도록 "검토권장" 구간을 둔다.
 """
 import os, re, json, sqlite3, argparse
 from extract_teacher import pdftext, extract_answers
@@ -24,7 +33,7 @@ from parser import parse_skeleton
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB   = os.path.join(HERE, "momo_kb.db")
 DATA = os.environ.get("MOMOAI_DATA", os.path.join(HERE, "data"))
-SHINGLE = 8   # 글자 n-gram 길이
+SHINGLE = 3   # 글자 n-gram 길이 (어순이 뒤섞인 원문에도 부분 일치를 잡기 위해 축소)
 
 
 def _norm(s):
@@ -79,13 +88,13 @@ def key_of(seq, sub):
     return f"{seq}" + (f"-{sub}" if sub else "")
 
 
-def verify(min_overlap):
+def verify(min_overlap, hard_overlap):
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
     mats = {m["work_title"]: m for m in load_materials()}
 
     stats = dict(ok=0, empty=0, json_err=0, scaffold=0, echo=0,
-                 fabricate=0, vision_review=0, total=0)
+                 fabricate=0, review=0, vision_review=0, total=0)
     flagged = []
 
     for mrow in con.execute("SELECT id, work_title FROM materials"):
@@ -145,9 +154,12 @@ def verify(min_overlap):
                 stats["vision_review"] += 1
             else:
                 ov = overlap(ans_text, raw["raw_answer"])
-                if ov < min_overlap:
+                if ov < hard_overlap:
                     problems.append(f"원문일치 {ov:.0%}(지어냄의심)")
                     stats["fabricate"] += 1
+                elif ov < min_overlap:
+                    problems.append(f"원문일치 {ov:.0%}(검토권장)")
+                    stats["review"] += 1
 
             if problems:
                 flagged.append((tag, ", ".join(problems), ""))
@@ -162,6 +174,7 @@ def verify(min_overlap):
     print(f"  ⚠ scaffold 누락       {stats['scaffold']}")
     print(f"  ⚠ 발문 에코           {stats['echo']}")
     print(f"  ✕ 원문불일치(지어냄)  {stats['fabricate']}")
+    print(f"  ▲ 검토권장(어순 상이)  {stats['review']}")
     print(f"  ✕ 빈 정답             {stats['empty']}")
     print(f"  ✕ JSON 깨짐           {stats['json_err']}")
     if flagged:
@@ -176,7 +189,9 @@ def verify(min_overlap):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--min-overlap", type=float, default=0.5,
-                    help="원문 일치 최소 비율(이하면 지어냄 의심, 기본 0.5)")
+    ap.add_argument("--min-overlap", type=float, default=0.55,
+                    help="이 미만이면 검토권장(경고), 기본 0.55")
+    ap.add_argument("--hard-overlap", type=float, default=0.25,
+                    help="이 미만이면 지어냄의심(하드오류), 기본 0.25")
     args = ap.parse_args()
-    raise SystemExit(verify(args.min_overlap))
+    raise SystemExit(verify(args.min_overlap, args.hard_overlap))
