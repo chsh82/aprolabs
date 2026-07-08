@@ -21,7 +21,10 @@ RE_STAGE   = re.compile(rf"^\s*(\d)\s*(?:단계|단어|이해|질문|토론|글�
 RE_QUOTE   = re.compile(r"[\u201c\"](.+?)[\u201d\"]", re.S)
 RE_TYPE    = re.compile(rf"({TYPES})")
 RE_STOP    = re.compile(r"(3\s*단계|글쓰기\s*주제|주제\s*글쓰기|<\s*글쓰기|^Step\s*\d)")
-RE_PAGE    = re.compile(r"\((\d{1,3}(?:-\d{1,3})?)\s*쪽?\)|[-\u2013]?\s*p\.?\s*(\d{1,3})", re.I)
+RE_PAGE    = re.compile(
+    r"\((\d{1,3}(?:-\d{1,3})?)\s*쪽?\)"
+    r"|[-\u2013]?\s*p\.?\s*(\d{1,3})(?:\s*[~\u301c\uff5e\u2013-]\s*\d{1,3})?",
+    re.I)  # "p.146~148" 뒷부분(~148)까지 통째로 소비 (잔여 텍스트로 안 새게)
 
 
 def pdftext(path: str) -> str:
@@ -70,7 +73,7 @@ def parse_skeleton(text: str):
         if not s:
             continue
         if RE_STOP.search(s):
-            stop = True; flush(); collecting = False; continue
+            stop = True; flush(); collecting = False; pending_types = []; continue
         if stop:
             continue
 
@@ -106,7 +109,10 @@ def parse_skeleton(text: str):
                                prebuf=passage_buf)          # β: 수집한 지문을 앞에 붙임
                 if residual.strip():
                     cur["_buf"].append(residual.strip())    # β: 발문 텍스트
-                pending_types = []; collecting = False; passage_buf = []
+                # pending_types는 여기서 초기화하지 않음(sticky) — 같은 유형 헤더를
+                # 공유하는 연속 문항(예: 헤더 하나에 3., 4. 두 문항)이 다음 헤더/단계
+                # 전환 전까지 계속 태그를 이어받도록 함.
+                collecting = False; passage_buf = []
                 continue
 
         # 지문 수집 모드(β)면 지문 버퍼로, 아니면 현재 문항 버퍼로
