@@ -31,6 +31,157 @@
 </div>
 {% endif %}
 
+{# 폴더/파일 선택 또는 드래그 드랍으로 선택한 PDF만 스캔 (전체 분기 스캔보다 빠름) #}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4 mb-8">
+  <div>
+    <h3 class="font-semibold text-gray-700 mb-1">📂 폴더/파일 선택 · 드래그 드랍 스캔</h3>
+    <p class="text-sm text-gray-400">전체 분기를 훑지 않고, 원하는 폴더나 PDF 파일만 골라서 빠르게 추출합니다.</p>
+  </div>
+
+  <div class="flex flex-wrap gap-3">
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">분기 라벨</label>
+      <input id="uploadQuarter" type="text" value="직접업로드" class="px-3 py-2 border border-gray-200 rounded-lg text-sm w-40">
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">학년 라벨</label>
+      <select id="uploadGrade" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white w-32">
+        <option value="미지정">미지정</option>
+        {% for g in grades %}
+        <option value="{{ g }}">{{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <label class="flex items-center gap-1.5 text-sm text-gray-600 cursor-pointer self-end pb-2.5">
+      <input id="uploadForce" type="checkbox" class="rounded border-gray-300">
+      이미 추출된 것도 다시 추출(재처리)
+    </label>
+  </div>
+
+  <div id="dropzone"
+       class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center text-sm text-gray-400 transition">
+    <p class="mb-2">여기로 PDF 파일을 드래그 드랍하세요</p>
+    <p class="text-xs text-gray-400 mb-3">또는</p>
+    <div class="flex justify-center gap-2">
+      <button type="button" id="pickFilesBtn" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg">파일 선택</button>
+      <button type="button" id="pickFolderBtn" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium rounded-lg">폴더 선택</button>
+    </div>
+    <input type="file" id="fileInput" multiple accept="application/pdf,.pdf" class="hidden">
+    <input type="file" id="folderInput" multiple webkitdirectory class="hidden">
+  </div>
+
+  <div id="fileListWrap" class="hidden">
+    <p class="text-xs text-gray-500 mb-1">선택된 PDF <span id="fileCount" class="font-semibold text-gray-700">0</span>개</p>
+    <ul id="fileList" class="text-xs text-gray-600 space-y-0.5 max-h-40 overflow-y-auto"></ul>
+  </div>
+
+  <button type="button" id="uploadScanBtn" disabled
+          class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition">
+    선택한 파일로 스캔 시작
+  </button>
+
+  <div id="uploadResult" class="hidden border-t border-gray-100 pt-4"></div>
+</div>
+
+<script>
+(function() {
+  let selected = [];
+
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const folderInput = document.getElementById('folderInput');
+  const fileListWrap = document.getElementById('fileListWrap');
+  const fileListEl = document.getElementById('fileList');
+  const fileCountEl = document.getElementById('fileCount');
+  const scanBtn = document.getElementById('uploadScanBtn');
+  const resultEl = document.getElementById('uploadResult');
+
+  function addFiles(fileArr) {
+    for (const f of fileArr) {
+      if (f.name.toLowerCase().endsWith('.pdf')) selected.push(f);
+    }
+    renderList();
+  }
+
+  function renderList() {
+    fileCountEl.textContent = selected.length;
+    fileListEl.innerHTML = '';
+    selected.forEach((f) => {
+      const li = document.createElement('li');
+      li.textContent = f.webkitRelativePath || f.name;
+      fileListEl.appendChild(li);
+    });
+    fileListWrap.classList.toggle('hidden', selected.length === 0);
+    scanBtn.disabled = selected.length === 0;
+  }
+
+  document.getElementById('pickFilesBtn').addEventListener('click', () => fileInput.click());
+  document.getElementById('pickFolderBtn').addEventListener('click', () => folderInput.click());
+  fileInput.addEventListener('change', (e) => { addFiles(Array.from(e.target.files)); e.target.value = ''; });
+  folderInput.addEventListener('change', (e) => { addFiles(Array.from(e.target.files)); e.target.value = ''; });
+
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-blue-400', 'bg-blue-50'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('border-blue-400', 'bg-blue-50'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('border-blue-400', 'bg-blue-50');
+    addFiles(Array.from(e.dataTransfer.files));
+  });
+
+  scanBtn.addEventListener('click', async () => {
+    if (!selected.length) return;
+    scanBtn.disabled = true;
+    scanBtn.textContent = '스캔 중...';
+    resultEl.classList.add('hidden');
+
+    const fd = new FormData();
+    selected.forEach(f => fd.append('files', f, f.name));
+    fd.append('quarter', document.getElementById('uploadQuarter').value || '직접업로드');
+    fd.append('grade', document.getElementById('uploadGrade').value || '미지정');
+    fd.append('force', document.getElementById('uploadForce').checked ? 'true' : 'false');
+
+    try {
+      const res = await fetch('/reading-essay/scan/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        resultEl.innerHTML = '<p class="text-sm text-red-500">' + (data.detail || '업로드 오류') + '</p>';
+      } else {
+        renderResult(data);
+      }
+      resultEl.classList.remove('hidden');
+    } catch (err) {
+      resultEl.innerHTML = '<p class="text-sm text-red-500">업로드 중 오류: ' + err + '</p>';
+      resultEl.classList.remove('hidden');
+    } finally {
+      scanBtn.disabled = selected.length === 0;
+      scanBtn.textContent = '선택한 파일로 스캔 시작';
+    }
+  });
+
+  function renderResult(data) {
+    let html = '<h4 class="font-semibold text-gray-700 mb-2">스캔 결과</h4>';
+    html += '<div class="flex gap-4 text-sm mb-2">';
+    html += '<span class="text-gray-500">전체 <b class="text-gray-800">' + data.total + '</b>건</span>';
+    html += '<span class="text-green-600">추출 <b>' + data.extracted + '</b>건</span>';
+    html += '<span class="text-gray-400">건너뜀 <b>' + data.skipped + '</b>건</span>';
+    html += '<span class="text-red-500">오류 <b>' + data.error + '</b>건</span>';
+    html += '</div>';
+    if (data.errors && data.errors.length) {
+      html += '<ul class="text-xs text-gray-500 space-y-1 max-h-40 overflow-y-auto">';
+      data.errors.forEach(e => {
+        html += '<li>' + e.file + ' — ' + e.error + '</li>';
+      });
+      html += '</ul>';
+    }
+    resultEl.innerHTML = html;
+  }
+})();
+</script>
+
+<div class="mb-3">
+  <h3 class="text-sm font-semibold text-gray-500">전체 분기 일괄 스캔</h3>
+  <p class="text-xs text-gray-400">시간이 오래 걸릴 수 있습니다. 특정 파일만 빠르게 처리하려면 위쪽을 사용하세요.</p>
+</div>
 <form method="POST" action="/reading-essay/scan" class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-5">
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-2">분기 (미선택 시 전체)</label>
