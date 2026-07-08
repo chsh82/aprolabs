@@ -1,0 +1,5 @@
+data/*.pdf
+materials.json
+*.db
+__pycache__/
+/tmp/momo_pages/

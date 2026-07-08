@@ -1,0 +1,10 @@
+# 논술교재 DB화 파이프라인 의존성
+# 표준 라이브러리(sqlite3, re, json, subprocess 등) 외 필요한 것만.
+
+anthropic>=0.40.0        # --llm 모드에서만 필요 (정답 구조화·비전 판독)
+
+# 시스템 의존성(pip 아님) — 별도 설치 필요:
+#   poppler-utils  →  pdftotext, pdftoppm, pdfinfo
+#   Windows:  https://github.com/oschwartz10612/poppler-windows 받아 PATH 등록
+#   macOS:    brew install poppler
+#   Ubuntu:   sudo apt install poppler-utils

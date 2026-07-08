@@ -1,0 +1,22 @@
+[
+  {
+    "work_title": "금오신화",
+    "author": "김시습",
+    "grade": "LV7",
+    "quarter": 3,
+    "week": 4,
+    "subject": "국어문학",
+    "student": "금오신화_학생용.pdf",
+    "teacher": "금오신화_교사용.pdf"
+  },
+  {
+    "work_title": "키다리 아저씨 1주차",
+    "author": "진 웹스터",
+    "grade": "LV4",
+    "quarter": 1,
+    "week": 2,
+    "subject": "문학",
+    "student": "키다리_1주차_학생용.pdf",
+    "teacher": "키다리_1주차_교사용.pdf"
+  }
+]
