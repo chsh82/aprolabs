@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}ISBN 검색 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-800">ISBN 검색</h2>
+  <p class="text-sm text-gray-400 mt-1">제목(+저자)으로 알라딘에서 도서 ISBN과 서지정보를 찾습니다.</p>
+</div>
+
+{# ── 검색 폼 ── #}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
+  <div class="flex flex-wrap gap-4 items-end">
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
+      <input id="inp-title" type="text" placeholder="예: 사피엔스"
+             class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+    <div>
+      <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
+      <input id="inp-author" type="text" placeholder="예: 유발 하라리"
+             class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-400">
+    </div>
+    <button id="btn-search" onclick="doSearch()"
+            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+      검색
+    </button>
+  </div>
+</div>
+
+{# ── 상태 표시 ── #}
+<div id="status-area" class="mb-4"></div>
+
+{# ── 결과 목록 ── #}
+<div id="result-list" class="space-y-3"></div>
+
+<script>
+const inpTitle  = document.getElementById('inp-title');
+const inpAuthor = document.getElementById('inp-author');
+const btnSearch = document.getElementById('btn-search');
+const statusArea = document.getElementById('status-area');
+const resultList  = document.getElementById('result-list');
+
+inpTitle.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+inpAuthor.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+
+async function doSearch() {
+  const title = inpTitle.value.trim();
+  const author = inpAuthor.value.trim();
+  if (!title) {
+    statusArea.innerHTML = `<p class="text-sm text-red-500">제목을 입력하세요.</p>`;
+    return;
+  }
+
+  btnSearch.disabled = true;
+  btnSearch.textContent = '검색 중...';
+  statusArea.innerHTML = `<p class="text-sm text-gray-400">검색 중입니다...</p>`;
+  resultList.innerHTML = '';
+
+  try {
+    const params = new URLSearchParams({ title, limit: 10 });
+    if (author) params.set('author', author);
+
+    const res = await fetch(`/isbn/search?${params.toString()}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      statusArea.innerHTML = `<p class="text-sm text-red-500">${escapeHtml(data.detail || '검색 중 오류가 발생했습니다.')}</p>`;
+      return;
+    }
+
+    if (data.count === 0) {
+      statusArea.innerHTML = `<p class="text-sm text-gray-400">검색 결과가 없습니다.</p>`;
+      return;
+    }
+
+    statusArea.innerHTML = `<p class="text-sm text-gray-400">${data.count}건 검색됨</p>`;
+    resultList.innerHTML = data.results.map(renderCard).join('');
+  } catch (e) {
+    statusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>`;
+  } finally {
+    btnSearch.disabled = false;
+    btnSearch.textContent = '검색';
+  }
+}
+
+function renderCard(item) {
+  const isbnDisplay = item.isbn13 || item.isbn10 || '';
+  const isbnLabel = isbnDisplay ? isbnDisplay : 'ISBN 없음';
+  const copyBtn = isbnDisplay
+    ? `<button onclick="copyIsbn('${isbnDisplay}', this)"
+               class="ml-2 px-2 py-0.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded transition">복사</button>`
+    : '';
+  const cover = item.cover
+    ? `<img src="${escapeHtml(item.cover)}" alt="표지" class="w-16 h-24 object-cover rounded border border-gray-100 flex-shrink-0">`
+    : `<div class="w-16 h-24 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-xs flex-shrink-0">표지없음</div>`;
+
+  return `
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex gap-4">
+      ${cover}
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
+        <p class="text-sm text-gray-500 mt-0.5">${escapeHtml(item.author || '-')}</p>
+        <p class="text-xs text-gray-400 mt-1">${escapeHtml(item.publisher || '-')} · ${escapeHtml(item.pubDate || '-')}</p>
+        <p class="text-xs text-gray-500 mt-2">
+          <span class="font-semibold">ISBN</span> ${escapeHtml(isbnLabel)}${copyBtn}
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function copyIsbn(isbn, btn) {
+  navigator.clipboard.writeText(isbn).then(() => {
+    const original = btn.textContent;
+    btn.textContent = '복사됨';
+    setTimeout(() => { btn.textContent = original; }, 1200);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+</script>
+{% endblock %}

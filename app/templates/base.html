@@ -98,6 +98,10 @@
         <a href="/crawl" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
           🕷️ 크롤링
         </a>
+        <a href="/isbn" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                {% if request.url.path.startswith('/isbn') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+          🔎 ISBN 검색
+        </a>
         <a href="/dashboard" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
           📊 API 사용량
         </a>
