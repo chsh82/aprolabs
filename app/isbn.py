@@ -80,7 +80,9 @@ async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | No
     key = _cache_key(title, author, limit)
     cached = _cache_get(key)
     if cached is not None:
+        print(f"[ISBN Cache] hit: {key}")
         return cached
+    print(f"[ISBN Cache] miss, 알라딘 호출: {key}")
 
     ttb_key = os.getenv("ALADIN_TTB_KEY")
     if not ttb_key:
