@@ -2,16 +2,21 @@
 {% block title %}ISBN 검색 - Aprolabs{% endblock %}
 
 {% block content %}
-<div class="mb-6">
-  <h2 class="text-2xl font-bold text-gray-800">ISBN 검색</h2>
-  <p class="text-sm text-gray-400 mt-1">제목(+저자)으로 알라딘에서 도서 ISBN과 서지정보를 찾습니다.</p>
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">ISBN 검색</h2>
+    <p class="text-sm text-gray-400 mt-1">제목(+저자)으로 알라딘에서 도서 ISBN과 서지정보를 찾습니다.</p>
+  </div>
+  <a href="/isbn/list" class="text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition whitespace-nowrap">
+    📚 독서 리스트 보기
+  </a>
 </div>
 
 {% if material %}
 <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-5 flex items-center justify-between">
   <p class="text-sm text-indigo-700">
     <a href="/reading-essay/{{ material.id }}" class="underline hover:no-underline">{{ material.title or '(제목 없음)' }}</a>
-    교재에 도서 정보를 연결합니다. 결과에서 <b>저장</b>을 누르면 해당 교재에 연결됩니다.
+    교재에 도서 정보를 연결합니다. 결과에서 <b>교재에 저장</b>을 누르면 해당 교재에 연결됩니다.
     {% if material.title and material.title != prefill_title %}
     <br><span class="text-xs text-indigo-400">원본 제목의 수업 메타데이터(주차/교사용 등)를 제거해 "{{ prefill_title }}"로 검색어를 채웠습니다. 결과가 안 맞으면 검색어를 직접 수정하세요.</span>
     {% endif %}
@@ -19,6 +24,8 @@
   <a href="/reading-essay/{{ material.id }}" class="text-sm text-indigo-600 hover:text-indigo-800 whitespace-nowrap ml-3">← 교재로 돌아가기</a>
 </div>
 {% endif %}
+
+<p class="text-xs text-gray-400 mb-4">체크박스로 여러 권을 선택해 <b>독서 리스트</b>에 한번에 모아 저장할 수 있습니다.</p>
 
 {# ── 모드 탭 ── #}
 <div class="flex gap-2 mb-4">
@@ -78,10 +85,26 @@
   <div id="batch-result-list" class="space-y-5"></div>
 </div>
 
+{# ── 선택 항목 저장 바 (하단 고정) ── #}
+<div id="selection-bar"
+     class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg px-6 py-3 flex items-center justify-between z-10">
+  <span id="selection-count" class="text-sm text-gray-600 font-medium">0권 선택됨</span>
+  <div class="flex items-center gap-3">
+    <button onclick="clearSelection()" class="text-sm text-gray-400 hover:text-gray-600">선택 해제</button>
+    <button id="btn-add-to-list" onclick="addSelectedToList()"
+            class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition">
+      독서 리스트에 저장
+    </button>
+  </div>
+</div>
+
 <script>
 const MATERIAL_ID = {{ (material.id if material else '') | tojson }};
 
 let lastResults = [];
+let itemRegistry = {};     // uid -> item
+let selectedUids = new Set();
+let uidCounter = 0;
 
 const inpTitle  = document.getElementById('inp-title');
 const inpAuthor = document.getElementById('inp-author');
@@ -93,6 +116,9 @@ const inpBatch = document.getElementById('inp-batch');
 const btnBatchSearch = document.getElementById('btn-batch-search');
 const batchStatusArea = document.getElementById('batch-status-area');
 const batchResultList = document.getElementById('batch-result-list');
+
+const selectionBar = document.getElementById('selection-bar');
+const selectionCount = document.getElementById('selection-count');
 
 inpTitle.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
 inpAuthor.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
@@ -194,7 +220,7 @@ function renderBatchGroup(item) {
   } else if (item.count === 0) {
     body = `<p class="text-sm text-gray-400 px-1">검색 결과가 없습니다.</p>`;
   } else {
-    body = `<div class="space-y-2">${item.results.map((r, i) => renderCard(r, i, false)).join('')}</div>`;
+    body = `<div class="space-y-2">${item.results.map((r) => renderCard(r, null, false)).join('')}</div>`;
   }
   return `
     <div>
@@ -204,7 +230,10 @@ function renderBatchGroup(item) {
   `;
 }
 
-function renderCard(item, idx, showSave) {
+function renderCard(item, materialSaveIdx, showSave) {
+  const uid = uidCounter++;
+  itemRegistry[uid] = item;
+
   const isbnDisplay = item.isbn13 || item.isbn10 || '';
   const isbnLabel = isbnDisplay ? isbnDisplay : 'ISBN 없음';
   const copyBtn = isbnDisplay
@@ -216,7 +245,7 @@ function renderCard(item, idx, showSave) {
     : `<div class="w-16 h-24 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-xs flex-shrink-0">표지없음</div>`;
 
   const saveBtn = showSave
-    ? `<button id="save-btn-${idx}" onclick="saveToMaterial(${idx})"
+    ? `<button id="save-btn-${materialSaveIdx}" onclick="saveToMaterial(${materialSaveIdx})"
                class="mt-2 px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
          교재에 저장
        </button>`
@@ -224,6 +253,7 @@ function renderCard(item, idx, showSave) {
 
   return `
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex gap-4">
+      <input type="checkbox" onchange="toggleSelect(${uid}, this.checked)" class="mt-1 w-4 h-4 flex-shrink-0">
       ${cover}
       <div class="flex-1 min-w-0">
         <p class="font-semibold text-gray-800">${escapeHtml(item.title)}</p>
@@ -236,6 +266,57 @@ function renderCard(item, idx, showSave) {
       </div>
     </div>
   `;
+}
+
+function toggleSelect(uid, checked) {
+  if (checked) {
+    selectedUids.add(uid);
+  } else {
+    selectedUids.delete(uid);
+  }
+  if (selectedUids.size > 0) {
+    selectionBar.classList.remove('hidden');
+    selectionCount.textContent = `${selectedUids.size}권 선택됨`;
+  } else {
+    selectionBar.classList.add('hidden');
+  }
+}
+
+function clearSelection() {
+  selectedUids.clear();
+  document.querySelectorAll('#result-list input[type=checkbox], #batch-result-list input[type=checkbox]')
+    .forEach(cb => cb.checked = false);
+  selectionBar.classList.add('hidden');
+}
+
+async function addSelectedToList() {
+  const items = [...selectedUids].map(uid => itemRegistry[uid]);
+  if (items.length === 0) return;
+
+  const btn = document.getElementById('btn-add-to-list');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+  try {
+    const res = await fetch('/isbn/list/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.detail || '저장 중 오류가 발생했습니다.');
+      return;
+    }
+    let msg = `${data.added}권 저장됨`;
+    if (data.skipped) msg += ` (이미 있는 항목 ${data.skipped}건 제외)`;
+    alert(msg);
+    clearSelection();
+  } catch (e) {
+    alert('네트워크 오류가 발생했습니다.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '독서 리스트에 저장';
+  }
 }
 
 async function saveToMaterial(idx) {

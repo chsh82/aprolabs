@@ -4,6 +4,9 @@ GET  /isbn              → 검색 UI (material_id 쿼리파라미터가 있으�
 GET  /isbn/search       → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
 POST /isbn/search-batch → 제목 여러 개(한 줄에 하나)를 병렬로 검색
 POST /isbn/save         → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
+GET  /isbn/list         → 독서 리스트(체크해서 모아둔 도서) 목록
+POST /isbn/list/add     → 검색 결과 여러 건을 독서 리스트에 추가 (중복 ISBN 자동 제외)
+POST /isbn/list/{id}/delete → 독서 리스트에서 1건 삭제
 
 동일한 (title, author, limit) 검색은 isbn_search_cache 테이블에 캐시되어
 TTL(기본 7일) 동안 재호출 없이 재사용됨 (알라딘 API 호출량 절약).
@@ -16,13 +19,14 @@ from datetime import datetime, timedelta
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from app.database import get_db, SessionLocal
 from app.models.reading_essay import ReadingMaterial
 from app.models.isbn_cache import IsbnSearchCache, CACHE_TTL_DAYS
+from app.models.reading_list import ReadingListBook
 
 router = APIRouter(prefix="/isbn")
 templates = Jinja2Templates(directory="app/templates")
@@ -264,3 +268,66 @@ async def isbn_save(request: Request, db: Session = Depends(get_db)):
     db.commit()
 
     return JSONResponse({"ok": True, "material_id": material_id})
+
+
+@router.get("/list", response_class=HTMLResponse)
+def isbn_list_page(request: Request, db: Session = Depends(get_db)):
+    """독서 리스트(체크해서 모아둔 도서) 목록"""
+    books = db.query(ReadingListBook).order_by(ReadingListBook.created_at.desc()).all()
+    return templates.TemplateResponse("isbn/list.html", {"request": request, "books": books})
+
+
+@router.post("/list/add")
+async def isbn_list_add(request: Request, db: Session = Depends(get_db)):
+    """검색 결과 여러 건을 독서 리스트에 추가. 이미 있는 ISBN은 건너뜀."""
+    body = await request.json()
+    items = body.get("items") or []
+    if not items:
+        raise HTTPException(status_code=400, detail="추가할 항목을 선택하세요.")
+
+    existing_isbns = {
+        v for row in db.query(ReadingListBook.isbn13, ReadingListBook.isbn10).all()
+        for v in row if v
+    }
+
+    added, skipped = 0, 0
+    for item in items:
+        title = (item.get("title") or "").strip()
+        isbn13 = (item.get("isbn13") or "").strip() or None
+        isbn10 = (item.get("isbn10") or "").strip() or None
+        if not title:
+            skipped += 1
+            continue
+        if (isbn13 and isbn13 in existing_isbns) or (isbn10 and isbn10 in existing_isbns):
+            skipped += 1
+            continue
+
+        db.add(ReadingListBook(
+            title=title,
+            isbn13=isbn13,
+            isbn10=isbn10,
+            author=item.get("author") or None,
+            publisher=item.get("publisher") or None,
+            pub_date=item.get("pubDate") or None,
+            cover_url=item.get("cover") or None,
+            aladin_link=item.get("link") or None,
+        ))
+        if isbn13:
+            existing_isbns.add(isbn13)
+        if isbn10:
+            existing_isbns.add(isbn10)
+        added += 1
+
+    db.commit()
+    return JSONResponse({"ok": True, "added": added, "skipped": skipped})
+
+
+@router.post("/list/{book_id}/delete")
+def isbn_list_delete(book_id: str, db: Session = Depends(get_db)):
+    """독서 리스트에서 1건 삭제"""
+    book = db.query(ReadingListBook).filter(ReadingListBook.id == book_id).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="항목을 찾을 수 없습니다.")
+    db.delete(book)
+    db.commit()
+    return RedirectResponse(url="/isbn/list", status_code=303)
