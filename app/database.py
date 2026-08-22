@@ -30,6 +30,12 @@ def init_db():
 def _safe_add_columns():
     migrations = [
         ("pipeline_jobs", "sub_type", "VARCHAR(20)"),
+        ("reading_materials", "book_isbn13", "VARCHAR(20)"),
+        ("reading_materials", "book_isbn10", "VARCHAR(20)"),
+        ("reading_materials", "book_publisher", "VARCHAR(200)"),
+        ("reading_materials", "book_pub_date", "VARCHAR(20)"),
+        ("reading_materials", "book_cover_url", "VARCHAR(500)"),
+        ("reading_materials", "book_aladin_link", "VARCHAR(500)"),
     ]
     with engine.connect() as conn:
         for table, col, col_type in migrations:

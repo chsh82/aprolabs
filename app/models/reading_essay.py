@@ -34,6 +34,14 @@ class ReadingMaterial(Base):
 
     template_family = Column(String(10), nullable=True, index=True)  # A1/A2/B/C
 
+    # 알라딘 ISBN 검색으로 연결한 실제 출판 도서 서지정보 (선택, /isbn 에서 연결)
+    book_isbn13 = Column(String(20), nullable=True, index=True)
+    book_isbn10 = Column(String(20), nullable=True)
+    book_publisher = Column(String(200), nullable=True)
+    book_pub_date = Column(String(20), nullable=True)
+    book_cover_url = Column(String(500), nullable=True)
+    book_aladin_link = Column(String(500), nullable=True)
+
     student_pdf_path = Column(String(500), nullable=True)
     teacher_pdf_path = Column(String(500), nullable=True)
 

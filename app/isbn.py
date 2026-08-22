@@ -1,16 +1,21 @@
 """
 알라딘 Open API 기반 도서 ISBN 검색
-GET /isbn         → 검색 UI
-GET /isbn/search  → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
+GET  /isbn         → 검색 UI (material_id 쿼리파라미터가 있으면 해당 독서논술 교재에 결과를 연결)
+GET  /isbn/search  → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
+POST /isbn/save    → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
 """
 import os
 import json
 import re
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.reading_essay import ReadingMaterial
 
 router = APIRouter(prefix="/isbn")
 templates = Jinja2Templates(directory="app/templates")
@@ -28,9 +33,26 @@ def _clean_author(author_raw: str) -> str:
 
 
 @router.get("", response_class=HTMLResponse)
-def isbn_page(request: Request):
-    """ISBN 검색 UI"""
-    return templates.TemplateResponse("isbn/index.html", {"request": request})
+def isbn_page(
+    request: Request,
+    material_id: str | None = Query(None),
+    title: str | None = Query(None),
+    author: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    """ISBN 검색 UI. material_id가 있으면 해당 독서논술 교재에 결과를 연결하는 모드로 동작."""
+    material = None
+    if material_id:
+        material = db.query(ReadingMaterial).filter(ReadingMaterial.id == material_id).first()
+        if not material:
+            raise HTTPException(status_code=404, detail="교재를 찾을 수 없습니다.")
+
+    return templates.TemplateResponse("isbn/index.html", {
+        "request": request,
+        "material": material,
+        "prefill_title": title or (material.title if material else "") or "",
+        "prefill_author": author or (material.author if material else "") or "",
+    })
 
 
 @router.get("/search")
@@ -89,3 +111,26 @@ async def isbn_search(
         })
 
     return {"query": query, "count": len(results), "results": results}
+
+
+@router.post("/save")
+async def isbn_save(request: Request, db: Session = Depends(get_db)):
+    """검색 결과 1건을 독서논술 교재(ReadingMaterial)의 book_* 필드에 저장"""
+    body = await request.json()
+    material_id = (body.get("material_id") or "").strip()
+    if not material_id:
+        raise HTTPException(status_code=400, detail="material_id가 필요합니다.")
+
+    material = db.query(ReadingMaterial).filter(ReadingMaterial.id == material_id).first()
+    if not material:
+        raise HTTPException(status_code=404, detail="교재를 찾을 수 없습니다.")
+
+    material.book_isbn13 = body.get("isbn13") or None
+    material.book_isbn10 = body.get("isbn10") or None
+    material.book_publisher = body.get("publisher") or None
+    material.book_pub_date = body.get("pubDate") or None
+    material.book_cover_url = body.get("cover") or None
+    material.book_aladin_link = body.get("link") or None
+    db.commit()
+
+    return JSONResponse({"ok": True, "material_id": material_id})

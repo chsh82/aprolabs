@@ -7,17 +7,27 @@
   <p class="text-sm text-gray-400 mt-1">제목(+저자)으로 알라딘에서 도서 ISBN과 서지정보를 찾습니다.</p>
 </div>
 
+{% if material %}
+<div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-5 flex items-center justify-between">
+  <p class="text-sm text-indigo-700">
+    <a href="/reading-essay/{{ material.id }}" class="underline hover:no-underline">{{ material.title or '(제목 없음)' }}</a>
+    교재에 도서 정보를 연결합니다. 결과에서 <b>저장</b>을 누르면 해당 교재에 연결됩니다.
+  </p>
+  <a href="/reading-essay/{{ material.id }}" class="text-sm text-indigo-600 hover:text-indigo-800 whitespace-nowrap ml-3">← 교재로 돌아가기</a>
+</div>
+{% endif %}
+
 {# ── 검색 폼 ── #}
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
   <div class="flex flex-wrap gap-4 items-end">
     <div>
       <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
-      <input id="inp-title" type="text" placeholder="예: 사피엔스"
+      <input id="inp-title" type="text" placeholder="예: 사피엔스" value="{{ prefill_title }}"
              class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-400">
     </div>
     <div>
       <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
-      <input id="inp-author" type="text" placeholder="예: 유발 하라리"
+      <input id="inp-author" type="text" placeholder="예: 유발 하라리" value="{{ prefill_author }}"
              class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-400">
     </div>
     <button id="btn-search" onclick="doSearch()"
@@ -34,6 +44,10 @@
 <div id="result-list" class="space-y-3"></div>
 
 <script>
+const MATERIAL_ID = {{ (material.id if material else '') | tojson }};
+
+let lastResults = [];
+
 const inpTitle  = document.getElementById('inp-title');
 const inpAuthor = document.getElementById('inp-author');
 const btnSearch = document.getElementById('btn-search');
@@ -74,7 +88,8 @@ async function doSearch() {
     }
 
     statusArea.innerHTML = `<p class="text-sm text-gray-400">${data.count}건 검색됨</p>`;
-    resultList.innerHTML = data.results.map(renderCard).join('');
+    lastResults = data.results;
+    resultList.innerHTML = data.results.map((item, i) => renderCard(item, i)).join('');
   } catch (e) {
     statusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>`;
   } finally {
@@ -83,7 +98,12 @@ async function doSearch() {
   }
 }
 
-function renderCard(item) {
+// 연결 모드로 들어온 경우 제목이 이미 있으면 자동 검색
+if (MATERIAL_ID && inpTitle.value.trim()) {
+  doSearch();
+}
+
+function renderCard(item, idx) {
   const isbnDisplay = item.isbn13 || item.isbn10 || '';
   const isbnLabel = isbnDisplay ? isbnDisplay : 'ISBN 없음';
   const copyBtn = isbnDisplay
@@ -93,6 +113,13 @@ function renderCard(item) {
   const cover = item.cover
     ? `<img src="${escapeHtml(item.cover)}" alt="표지" class="w-16 h-24 object-cover rounded border border-gray-100 flex-shrink-0">`
     : `<div class="w-16 h-24 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-xs flex-shrink-0">표지없음</div>`;
+
+  const saveBtn = MATERIAL_ID
+    ? `<button id="save-btn-${idx}" onclick="saveToMaterial(${idx})"
+               class="mt-2 px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
+         교재에 저장
+       </button>`
+    : '';
 
   return `
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex gap-4">
@@ -104,9 +131,38 @@ function renderCard(item) {
         <p class="text-xs text-gray-500 mt-2">
           <span class="font-semibold">ISBN</span> ${escapeHtml(isbnLabel)}${copyBtn}
         </p>
+        ${saveBtn}
       </div>
     </div>
   `;
+}
+
+async function saveToMaterial(idx) {
+  const item = lastResults[idx];
+  const btn = document.getElementById(`save-btn-${idx}`);
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+  try {
+    const res = await fetch('/isbn/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ material_id: MATERIAL_ID, ...item }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      btn.disabled = false;
+      btn.textContent = '교재에 저장';
+      alert(data.detail || '저장 중 오류가 발생했습니다.');
+      return;
+    }
+    btn.textContent = '✓ 저장됨';
+    btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+    btn.classList.add('bg-green-600');
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '교재에 저장';
+    alert('네트워크 오류가 발생했습니다.');
+  }
 }
 
 function copyIsbn(isbn, btn) {
