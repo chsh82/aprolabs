@@ -4,11 +4,15 @@ GET  /isbn              → 검색 UI (material_id 쿼리파라미터가 있으�
 GET  /isbn/search       → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
 POST /isbn/search-batch → 제목 여러 개(한 줄에 하나)를 병렬로 검색
 POST /isbn/save         → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
+
+동일한 (title, author, limit) 검색은 isbn_search_cache 테이블에 캐시되어
+TTL(기본 7일) 동안 재호출 없이 재사용됨 (알라딘 API 호출량 절약).
 """
 import os
 import json
 import re
 import asyncio
+from datetime import datetime, timedelta
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -16,8 +20,9 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.models.reading_essay import ReadingMaterial
+from app.models.isbn_cache import IsbnSearchCache, CACHE_TTL_DAYS
 
 router = APIRouter(prefix="/isbn")
 templates = Jinja2Templates(directory="app/templates")
@@ -25,6 +30,40 @@ templates = Jinja2Templates(directory="app/templates")
 ALADIN_SEARCH_URL = "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
 BATCH_MAX_TITLES = 30
 BATCH_CONCURRENCY = 5
+
+
+def _cache_key(title: str, author: str | None, limit: int) -> str:
+    return f"{title}|{author or ''}|{limit}"
+
+
+def _cache_get(key: str) -> dict | None:
+    """캐시 조회. TTL 만료됐거나 없으면 None (알라딘 API 호출량 절약용, 세션은 요청과 독립적으로 짧게 열고 닫음)"""
+    db = SessionLocal()
+    try:
+        row = db.query(IsbnSearchCache).filter(IsbnSearchCache.cache_key == key).first()
+        if not row or datetime.now() - row.created_at > timedelta(days=CACHE_TTL_DAYS):
+            return None
+        try:
+            return json.loads(row.response_json)
+        except json.JSONDecodeError:
+            return None
+    finally:
+        db.close()
+
+
+def _cache_set(key: str, data: dict) -> None:
+    db = SessionLocal()
+    try:
+        payload = json.dumps(data, ensure_ascii=False)
+        row = db.query(IsbnSearchCache).filter(IsbnSearchCache.cache_key == key).first()
+        if row:
+            row.response_json = payload
+            row.created_at = datetime.now()
+        else:
+            db.add(IsbnSearchCache(cache_key=key, response_json=payload, created_at=datetime.now()))
+        db.commit()
+    finally:
+        db.close()
 
 
 def _clean_author(author_raw: str) -> str:
@@ -37,7 +76,12 @@ def _clean_author(author_raw: str) -> str:
 
 
 async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | None, limit: int) -> dict:
-    """알라딘 상품검색 호출 + 파싱 (실패 시 HTTPException 발생)"""
+    """알라딘 상품검색 호출 + 파싱 (실패 시 HTTPException 발생). 동일 검색은 캐시로 응답."""
+    key = _cache_key(title, author, limit)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached
+
     ttb_key = os.getenv("ALADIN_TTB_KEY")
     if not ttb_key:
         raise HTTPException(status_code=500, detail="ALADIN_TTB_KEY 환경변수가 설정되지 않았습니다.")
@@ -86,7 +130,9 @@ async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | No
         for item in data.get("item", [])
     ]
 
-    return {"query": query, "count": len(results), "results": results}
+    result = {"query": query, "count": len(results), "results": results}
+    _cache_set(key, result)
+    return result
 
 
 @router.get("", response_class=HTMLResponse)
