@@ -1,12 +1,14 @@
 """
 알라딘 Open API 기반 도서 ISBN 검색
-GET  /isbn         → 검색 UI (material_id 쿼리파라미터가 있으면 해당 독서논술 교재에 결과를 연결)
-GET  /isbn/search  → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
-POST /isbn/save    → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
+GET  /isbn              → 검색 UI (material_id 쿼리파라미터가 있으면 해당 독서논술 교재에 결과를 연결)
+GET  /isbn/search       → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
+POST /isbn/search-batch → 제목 여러 개(한 줄에 하나)를 병렬로 검색
+POST /isbn/save         → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
 """
 import os
 import json
 import re
+import asyncio
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -21,6 +23,8 @@ router = APIRouter(prefix="/isbn")
 templates = Jinja2Templates(directory="app/templates")
 
 ALADIN_SEARCH_URL = "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
+BATCH_MAX_TITLES = 30
+BATCH_CONCURRENCY = 5
 
 
 def _clean_author(author_raw: str) -> str:
@@ -30,6 +34,59 @@ def _clean_author(author_raw: str) -> str:
         for p in (author_raw or "").split(",")
         if p.strip()
     )
+
+
+async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | None, limit: int) -> dict:
+    """알라딘 상품검색 호출 + 파싱 (실패 시 HTTPException 발생)"""
+    ttb_key = os.getenv("ALADIN_TTB_KEY")
+    if not ttb_key:
+        raise HTTPException(status_code=500, detail="ALADIN_TTB_KEY 환경변수가 설정되지 않았습니다.")
+
+    query = f"{title} {author}" if author else title
+    query_type = "Keyword" if author else "Title"
+
+    params = {
+        "ttbkey": ttb_key,
+        "Query": query,
+        "QueryType": query_type,
+        "SearchTarget": "Book",
+        "MaxResults": limit,
+        "start": 1,
+        "output": "js",
+        "Version": "20131101",
+    }
+
+    try:
+        res = await client.get(ALADIN_SEARCH_URL, params=params)
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=502, detail=f"알라딘 API 호출에 실패했습니다: {e}")
+
+    try:
+        data = json.loads(res.text.strip().rstrip(";"))
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=502, detail="알라딘 API 응답을 해석할 수 없습니다.")
+
+    if data.get("errorCode"):
+        raise HTTPException(
+            status_code=502,
+            detail=f"알라딘 API 오류 (errorCode: {data.get('errorCode')}): {data.get('errorMessage')}",
+        )
+
+    results = [
+        {
+            "isbn13": item.get("isbn13", ""),
+            "isbn10": item.get("isbn", ""),
+            "title": item.get("title", ""),
+            "author": _clean_author(item.get("author", "")),
+            "publisher": item.get("publisher", ""),
+            "pubDate": item.get("pubDate", ""),
+            "cover": item.get("cover", ""),
+            "link": item.get("link", ""),
+        }
+        for item in data.get("item", [])
+    ]
+
+    return {"query": query, "count": len(results), "results": results}
 
 
 @router.get("", response_class=HTMLResponse)
@@ -62,55 +119,43 @@ async def isbn_search(
     limit: int = Query(5, ge=1, le=10),
 ):
     """제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환"""
-    ttb_key = os.getenv("ALADIN_TTB_KEY")
-    if not ttb_key:
-        raise HTTPException(status_code=500, detail="ALADIN_TTB_KEY 환경변수가 설정되지 않았습니다.")
+    async with httpx.AsyncClient(timeout=10) as client:
+        return await _search_aladin(client, title, author, limit)
 
-    query = f"{title} {author}" if author else title
-    query_type = "Keyword" if author else "Title"
 
-    params = {
-        "ttbkey": ttb_key,
-        "Query": query,
-        "QueryType": query_type,
-        "SearchTarget": "Book",
-        "MaxResults": limit,
-        "start": 1,
-        "output": "js",
-        "Version": "20131101",
-    }
+@router.post("/search-batch")
+async def isbn_search_batch(request: Request):
+    """제목 여러 개(한 줄에 하나)를 병렬로 검색. 항목별 실패는 error 필드로 표시하고 나머지는 계속 진행."""
+    body = await request.json()
+    raw_text = body.get("text", "") or ""
+    limit = min(max(int(body.get("limit", 3) or 3), 1), 5)
 
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            res = await client.get(ALADIN_SEARCH_URL, params=params)
-    except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"알라딘 API 호출에 실패했습니다: {e}")
+    titles = list(dict.fromkeys(
+        line.strip() for line in raw_text.splitlines() if line.strip()
+    ))
 
-    try:
-        data = json.loads(res.text.strip().rstrip(";"))
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=502, detail="알라딘 API 응답을 해석할 수 없습니다.")
-
-    if data.get("errorCode"):
+    if not titles:
+        raise HTTPException(status_code=400, detail="검색할 제목을 한 줄에 하나씩 입력하세요.")
+    if len(titles) > BATCH_MAX_TITLES:
         raise HTTPException(
-            status_code=502,
-            detail=f"알라딘 API 오류 (errorCode: {data.get('errorCode')}): {data.get('errorMessage')}",
+            status_code=400,
+            detail=f"한 번에 최대 {BATCH_MAX_TITLES}개까지 검색할 수 있습니다. (입력된 제목: {len(titles)}개)",
         )
 
-    results = []
-    for item in data.get("item", []):
-        results.append({
-            "isbn13": item.get("isbn13", ""),
-            "isbn10": item.get("isbn", ""),
-            "title": item.get("title", ""),
-            "author": _clean_author(item.get("author", "")),
-            "publisher": item.get("publisher", ""),
-            "pubDate": item.get("pubDate", ""),
-            "cover": item.get("cover", ""),
-            "link": item.get("link", ""),
-        })
+    semaphore = asyncio.Semaphore(BATCH_CONCURRENCY)
 
-    return {"query": query, "count": len(results), "results": results}
+    async def _search_one(client: httpx.AsyncClient, t: str) -> dict:
+        async with semaphore:
+            try:
+                res = await _search_aladin(client, t, None, limit)
+                return {"title": t, "count": res["count"], "results": res["results"], "error": None}
+            except HTTPException as e:
+                return {"title": t, "count": 0, "results": [], "error": e.detail}
+
+    async with httpx.AsyncClient(timeout=10) as client:
+        items = await asyncio.gather(*[_search_one(client, t) for t in titles])
+
+    return {"items": items}
 
 
 @router.post("/save")

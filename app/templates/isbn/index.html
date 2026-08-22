@@ -17,31 +17,63 @@
 </div>
 {% endif %}
 
-{# ── 검색 폼 ── #}
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
-  <div class="flex flex-wrap gap-4 items-end">
-    <div>
-      <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
-      <input id="inp-title" type="text" placeholder="예: 사피엔스" value="{{ prefill_title }}"
-             class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-400">
-    </div>
-    <div>
-      <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
-      <input id="inp-author" type="text" placeholder="예: 유발 하라리" value="{{ prefill_author }}"
-             class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-400">
-    </div>
-    <button id="btn-search" onclick="doSearch()"
-            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
-      검색
-    </button>
-  </div>
+{# ── 모드 탭 ── #}
+<div class="flex gap-2 mb-4">
+  <button type="button" id="tab-single" onclick="switchTab('single')"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition bg-blue-600 text-white">
+    단일 검색
+  </button>
+  <button type="button" id="tab-batch" onclick="switchTab('batch')"
+          class="px-4 py-2 rounded-lg text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+    일괄 검색 (제목 여러 개)
+  </button>
 </div>
 
-{# ── 상태 표시 ── #}
-<div id="status-area" class="mb-4"></div>
+{# ── 단일 검색 패널 ── #}
+<div id="panel-single">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
+    <div class="flex flex-wrap gap-4 items-end">
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
+        <input id="inp-title" type="text" placeholder="예: 사피엔스" value="{{ prefill_title }}"
+               class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
+        <input id="inp-author" type="text" placeholder="예: 유발 하라리" value="{{ prefill_author }}"
+               class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <button id="btn-search" onclick="doSearch()"
+              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+        검색
+      </button>
+    </div>
+  </div>
 
-{# ── 결과 목록 ── #}
-<div id="result-list" class="space-y-3"></div>
+  {# ── 상태 표시 / 결과 목록 (단일) ── #}
+  <div id="status-area" class="mb-4"></div>
+  <div id="result-list" class="space-y-3"></div>
+</div>
+
+{# ── 일괄 검색 패널 ── #}
+<div id="panel-batch" class="hidden">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
+    <label class="block text-xs font-semibold text-gray-500 mb-1">
+      제목 목록 <span class="font-normal text-gray-400">(한 줄에 하나씩, 최대 30개)</span>
+    </label>
+    <textarea id="inp-batch" rows="8"
+      placeholder="사피엔스&#10;원칙&#10;코스모스"
+      class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+    <button id="btn-batch-search" onclick="doBatchSearch()"
+            class="mt-3 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+      일괄 검색
+    </button>
+  </div>
+
+  {# ── 상태 표시 / 결과 목록 (일괄) ── #}
+  <div id="batch-status-area" class="mb-4"></div>
+  <div id="batch-result-list" class="space-y-5"></div>
+</div>
 
 <script>
 const MATERIAL_ID = {{ (material.id if material else '') | tojson }};
@@ -54,8 +86,21 @@ const btnSearch = document.getElementById('btn-search');
 const statusArea = document.getElementById('status-area');
 const resultList  = document.getElementById('result-list');
 
+const inpBatch = document.getElementById('inp-batch');
+const btnBatchSearch = document.getElementById('btn-batch-search');
+const batchStatusArea = document.getElementById('batch-status-area');
+const batchResultList = document.getElementById('batch-result-list');
+
 inpTitle.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
 inpAuthor.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+
+function switchTab(tab) {
+  const single = tab === 'single';
+  document.getElementById('panel-single').classList.toggle('hidden', !single);
+  document.getElementById('panel-batch').classList.toggle('hidden', single);
+  document.getElementById('tab-single').className = `px-4 py-2 rounded-lg text-sm font-medium transition ${single ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
+  document.getElementById('tab-batch').className  = `px-4 py-2 rounded-lg text-sm font-medium transition ${!single ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`;
+}
 
 async function doSearch() {
   const title = inpTitle.value.trim();
@@ -89,7 +134,7 @@ async function doSearch() {
 
     statusArea.innerHTML = `<p class="text-sm text-gray-400">${data.count}건 검색됨</p>`;
     lastResults = data.results;
-    resultList.innerHTML = data.results.map((item, i) => renderCard(item, i)).join('');
+    resultList.innerHTML = data.results.map((item, i) => renderCard(item, i, MATERIAL_ID !== '')).join('');
   } catch (e) {
     statusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>`;
   } finally {
@@ -103,7 +148,60 @@ if (MATERIAL_ID && inpTitle.value.trim()) {
   doSearch();
 }
 
-function renderCard(item, idx) {
+async function doBatchSearch() {
+  const lines = inpBatch.value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (lines.length === 0) {
+    batchStatusArea.innerHTML = `<p class="text-sm text-red-500">검색할 제목을 한 줄에 하나씩 입력하세요.</p>`;
+    return;
+  }
+
+  btnBatchSearch.disabled = true;
+  btnBatchSearch.textContent = '검색 중...';
+  batchStatusArea.innerHTML = `<p class="text-sm text-gray-400">${lines.length}개 제목 검색 중입니다...</p>`;
+  batchResultList.innerHTML = '';
+
+  try {
+    const res = await fetch('/isbn/search-batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: inpBatch.value, limit: 3 }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      batchStatusArea.innerHTML = `<p class="text-sm text-red-500">${escapeHtml(data.detail || '검색 중 오류가 발생했습니다.')}</p>`;
+      return;
+    }
+
+    const okCount = data.items.filter(it => !it.error).length;
+    batchStatusArea.innerHTML = `<p class="text-sm text-gray-400">${data.items.length}개 중 ${okCount}개 검색 성공</p>`;
+    batchResultList.innerHTML = data.items.map(renderBatchGroup).join('');
+  } catch (e) {
+    batchStatusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>`;
+  } finally {
+    btnBatchSearch.disabled = false;
+    btnBatchSearch.textContent = '일괄 검색';
+  }
+}
+
+function renderBatchGroup(item) {
+  let body;
+  if (item.error) {
+    body = `<p class="text-sm text-red-500 px-1">${escapeHtml(item.error)}</p>`;
+  } else if (item.count === 0) {
+    body = `<p class="text-sm text-gray-400 px-1">검색 결과가 없습니다.</p>`;
+  } else {
+    body = `<div class="space-y-2">${item.results.map((r, i) => renderCard(r, i, false)).join('')}</div>`;
+  }
+  return `
+    <div>
+      <p class="text-sm font-semibold text-gray-700 mb-2">🔎 ${escapeHtml(item.title)}</p>
+      ${body}
+    </div>
+  `;
+}
+
+function renderCard(item, idx, showSave) {
   const isbnDisplay = item.isbn13 || item.isbn10 || '';
   const isbnLabel = isbnDisplay ? isbnDisplay : 'ISBN 없음';
   const copyBtn = isbnDisplay
@@ -114,7 +212,7 @@ function renderCard(item, idx) {
     ? `<img src="${escapeHtml(item.cover)}" alt="표지" class="w-16 h-24 object-cover rounded border border-gray-100 flex-shrink-0">`
     : `<div class="w-16 h-24 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-xs flex-shrink-0">표지없음</div>`;
 
-  const saveBtn = MATERIAL_ID
+  const saveBtn = showSave
     ? `<button id="save-btn-${idx}" onclick="saveToMaterial(${idx})"
                class="mt-2 px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
          교재에 저장
