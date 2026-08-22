@@ -31,6 +31,39 @@ ALADIN_SEARCH_URL = "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
 BATCH_MAX_TITLES = 30
 BATCH_CONCURRENCY = 5
 
+# 독서논술 교재 제목에 흔히 붙는 수업 메타데이터 노이즈 (앞: 학년/읽기레벨/주차, 뒤: 교사용·수업준비·강사코드 등)
+_LEADING_TITLE_NOISE_RE = re.compile(r"^\s*(?:(?:초|중|고)[1-6]_?|LV\s*\d+|\d+\s*(?:분기|주차|차시))\s*")
+_TRAILING_TITLE_NOISE_TOKENS = [
+    r"[가-힣]{1,4}T",       # 담당 강사 코드 (예: 문요한T, 문T)
+    r"교사용|학생용",
+    r"수업\s*준비",
+    r"\d+\s*(?:주차|차시)",
+    r"\d+",                 # 위 패턴들을 뗀 뒤 남는 단독 숫자
+]
+
+
+def _clean_material_title_for_search(title: str) -> str:
+    """
+    교재 제목에서 검색을 방해하는 수업 메타데이터를 제거해 도서 검색에 적합하게 정리.
+    예: "금오신화 1주차 수업준비" -> "금오신화", "LV 2 아빠사자와 행복한 아이들" -> "아빠사자와 행복한 아이들"
+    책 속 문장/저자명이 제목에 그대로 이어붙은 경우 등은 안전하게 분리할 수 없어 원본을 그대로 둠.
+    """
+    t = (title or "").strip()
+    t = _LEADING_TITLE_NOISE_RE.sub("", t, count=1)
+
+    changed = True
+    while changed:
+        changed = False
+        for token in _TRAILING_TITLE_NOISE_TOKENS:
+            m = re.search(rf"[\s_]*(?:{token})[\s_]*$", t)
+            if m and m.start() > 0:
+                t = t[:m.start()]
+                changed = True
+                break
+
+    cleaned = t.strip(" _'\"‘’“”")
+    return cleaned if cleaned else (title or "").strip()
+
 
 def _cache_key(title: str, author: str | None, limit: int) -> str:
     return f"{title}|{author or ''}|{limit}"
@@ -152,10 +185,14 @@ def isbn_page(
         if not material:
             raise HTTPException(status_code=404, detail="교재를 찾을 수 없습니다.")
 
+    raw_title = title or (material.title if material else "") or ""
+    # 교재 연결 모드일 때만 "N주차_교사용" 같은 수업 메타데이터를 제거 (직접 입력한 검색어는 그대로 둠)
+    prefill_title = _clean_material_title_for_search(raw_title) if material else raw_title
+
     return templates.TemplateResponse("isbn/index.html", {
         "request": request,
         "material": material,
-        "prefill_title": title or (material.title if material else "") or "",
+        "prefill_title": prefill_title,
         "prefill_author": author or (material.author if material else "") or "",
     })
 

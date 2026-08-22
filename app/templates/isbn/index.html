@@ -12,6 +12,9 @@
   <p class="text-sm text-indigo-700">
     <a href="/reading-essay/{{ material.id }}" class="underline hover:no-underline">{{ material.title or '(제목 없음)' }}</a>
     교재에 도서 정보를 연결합니다. 결과에서 <b>저장</b>을 누르면 해당 교재에 연결됩니다.
+    {% if material.title and material.title != prefill_title %}
+    <br><span class="text-xs text-indigo-400">원본 제목의 수업 메타데이터(주차/교사용 등)를 제거해 "{{ prefill_title }}"로 검색어를 채웠습니다. 결과가 안 맞으면 검색어를 직접 수정하세요.</span>
+    {% endif %}
   </p>
   <a href="/reading-essay/{{ material.id }}" class="text-sm text-indigo-600 hover:text-indigo-800 whitespace-nowrap ml-3">← 교재로 돌아가기</a>
 </div>
