@@ -50,28 +50,28 @@
 
 {% if weeks %}
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-  <table class="w-full text-sm">
+  <table class="w-full text-sm table-fixed">
     <thead class="bg-gray-50 text-gray-500 text-xs">
       <tr>
-        <th class="px-4 py-2 text-left">학년</th>
-        <th class="px-4 py-2 text-left">분기</th>
-        <th class="px-4 py-2 text-left">주차</th>
-        <th class="px-4 py-2 text-left">기간</th>
-        <th class="px-4 py-2 text-left">도서명</th>
-        <th class="px-4 py-2 text-left">저자(역자)</th>
-        <th class="px-4 py-2 text-left">출판사</th>
+        <th class="px-4 py-2 text-left w-[9%]">학년</th>
+        <th class="px-4 py-2 text-left w-[10%]">분기</th>
+        <th class="px-4 py-2 text-left w-[6%]">주차</th>
+        <th class="px-4 py-2 text-left w-[11%]">기간</th>
+        <th class="px-4 py-2 text-left w-[38%]">도서명</th>
+        <th class="px-4 py-2 text-left w-[14%]">저자(역자)</th>
+        <th class="px-4 py-2 text-left w-[12%]">출판사</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray-100">
       {% for w in weeks %}
       <tr class="{% if w.is_holiday %}text-gray-400{% else %}text-gray-700{% endif %}">
-        <td class="px-4 py-2 whitespace-nowrap">{{ w.grade }}</td>
-        <td class="px-4 py-2 whitespace-nowrap">{{ w.quarter }}</td>
-        <td class="px-4 py-2 whitespace-nowrap">{{ w.week_number }}주차</td>
-        <td class="px-4 py-2 whitespace-nowrap">{{ w.date_range or '-' }}</td>
-        <td class="px-4 py-2">{{ w.title }}</td>
-        <td class="px-4 py-2 whitespace-nowrap">{{ w.author or '-' }}</td>
-        <td class="px-4 py-2 whitespace-nowrap">{{ w.publisher or '-' }}</td>
+        <td class="px-4 py-2 truncate">{{ w.grade }}</td>
+        <td class="px-4 py-2 truncate">{{ w.quarter }}</td>
+        <td class="px-4 py-2 truncate">{{ w.week_number }}주차</td>
+        <td class="px-4 py-2 truncate">{{ w.date_range or '-' }}</td>
+        <td class="px-4 py-2 break-words">{{ w.title }}</td>
+        <td class="px-4 py-2 truncate">{{ w.author or '-' }}</td>
+        <td class="px-4 py-2 truncate">{{ w.publisher or '-' }}</td>
       </tr>
       {% endfor %}
     </tbody>
