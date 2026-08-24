@@ -81,15 +81,18 @@ def _parse_workbook(file_bytes: bytes) -> list[dict]:
 @router.get("", response_class=HTMLResponse)
 def bookshelf_list(
     request: Request,
-    year: int | None = None,
+    year: str | None = None,
     quarter: str | None = None,
     grade: str | None = None,
     db: Session = Depends(get_db),
 ):
     """연도/분기/학년으로 필터링한 커리큘럼 목록"""
+    # "전체" 옵션 선택 시 빈 문자열로 넘어오므로 int 파싱 전에 방어
+    year_val = int(year) if year else None
+
     query = db.query(MomoBookshelfWeek)
-    if year:
-        query = query.filter(MomoBookshelfWeek.year == year)
+    if year_val:
+        query = query.filter(MomoBookshelfWeek.year == year_val)
     if quarter:
         query = query.filter(MomoBookshelfWeek.quarter == quarter)
     if grade:
@@ -110,7 +113,7 @@ def bookshelf_list(
         "years": years,
         "quarters": quarters,
         "grades": GRADES,
-        "filter_year": year,
+        "filter_year": year_val,
         "filter_quarter": quarter,
         "filter_grade": grade,
         "total_count": db.query(MomoBookshelfWeek).count(),
