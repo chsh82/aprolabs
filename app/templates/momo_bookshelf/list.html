@@ -7,10 +7,16 @@
     <h2 class="text-2xl font-bold text-gray-800">📖 모모의 책장</h2>
     <p class="text-sm text-gray-400 mt-1">전체 {{ total_count }}건 · 조회된 {{ weeks|length }}건</p>
   </div>
-  <a href="/momo-bookshelf/upload"
-     class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
-    ⬆️ 커리큘럼 업로드
-  </a>
+  <div class="flex gap-2">
+    <a href="/momo-bookshelf/required"
+       class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition font-medium">
+      📕 필독서 보기
+    </a>
+    <a href="/momo-bookshelf/upload"
+       class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+      ⬆️ 커리큘럼 업로드
+    </a>
+  </div>
 </div>
 
 <!-- 필터 -->

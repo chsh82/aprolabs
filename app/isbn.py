@@ -1,9 +1,10 @@
 """
 알라딘 Open API 기반 도서 ISBN 검색
-GET  /isbn              → 검색 UI (material_id 쿼리파라미터가 있으면 해당 독서논술 교재에 결과를 연결)
+GET  /isbn              → 검색 UI (material_id 또는 required_book_id로 연결 대상 지정)
 GET  /isbn/search       → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
 POST /isbn/search-batch → 제목 여러 개(한 줄에 하나)를 병렬로 검색
 POST /isbn/save         → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
+POST /isbn/save-required-book → 검색 결과 1건을 MomoRequiredBook에 연결
 GET  /isbn/list         → 독서 리스트(체크해서 모아둔 도서) 목록
 POST /isbn/list/add     → 검색 결과 여러 건을 독서 리스트에 추가 (중복 ISBN 자동 제외)
 POST /isbn/list/{id}/delete → 독서 리스트에서 1건 삭제
@@ -27,6 +28,7 @@ from app.database import get_db, SessionLocal
 from app.models.reading_essay import ReadingMaterial
 from app.models.isbn_cache import IsbnSearchCache, CACHE_TTL_DAYS
 from app.models.reading_list import ReadingListBook
+from app.models.momo_bookshelf import MomoRequiredBook
 
 router = APIRouter(prefix="/isbn")
 templates = Jinja2Templates(directory="app/templates")
@@ -178,26 +180,39 @@ async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | No
 def isbn_page(
     request: Request,
     material_id: str | None = Query(None),
+    required_book_id: str | None = Query(None),
     title: str | None = Query(None),
     author: str | None = Query(None),
     db: Session = Depends(get_db),
 ):
-    """ISBN 검색 UI. material_id가 있으면 해당 독서논술 교재에 결과를 연결하는 모드로 동작."""
+    """
+    ISBN 검색 UI.
+    - material_id: 독서논술 교재(ReadingMaterial)에 결과를 연결하는 모드
+    - required_book_id: 모모의 책장 필독서(MomoRequiredBook)에 결과를 연결하는 모드
+    두 파라미터는 동시에 쓰지 않음.
+    """
     material = None
+    required_book = None
     if material_id:
         material = db.query(ReadingMaterial).filter(ReadingMaterial.id == material_id).first()
         if not material:
             raise HTTPException(status_code=404, detail="교재를 찾을 수 없습니다.")
+    elif required_book_id:
+        required_book = db.query(MomoRequiredBook).filter(MomoRequiredBook.id == required_book_id).first()
+        if not required_book:
+            raise HTTPException(status_code=404, detail="필독서를 찾을 수 없습니다.")
 
-    raw_title = title or (material.title if material else "") or ""
-    # 교재 연결 모드일 때만 "N주차_교사용" 같은 수업 메타데이터를 제거 (직접 입력한 검색어는 그대로 둠)
-    prefill_title = _clean_material_title_for_search(raw_title) if material else raw_title
+    link_target = material or required_book
+    raw_title = title or (link_target.title if link_target else "") or ""
+    # 연결 모드일 때만 "N주차_교사용" 같은 수업 메타데이터를 제거 (직접 입력한 검색어는 그대로 둠)
+    prefill_title = _clean_material_title_for_search(raw_title) if link_target else raw_title
 
     return templates.TemplateResponse("isbn/index.html", {
         "request": request,
         "material": material,
+        "required_book": required_book,
         "prefill_title": prefill_title,
-        "prefill_author": author or (material.author if material else "") or "",
+        "prefill_author": author or (link_target.author if link_target else "") or "",
     })
 
 
@@ -268,6 +283,28 @@ async def isbn_save(request: Request, db: Session = Depends(get_db)):
     db.commit()
 
     return JSONResponse({"ok": True, "material_id": material_id})
+
+
+@router.post("/save-required-book")
+async def isbn_save_required_book(request: Request, db: Session = Depends(get_db)):
+    """검색 결과 1건을 모모의 책장 필독서(MomoRequiredBook)에 연결"""
+    body = await request.json()
+    required_book_id = (body.get("required_book_id") or "").strip()
+    if not required_book_id:
+        raise HTTPException(status_code=400, detail="required_book_id가 필요합니다.")
+
+    book = db.query(MomoRequiredBook).filter(MomoRequiredBook.id == required_book_id).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="필독서를 찾을 수 없습니다.")
+
+    book.isbn13 = body.get("isbn13") or None
+    book.isbn10 = body.get("isbn10") or None
+    book.publisher = body.get("publisher") or book.publisher
+    book.cover_url = body.get("cover") or None
+    book.aladin_link = body.get("link") or None
+    db.commit()
+
+    return JSONResponse({"ok": True, "required_book_id": required_book_id})
 
 
 @router.get("/list", response_class=HTMLResponse)

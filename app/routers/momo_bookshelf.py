@@ -20,7 +20,7 @@ from sqlalchemy import distinct
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.momo_bookshelf import MomoBookshelfWeek, GRADES
+from app.models.momo_bookshelf import MomoBookshelfWeek, MomoRequiredBook, GRADES
 
 router = APIRouter(prefix="/momo-bookshelf")
 templates = Jinja2Templates(directory="app/templates")
@@ -34,6 +34,48 @@ def _parse_week_number(raw) -> int | None:
         return None
     m = re.search(r"\d+", str(raw))
     return int(m.group()) if m else None
+
+
+def _strip_extension_marker(title: str) -> str:
+    """"이솝 이야기 (연장)" -> "이솝 이야기" (같은 책을 연속으로 읽는 재당 주차 표시 제거)"""
+    return re.sub(r"\s*\(연장\)\s*$", "", title or "").strip()
+
+
+def _sync_required_books(db: Session) -> dict:
+    """momo_bookshelf_weeks에서 주차를 빼고 학년+분기별 고유 도서만 뽑아 momo_required_books에 반영.
+    "(연장)" 재당 주차는 원본과 합치고, 휴강/특강 표시 행은 제외함.
+    이미 연결된 ISBN 등 기존 필드는 건드리지 않음(사라진 항목도 삭제하지 않고 유지)."""
+    weeks = db.query(MomoBookshelfWeek).filter(MomoBookshelfWeek.is_holiday == False).all()
+
+    unique = {}  # (year, quarter, grade, clean_title) -> (author, publisher)
+    for w in weeks:
+        clean_title = _strip_extension_marker(w.title)
+        if not clean_title:
+            continue
+        key = (w.year, w.quarter, w.grade, clean_title)
+        if key not in unique:
+            unique[key] = (w.author, w.publisher)
+
+    added, updated = 0, 0
+    for (year, quarter, grade, title), (author, publisher) in unique.items():
+        existing = db.query(MomoRequiredBook).filter(
+            MomoRequiredBook.year == year,
+            MomoRequiredBook.quarter == quarter,
+            MomoRequiredBook.grade == grade,
+            MomoRequiredBook.title == title,
+        ).first()
+        if existing:
+            if existing.author != author or existing.publisher != publisher:
+                existing.author = author
+                existing.publisher = publisher
+                existing.updated_at = datetime.now()
+                updated += 1
+        else:
+            db.add(MomoRequiredBook(year=year, quarter=quarter, grade=grade, title=title, author=author, publisher=publisher))
+            added += 1
+
+    db.commit()
+    return {"added": added, "updated": updated, "total": len(unique)}
 
 
 def _parse_workbook(file_bytes: bytes) -> list[dict]:
@@ -168,4 +210,55 @@ async def bookshelf_upload(
             added += 1
 
     db.commit()
-    return JSONResponse({"ok": True, "added": added, "updated": updated, "total": len(rows)})
+    sync_result = _sync_required_books(db)
+    return JSONResponse({
+        "ok": True, "added": added, "updated": updated, "total": len(rows),
+        "required_books": sync_result,
+    })
+
+
+@router.get("/required", response_class=HTMLResponse)
+def required_books_list(
+    request: Request,
+    year: str | None = None,
+    quarter: str | None = None,
+    grade: str | None = None,
+    db: Session = Depends(get_db),
+):
+    """모모의 책장 필독서 목록 (커리큘럼에서 주차를 뺀 학년+분기별 고유 도서 + ISBN)"""
+    year_val = int(year) if year else None
+
+    query = db.query(MomoRequiredBook)
+    if year_val:
+        query = query.filter(MomoRequiredBook.year == year_val)
+    if quarter:
+        query = query.filter(MomoRequiredBook.quarter == quarter)
+    if grade:
+        query = query.filter(MomoRequiredBook.grade == grade)
+
+    books = query.order_by(
+        MomoRequiredBook.grade, MomoRequiredBook.quarter, MomoRequiredBook.title
+    ).all()
+
+    years = [r[0] for r in db.query(distinct(MomoRequiredBook.year)).order_by(MomoRequiredBook.year.desc()).all()]
+    quarters = sorted(r[0] for r in db.query(distinct(MomoRequiredBook.quarter)).all())
+
+    return templates.TemplateResponse("momo_bookshelf/required.html", {
+        "request": request,
+        "books": books,
+        "years": years,
+        "quarters": quarters,
+        "grades": GRADES,
+        "filter_year": year_val,
+        "filter_quarter": quarter,
+        "filter_grade": grade,
+        "total_count": db.query(MomoRequiredBook).count(),
+        "linked_count": db.query(MomoRequiredBook).filter(MomoRequiredBook.isbn13.isnot(None)).count(),
+    })
+
+
+@router.post("/required/sync")
+def required_books_sync(db: Session = Depends(get_db)):
+    """커리큘럼(momo_bookshelf_weeks)에서 필독서 목록을 다시 동기화 (수동 재실행용)"""
+    result = _sync_required_books(db)
+    return JSONResponse({"ok": True, **result})

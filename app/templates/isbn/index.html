@@ -23,6 +23,14 @@
   </p>
   <a href="/reading-essay/{{ material.id }}" class="text-sm text-indigo-600 hover:text-indigo-800 whitespace-nowrap ml-3">← 교재로 돌아가기</a>
 </div>
+{% elif required_book %}
+<div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-5 flex items-center justify-between">
+  <p class="text-sm text-indigo-700">
+    <b>{{ required_book.title }}</b> ({{ required_book.grade }} · {{ required_book.quarter }}) 필독서에 ISBN을 연결합니다.
+    결과에서 <b>필독서에 저장</b>을 누르면 연결됩니다.
+  </p>
+  <a href="/momo-bookshelf/required" class="text-sm text-indigo-600 hover:text-indigo-800 whitespace-nowrap ml-3">← 필독서 목록으로</a>
+</div>
 {% endif %}
 
 <p class="text-xs text-gray-400 mb-4">체크박스로 여러 권을 선택해 <b>독서 리스트</b>에 한번에 모아 저장할 수 있습니다.</p>
@@ -99,7 +107,11 @@
 </div>
 
 <script>
-const MATERIAL_ID = {{ (material.id if material else '') | tojson }};
+const LINK_TYPE = {{ ('material' if material else ('required_book' if required_book else '')) | tojson }};
+const LINK_ID = {{ (material.id if material else (required_book.id if required_book else '')) | tojson }};
+const LINK_ENDPOINT = { material: '/isbn/save', required_book: '/isbn/save-required-book' }[LINK_TYPE];
+const LINK_BODY_KEY = { material: 'material_id', required_book: 'required_book_id' }[LINK_TYPE];
+const LINK_BTN_LABEL = { material: '교재에 저장', required_book: '필독서에 저장' }[LINK_TYPE];
 
 let lastResults = [];
 let itemRegistry = {};     // uid -> item
@@ -163,7 +175,7 @@ async function doSearch() {
 
     statusArea.innerHTML = `<p class="text-sm text-gray-400">${data.count}건 검색됨</p>`;
     lastResults = data.results;
-    resultList.innerHTML = data.results.map((item, i) => renderCard(item, i, MATERIAL_ID !== '')).join('');
+    resultList.innerHTML = data.results.map((item, i) => renderCard(item, i, LINK_ID !== '')).join('');
   } catch (e) {
     statusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>`;
   } finally {
@@ -173,7 +185,7 @@ async function doSearch() {
 }
 
 // 연결 모드로 들어온 경우 제목이 이미 있으면 자동 검색
-if (MATERIAL_ID && inpTitle.value.trim()) {
+if (LINK_ID && inpTitle.value.trim()) {
   doSearch();
 }
 
@@ -245,9 +257,9 @@ function renderCard(item, materialSaveIdx, showSave) {
     : `<div class="w-16 h-24 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-xs flex-shrink-0">표지없음</div>`;
 
   const saveBtn = showSave
-    ? `<button id="save-btn-${materialSaveIdx}" onclick="saveToMaterial(${materialSaveIdx})"
+    ? `<button id="save-btn-${materialSaveIdx}" onclick="saveToLink(${materialSaveIdx})"
                class="mt-2 px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
-         교재에 저장
+         ${LINK_BTN_LABEL}
        </button>`
     : '';
 
@@ -319,21 +331,21 @@ async function addSelectedToList() {
   }
 }
 
-async function saveToMaterial(idx) {
+async function saveToLink(idx) {
   const item = lastResults[idx];
   const btn = document.getElementById(`save-btn-${idx}`);
   btn.disabled = true;
   btn.textContent = '저장 중...';
   try {
-    const res = await fetch('/isbn/save', {
+    const res = await fetch(LINK_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ material_id: MATERIAL_ID, ...item }),
+      body: JSON.stringify({ [LINK_BODY_KEY]: LINK_ID, ...item }),
     });
     const data = await res.json();
     if (!res.ok) {
       btn.disabled = false;
-      btn.textContent = '교재에 저장';
+      btn.textContent = LINK_BTN_LABEL;
       alert(data.detail || '저장 중 오류가 발생했습니다.');
       return;
     }
@@ -342,7 +354,7 @@ async function saveToMaterial(idx) {
     btn.classList.add('bg-green-600');
   } catch (e) {
     btn.disabled = false;
-    btn.textContent = '교재에 저장';
+    btn.textContent = LINK_BTN_LABEL;
     alert('네트워크 오류가 발생했습니다.');
   }
 }

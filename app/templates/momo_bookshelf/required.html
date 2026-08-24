@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}모모의 책장 필독서 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">📕 모모의 책장 필독서</h2>
+    <p class="text-sm text-gray-400 mt-1">전체 {{ total_count }}건 · ISBN 연결됨 {{ linked_count }}건 · 조회된 {{ books|length }}건</p>
+  </div>
+  <div class="flex gap-2">
+    <button onclick="doSync()" id="btn-sync"
+            class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition font-medium">
+      🔄 커리큘럼과 동기화
+    </button>
+    <a href="/momo-bookshelf" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+      📖 커리큘럼 목록으로
+    </a>
+  </div>
+</div>
+
+<div id="sync-status" class="mb-4"></div>
+
+<!-- 필터 -->
+<form method="GET" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 flex flex-wrap gap-3 items-end">
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">연도</label>
+    <select name="year" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for y in years %}
+      <option value="{{ y }}" {% if filter_year == y %}selected{% endif %}>{{ y }}년</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">분기</label>
+    <select name="quarter" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for qt in quarters %}
+      <option value="{{ qt }}" {% if filter_quarter == qt %}selected{% endif %}>{{ qt }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">학년</label>
+    <select name="grade" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for g in grades %}
+      <option value="{{ g }}" {% if filter_grade == g %}selected{% endif %}>{{ g }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">필터 적용</button>
+  {% if filter_year or filter_quarter or filter_grade %}
+  <a href="/momo-bookshelf/required" class="text-sm text-gray-400 hover:text-gray-600">초기화</a>
+  {% endif %}
+</form>
+
+{% if books %}
+<div class="space-y-2">
+  {% for b in books %}
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3 flex items-center gap-4">
+    {% if b.cover_url %}
+    <img src="{{ b.cover_url }}" alt="표지" class="w-10 h-14 object-cover rounded border border-gray-100 flex-shrink-0">
+    {% else %}
+    <div class="w-10 h-14 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-[10px] flex-shrink-0">없음</div>
+    {% endif %}
+    <div class="w-24 flex-shrink-0 text-xs text-gray-400">{{ b.grade }}</div>
+    <div class="w-24 flex-shrink-0 text-xs text-gray-400">{{ b.quarter }}</div>
+    <div class="flex-1 min-w-0">
+      <p class="font-medium text-gray-800 truncate">{{ b.title }}</p>
+      <p class="text-xs text-gray-400 truncate">{{ b.author or '-' }} · {{ b.publisher or '-' }}</p>
+    </div>
+    <div class="w-40 flex-shrink-0 text-xs text-gray-500">
+      {% if b.isbn13 or b.isbn10 %}
+      <span class="text-green-600">✓ {{ b.isbn13 or b.isbn10 }}</span>
+      {% else %}
+      <span class="text-gray-300">ISBN 없음</span>
+      {% endif %}
+    </div>
+    <a href="/isbn?required_book_id={{ b.id }}&title={{ b.title | urlencode }}&author={{ (b.author or '') | urlencode }}"
+       class="text-xs px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition whitespace-nowrap flex-shrink-0">
+      {% if b.isbn13 or b.isbn10 %}다시 검색{% else %}ISBN 연결{% endif %}
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">
+  필독서 목록이 없습니다. "커리큘럼과 동기화"를 눌러 생성해보세요.
+</div>
+{% endif %}
+
+<script>
+async function doSync() {
+  const btn = document.getElementById('btn-sync');
+  const statusArea = document.getElementById('sync-status');
+  btn.disabled = true;
+  btn.textContent = '동기화 중...';
+  try {
+    const res = await fetch('/momo-bookshelf/required/sync', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) {
+      statusArea.innerHTML = `<p class="text-sm text-red-500">${data.detail || '동기화 중 오류가 발생했습니다.'}</p>`;
+      return;
+    }
+    statusArea.innerHTML = `<p class="text-sm text-green-600">동기화 완료 — 신규 ${data.added}건, 갱신 ${data.updated}건 (전체 ${data.total}건)</p>`;
+    setTimeout(() => location.reload(), 1000);
+  } catch (e) {
+    statusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다.</p>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔄 커리큘럼과 동기화';
+  }
+}
+</script>
+{% endblock %}
