@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}모모의 책장 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">📖 모모의 책장</h2>
+    <p class="text-sm text-gray-400 mt-1">전체 {{ total_count }}건 · 조회된 {{ weeks|length }}건</p>
+  </div>
+  <a href="/momo-bookshelf/upload"
+     class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+    ⬆️ 커리큘럼 업로드
+  </a>
+</div>
+
+<!-- 필터 -->
+<form method="GET" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 flex flex-wrap gap-3 items-end">
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">연도</label>
+    <select name="year" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for y in years %}
+      <option value="{{ y }}" {% if filter_year == y %}selected{% endif %}>{{ y }}년</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">분기</label>
+    <select name="quarter" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for qt in quarters %}
+      <option value="{{ qt }}" {% if filter_quarter == qt %}selected{% endif %}>{{ qt }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">학년</label>
+    <select name="grade" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+      <option value="">전체</option>
+      {% for g in grades %}
+      <option value="{{ g }}" {% if filter_grade == g %}selected{% endif %}>{{ g }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">필터 적용</button>
+  {% if filter_year or filter_quarter or filter_grade %}
+  <a href="/momo-bookshelf" class="text-sm text-gray-400 hover:text-gray-600">초기화</a>
+  {% endif %}
+</form>
+
+{% if weeks %}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs">
+      <tr>
+        <th class="px-4 py-2 text-left">학년</th>
+        <th class="px-4 py-2 text-left">분기</th>
+        <th class="px-4 py-2 text-left">주차</th>
+        <th class="px-4 py-2 text-left">기간</th>
+        <th class="px-4 py-2 text-left">도서명</th>
+        <th class="px-4 py-2 text-left">저자(역자)</th>
+        <th class="px-4 py-2 text-left">출판사</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for w in weeks %}
+      <tr class="{% if w.is_holiday %}text-gray-400{% else %}text-gray-700{% endif %}">
+        <td class="px-4 py-2 whitespace-nowrap">{{ w.grade }}</td>
+        <td class="px-4 py-2 whitespace-nowrap">{{ w.quarter }}</td>
+        <td class="px-4 py-2 whitespace-nowrap">{{ w.week_number }}주차</td>
+        <td class="px-4 py-2 whitespace-nowrap">{{ w.date_range or '-' }}</td>
+        <td class="px-4 py-2">{{ w.title }}</td>
+        <td class="px-4 py-2 whitespace-nowrap">{{ w.author or '-' }}</td>
+        <td class="px-4 py-2 whitespace-nowrap">{{ w.publisher or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">
+  등록된 커리큘럼이 없습니다. <a href="/momo-bookshelf/upload" class="text-blue-600 hover:underline">엑셀 업로드</a>로 추가해보세요.
+</div>
+{% endif %}
+{% endblock %}
