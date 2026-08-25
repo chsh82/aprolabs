@@ -55,6 +55,7 @@ class MomoRequiredBook(Base):
     isbn10 = Column(String(20), nullable=True)
     cover_url = Column(String(500), nullable=True)
     aladin_link = Column(String(500), nullable=True)
+    is_auto_linked = Column(Boolean, default=False)  # 일괄 자동 연결로 채워졌는지 (사람이 확인 안 함, 스팟체크 유도용)
 
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

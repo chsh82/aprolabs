@@ -172,7 +172,10 @@ async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | No
     ]
 
     result = {"query": query, "count": len(results), "results": results}
-    _cache_set(key, result)
+    # 결과 0건은 캐싱하지 않음: 일괄 호출 중 일시적으로 빈 응답이 오는 경우(요청 폭주 등)를
+    # "검색결과 없음"으로 영구 캐싱해버리면 이후 TTL 기간 내내 그 제목이 실패로 고정됨.
+    if results:
+        _cache_set(key, result)
     return result
 
 
@@ -302,6 +305,7 @@ async def isbn_save_required_book(request: Request, db: Session = Depends(get_db
     book.publisher = body.get("publisher") or book.publisher
     book.cover_url = body.get("cover") or None
     book.aladin_link = body.get("link") or None
+    book.is_auto_linked = False  # 사람이 직접 확인하고 저장했으므로 자동연결 표시 해제
     db.commit()
 
     return JSONResponse({"ok": True, "required_book_id": required_book_id})

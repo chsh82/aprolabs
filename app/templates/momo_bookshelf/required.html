@@ -8,6 +8,10 @@
     <p class="text-sm text-gray-400 mt-1">전체 {{ total_count }}건 · ISBN 연결됨 {{ linked_count }}건 · 조회된 {{ books|length }}건</p>
   </div>
   <div class="flex gap-2">
+    <button onclick="doAutoLink()" id="btn-auto-link"
+            class="text-sm bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg transition font-medium">
+      🤖 일괄 자동 연결
+    </button>
     <button onclick="doSync()" id="btn-sync"
             class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition font-medium">
       🔄 커리큘럼과 동기화
@@ -17,6 +21,11 @@
     </a>
   </div>
 </div>
+
+<p class="text-xs text-gray-400 mb-2">
+  "일괄 자동 연결"은 제목/저자가 알라딘 검색 결과와 충분히 비슷한 것만 자동으로 채웁니다.
+  <span class="text-amber-600">🤖 표시</span>는 사람이 확인하지 않은 항목이니 한 번씩 훑어봐 주세요.
+</p>
 
 <div id="sync-status" class="mb-4"></div>
 
@@ -70,9 +79,10 @@
       <p class="font-medium text-gray-800 truncate">{{ b.title }}</p>
       <p class="text-xs text-gray-400 truncate">{{ b.author or '-' }} · {{ b.publisher or '-' }}</p>
     </div>
-    <div class="w-40 flex-shrink-0 text-xs text-gray-500">
+    <div class="w-44 flex-shrink-0 text-xs text-gray-500">
       {% if b.isbn13 or b.isbn10 %}
       <span class="text-green-600">✓ {{ b.isbn13 or b.isbn10 }}</span>
+      {% if b.is_auto_linked %}<span class="text-amber-600" title="자동 연결됨 (미확인)">🤖</span>{% endif %}
       {% else %}
       <span class="text-gray-300">ISBN 없음</span>
       {% endif %}
@@ -91,6 +101,45 @@
 {% endif %}
 
 <script>
+async function doAutoLink() {
+  const btn = document.getElementById('btn-auto-link');
+  const statusArea = document.getElementById('sync-status');
+  btn.disabled = true;
+
+  let totalLinked = 0, totalSkipped = 0, totalProcessed = 0;
+  let noProgressStreak = 0;
+  try {
+    while (true) {
+      btn.textContent = `자동 연결 중... (${totalProcessed}건 처리)`;
+      const res = await fetch('/momo-bookshelf/required/auto-link', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        statusArea.innerHTML = `<p class="text-sm text-red-500">${data.detail || '자동 연결 중 오류가 발생했습니다.'}</p>`;
+        return;
+      }
+      totalLinked += data.linked;
+      totalSkipped += data.skipped;
+      totalProcessed += data.processed;
+      if (data.processed === 0 || data.remaining === 0) break;
+      // 매칭이 애매해서 못 채우는 책들 때문에 remaining이 0이 안 될 수 있으므로,
+      // 연속 2번 진전이 없으면(0건 연결) 남은 건 수동 확인이 필요하다고 보고 멈춤
+      if (data.linked === 0) {
+        noProgressStreak++;
+        if (noProgressStreak >= 2) break;
+      } else {
+        noProgressStreak = 0;
+      }
+    }
+    statusArea.innerHTML = `<p class="text-sm text-green-600">자동 연결 완료 — ${totalLinked}건 연결, ${totalSkipped}건은 확신도가 낮아 건너뜀 (총 ${totalProcessed}건 처리). 건너뛴 항목은 직접 검색해서 연결해주세요.</p>`;
+    setTimeout(() => location.reload(), 1500);
+  } catch (e) {
+    statusArea.innerHTML = `<p class="text-sm text-red-500">네트워크 오류가 발생했습니다.</p>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🤖 일괄 자동 연결';
+  }
+}
+
 async function doSync() {
   const btn = document.getElementById('btn-sync');
   const statusArea = document.getElementById('sync-status');

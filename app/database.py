@@ -39,6 +39,7 @@ def _safe_add_columns():
         ("reading_materials", "book_pub_date", "VARCHAR(20)"),
         ("reading_materials", "book_cover_url", "VARCHAR(500)"),
         ("reading_materials", "book_aladin_link", "VARCHAR(500)"),
+        ("momo_required_books", "is_auto_linked", "BOOLEAN DEFAULT 0"),
     ]
     with engine.connect() as conn:
         for table, col, col_type in migrations:
