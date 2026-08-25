@@ -8,6 +8,10 @@
     <p class="text-sm text-gray-400 mt-1">전체 {{ total_count }}건 · ISBN 연결됨 {{ linked_count }}건 · 조회된 {{ books|length }}건</p>
   </div>
   <div class="flex gap-2">
+    <a href="/momo-bookshelf/required/export{% if export_query %}?{{ export_query }}{% endif %}"
+       class="text-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg transition font-medium">
+      ⬇️ 엑셀 다운로드
+    </a>
     <button onclick="doAutoLink()" id="btn-auto-link"
             class="text-sm bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg transition font-medium">
       🤖 일괄 자동 연결
@@ -19,6 +23,25 @@
     <a href="/momo-bookshelf" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
       📖 커리큘럼 목록으로
     </a>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    <p class="text-xs text-gray-400">전체</p>
+    <p class="text-2xl font-bold text-gray-800">{{ total_count }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    <p class="text-xs text-gray-400">ISBN 연결됨</p>
+    <p class="text-2xl font-bold text-green-600">{{ linked_count }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    <p class="text-xs text-gray-400">미연결</p>
+    <p class="text-2xl font-bold text-gray-500">{{ total_count - linked_count }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    <p class="text-xs text-gray-400">🤖 자동연결(미확인)</p>
+    <p class="text-2xl font-bold text-amber-600">{{ auto_linked_count }}</p>
   </div>
 </div>
 
