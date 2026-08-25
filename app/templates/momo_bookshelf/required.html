@@ -45,6 +45,45 @@
   </div>
 </div>
 
+{% if grade_quarter_table %}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 overflow-x-auto">
+  <p class="text-xs text-gray-400 mb-3">학년별 · 분기별 현황 (연결됨/전체{% if filter_year %}, {{ filter_year }}년{% endif %})</p>
+  <table class="text-sm w-full min-w-[600px]">
+    <thead>
+      <tr class="text-gray-400 text-xs border-b border-gray-100">
+        <th class="text-left font-medium py-1.5 pr-3">학년</th>
+        {% for q in matrix_quarters %}
+        <th class="text-center font-medium py-1.5 px-2">{{ q }}</th>
+        {% endfor %}
+        <th class="text-center font-medium py-1.5 pl-2">합계</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in grade_quarter_table %}
+      <tr class="border-b border-gray-50 last:border-0">
+        <td class="py-1.5 pr-3 text-gray-700 whitespace-nowrap">{{ row.grade }}</td>
+        {% for cell in row.cells %}
+        <td class="text-center py-1.5 px-2 {% if cell.total == 0 %}text-gray-300{% elif cell.linked == cell.total %}text-green-600{% else %}text-amber-600{% endif %}">
+          {% if cell.total > 0 %}{{ cell.linked }}/{{ cell.total }}{% else %}-{% endif %}
+        </td>
+        {% endfor %}
+        <td class="text-center py-1.5 pl-2 font-medium text-gray-700">{{ row.row_total.linked }}/{{ row.row_total.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="border-t border-gray-200 font-medium text-gray-700">
+        <td class="py-1.5 pr-3">합계</td>
+        {% for ct in col_totals %}
+        <td class="text-center py-1.5 px-2">{{ ct.linked }}/{{ ct.total }}</td>
+        {% endfor %}
+        <td class="text-center py-1.5 pl-2">{{ grand_total.linked }}/{{ grand_total.total }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% endif %}
+
 <p class="text-xs text-gray-400 mb-2">
   "일괄 자동 연결"은 제목/저자가 알라딘 검색 결과와 충분히 비슷한 것만 자동으로 채웁니다.
   <span class="text-amber-600">🤖 표시</span>는 사람이 확인하지 않은 항목이니 한 번씩 훑어봐 주세요.

@@ -341,6 +341,8 @@ def required_books_list(
     years = [r[0] for r in db.query(distinct(MomoRequiredBook.year)).order_by(MomoRequiredBook.year.desc()).all()]
     quarters = sorted(r[0] for r in db.query(distinct(MomoRequiredBook.quarter)).all())
 
+    grade_quarter_table, matrix_quarters, col_totals, grand_total = _grade_quarter_matrix(db, year_val)
+
     return templates.TemplateResponse("momo_bookshelf/required.html", {
         "request": request,
         "books": books,
@@ -359,7 +361,49 @@ def required_books_list(
             (MomoRequiredBook.isbn13.isnot(None)) | (MomoRequiredBook.isbn10.isnot(None)),
         ).count(),
         "export_query": request.url.query,
+        "grade_quarter_table": grade_quarter_table,
+        "matrix_quarters": matrix_quarters,
+        "col_totals": col_totals,
+        "grand_total": grand_total,
     })
+
+
+def _grade_quarter_matrix(db: Session, year_val: int | None):
+    """학년(행) x 분기(열)별 전체/ISBN연결 건수 매트릭스. (연도 필터만 반영, 학년/분기 필터는 무시하고 항상 전체 분포를 보여줌)"""
+    query = db.query(MomoRequiredBook)
+    if year_val:
+        query = query.filter(MomoRequiredBook.year == year_val)
+    rows = query.all()
+
+    stats = {}  # grade -> quarter -> {"total": int, "linked": int}
+    for b in rows:
+        cell = stats.setdefault(b.grade, {}).setdefault(b.quarter, {"total": 0, "linked": 0})
+        cell["total"] += 1
+        if b.isbn13 or b.isbn10:
+            cell["linked"] += 1
+
+    matrix_quarters = sorted({b.quarter for b in rows})
+    matrix_grades = [g for g in GRADES if g in stats]
+
+    col_totals = {q: {"total": 0, "linked": 0} for q in matrix_quarters}
+    grand_total = {"total": 0, "linked": 0}
+    table = []
+    for g in matrix_grades:
+        row_total = {"total": 0, "linked": 0}
+        cells = []
+        for q in matrix_quarters:
+            cell = stats.get(g, {}).get(q, {"total": 0, "linked": 0})
+            cells.append(cell)
+            row_total["total"] += cell["total"]
+            row_total["linked"] += cell["linked"]
+            col_totals[q]["total"] += cell["total"]
+            col_totals[q]["linked"] += cell["linked"]
+        grand_total["total"] += row_total["total"]
+        grand_total["linked"] += row_total["linked"]
+        table.append({"grade": g, "cells": cells, "row_total": row_total})
+
+    col_totals_list = [col_totals[q] for q in matrix_quarters]
+    return table, matrix_quarters, col_totals_list, grand_total
 
 
 @router.post("/required/sync")
