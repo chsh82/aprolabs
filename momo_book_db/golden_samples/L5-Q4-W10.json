@@ -1,0 +1,122 @@
+{
+  "documents": {
+    "doc_id": "L5-Q4-W10",
+    "curriculum_id": "6a7fc924-4550-4b62-a497-da3d12b7ea4c",
+    "level": "L5",
+    "quarter": "4분기(인문예술)",
+    "week": 10,
+    "book_title": "나의 행복과 모두의 행복",
+    "book_author": "서정욱",
+    "isbn": null,
+    "source_file": "D:\\25년도 4분기 교재\\초5\\[4분기 10주차] 나의 행복과 모두의 행복 1주차(학생용).pdf",
+    "source_format": "pdf",
+    "source_hash": null,
+    "version": 1,
+    "parsed_at": null,
+    "review_status": "approved"
+  },
+  "vocabulary": [
+    { "order_no": 1, "word": "양해", "definition": "남의 사정을 잘 헤아려 너그러이 받아들임.", "book_page": 48, "example_sentence": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 2, "word": "예삿일", "definition": "보통 흔히 있는 일.", "book_page": 52, "example_sentence": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 3, "word": "부과하다", "definition": "세금이나 부담금 따위를 매기어 부담하게 하다.", "book_page": 54, "example_sentence": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 4, "word": "순조롭다", "definition": "일이 아무 탈이나 말썽 없이 예정대로 잘되어 가는 상태에 있다.", "book_page": 74, "example_sentence": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" }
+  ],
+  "ox_quiz": [
+    { "order_no": 1, "question": "산업혁명 시기 영국은 아직 특허권 제도를 도입하지 않았어요.", "answer": null, "evidence_page": 44, "explanation": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 2, "question": "산업혁명은 영국에서 처음 시작되어 사람들의 삶에 큰 변화를 가져다주었어요.", "answer": null, "evidence_page": 53, "explanation": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 3, "question": "모든 국민이 행복하게 살 수 있도록 국가가 역할을 해야 한다는 '사회복지'는 제레미 벤담이 처음 한 생각이었어요.", "answer": null, "evidence_page": 64, "explanation": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 4, "question": "제레미 벤담이 살던 당시 영국에서 범법자는 죄의 정도에 따라 처벌의 정도도 달라졌어요.", "answer": null, "evidence_page": 89, "explanation": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" },
+    { "order_no": 5, "question": "많은 사람들의 행복, 즉 공공의 이익을 추구하는 사상을 공리주의라고 불러요.", "answer": null, "evidence_page": 99, "explanation": null, "source_page": 2, "extraction_confidence": 1.0, "review_status": "approved" }
+  ],
+  "discussion_qa": [
+    {
+      "order_no": 1, "order_label": "1", "reading_type": "비판적",
+      "excerpt_text": "나는 제니 방적기에 대해서 잘은 모르지만 아마 그 기계는 노동자들이 하는 일을 대신 해 줄 수 있었을 거야. 그럼 어떻게 될지 상상이 가니, 혜리야? \"그렇다면... 공장주들이 사람을 쓰지 않고 제니 방적기만 쓰려고 하겠네요? 그럼 노동자들이 일자리를 잃게 되고요.\"",
+      "excerpt_page": 44,
+      "question_text": "기계 때문에 일자리를 잃은 사람들은 기계를 부수기 시작했어요. 이른바 '러다이트'은 이후 새로운 기술의 등장에 반대하는 사람을 의미하게 되었어요. 여러분은 '러다이트'에 대해 어떻게 생각하나요?",
+      "ui_type": "choice_ab", "ui_config": "{\"options\": [\"동의할 수 있어요!\", \"동의할 수 없어요!\"]}",
+      "model_answer": null, "source_page": 3, "extraction_confidence": 1.0, "review_status": "approved"
+    },
+    {
+      "order_no": 2, "order_label": "2", "reading_type": "추론적",
+      "excerpt_text": "\"복지는 '생활할 만한 환경'을 말하는 거야. ~ 사회복지를 제일 먼저 언급한 벤담이지.\"",
+      "excerpt_page": 63,
+      "question_text": "제레미 벤담은 왜 모든 국민이 행복하게 살 수 있도록 국가 역할을 해야 한다는 '사회복지(사회보장제도)'를 생각하게 되었을까요? 산업혁명 이후 영국의 모습을 떠올려보고 그 이유를 생각해봅시다. * 사회보장제도: 사회구성원의 삶을 향상하기 위해 공공의 재원으로 최저생활을 보장해 주는 제도.",
+      "ui_type": "text_short_multi", "ui_config": "{\"blanks\": [\"산업혁명 이후 영국 사람들의 삶\", \"사회복지가 필요해!!\"]}",
+      "model_answer": null, "source_page": 4, "extraction_confidence": 1.0, "review_status": "approved",
+      "_note": "발췌 페이지는 -p.63~64로 표기, excerpt_page는 시작 페이지만 저장"
+    },
+    {
+      "order_no": 3, "order_label": "3", "reading_type": "적용적",
+      "excerpt_text": "\"벤담은 모든 법과 도덕은 '공공의 행복'이 기본이 되어야 한다고 말했어.\"",
+      "excerpt_page": 65,
+      "question_text": "벤담은 법과 도덕은 행복을 기준으로 해야 한다고 말했어요. 여러분은 사람의 생각이나 행동의 기준이 되는 것은 무엇이 되어야 한다고 생각하나요?",
+      "ui_type": "choice_multi", "ui_config": "{\"options\": [\"법이 기준이 되어야 해요!\", \"도덕이 기준이 되어야 해요!\", \"행복이 기준이 되어야 해요!\"]}",
+      "model_answer": null, "source_page": 4, "extraction_confidence": 1.0, "review_status": "approved",
+      "_note": "section 5 표에 없는 새 ui_type. 3지선다형이라 choice_ab와 달라서 신설."
+    },
+    {
+      "order_no": 4, "order_label": "4-1", "reading_type": "비판적",
+      "excerpt_text": "\"그럼 바보 같은 질문이지. 영국은 지금 범죄가 점점 더 심해지고 있고, ~ 법이 엄격하다면 사람들이 무서워서 나쁜 짓을 저지르지 않을 텐데?\"",
+      "excerpt_page": 91,
+      "question_text": "다음은 제레미 벤담과 비슷한 시기에 영국에 살았던 사람이 쓴 책의 내용이에요. 두 사람 모두 범죄자에 대한 가혹한 처벌이 사회를 더욱 불행하게 만든다고 주장하고 있어요. 엄격한 법이 왜 사회를 더욱 불행하게 만들까요? [인용: 토마스 모어, 『유토피아』 발췌 + 학교 벌칙 사례]",
+      "ui_type": "text_long", "ui_config": "{}",
+      "model_answer": null, "source_page": 5, "extraction_confidence": 1.0, "review_status": "approved",
+      "_note": "text_long으로 확정 (요청자 확인, 2026-08-26)"
+    },
+    {
+      "order_no": 4, "order_label": "4-2", "reading_type": "비판적",
+      "excerpt_text": null, "excerpt_page": null,
+      "question_text": "여러분은 '법'이 왜 필요하다고 생각하나요?",
+      "ui_type": "text_short", "ui_config": "{\"starter\": \"법이 필요한 이유는...\"}",
+      "model_answer": null, "source_page": 6, "extraction_confidence": 1.0, "review_status": "approved",
+      "_note": "4-1과 같은 발췌문의 후속 질문이라 4-1의 '비판적'을 상속 처리 (요청자 확인, 2026-08-26)"
+    },
+    {
+      "order_no": 5, "order_label": "5", "reading_type": "추론적",
+      "excerpt_text": "\"그래, 벤담이 처음부터 공리주의를 주장한 것은 아니야. 프리스틀리의 책에서 '최대 다수의 최대 행복'이라는 글귀를 읽고 깨닫게 된 거지.\"",
+      "excerpt_page": 100,
+      "question_text": "벤담이 법은 최대 다수의 최대 행복, 즉 공리주의 원칙에 따라 만들어져야 한다고 주장한 이유는 무엇일까요?",
+      "ui_type": "text_short", "ui_config": "{\"starter\": \"법은 다수의 행복을 보장해야 합니다!!!\"}",
+      "model_answer": null, "source_page": 6, "extraction_confidence": 1.0, "review_status": "approved"
+    },
+    {
+      "order_no": 6, "order_label": "6", "reading_type": "비판적/적용적",
+      "excerpt_text": "\"그렇겠지? 이게 바로 최대 다수의 최대 행복이라는 거야. ~ 그럼 아저씨, 아니 선생님. 다수결도 공리주의와 관계가 있겠네요?",
+      "excerpt_page": 106,
+      "question_text": "아래 소개된 트롤리 사례에서 벤담은 과연 어떤 선택을 할까요? 벤담의 선택이 갖는 문제는 무엇일까요?",
+      "ui_type": "text_short_multi", "ui_config": "{\"blanks\": [\"벤담의 선택은?\", \"벤담의 선택이 갖는 한계?\"]}",
+      "model_answer": null, "source_page": 7, "extraction_confidence": 1.0, "review_status": "approved",
+      "_note": "원문 표기는 '적용적 / 비판적 독해'. 규칙(사실적<추론적<비판적<분석적<적용적 순 정렬)에 따라 '비판적/적용적'으로 정규화함"
+    },
+    {
+      "order_no": 7, "order_label": "7", "reading_type": "추론적",
+      "excerpt_text": "벤담은 최대 다수의 최대 행복을 도덕의 기초로 삼았다고 했죠. ~ 우리가 바라는 최대 다수의 행복이 사회의 선이고, 옳은 행동이며, 쾌락이 되는 것이겠죠.",
+      "excerpt_page": 109,
+      "question_text": "벤담은 모두에게 더 큰 행복을 주는 것이 결국 도덕이라고 생각하고 있어요. 1번 문제에서 살펴보았던 기계를 부수는 사람들에게 벤담은 어떤 말을 했을까요?",
+      "ui_type": "text_long", "ui_config": "{\"starter\": \"기계를 부순 러다이트 운동을 한 사람들에게 전하는 말...\"}",
+      "model_answer": null, "source_page": 8, "extraction_confidence": 1.0, "review_status": "approved"
+    }
+  ],
+  "essay_prompt": {
+    "main_topic": "공리주의는 왜 등장했을까요? (최대 다수의 최대 행복)",
+    "writing_format": "text_long",
+    "min_length": null,
+    "source_page": 9,
+    "extraction_confidence": 1.0,
+    "review_status": "approved",
+    "_note": "원고지 칸수 구분 없이 text_long으로 처리 (요청자 확인, 2026-08-26)",
+    "outline_questions": [
+      { "order_no": 1, "question_text": "산업혁명 이후 영국 사람들의 삶은 어떻게 변화했나요? (긍정적인 부분과 부정적인 부분을 모두 함께 적어 보세요.)", "role": "intro" },
+      { "order_no": 2, "question_text": "벤담은 왜 영국 사회를 더 좋게 만들기 위해서는 공리주의 원칙, 즉 최대 다수의 최대 행복이 필요하다고 생각했을까요?", "role": "body" },
+      { "order_no": 3, "question_text": "최대 다수의 최대 행복에 대한 여러분의 생각을 적어보며 글을 마무리해 보세요.", "role": "conclusion" }
+    ]
+  },
+  "extraction_log": [
+    { "level": "warning", "stage": "vocabulary", "message": "어휘 항목에 명시적 번호가 없어 등장 순서로 order_no 부여함" },
+    { "level": "warning", "stage": "ox_quiz", "message": "OX 문항에 명시적 번호가 없어 등장 순서로 order_no 부여함" },
+    { "level": "info", "stage": "discussion_qa", "message": "4-2번 문항은 독해유형 태그가 원문에 없어 4-1(같은 발췌문)의 태그를 상속함 - 요청자 확인 완료" },
+    { "level": "info", "stage": "discussion_qa", "message": "4-1번 문항 답변란은 표가 아니라 text_long으로 확정 - 요청자 확인 완료" },
+    { "level": "info", "stage": "essay_prompt", "message": "글쓰기 답변란은 원고지 구분 없이 text_long으로 통일 처리 - 요청자 확인 완료" }
+  ]
+}
