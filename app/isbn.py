@@ -361,8 +361,20 @@ async def isbn_save_required_book(request: Request, db: Session = Depends(get_db
     if not book:
         raise HTTPException(status_code=404, detail="필독서를 찾을 수 없습니다.")
 
+    new_title = body.get("title") or book.title
+    title_conflict = new_title != book.title and db.query(MomoRequiredBook).filter(
+        MomoRequiredBook.id != book.id,
+        MomoRequiredBook.year == book.year,
+        MomoRequiredBook.quarter == book.quarter,
+        MomoRequiredBook.grade == book.grade,
+        MomoRequiredBook.title == new_title,
+    ).first() is not None
+
     book.isbn13 = body.get("isbn13") or None
     book.isbn10 = body.get("isbn10") or None
+    if not title_conflict:
+        book.title = new_title
+    book.author = body.get("author") or book.author
     book.publisher = body.get("publisher") or book.publisher
     book.cover_url = body.get("cover") or None
     book.aladin_link = body.get("link") or None
