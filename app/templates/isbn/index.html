@@ -40,36 +40,48 @@
     검색이 안 되나요? 직접 입력하기
   </button>
   <div id="manual-entry-form" class="hidden mt-3">
-    <p class="text-xs text-gray-400 mb-3">알라딘에 없거나 검색이 안 되는 책은 정보를 직접 입력해서 저장할 수 있습니다. ISBN은 몰라도 저장 가능합니다.</p>
-    <div class="grid grid-cols-2 gap-3 mb-3">
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">ISBN13 <span class="font-normal text-gray-400">(선택)</span></label>
-        <input id="manual-isbn13" type="text" placeholder="예: 9788934972464"
-               class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">ISBN10 <span class="font-normal text-gray-400">(선택)</span></label>
-        <input id="manual-isbn10" type="text" placeholder="예: 8934972467"
-               class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
-        <input id="manual-title" type="text" value="{{ prefill_title }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
-        <input id="manual-author" type="text" value="{{ prefill_author }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">출판사 <span class="font-normal text-gray-400">(선택)</span></label>
-        <input id="manual-publisher" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+    <p class="text-xs text-gray-400 mb-3">알라딘에 없거나 검색이 안 되는 책은 정보를 직접 입력해서 저장할 수 있습니다. ISBN을 알면 표지/서지정보를 자동으로 가져올 수 있습니다.</p>
+    <div class="flex gap-4">
+      <div id="manual-cover-preview" class="w-16 h-24 flex items-center justify-center rounded border border-gray-100 bg-gray-50 text-gray-300 text-[10px] flex-shrink-0">표지없음</div>
+      <div class="flex-1">
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">ISBN13 <span class="font-normal text-gray-400">(선택)</span></label>
+            <div class="flex gap-2">
+              <input id="manual-isbn13" type="text" placeholder="예: 9788934972464"
+                     class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <button type="button" onclick="fetchIsbnInfo()" id="btn-fetch-isbn"
+                      class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs rounded-lg transition whitespace-nowrap">
+                🔍 가져오기
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">ISBN10 <span class="font-normal text-gray-400">(선택)</span></label>
+            <input id="manual-isbn10" type="text" placeholder="예: 8934972467"
+                   class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
+            <input id="manual-title" type="text" value="{{ prefill_title }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
+            <input id="manual-author" type="text" value="{{ prefill_author }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">출판사 <span class="font-normal text-gray-400">(선택)</span></label>
+            <input id="manual-publisher" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+          </div>
+        </div>
+        <span id="fetch-isbn-status" class="text-xs text-gray-400 block mb-2"></span>
+        <button id="btn-manual-save" onclick="saveManualEntry()"
+                class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition">
+          직접 입력한 정보 저장
+        </button>
+        <span id="manual-save-status" class="text-sm ml-3"></span>
       </div>
     </div>
-    <button id="btn-manual-save" onclick="saveManualEntry()"
-            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition">
-      직접 입력한 정보 저장
-    </button>
-    <span id="manual-save-status" class="text-sm ml-3"></span>
   </div>
 </div>
 {% endif %}
@@ -405,6 +417,52 @@ function toggleManualEntry() {
   form.classList.toggle('hidden');
 }
 
+let manualFetchedCover = '';
+let manualFetchedLink = '';
+
+async function fetchIsbnInfo() {
+  const isbn = document.getElementById('manual-isbn13').value.trim() || document.getElementById('manual-isbn10').value.trim();
+  const statusEl = document.getElementById('fetch-isbn-status');
+  if (!isbn) {
+    statusEl.textContent = 'ISBN13 또는 ISBN10을 입력하세요.';
+    statusEl.className = 'text-xs text-red-500 block mb-2';
+    return;
+  }
+
+  const btn = document.getElementById('btn-fetch-isbn');
+  btn.disabled = true;
+  btn.textContent = '조회 중...';
+  statusEl.textContent = '';
+  try {
+    const res = await fetch(`/isbn/lookup?isbn=${encodeURIComponent(isbn)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      statusEl.textContent = data.detail || '조회 중 오류가 발생했습니다.';
+      statusEl.className = 'text-xs text-red-500 block mb-2';
+      return;
+    }
+    if (data.isbn13) document.getElementById('manual-isbn13').value = data.isbn13;
+    if (data.isbn10) document.getElementById('manual-isbn10').value = data.isbn10;
+    if (data.title) document.getElementById('manual-title').value = data.title;
+    if (data.author) document.getElementById('manual-author').value = data.author;
+    if (data.publisher) document.getElementById('manual-publisher').value = data.publisher;
+    manualFetchedCover = data.cover || '';
+    manualFetchedLink = data.link || '';
+    const preview = document.getElementById('manual-cover-preview');
+    if (manualFetchedCover) {
+      preview.innerHTML = `<img src="${manualFetchedCover}" alt="표지" class="w-16 h-24 object-cover rounded">`;
+    }
+    statusEl.textContent = '✓ 정보를 가져왔습니다. 저장 전에 내용을 확인하세요.';
+    statusEl.className = 'text-xs text-green-600 block mb-2';
+  } catch (e) {
+    statusEl.textContent = '네트워크 오류가 발생했습니다.';
+    statusEl.className = 'text-xs text-red-500 block mb-2';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔍 가져오기';
+  }
+}
+
 async function saveManualEntry() {
   const title = document.getElementById('manual-title').value.trim();
   const statusEl = document.getElementById('manual-save-status');
@@ -421,8 +479,8 @@ async function saveManualEntry() {
     author: document.getElementById('manual-author').value.trim(),
     publisher: document.getElementById('manual-publisher').value.trim(),
     pubDate: '',
-    cover: '',
-    link: '',
+    cover: manualFetchedCover,
+    link: manualFetchedLink,
   };
 
   const btn = document.getElementById('btn-manual-save');

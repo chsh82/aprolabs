@@ -2,6 +2,7 @@
 알라딘 Open API 기반 도서 ISBN 검색
 GET  /isbn              → 검색 UI (material_id 또는 required_book_id로 연결 대상 지정)
 GET  /isbn/search       → 제목(+저자)으로 알라딘 상품검색 → ISBN/서지정보 반환
+GET  /isbn/lookup       → ISBN으로 알라딘 상품조회(ItemLookUp) → 표지/서지정보 반환 (직접입력 보조용)
 POST /isbn/search-batch → 제목 여러 개(한 줄에 하나)를 병렬로 검색
 POST /isbn/save         → 검색 결과 1건을 ReadingMaterial.book_* 필드에 저장
 POST /isbn/save-required-book → 검색 결과 1건을 MomoRequiredBook에 연결
@@ -34,6 +35,7 @@ router = APIRouter(prefix="/isbn")
 templates = Jinja2Templates(directory="app/templates")
 
 ALADIN_SEARCH_URL = "https://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
+ALADIN_LOOKUP_URL = "https://www.aladin.co.kr/ttb/api/ItemLookUp.aspx"
 BATCH_MAX_TITLES = 30
 BATCH_CONCURRENCY = 5
 
@@ -176,6 +178,65 @@ async def _search_aladin(client: httpx.AsyncClient, title: str, author: str | No
     # "검색결과 없음"으로 영구 캐싱해버리면 이후 TTL 기간 내내 그 제목이 실패로 고정됨.
     if results:
         _cache_set(key, result)
+    return result
+
+
+async def _lookup_aladin_isbn(client: httpx.AsyncClient, isbn: str) -> dict | None:
+    """ISBN으로 알라딘 상품조회(ItemLookUp). 직접입력 시 표지/서지정보를 채워주는 보조 기능이라
+    실패해도 예외를 던지지 않고 None을 반환함(직접입력 자체는 계속 가능해야 하므로)."""
+    ttb_key = os.getenv("ALADIN_TTB_KEY")
+    if not ttb_key:
+        return None
+
+    isbn_clean = re.sub(r"[^0-9Xx]", "", isbn or "")
+    if not isbn_clean:
+        return None
+
+    key = _cache_key(f"isbn:{isbn_clean}", None, 1)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached.get("results", [None])[0]
+
+    params = {
+        "ttbkey": ttb_key,
+        "itemIdType": "ISBN13" if len(isbn_clean) == 13 else "ISBN",
+        "ItemId": isbn_clean,
+        "output": "js",
+        "Version": "20131101",
+        "Cover": "Big",
+    }
+    try:
+        res = await client.get(ALADIN_LOOKUP_URL, params=params)
+        data = json.loads(res.text.strip().rstrip(";"))
+    except (httpx.HTTPError, json.JSONDecodeError):
+        return None
+
+    items = data.get("item", [])
+    if data.get("errorCode") or not items:
+        return None
+
+    item = items[0]
+    result = {
+        "isbn13": item.get("isbn13", ""),
+        "isbn10": item.get("isbn", ""),
+        "title": item.get("title", ""),
+        "author": _clean_author(item.get("author", "")),
+        "publisher": item.get("publisher", ""),
+        "pubDate": item.get("pubDate", ""),
+        "cover": item.get("cover", ""),
+        "link": item.get("link", ""),
+    }
+    _cache_set(key, {"query": isbn_clean, "count": 1, "results": [result]})
+    return result
+
+
+@router.get("/lookup")
+async def isbn_lookup(isbn: str = Query(..., min_length=1)):
+    """ISBN으로 알라딘 조회 → 표지/서지정보 반환 (직접입력 폼에서 자동完성용)"""
+    async with httpx.AsyncClient(timeout=10) as client:
+        result = await _lookup_aladin_isbn(client, isbn)
+    if not result:
+        raise HTTPException(status_code=404, detail="해당 ISBN으로 알라딘에서 정보를 찾을 수 없습니다.")
     return result
 
 
