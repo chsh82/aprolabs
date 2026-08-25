@@ -51,17 +51,69 @@ def _strip_extension_marker(title: str) -> str:
     return re.sub(r"\s*\(연장\)\s*$", "", title or "").strip()
 
 
+_REQUIRED_TRAILING_NOISE_TOKENS = [
+    r"[가-힣]{1,4}T",       # 담당 강사 코드 (예: 문요한T, 문T)
+    r"교사용|학생용",
+    r"수업\s*준비",
+    r"\d+\s*(?:주차|차시)",
+    # 단독 숫자(예: \d+)는 일부러 제외함: "한국 대표 단편문학선 1"/"2"처럼
+    # 뒤에 붙은 숫자가 서로 다른 책(권)을 가리키는 경우가 있어 여기서 지우면 안 됨.
+]
+
+
+def _clean_required_title(title: str) -> str:
+    """(연장) 표시 + "N주차_교사용"/강사코드 등 수업 메타데이터를 제거.
+    /isbn 검색 프리필에 쓰는 _clean_material_title_for_search와 달리 단독 숫자는 지우지 않음
+    (권 번호가 붙은 여러 권짜리 도서를 서로 다른 책으로 유지하기 위함)."""
+    from app.isbn import _LEADING_TITLE_NOISE_RE
+
+    t = _strip_extension_marker(title)
+    t = _LEADING_TITLE_NOISE_RE.sub("", t, count=1)
+
+    changed = True
+    while changed:
+        changed = False
+        for token in _REQUIRED_TRAILING_NOISE_TOKENS:
+            m = re.search(rf"[\s_]*(?:{token})[\s_]*$", t)
+            if m and m.start() > 0:
+                t = t[:m.start()]
+                changed = True
+                break
+
+    cleaned = t.strip(" _'\"‘’“”")
+    return cleaned if cleaned else (title or "").strip()
+
+
 def _sync_required_books(db: Session) -> dict:
     """momo_bookshelf_weeks에서 주차를 빼고 학년+분기별 고유 도서만 뽑아 momo_required_books에 반영.
-    "(연장)" 재당 주차는 원본과 합치고, 휴강/특강 표시 행은 제외함.
-    이미 연결된 ISBN 등 기존 필드는 건드리지 않음(사라진 항목도 삭제하지 않고 유지)."""
-    weeks = db.query(MomoBookshelfWeek).filter(MomoBookshelfWeek.is_holiday == False).all()
+    "(연장)"/"N주차_교사용" 등 재당 주차 표시는 원본과 합치고, 휴강/특강 표시 행은 제외함.
+    같은 학년+분기 안에서 제목이 "..."로 끝나면(엑셀에 "위와 동일" 뜻으로 흔히 씀) 바로 이전 주차의
+    책 제목을 이어받은 것으로 보고 합침.
+    이미 연결된 ISBN 등 기존 필드는 건드리지 않음. 예전 방식으로 잘못 쪼개져 남아있던 중복 행은
+    새 제목 기준으로 정리하되, ISBN이 연결돼 있으면 잃지 않고 정본 행으로 옮겨줌."""
+    weeks = (
+        db.query(MomoBookshelfWeek)
+        .filter(MomoBookshelfWeek.is_holiday == False)
+        .order_by(MomoBookshelfWeek.year, MomoBookshelfWeek.quarter, MomoBookshelfWeek.grade, MomoBookshelfWeek.week_number)
+        .all()
+    )
 
     unique = {}  # (year, quarter, grade, clean_title) -> (author, publisher)
+    last_title_by_group = {}  # (year, quarter, grade) -> 그 그룹에서 마지막으로 확정된 clean_title
     for w in weeks:
-        clean_title = _strip_extension_marker(w.title)
-        if not clean_title:
+        raw_clean = _clean_required_title(w.title)
+        if not raw_clean:
             continue
+        group_key = (w.year, w.quarter, w.grade)
+
+        clean_title = raw_clean
+        if raw_clean.endswith("...") and group_key in last_title_by_group:
+            prefix = raw_clean[:-3].strip()
+            prev_title = last_title_by_group[group_key]
+            if not prefix or prev_title.startswith(prefix):
+                clean_title = prev_title  # "..."는 이전 주차와 같은 책의 연속으로 봄
+
+        last_title_by_group[group_key] = clean_title
         key = (w.year, w.quarter, w.grade, clean_title)
         if key not in unique:
             unique[key] = (w.author, w.publisher)
@@ -83,9 +135,44 @@ def _sync_required_books(db: Session) -> dict:
         else:
             db.add(MomoRequiredBook(year=year, quarter=quarter, grade=grade, title=title, author=author, publisher=publisher))
             added += 1
+    db.commit()
+
+    merged, removed = _reconcile_orphan_required_books(db, unique)
+
+    return {"added": added, "updated": updated, "total": len(unique), "merged": merged, "removed": removed}
+
+
+def _reconcile_orphan_required_books(db: Session, unique: dict) -> tuple[int, int]:
+    """새 제목 기준(unique)에 더 이상 없는 기존 필독서 행(예전 분리 방식의 잔재)을 정리.
+    ISBN이 연결돼 있으면 같은 학년+분기의 정본 행으로 옮긴 뒤(정본에 ISBN이 없을 때만) 삭제하고,
+    ISBN이 없으면 그냥 삭제함."""
+    valid_keys = set(unique.keys())
+    all_rows = db.query(MomoRequiredBook).all()
+    orphans = [r for r in all_rows if (r.year, r.quarter, r.grade, r.title) not in valid_keys]
+    if not orphans:
+        return 0, 0
+
+    canonical_by_group = {}
+    for r in all_rows:
+        canonical_by_group.setdefault((r.year, r.quarter, r.grade), []).append(r)
+
+    merged = removed = 0
+    for orphan in orphans:
+        group = canonical_by_group.get((orphan.year, orphan.quarter, orphan.grade), [])
+        target = next((c for c in group if c.id != orphan.id and c.title in orphan.title), None)
+        if target and (orphan.isbn13 or orphan.isbn10) and not (target.isbn13 or target.isbn10):
+            target.isbn13 = orphan.isbn13
+            target.isbn10 = orphan.isbn10
+            target.publisher = target.publisher or orphan.publisher
+            target.cover_url = orphan.cover_url
+            target.aladin_link = orphan.aladin_link
+            target.is_auto_linked = orphan.is_auto_linked
+            merged += 1
+        db.delete(orphan)
+        removed += 1
 
     db.commit()
-    return {"added": added, "updated": updated, "total": len(unique)}
+    return merged, removed
 
 
 def _parse_workbook(file_bytes: bytes) -> list[dict]:
