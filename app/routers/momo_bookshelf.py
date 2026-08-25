@@ -7,6 +7,7 @@ GET  /momo-bookshelf/required         -> 필독서 목록 (주차 뺀 학년+분
 POST /momo-bookshelf/required/sync    -> 커리큘럼에서 필독서 목록 재동기화
 POST /momo-bookshelf/required/auto-link -> ISBN 없는 필독서 일괄 자동 매칭(제목/저자 유사도 확인)
 GET  /momo-bookshelf/required/export  -> 필독서 목록 엑셀 다운로드 (목록 화면과 동일한 필터 적용)
+GET  /momo-bookshelf/export           -> 주차별 커리큘럼 목록 엑셀 다운로드 (목록 화면과 동일한 필터 적용)
 
 업로드 파일은 "모모의책장_DB_..._연간_통합_주차별.xlsx"와 같은 형식으로,
 "연간 전체 리스트" 시트에 분기/학년/주차/기간/도서명/저자(역자)/출판사
@@ -257,6 +258,7 @@ def bookshelf_list(
         "filter_quarter": quarter,
         "filter_grade": grade,
         "total_count": db.query(MomoBookshelfWeek).count(),
+        "export_query": request.url.query,
     })
 
 
@@ -413,6 +415,32 @@ def required_books_sync(db: Session = Depends(get_db)):
     return JSONResponse({"ok": True, **result})
 
 
+def _xlsx_response(sheet_title: str, headers: list, rows: list, widths: list, filename: str):
+    """행 목록을 엑셀 파일로 만들어 다운로드 응답으로 반환하는 공용 헬퍼"""
+    from urllib.parse import quote
+    from openpyxl import Workbook
+    from fastapi.responses import StreamingResponse
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = sheet_title
+    ws.append(headers)
+    for r in rows:
+        ws.append(r)
+    for i, w in enumerate(widths, start=1):
+        ws.column_dimensions[chr(64 + i)].width = w
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"},
+    )
+
+
 @router.get("/required/export")
 def required_books_export(
     year: str | None = None,
@@ -421,10 +449,6 @@ def required_books_export(
     db: Session = Depends(get_db),
 ):
     """필독서 목록을 엑셀로 다운로드 (목록 화면과 동일한 필터 적용, 필터 없으면 전체)"""
-    from urllib.parse import quote
-    from openpyxl import Workbook
-    from fastapi.responses import StreamingResponse
-
     year_val = int(year) if year else None
     query = db.query(MomoRequiredBook)
     if year_val:
@@ -437,33 +461,60 @@ def required_books_export(
         MomoRequiredBook.grade, MomoRequiredBook.quarter, MomoRequiredBook.title
     ).all()
 
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "모모의 책장 필독서"
-    headers = ["연도", "분기", "학년", "도서명", "저자", "출판사", "ISBN13", "ISBN10", "연결상태", "알라딘 링크"]
-    ws.append(headers)
+    rows = []
     for b in books:
         if b.isbn13 or b.isbn10:
             status = "자동연결(미확인)" if b.is_auto_linked else "확인완료"
         else:
             status = "미연결"
-        ws.append([
+        rows.append([
             b.year, b.quarter, b.grade, b.title, b.author or "", b.publisher or "",
             b.isbn13 or "", b.isbn10 or "", status, b.aladin_link or "",
         ])
-    widths = [8, 14, 14, 45, 20, 20, 16, 14, 14, 30]
-    for i, w in enumerate(widths, start=1):
-        ws.column_dimensions[chr(64 + i)].width = w
 
-    buf = io.BytesIO()
-    wb.save(buf)
-    buf.seek(0)
+    return _xlsx_response(
+        sheet_title="모모의 책장 필독서",
+        headers=["연도", "분기", "학년", "도서명", "저자", "출판사", "ISBN13", "ISBN10", "연결상태", "알라딘 링크"],
+        rows=rows,
+        widths=[8, 14, 14, 45, 20, 20, 16, 14, 14, 30],
+        filename="모모의책장_필독서.xlsx",
+    )
 
-    filename = "모모의책장_필독서.xlsx"
-    return StreamingResponse(
-        buf,
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}"},
+
+@router.get("/export")
+def bookshelf_export(
+    year: str | None = None,
+    quarter: str | None = None,
+    grade: str | None = None,
+    db: Session = Depends(get_db),
+):
+    """주차별 커리큘럼 목록을 엑셀로 다운로드 (목록 화면과 동일한 필터 적용, 필터 없으면 전체)"""
+    year_val = int(year) if year else None
+    query = db.query(MomoBookshelfWeek)
+    if year_val:
+        query = query.filter(MomoBookshelfWeek.year == year_val)
+    if quarter:
+        query = query.filter(MomoBookshelfWeek.quarter == quarter)
+    if grade:
+        query = query.filter(MomoBookshelfWeek.grade == grade)
+    weeks = query.order_by(
+        MomoBookshelfWeek.grade, MomoBookshelfWeek.quarter, MomoBookshelfWeek.week_number
+    ).all()
+
+    rows = [
+        [
+            w.year, w.quarter, w.grade, w.week_number, w.date_range or "",
+            w.title, w.author or "", w.publisher or "", "휴강" if w.is_holiday else "",
+        ]
+        for w in weeks
+    ]
+
+    return _xlsx_response(
+        sheet_title="연간 전체 리스트",
+        headers=["연도", "분기", "학년", "주차", "기간", "도서명", "저자(역자)", "출판사", "휴강여부"],
+        rows=rows,
+        widths=[8, 14, 14, 8, 20, 45, 20, 20, 10],
+        filename="모모의책장_커리큘럼.xlsx",
     )
 
 

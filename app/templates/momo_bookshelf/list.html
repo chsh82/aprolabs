@@ -8,6 +8,10 @@
     <p class="text-sm text-gray-400 mt-1">전체 {{ total_count }}건 · 조회된 {{ weeks|length }}건</p>
   </div>
   <div class="flex gap-2">
+    <a href="/momo-bookshelf/export{% if export_query %}?{{ export_query }}{% endif %}"
+       class="text-sm bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg transition font-medium">
+      ⬇️ 엑셀 다운로드
+    </a>
     <a href="/momo-bookshelf/required"
        class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition font-medium">
       📕 필독서 보기
