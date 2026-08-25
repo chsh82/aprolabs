@@ -33,6 +33,47 @@
 </div>
 {% endif %}
 
+{% if material or required_book %}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-5">
+  <button type="button" onclick="toggleManualEntry()" id="btn-toggle-manual"
+          class="text-sm text-gray-500 hover:text-gray-700 underline">
+    검색이 안 되나요? 직접 입력하기
+  </button>
+  <div id="manual-entry-form" class="hidden mt-3">
+    <p class="text-xs text-gray-400 mb-3">알라딘에 없거나 검색이 안 되는 책은 정보를 직접 입력해서 저장할 수 있습니다. ISBN은 몰라도 저장 가능합니다.</p>
+    <div class="grid grid-cols-2 gap-3 mb-3">
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">ISBN13 <span class="font-normal text-gray-400">(선택)</span></label>
+        <input id="manual-isbn13" type="text" placeholder="예: 9788934972464"
+               class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">ISBN10 <span class="font-normal text-gray-400">(선택)</span></label>
+        <input id="manual-isbn10" type="text" placeholder="예: 8934972467"
+               class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">제목 <span class="text-red-400">*</span></label>
+        <input id="manual-title" type="text" value="{{ prefill_title }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">저자 <span class="font-normal text-gray-400">(선택)</span></label>
+        <input id="manual-author" type="text" value="{{ prefill_author }}" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">출판사 <span class="font-normal text-gray-400">(선택)</span></label>
+        <input id="manual-publisher" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+    </div>
+    <button id="btn-manual-save" onclick="saveManualEntry()"
+            class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition">
+      직접 입력한 정보 저장
+    </button>
+    <span id="manual-save-status" class="text-sm ml-3"></span>
+  </div>
+</div>
+{% endif %}
+
 <p class="text-xs text-gray-400 mb-4">체크박스로 여러 권을 선택해 <b>독서 리스트</b>에 한번에 모아 저장할 수 있습니다.</p>
 
 {# ── 모드 탭 ── #}
@@ -356,6 +397,58 @@ async function saveToLink(idx) {
     btn.disabled = false;
     btn.textContent = LINK_BTN_LABEL;
     alert('네트워크 오류가 발생했습니다.');
+  }
+}
+
+function toggleManualEntry() {
+  const form = document.getElementById('manual-entry-form');
+  form.classList.toggle('hidden');
+}
+
+async function saveManualEntry() {
+  const title = document.getElementById('manual-title').value.trim();
+  const statusEl = document.getElementById('manual-save-status');
+  if (!title) {
+    statusEl.textContent = '제목을 입력하세요.';
+    statusEl.className = 'text-sm ml-3 text-red-500';
+    return;
+  }
+
+  const item = {
+    isbn13: document.getElementById('manual-isbn13').value.trim(),
+    isbn10: document.getElementById('manual-isbn10').value.trim(),
+    title: title,
+    author: document.getElementById('manual-author').value.trim(),
+    publisher: document.getElementById('manual-publisher').value.trim(),
+    pubDate: '',
+    cover: '',
+    link: '',
+  };
+
+  const btn = document.getElementById('btn-manual-save');
+  btn.disabled = true;
+  btn.textContent = '저장 중...';
+  statusEl.textContent = '';
+  try {
+    const res = await fetch(LINK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [LINK_BODY_KEY]: LINK_ID, ...item }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      statusEl.textContent = data.detail || '저장 중 오류가 발생했습니다.';
+      statusEl.className = 'text-sm ml-3 text-red-500';
+      return;
+    }
+    statusEl.textContent = '✓ 저장됨';
+    statusEl.className = 'text-sm ml-3 text-green-600';
+  } catch (e) {
+    statusEl.textContent = '네트워크 오류가 발생했습니다.';
+    statusEl.className = 'text-sm ml-3 text-red-500';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '직접 입력한 정보 저장';
   }
 }
 
