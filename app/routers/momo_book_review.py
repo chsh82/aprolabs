@@ -10,6 +10,8 @@ POST /momo-review/{doc_id}/{table}/{item_id}    -> 항목 수정 후 승인
 POST /momo-review/{doc_id}/approve              -> 문서 전체를 approved로
 POST /momo-review/{doc_id}/discussion_qa/{item_id}/upload-reference-image
                                                  -> "보기" 이미지 직접 업로드
+POST /momo-review/{doc_id}/image/{image_id}/delete
+                                                 -> 잘못 캡처된 이미지 삭제(표지/삽화/보기)
 """
 import os
 import sqlite3
@@ -48,7 +50,7 @@ EDITABLE_TABLES = {
         "id_col": "id",
     },
     "essay_prompt": {
-        "fields": ["main_topic", "writing_format", "min_length", "closing_instruction"],
+        "fields": ["main_topic", "writing_guide", "writing_format", "min_length", "closing_instruction"],
         "id_col": "id",
     },
 }
@@ -138,6 +140,7 @@ def momo_review_detail(request: Request, doc_id: str):
     images_by_page = {}
     for im in images:
         images_by_page.setdefault(im["source_page"], []).append(im)
+    image_by_path = {im["file_path"]: im for im in images}
 
     return templates.TemplateResponse("momo_review/detail.html", {
         "request": request,
@@ -150,6 +153,7 @@ def momo_review_detail(request: Request, doc_id: str):
         "images_by_page": images_by_page,
         "cover_image": cover_image,
         "illustrations_by_page": illustrations_by_page,
+        "image_by_path": image_by_path,
     })
 
 
@@ -225,4 +229,32 @@ async def momo_review_upload_reference_image(doc_id: str, item_id: int, file: Up
     )
     conn.commit()
     conn.close()
+    return RedirectResponse(url=f"/momo-review/{doc_id}", status_code=303)
+
+
+@router.post("/{doc_id}/image/{image_id}/delete")
+def momo_review_delete_image(doc_id: str, image_id: int):
+    """자동 추출됐거나 업로드된 이미지가 잘못 캡처된 경우 삭제함(표지/삽화/보기 공통).
+    파일과 document_image 행을 지우고, 그 이미지를 "보기"로 쓰던 문항이 있으면 연결도 끊음."""
+    conn = _db()
+    row = conn.execute(
+        "SELECT file_path FROM document_image WHERE id = ? AND doc_id = ?", (image_id, doc_id)
+    ).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="이미지를 찾을 수 없습니다.")
+    file_path = row["file_path"]
+
+    conn.execute("DELETE FROM document_image WHERE id = ? AND doc_id = ?", (image_id, doc_id))
+    conn.execute(
+        "UPDATE discussion_qa SET reference_image_path = NULL WHERE doc_id = ? AND reference_image_path = ?",
+        (doc_id, file_path),
+    )
+    conn.commit()
+    conn.close()
+
+    abs_path = os.path.join(_IMAGES_DIR, file_path)
+    if os.path.isfile(abs_path):
+        os.remove(abs_path)
+
     return RedirectResponse(url=f"/momo-review/{doc_id}", status_code=303)

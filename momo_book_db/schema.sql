@@ -76,6 +76,7 @@ CREATE TABLE essay_prompt (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
     doc_id          TEXT NOT NULL REFERENCES documents(doc_id),
     main_topic      TEXT NOT NULL,
+    writing_guide   TEXT,               -- 주제와 Step1 사이의 글쓰기 안내/설명 - 2026-08-26 추가
     writing_format  TEXT,
     min_length      INTEGER,
     closing_instruction TEXT,           -- Step2 안내문("앞선 질문들에...") - 2026-08-26 추가

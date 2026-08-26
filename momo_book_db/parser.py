@@ -548,19 +548,17 @@ def parse_essay(pages, stage3_start, log):
         scan_blocks = _clean_blocks(raw_lines)
 
     topic_blocks = [b for b in scan_blocks if not _looks_like_quote_block(b)]
-    main_topic = ' '.join(topic_blocks[-1]).strip() if topic_blocks else None
+    main_block = topic_blocks[-1] if topic_blocks else None
+    main_topic = ' '.join(main_block).strip() if main_block else None
+
+    # "글쓰기 안내": 주제(main_topic)와 Step1 사이(Step 구조가 없으면 본문 전체)에 있는
+    # 나머지 내용(안내문/인용문/배경 설명 등)을 모음. 주제 블록을 뺀 나머지 전부를 씀
+    # (요청자 확인, 2026-08-26 - 주제와 Step 사이에 별도 칸으로 넣기로 함)
+    guide_blocks = [b for b in scan_blocks if b is not main_block]
+    writing_guide = '\n'.join(' '.join(b) for b in guide_blocks).strip() or None
 
     outline = []
     closing_instruction = None
-
-    if not step_markers and scan_blocks:
-        # "C형": Step 구조가 없음 - main_topic으로 쓴 블록을 제외한 나머지 전부를
-        # "추가설명"(인용문, 배경 설명 등)으로 묶어서 넣음(요청자 확인, 2026-08-26)
-        main_block = topic_blocks[-1] if topic_blocks else None
-        extra_blocks = [b for b in scan_blocks if b is not main_block]
-        if extra_blocks:
-            extra_text = '\n'.join(' '.join(b) for b in extra_blocks).strip()
-            outline.append({'order_no': 1, 'question_text': extra_text, 'role': '추가설명'})
 
     if step_markers:
         block0_end = step_markers[1][0] if len(step_markers) > 1 else len(lines)
@@ -600,6 +598,7 @@ def parse_essay(pages, stage3_start, log):
 
     return {
         'main_topic': main_topic,
+        'writing_guide': writing_guide,
         'writing_format': 'text_long',
         'min_length': None,
         'closing_instruction': closing_instruction,

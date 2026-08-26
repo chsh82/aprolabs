@@ -5,7 +5,12 @@
 <div class="mb-6 flex items-center justify-between">
   <div class="flex gap-4">
     {% if cover_image %}
-    <img src="/momo-images/{{ cover_image.file_path }}" class="w-24 rounded border border-gray-200 shadow-sm flex-shrink-0" alt="표지">
+    <div class="relative flex-shrink-0">
+      <img src="/momo-images/{{ cover_image.file_path }}" class="w-24 rounded border border-gray-200 shadow-sm" alt="표지">
+      <form method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ cover_image.id }}/delete" class="absolute -top-2 -right-2">
+        <button type="submit" title="이미지 삭제" class="w-5 h-5 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white text-xs rounded-full leading-none">×</button>
+      </form>
+    </div>
     {% endif %}
     <div>
       <a href="/momo-review" class="text-xs text-gray-400 hover:text-gray-600">← 목록으로</a>
@@ -93,7 +98,12 @@
     </div>
     {% set illustration = illustrations_by_page.get(d.source_page) %}
     {% if illustration %}
-    <img src="/momo-images/{{ illustration.file_path }}" class="max-h-40 rounded border border-gray-200 mb-2" alt="삽화 ({{ d.source_page }}페이지)">
+    <div class="relative inline-block mb-2">
+      <img src="/momo-images/{{ illustration.file_path }}" class="max-h-40 rounded border border-gray-200" alt="삽화 ({{ d.source_page }}페이지)">
+      <form method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ illustration.id }}/delete" class="absolute -top-2 -right-2">
+        <button type="submit" title="이미지 삭제" class="w-5 h-5 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white text-xs rounded-full leading-none">×</button>
+      </form>
+    </div>
     {% endif %}
     <form method="POST" action="/momo-review/{{ doc.doc_id }}/discussion_qa/{{ d.id }}" class="space-y-2">
       <div class="grid grid-cols-3 gap-2">
@@ -133,6 +143,7 @@
         {% if d.reference_image_path %}
         <img src="/momo-images/{{ d.reference_image_path }}" class="max-h-32 rounded border border-gray-200" alt="보기 이미지">
         {% endif %}
+        {% set ref_image = image_by_path.get(d.reference_image_path) %}
       </div>
       <div>
         <label class="text-xs text-gray-400">ui_config (JSON)</label>
@@ -145,7 +156,13 @@
       <input type="file" name="file" accept=".jpg,.jpeg,.png,.gif,.webp" required
              class="text-xs text-gray-500 flex-1">
       <button type="submit" class="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded transition">보기 이미지 업로드</button>
+      {% if ref_image %}
+      <button type="submit" form="delete-ref-{{ d.id }}" title="보기 이미지 삭제" class="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium rounded transition">보기 이미지 삭제</button>
+      {% endif %}
     </form>
+    {% if ref_image %}
+    <form id="delete-ref-{{ d.id }}" method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ ref_image.id }}/delete"></form>
+    {% endif %}
     <details class="mt-2">
       <summary class="text-xs text-gray-400 cursor-pointer">원문 보기</summary>
       <pre class="text-xs text-gray-500 whitespace-pre-wrap bg-gray-50 rounded p-2 mt-1">{{ d.raw_text }}</pre>
@@ -163,6 +180,11 @@
       <div>
         <label class="text-xs text-gray-400">주제</label>
         <input name="main_topic" value="{{ e.main_topic }}" class="w-full px-2 py-1.5 border border-gray-200 rounded text-sm">
+      </div>
+      <div>
+        <label class="text-xs text-gray-400">글쓰기 안내 (주제와 Step 사이 설명)</label>
+        {% set wgrows = [((e.writing_guide or '')|length // 55) + 2, 2]|max %}
+        <textarea name="writing_guide" rows="{{ wgrows }}" class="w-full px-2 py-1.5 border border-gray-200 rounded text-sm">{{ e.writing_guide or '' }}</textarea>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>

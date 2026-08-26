@@ -133,10 +133,10 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
     essay = parsed.get('essay_prompt') or {}
     if essay.get('main_topic'):
         cur = conn.execute('''INSERT INTO essay_prompt
-            (doc_id, main_topic, writing_format, min_length, closing_instruction, source_page, raw_text,
+            (doc_id, main_topic, writing_guide, writing_format, min_length, closing_instruction, source_page, raw_text,
              extraction_confidence, review_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
-            doc_id, essay['main_topic'], essay.get('writing_format'), essay.get('min_length'),
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
+            doc_id, essay['main_topic'], essay.get('writing_guide'), essay.get('writing_format'), essay.get('min_length'),
             essay.get('closing_instruction'), essay.get('source_page'), essay.get('raw_text'), 0.7,
         ))
         essay_id = cur.lastrowid
