@@ -14,6 +14,7 @@ app = FastAPI(title="Aprolabs")
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/momo-images", StaticFiles(directory="momo_book_db/extracted_images"), name="momo_images")
 
 # 인증 라우터 (로그인/로그아웃 — 보호 불필요)
 app.include_router(auth_router.router)

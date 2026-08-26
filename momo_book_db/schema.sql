@@ -1,5 +1,7 @@
 -- 모모의책장 교재DB — 승인된 스키마 (요청서 v1.1 + 2026-08-26 승인 변경사항)
 -- 변경점: discussion_qa.order_label TEXT 추가 (하위 번호 "4-1"/"4-2" 보존용)
+-- 변경점(2026-08-26 #2): documents.cover_message, essay_prompt.closing_instruction,
+--                        document_image 테이블 추가 (표지 문구/삽화/Step2 안내문 추출)
 
 CREATE TABLE documents (
     doc_id          TEXT PRIMARY KEY,   -- 예: L5-Q4-W10
@@ -10,6 +12,7 @@ CREATE TABLE documents (
     book_title      TEXT NOT NULL,
     book_author     TEXT,
     isbn            TEXT,
+    cover_message   TEXT,               -- 표지 하단 대표 문구 - 2026-08-26 추가
     source_file     TEXT NOT NULL,
     source_format   TEXT,
     source_hash     TEXT,
@@ -70,6 +73,7 @@ CREATE TABLE essay_prompt (
     main_topic      TEXT NOT NULL,
     writing_format  TEXT,
     min_length      INTEGER,
+    closing_instruction TEXT,           -- Step2 안내문("앞선 질문들에...") - 2026-08-26 추가
     source_page     INTEGER,
     raw_text        TEXT,
     extraction_confidence REAL,
@@ -82,6 +86,15 @@ CREATE TABLE essay_outline_question (
     order_no        INTEGER NOT NULL,
     question_text   TEXT NOT NULL,
     role            TEXT
+);
+
+CREATE TABLE document_image (          -- 표지/삽화 이미지 - 2026-08-26 추가
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    doc_id          TEXT NOT NULL REFERENCES documents(doc_id),
+    image_type      TEXT NOT NULL,      -- 'cover' | 'illustration'
+    source_page     INTEGER,
+    file_path       TEXT NOT NULL,      -- momo_book_db/extracted_images/{doc_id}/... 상대경로
+    extraction_confidence REAL
 );
 
 CREATE TABLE extraction_log (

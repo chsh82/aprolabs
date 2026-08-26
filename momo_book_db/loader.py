@@ -22,6 +22,7 @@ from parser import parse_pdf
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'momo_book.db')
 SCHEMA_PATH = os.path.join(os.path.dirname(__file__), 'schema.sql')
+IMAGES_DIR = os.path.join(os.path.dirname(__file__), 'extracted_images')
 
 
 def get_conn():
@@ -54,7 +55,12 @@ def _delete_document_children(conn, doc_id):
     conn.execute('DELETE FROM vocabulary WHERE doc_id=?', (doc_id,))
     conn.execute('DELETE FROM ox_quiz WHERE doc_id=?', (doc_id,))
     conn.execute('DELETE FROM discussion_qa WHERE doc_id=?', (doc_id,))
+    conn.execute('DELETE FROM document_image WHERE doc_id=?', (doc_id,))
     conn.execute('DELETE FROM extraction_log WHERE doc_id=?', (doc_id,))
+    doc_image_dir = os.path.join(IMAGES_DIR, doc_id)
+    if os.path.isdir(doc_image_dir):
+        for fname in os.listdir(doc_image_dir):
+            os.remove(os.path.join(doc_image_dir, fname))
 
 
 def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
@@ -70,24 +76,26 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
     version = (existing[1] + 1) if existing else 1
     parsed_at = datetime.now(timezone.utc).isoformat()
 
+    cover_message = parsed.get('cover_message')
+
     if existing:
         _delete_document_children(conn, doc_id)
         conn.execute('''UPDATE documents SET curriculum_id=?, level=?, quarter=?, week=?,
-                         book_title=?, book_author=?, isbn=?, source_file=?, source_format=?,
+                         book_title=?, book_author=?, isbn=?, cover_message=?, source_file=?, source_format=?,
                          source_hash=?, version=?, parsed_at=?, review_status='pending'
                          WHERE doc_id=?''', (
             doc_meta.get('curriculum_id'), doc_meta.get('level'), doc_meta.get('quarter'), doc_meta.get('week'),
-            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'),
+            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'), cover_message,
             doc_meta['source_file'], doc_meta.get('source_format'), doc_meta['source_hash'],
             version, parsed_at, doc_id,
         ))
     else:
         conn.execute('''INSERT INTO documents
-            (doc_id, curriculum_id, level, quarter, week, book_title, book_author, isbn,
+            (doc_id, curriculum_id, level, quarter, week, book_title, book_author, isbn, cover_message,
              source_file, source_format, source_hash, version, parsed_at, review_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
             doc_id, doc_meta.get('curriculum_id'), doc_meta.get('level'), doc_meta.get('quarter'), doc_meta.get('week'),
-            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'),
+            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'), cover_message,
             doc_meta['source_file'], doc_meta.get('source_format'), doc_meta['source_hash'],
             version, parsed_at,
         ))
@@ -124,16 +132,29 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
     essay = parsed.get('essay_prompt') or {}
     if essay.get('main_topic'):
         cur = conn.execute('''INSERT INTO essay_prompt
-            (doc_id, main_topic, writing_format, min_length, source_page, raw_text,
+            (doc_id, main_topic, writing_format, min_length, closing_instruction, source_page, raw_text,
              extraction_confidence, review_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')''', (
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
             doc_id, essay['main_topic'], essay.get('writing_format'), essay.get('min_length'),
-            essay.get('source_page'), essay.get('raw_text'), 0.7,
+            essay.get('closing_instruction'), essay.get('source_page'), essay.get('raw_text'), 0.7,
         ))
         essay_id = cur.lastrowid
         for oq in essay.get('outline_questions', []):
             conn.execute('''INSERT INTO essay_outline_question (essay_id, order_no, question_text, role)
                 VALUES (?, ?, ?, ?)''', (essay_id, oq['order_no'], oq['question_text'], oq.get('role')))
+
+    images = parsed.get('images') or []
+    if images:
+        doc_image_dir = os.path.join(IMAGES_DIR, doc_id)
+        os.makedirs(doc_image_dir, exist_ok=True)
+        for img in images:
+            fname = f"{img['image_type']}_p{img['source_page']}.{img['ext']}"
+            with open(os.path.join(doc_image_dir, fname), 'wb') as f:
+                f.write(img['image_bytes'])
+            conn.execute('''INSERT INTO document_image (doc_id, image_type, source_page, file_path, extraction_confidence)
+                VALUES (?, ?, ?, ?, ?)''', (
+                doc_id, img['image_type'], img['source_page'], f'{doc_id}/{fname}', 0.7,
+            ))
 
     for log in parsed.get('extraction_log', []):
         conn.execute('''INSERT INTO extraction_log (doc_id, level, stage, message, created_at)
@@ -146,6 +167,7 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
         'ox_quiz': len(parsed['ox_quiz']),
         'discussion_qa': len(parsed['discussion_qa']),
         'essay_prompt': 1 if essay.get('main_topic') else 0,
+        'images': len(images),
         'version': version,
     }}
 

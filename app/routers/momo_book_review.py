@@ -39,7 +39,7 @@ EDITABLE_TABLES = {
         "id_col": "id",
     },
     "essay_prompt": {
-        "fields": ["main_topic", "writing_format", "min_length"],
+        "fields": ["main_topic", "writing_format", "min_length", "closing_instruction"],
         "id_col": "id",
     },
 }
@@ -119,7 +119,13 @@ def momo_review_detail(request: Request, doc_id: str):
     logs = [dict(r) for r in conn.execute(
         "SELECT * FROM extraction_log WHERE doc_id = ? ORDER BY id", (doc_id,)
     )]
+    images = [dict(r) for r in conn.execute(
+        "SELECT * FROM document_image WHERE doc_id = ? ORDER BY source_page", (doc_id,)
+    )]
     conn.close()
+
+    cover_image = next((im for im in images if im["image_type"] == "cover"), None)
+    illustrations_by_page = {im["source_page"]: im for im in images if im["image_type"] == "illustration"}
 
     return templates.TemplateResponse("momo_review/detail.html", {
         "request": request,
@@ -129,6 +135,8 @@ def momo_review_detail(request: Request, doc_id: str):
         "discussion_qa": discussion_qa,
         "essay_prompts": essay_prompts,
         "logs": logs,
+        "cover_image": cover_image,
+        "illustrations_by_page": illustrations_by_page,
     })
 
 

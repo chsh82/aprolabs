@@ -10,6 +10,9 @@ aprolabs_deploy*
 *.sqlite
 *.sqlite3
 
+# 모모의책장 교재DB에서 추출한 이미지(용량이 커서 git에 안 올림 - db처럼 서버에 수동 동기화)
+momo_book_db/extracted_images/
+
 # Temp files
 nul
 *.tmp
