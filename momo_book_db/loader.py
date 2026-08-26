@@ -77,25 +77,26 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
     parsed_at = datetime.now(timezone.utc).isoformat()
 
     cover_message = parsed.get('cover_message')
+    background_text = parsed.get('background_text')
 
     if existing:
         _delete_document_children(conn, doc_id)
         conn.execute('''UPDATE documents SET curriculum_id=?, level=?, quarter=?, week=?,
-                         book_title=?, book_author=?, isbn=?, cover_message=?, source_file=?, source_format=?,
+                         book_title=?, book_author=?, isbn=?, cover_message=?, background_text=?, source_file=?, source_format=?,
                          source_hash=?, version=?, parsed_at=?, review_status='pending'
                          WHERE doc_id=?''', (
             doc_meta.get('curriculum_id'), doc_meta.get('level'), doc_meta.get('quarter'), doc_meta.get('week'),
-            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'), cover_message,
+            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'), cover_message, background_text,
             doc_meta['source_file'], doc_meta.get('source_format'), doc_meta['source_hash'],
             version, parsed_at, doc_id,
         ))
     else:
         conn.execute('''INSERT INTO documents
-            (doc_id, curriculum_id, level, quarter, week, book_title, book_author, isbn, cover_message,
+            (doc_id, curriculum_id, level, quarter, week, book_title, book_author, isbn, cover_message, background_text,
              source_file, source_format, source_hash, version, parsed_at, review_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')''', (
             doc_id, doc_meta.get('curriculum_id'), doc_meta.get('level'), doc_meta.get('quarter'), doc_meta.get('week'),
-            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'), cover_message,
+            doc_meta['book_title'], doc_meta.get('book_author'), doc_meta.get('isbn'), cover_message, background_text,
             doc_meta['source_file'], doc_meta.get('source_format'), doc_meta['source_hash'],
             version, parsed_at,
         ))
@@ -168,6 +169,7 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
         'discussion_qa': len(parsed['discussion_qa']),
         'essay_prompt': 1 if essay.get('main_topic') else 0,
         'images': len(images),
+        'has_background_text': bool(background_text),
         'version': version,
     }}
 

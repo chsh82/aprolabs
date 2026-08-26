@@ -35,7 +35,8 @@ EDITABLE_TABLES = {
         "id_col": "id",
     },
     "discussion_qa": {
-        "fields": ["reading_type", "excerpt_text", "excerpt_page", "question_text", "ui_type", "ui_config"],
+        "fields": ["reading_type", "excerpt_text", "excerpt_page", "question_text",
+                   "reference_text", "reference_image_path", "ui_type", "ui_config"],
         "id_col": "id",
     },
     "essay_prompt": {
@@ -126,6 +127,9 @@ def momo_review_detail(request: Request, doc_id: str):
 
     cover_image = next((im for im in images if im["image_type"] == "cover"), None)
     illustrations_by_page = {im["source_page"]: im for im in images if im["image_type"] == "illustration"}
+    images_by_page = {}
+    for im in images:
+        images_by_page.setdefault(im["source_page"], []).append(im)
 
     return templates.TemplateResponse("momo_review/detail.html", {
         "request": request,
@@ -135,6 +139,7 @@ def momo_review_detail(request: Request, doc_id: str):
         "discussion_qa": discussion_qa,
         "essay_prompts": essay_prompts,
         "logs": logs,
+        "images_by_page": images_by_page,
         "cover_image": cover_image,
         "illustrations_by_page": illustrations_by_page,
     })

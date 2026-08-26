@@ -34,7 +34,10 @@ GRADE_FOLDER_TO_LABEL = {
 
 FNAME_RE = re.compile(r'^\[(?P<q>\d+)분기\s*(?P<w>\d+)주차\]\s*(?P<title>.+?)(?:\(학생용\))?\.pdf$', re.IGNORECASE)
 TITLE_SUFFIX_RE = re.compile(r'\s*\(연장\)\s*$|\s*\d+(-\d+)?\s*주차\s*$')
-LV_RE = re.compile(r'LV\s*(\d+)')
+# 폰트 인코딩이 깨진 PDF는 "LV# 8"처럼 글자 사이에 이상한 문자(#, $ 등)가 끼어 나옴
+# (요청자 확인 - 나중에 검수하면서 수정). 숫자만 못 찾게 되는 걸 막기 위해 LV와 숫자
+# 사이에 숫자가 아닌 문자가 끼어도 인식되게 함.
+LV_RE = re.compile(r'LV[^\d]*(\d+)')
 
 
 def clean_title(raw_title: str) -> str:
@@ -126,7 +129,8 @@ def run_batch(folder: str, year: int, quarter_num: int, grade_folder: str, use_l
         if fname_week_number != week_number:
             results['warning'].append((fname, f'파일명 주차표기({fname_week_number}주차) != 커리큘럼DB week_number({week_number}) - 순서 매칭으로 커리큘럼DB 값 사용'))
 
-        level = get_pdf_level(pdf_path) or 'L?'
+        # 'L?'처럼 물음표가 들어가면 Windows 폴더명으로 못 써서 이미지 저장이 깨짐 - 'LX'로 대체
+        level = get_pdf_level(pdf_path) or 'LX'
         doc_id = f'{level}-Q{quarter_num}-W{week_number:02d}'
 
         try:
@@ -144,7 +148,9 @@ def run_batch(folder: str, year: int, quarter_num: int, grade_folder: str, use_l
                 results['skipped'].append((fname, doc_id))
             else:
                 stats = result['stats']
-                if stats['vocabulary'] == 0 or stats['ox_quiz'] == 0 or stats['discussion_qa'] == 0:
+                # 중등 교재처럼 배경지식(background_text)이 있는 경우는 vocab/ox가 0건인 게 정상이라 경고 대상 아님
+                vocab_ox_missing = (stats['vocabulary'] == 0 or stats['ox_quiz'] == 0) and not stats['has_background_text']
+                if vocab_ox_missing or stats['discussion_qa'] == 0:
                     results['warning'].append((fname, f'{doc_id}: 일부 섹션이 0건 추출됨 {stats}'))
                 else:
                     results['success'].append((fname, doc_id, stats))

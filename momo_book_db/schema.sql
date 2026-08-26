@@ -2,6 +2,8 @@
 -- 변경점: discussion_qa.order_label TEXT 추가 (하위 번호 "4-1"/"4-2" 보존용)
 -- 변경점(2026-08-26 #2): documents.cover_message, essay_prompt.closing_instruction,
 --                        document_image 테이블 추가 (표지 문구/삽화/Step2 안내문 추출)
+-- 변경점(2026-08-26 #3): documents.background_text 추가 (중등 1단계 - 어휘/OX 표 없이
+--                        배경지식 설명글만 있는 경우 텍스트를 이 필드에 저장)
 
 CREATE TABLE documents (
     doc_id          TEXT PRIMARY KEY,   -- 예: L5-Q4-W10
@@ -13,6 +15,7 @@ CREATE TABLE documents (
     book_author     TEXT,
     isbn            TEXT,
     cover_message   TEXT,               -- 표지 하단 대표 문구 - 2026-08-26 추가
+    background_text TEXT,               -- 중등 1단계 배경지식 설명글(어휘/OX 표 없을 때) - 2026-08-26 추가
     source_file     TEXT NOT NULL,
     source_format   TEXT,
     source_hash     TEXT,
@@ -58,6 +61,8 @@ CREATE TABLE discussion_qa (
     excerpt_text    TEXT,
     excerpt_page    INTEGER,
     question_text   TEXT NOT NULL,
+    reference_text  TEXT,               -- "보기" 텍스트(질문에 따라붙는 참고자료) - 검수 중 수동 분리, 2026-08-26 추가
+    reference_image_path TEXT,          -- "보기" 이미지(있는 경우) - document_image 중에서 선택, 2026-08-26 추가
     ui_type         TEXT,
     ui_config       TEXT,
     model_answer    TEXT,

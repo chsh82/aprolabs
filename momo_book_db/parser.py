@@ -87,7 +87,7 @@ READING_TYPE_ORDER = ["사실적", "추론적", "비판적", "분석적", "적�
 # 태그 표기 변형: "사실적 독해"(기본), "[1] 사실적 독해"/"[1~3] 추론적/비판적 독해"
 # (문항번호(범위)가 앞에 붙음), "[분석적 독해]"(태그 전체가 대괄호로 감싸짐)
 TAG_LINE_RE = re.compile(r'^(?:\[[\d~\-]+\]\s*)?\[?\s*((?:[가-힣]+적\s*/?\s*)+)독해\s*\]?\s*$')
-PAGE_REF_RE = re.compile(r'^-p\.?\s*([\d~\-]+)')
+PAGE_REF_RE = re.compile(r'^-p\.?\s*([\d~\-]+)', re.IGNORECASE)
 PAGE_FOOTER_RE = re.compile(r'^-\s*\d+\s*-$')  # 페이지 하단 쪽번호("- 7 -") - 본문 아님
 QNUM_RE = re.compile(r'^(\d+(?:-\d+)?)\.\s*(.*)')
 # 교재별로 "1단계"(숫자-단계 붙여서)로 나오는 경우도 있고, "단계"라는 글자와 숫자가
@@ -97,8 +97,13 @@ QNUM_RE = re.compile(r'^(\d+(?:-\d+)?)\.\s*(.*)')
 # 순서가 1/2/3/4단계로 밀리는 교재를 놓침(예: 초정리 편지 - 3단계가 토론, 4단계가 글쓰기).
 # 그래서 숫자 대신 각 단계 표제에 항상 나오는 내용 키워드로 찾고, 페이지 첫 줄(=표제)에서만
 # 검사해서 본문 중간에 우연히 같은 단어가 나와도 오탐하지 않게 함.
-STAGE1_RE = re.compile(r'어휘|단어.*(?:퀴즈|문장|O\.?X)')
-STAGE2_RE = re.compile(r'질문과\s*토론|심화\s*이해\s*질문')
+# 중등 교재는 1단계가 어휘/OX가 아니라 배경지식 설명글이라 어휘 관련 키워드가 전혀 없음.
+# 그래도 1단계 번호 자체는 항상 "1단계"로 나오므로(뒤 단계만 중간에 밀리는 경우가 있음)
+# 어휘 키워드가 없으면 "1단계" 표기만으로도 인식되게 함(첫 줄만 보므로 오탐 위험 낮음).
+STAGE1_RE = re.compile(r'어휘|단어.*(?:퀴즈|문장|O\.?X)|^1\s*단계')
+# 폰트 손상 교재는 "심화# 문제"처럼 단어 사이에 이상한 문자(#)가 끼어 나옴 - 공백 대신
+# 그런 문자도 허용해서 인식되게 함(요청자 확인 - 폰트 손상은 검수 때 수정)
+STAGE2_RE = re.compile(r'질문과\s*토론|심화\s*이해\s*질문|심화[\s#]*문제')
 STAGE3_RE = re.compile(r'글쓰기')
 
 
@@ -217,13 +222,27 @@ def parse_vocabulary_and_ox(page, log):
     real_tables = [t for t in tables if len(t) > 1]
 
     ox_table = next((t for t in real_tables if _is_ox_table(t)), None)
-    vocab_table = next((t for t in real_tables if t is not ox_table), None)
+    vocab_table = None
+    vocab_format = None
+    for t in real_tables:
+        if t is ox_table:
+            continue
+        header0 = (t[0][0] or '').strip()
+        if header0 == '의미':
+            vocab_table, vocab_format = t, 'hint_quiz'
+            break
+        if header0 == '단어':
+            vocab_table, vocab_format = t, 'standard'
+            break
+
+    if vocab_table is None and ox_table is None:
+        # 표가 없거나, 있어도 어휘/OX로 알려진 형식이 아님 - 배경지식 설명글로 보임(중등 교재에서 흔함)
+        return [], [], True
 
     vocab, ox = [], []
 
     if vocab_table is not None:
-        header0 = (vocab_table[0][0] or '').strip()
-        if header0 == '의미':
+        if vocab_format == 'hint_quiz':
             vocab = _parse_vocab_table_hint_quiz(vocab_table, page['no'])
             log.append({'level': 'info', 'stage': 'vocabulary',
                         'message': '이 페이지는 "의미/용어(자음 힌트)" 퀴즈 형식 - word 칸에 자음 힌트, definition 칸에 뜻을 넣음'})
@@ -255,7 +274,7 @@ def parse_vocabulary_and_ox(page, log):
     if ox:
         log.append({'level': 'warning', 'stage': 'ox_quiz', 'message': 'OX 문항에 명시적 번호가 없어 등장 순서로 order_no 부여함'})
 
-    return vocab, ox
+    return vocab, ox, False
 
 
 # 답변란(ui_type) 패턴 - 원문 텍스트 뒷부분에서 정규식으로 판별
@@ -331,9 +350,31 @@ def parse_discussion(pages, stage2_start, stage3_start, log, use_llm=False):
             continue
 
         qnum_match = QNUM_RE.match(line)
-        if qnum_match:
-            order_label = qnum_match.group(1)
-            order_no_val = int(order_label.split('-')[0])
+        # 문항 번호가 없는 경우도 있음(예: 발췌문+"-p.NN" 뒤에 번호 없이 바로 질문이 이어짐).
+        # "-p.NN" 줄 바로 다음(빈 줄 제외)이 번호로 시작하지 않으면 번호 없는 문항으로 보고,
+        # 이전 문항 번호 + 1로 순서를 추정해서 입력함(요청자 확인, 2026-08-26).
+        pageref_here = None if qnum_match else PAGE_REF_RE.match(line)
+        is_unnumbered_start = False
+        if pageref_here:
+            j2 = i + 1
+            while j2 < n and not lines[j2].strip():
+                j2 += 1
+            nxt_line = lines[j2].strip() if j2 < n else ''
+            if not QNUM_RE.match(nxt_line):
+                is_unnumbered_start = True
+
+        if qnum_match or is_unnumbered_start:
+            if qnum_match:
+                order_label = qnum_match.group(1)
+                order_no_val = int(order_label.split('-')[0])
+                body_seed = [qnum_match.group(2)]
+            else:
+                order_no_val = order_no + 1
+                order_label = str(order_no_val)
+                body_seed = []
+                log.append({'level': 'info', 'stage': 'discussion_qa',
+                            'message': f'{order_no_val}번 문항에 번호 표기가 없어 순서로 추정함'})
+
             # 발췌문: 이 문항 앞, page-ref 줄("-p.NN")까지 역방향 수집.
             # sort=True로 뽑으면 줄마다 빈 줄이 섞여 나와서 빈 줄은 그냥 건너뛰고,
             # 태그줄/이전 문항줄을 만나면 멈춤. "-p.NN"을 못 만나고 멈추면(=4-2처럼
@@ -355,10 +396,14 @@ def parse_discussion(pages, stage2_start, stage3_start, log, use_llm=False):
                 if prev:
                     excerpt_lines.insert(0, prev)
                 j -= 1
+            if pageref_here:
+                # 번호 없는 문항은 자기 자신이 "-p.NN" 줄이므로 그 값을 그대로 씀
+                found_page_ref = True
+                excerpt_page = int(re.findall(r'\d+', pageref_here.group(1))[0])
             excerpt_text = ' '.join(excerpt_lines).strip() if found_page_ref and excerpt_lines else None
 
             # 질문 본문 + 답변란: 다음 태그줄/문항줄/페이지 끝까지 모음
-            body_lines = [qnum_match.group(2)]
+            body_lines = list(body_seed)
             k = i + 1
             while k < n:
                 nxt = lines[k].strip()
@@ -414,6 +459,7 @@ def parse_discussion(pages, stage2_start, stage3_start, log, use_llm=False):
                 'extraction_confidence': 0.9 if llm_used else 0.6,
                 'raw_text': '\n'.join(body_lines),
             })
+            order_no = order_no_val
             i = k
             continue
         i += 1
@@ -442,44 +488,44 @@ def parse_essay(pages, stage3_start, log):
         if m:
             step_markers.append((idx, int(m.group(1)), m.group(2)))
 
-    # "Step 1." 이전 내용 중 main_topic 추정. 제목 블록 다음에 책 속 인용문이 통째로
-    # 붙어 나오는 교재도 있어서(예: 초6 일부), 인용문처럼 보이는 블록("..." 로 시작하거나
-    # "(81)"같은 쪽번호 인용으로 끝나는 블록)은 제외하고 남은 마지막 블록을 씀.
-    # 빈 줄이 문단 경계 신호라서(sort=True) 여기서는 빈 줄을 지우지 않은 원본 줄로 블록을 나눔.
-    main_topic = None
-    if step_markers:
-        raw_lines = text.splitlines()
-        first_raw_idx = next((i for i, l in enumerate(raw_lines) if STEP_RE.match(l.strip())), len(raw_lines))
-        header_re = re.compile(r'^\d+\s*(?:단계\s*)?글쓰기')
-        pre_blocks = _split_into_blocks(raw_lines[:first_raw_idx])
-        pre_blocks = [[l for l in b if not header_re.match(l)] for b in pre_blocks]
-        pre_blocks = [b for b in pre_blocks if b]
+    # main_topic 추정. 제목 블록 다음에 책 속 인용문이 통째로 붙어 나오는 교재도 있어서
+    # (예: 초6 일부), 인용문처럼 보이는 블록("..." 로 시작하거나 "(81)"같은 쪽번호 인용으로
+    # 끝나는 블록)은 제외하고 남은 마지막 블록을 씀. 빈 줄이 문단 경계 신호라서(sort=True)
+    # 여기서는 빈 줄을 지우지 않은 원본 줄로 블록을 나눔.
+    raw_lines = text.splitlines()
+    header_re = re.compile(r'^\d+\s*(?:단계\s*)?글쓰기')
 
-        def _looks_like_quote(block):
-            joined = ' '.join(block)
-            return joined.startswith('“') or joined.startswith('"') or bool(re.search(r'\(\w*\d+\w*\)\s*$', joined))
-
-        # 인용문과 제목 사이에 빈 줄이 1개뿐이라 한 블록으로 뭉쳐지는 경우가 있어서
-        # (예: 초정리 편지), 블록 안에서 인용부호가 닫히는 줄을 찾으면 그 뒤를 별도 블록으로 뗀다.
-        def _split_quote_prefix(block):
-            if not (block[0].startswith('“') or block[0].startswith('"')):
-                return [block]
-            for i, l in enumerate(block):
-                if re.search(r'[”\"]\s*(\(\w*\d+\w*\))?\s*$', l):
-                    return [block[:i + 1], block[i + 1:]] if block[i + 1:] else [block[:i + 1]]
-            return [block]
-
+    def _clean_blocks(block_lines):
+        blocks = _split_into_blocks(block_lines)
+        blocks = [[l for l in b if not header_re.match(l)] for b in blocks]
+        blocks = [b for b in blocks if b]
         split_blocks = []
-        for b in pre_blocks:
-            split_blocks.extend(_split_quote_prefix(b))
-        pre_blocks = [b for b in split_blocks if b]
+        for b in blocks:
+            split_blocks.extend(_split_quote_prefix_block(b))
+        return [b for b in split_blocks if b]
 
-        topic_blocks = [b for b in pre_blocks if not _looks_like_quote(b)]
-        if topic_blocks:
-            main_topic = ' '.join(topic_blocks[-1]).strip()
+    if step_markers:
+        first_raw_idx = next((i for i, l in enumerate(raw_lines) if STEP_RE.match(l.strip())), len(raw_lines))
+        scan_blocks = _clean_blocks(raw_lines[:first_raw_idx])
+    else:
+        # Step 구조가 전혀 없는 교재도 있음(예: 중2 일부 - 인용문 비교 + 질문 하나만 있는 자유
+        # 서술형). 이 경우 전체 내용에서 main_topic을 찾음.
+        scan_blocks = _clean_blocks(raw_lines)
+
+    topic_blocks = [b for b in scan_blocks if not _looks_like_quote_block(b)]
+    main_topic = ' '.join(topic_blocks[-1]).strip() if topic_blocks else None
 
     outline = []
     closing_instruction = None
+
+    if not step_markers and scan_blocks:
+        # "C형": Step 구조가 없음 - main_topic으로 쓴 블록을 제외한 나머지 전부를
+        # "추가설명"(인용문, 배경 설명 등)으로 묶어서 넣음(요청자 확인, 2026-08-26)
+        main_block = topic_blocks[-1] if topic_blocks else None
+        extra_blocks = [b for b in scan_blocks if b is not main_block]
+        if extra_blocks:
+            extra_text = '\n'.join(' '.join(b) for b in extra_blocks).strip()
+            outline.append({'order_no': 1, 'question_text': extra_text, 'role': '추가설명'})
 
     if step_markers:
         block0_end = step_markers[1][0] if len(step_markers) > 1 else len(lines)
@@ -551,6 +597,24 @@ def _split_into_blocks(lines):
     return blocks
 
 
+def _looks_like_quote_block(block):
+    """블록이 책 속 인용문처럼 보이는지(여는 인용부호로 시작하거나 "(81)"같은 쪽번호
+    인용으로 끝나는지) 판단 - main_topic 후보에서 제외하기 위함"""
+    joined = ' '.join(block)
+    return joined.startswith('“') or joined.startswith('"') or bool(re.search(r'\(\w*\d+\w*\)\s*$', joined))
+
+
+def _split_quote_prefix_block(block):
+    """인용문과 그 다음 내용(제목 등) 사이에 빈 줄이 1개뿐이라 한 블록으로 뭉쳐지는 경우가
+    있어서(예: 초정리 편지), 블록 안에서 인용부호가 닫히는 줄을 찾으면 그 뒤를 별도 블록으로 뗀다."""
+    if not (block[0].startswith('“') or block[0].startswith('"')):
+        return [block]
+    for i, l in enumerate(block):
+        if re.search(r'[”\"]\s*(\(\w*\d+\w*\))?\s*$', l):
+            return [block[:i + 1], block[i + 1:]] if block[i + 1:] else [block[:i + 1]]
+    return [block]
+
+
 def extract_cover_message(page1_text: str):
     """표지(1페이지) 하단의 대표 문구를 뽑음.
     표지는 보통 [레벨/주차/제목 블록] - [대표 문구 블록] - [쪽번호] 구조라, 마지막 블록을 씀."""
@@ -565,8 +629,8 @@ def _is_decorative_image(xref, xref_pages):
     return len(xref_pages.get(xref, ())) > 1
 
 
-def extract_images(pdf_path: str, stage2_start, stage3_start):
-    """표지 이미지(1페이지)와 2단계(토론) 페이지별 삽화를 뽑음.
+def extract_images(pdf_path: str, stage1_start, stage2_start, stage3_start):
+    """표지 이미지(1페이지), 1단계(배경지식) 이미지, 2단계(토론) 페이지별 삽화를 뽑음.
     여러 페이지에 반복 등장하는 이미지(로고 배너 등)는 장식용으로 보고 제외함."""
     fitz_doc = fitz.open(pdf_path)
     xref_pages = {}
@@ -590,6 +654,14 @@ def extract_images(pdf_path: str, stage2_start, stage3_start):
         _, info = best
         images.append({'image_type': 'cover', 'source_page': 1, 'ext': info['ext'], 'image_bytes': info['image']})
 
+    if stage1_start:
+        page = fitz_doc[stage1_start - 1]
+        xrefs = [img[0] for img in page.get_images() if not _is_decorative_image(img[0], xref_pages)]
+        best = _biggest(xrefs)
+        if best:
+            _, info = best
+            images.append({'image_type': 'background', 'source_page': stage1_start, 'ext': info['ext'], 'image_bytes': info['image']})
+
     if stage2_start and stage3_start:
         for page_no in range(stage2_start, stage3_start):
             page = fitz_doc[page_no - 1]
@@ -610,9 +682,15 @@ def parse_pdf(pdf_path: str, use_llm: bool = False) -> dict:
         log.append({'level': 'error', 'stage': 'stage_split', 'message': f'단계 구분 실패: 1단계={stage1}, 2단계={stage2}, 3단계={stage3}'})
 
     vocab, ox = ([], [])
+    background_text = None
     for p in pages:
         if p['no'] == stage1:
-            vocab, ox = parse_vocabulary_and_ox(p, log)
+            vocab, ox, is_background = parse_vocabulary_and_ox(p, log)
+            if is_background:
+                # 어휘/OX 표가 없는 중등 교재 - 1단계를 배경지식 설명글로 분류
+                background_text = p['text'].strip() or None
+                log.append({'level': 'info', 'stage': 'background_text',
+                            'message': f'{p["no"]}페이지에 어휘/OX 표가 없어 배경지식 설명글로 분류함'})
             break
 
     discussion = parse_discussion(pages, stage2, stage3, log, use_llm=use_llm) if stage2 and stage3 else []
@@ -621,10 +699,11 @@ def parse_pdf(pdf_path: str, use_llm: bool = False) -> dict:
     cover_message = extract_cover_message(pages[0]['text']) if pages else None
     if not cover_message:
         log.append({'level': 'warning', 'stage': 'documents', 'message': '표지 대표 문구 추정 실패'})
-    images = extract_images(pdf_path, stage2, stage3)
+    images = extract_images(pdf_path, stage1, stage2, stage3)
 
     return {
         'cover_message': cover_message,
+        'background_text': background_text,
         'vocabulary': vocab,
         'ox_quiz': ox,
         'discussion_qa': discussion,
