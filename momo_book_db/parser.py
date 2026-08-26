@@ -87,6 +87,12 @@ READING_TYPE_ORDER = ["사실적", "추론적", "비판적", "분석적", "적�
 # 태그 표기 변형: "사실적 독해"(기본), "[1] 사실적 독해"/"[1~3] 추론적/비판적 독해"
 # (문항번호(범위)가 앞에 붙음), "[분석적 독해]"(태그 전체가 대괄호로 감싸짐)
 TAG_LINE_RE = re.compile(r'^(?:\[[\d~\-]+\]\s*)?\[?\s*((?:[가-힣]+적\s*/?\s*)+)독해\s*\]?\s*$')
+# 저학년 교재는 태그와 문항 번호가 한 줄에 붙어 나옴: "[비교하며 읽기] 5. 페르시아..."
+INLINE_TAG_QNUM_RE = re.compile(r'^\[([^\]]+)\]\s*(\d+(?:-\d+)?\.\s*.*)$')
+# 저학년 교재는 "독해"로 끝나지 않는 태그를 씀: "[비교하며 읽기]", "[생각하며 읽기]",
+# "[사실적 이해]" 등. 줄 전체가 대괄호 하나로만 된 경우만 태그로 인정해서, 문장 중간에
+# 나오는 선택지형 대괄호("바로 [보이는 것/보이지 않는 것] 예요.")와 헷갈리지 않게 함.
+LOW_GRADE_TAG_RE = re.compile(r'^\[([가-힣\s/]{2,20})\]$')
 PAGE_REF_RE = re.compile(r'^-p\.?\s*([\d~\-]+)', re.IGNORECASE)
 PAGE_FOOTER_RE = re.compile(r'^-\s*\d+\s*-$')  # 페이지 하단 쪽번호("- 7 -") - 본문 아님
 QNUM_RE = re.compile(r'^(\d+(?:-\d+)?)\.\s*(.*)')
@@ -109,8 +115,12 @@ STAGE3_RE = re.compile(r'글쓰기')
 
 def normalize_reading_type(raw: str) -> str:
     """'적용적 / 비판적 독해', '비판적추론적/ 독해'(구분자 없이 붙은 표기) 등을
-    사실적<추론적<비판적<분석적<적용적 순으로 정규화"""
+    사실적<추론적<비판적<분석적<적용적 순으로 정규화.
+    저학년 교재는 "비교하며 읽기", "생각하며 읽기"처럼 전혀 다른 태그 어휘를 쓰기도 하는데,
+    이 경우 "적"으로 끝나는 조각이 없으니 그냥 원문 그대로 남겨둠(버리지 않음)."""
     parts = re.findall(r'[가-힣]+?적', raw)
+    if not parts:
+        return raw.strip()
     parts = sorted(set(parts), key=lambda p: READING_TYPE_ORDER.index(p) if p in READING_TYPE_ORDER else 99)
     return '/'.join(parts)
 
@@ -152,9 +162,28 @@ def find_stage_boundaries(pages):
     return stage1, stage2, stage3
 
 
+def _ox_row_text(row):
+    """OX 표 한 행에서 문장 텍스트를 뽑음. 보통 문장이 첫 칸에 다 있지만, 줄바꿈 때문에
+    문장이 둘로 나뉘고 마지막 조각에 "○ X" 표시가 붙어 나오는 경우도 있어서(예: 초1
+    "세계의 문화"), 그런 셀들도 모두 이어붙이고 끝의 ○/X 표시만 떼어냄."""
+    cells = [(c or '').replace('\n', ' ').strip() for c in row if (c or '').strip()]
+    if cells:
+        cells[-1] = re.sub(r'[○Xx\s]+$', '', cells[-1]).strip()
+    return ' '.join(c for c in cells if c and c not in ('○', 'X', 'x'))
+
+
 def _is_ox_table(rows):
-    """행 중에 ○/X 정답 칸이 있으면 OX 표로 판단"""
-    return any(any((c or '').strip() in ('○', 'X', 'x') for c in row) for row in rows)
+    """행 중에 ○/X 정답 칸이 있으면 OX 표로 판단.
+    줄바꿈 때문에 "...기 힘든 곳이에요. ○ X"처럼 문장 끝과 ○/X가 한 셀에 합쳐지는
+    경우도 있어서, 셀 전체 일치 외에 끝부분에 ○ X가 붙어있는지도 확인함."""
+    for row in rows:
+        for c in row:
+            cell = (c or '').strip()
+            if cell in ('○', 'X', 'x'):
+                return True
+            if re.search(r'○\s*[Xx]\s*$', cell):
+                return True
+    return False
 
 
 def _parse_vocab_table_standard(rows, page_no):
@@ -253,7 +282,7 @@ def parse_vocabulary_and_ox(page, log):
 
     if ox_table is not None:
         for i, row in enumerate(ox_table, start=1):
-            statement_raw = (row[0] or '').strip().replace('\n', ' ')
+            statement_raw = _ox_row_text(row)
             m = re.search(r'\((\d+)\s*페이지\)\s*$', statement_raw)
             page_no = int(m.group(1)) if m else None
             statement = re.sub(r'\s*\(\d+\s*페이지\)\s*$', '', statement_raw).strip()
@@ -343,7 +372,13 @@ def parse_discussion(pages, stage2_start, stage3_start, log, use_llm=False):
     n = len(lines)
     while i < n:
         line = lines[i].strip()
-        tag_match = TAG_LINE_RE.match(line)
+        # 저학년 교재는 태그와 문항 번호가 한 줄에 붙어 나옴: "[비교하며 읽기] 5. 페르시아..."
+        inline_match = INLINE_TAG_QNUM_RE.match(line)
+        if inline_match:
+            current_tag = normalize_reading_type(inline_match.group(1))
+            line = inline_match.group(2)
+
+        tag_match = TAG_LINE_RE.match(line) or LOW_GRADE_TAG_RE.match(line)
         if tag_match:
             current_tag = normalize_reading_type(tag_match.group(1))
             i += 1
@@ -385,7 +420,7 @@ def parse_discussion(pages, stage2_start, stage3_start, log, use_llm=False):
             found_page_ref = False
             while j >= 0:
                 prev = lines[j].strip()
-                if TAG_LINE_RE.match(prev) or QNUM_RE.match(prev):
+                if TAG_LINE_RE.match(prev) or LOW_GRADE_TAG_RE.match(prev) or QNUM_RE.match(prev) or INLINE_TAG_QNUM_RE.match(prev):
                     break
                 pref = PAGE_REF_RE.match(prev)
                 if pref:
@@ -407,7 +442,7 @@ def parse_discussion(pages, stage2_start, stage3_start, log, use_llm=False):
             k = i + 1
             while k < n:
                 nxt = lines[k].strip()
-                if TAG_LINE_RE.match(nxt) or QNUM_RE.match(nxt) or PAGE_REF_RE.match(nxt):
+                if TAG_LINE_RE.match(nxt) or LOW_GRADE_TAG_RE.match(nxt) or QNUM_RE.match(nxt) or PAGE_REF_RE.match(nxt) or INLINE_TAG_QNUM_RE.match(nxt):
                     break
                 if nxt and not PAGE_FOOTER_RE.match(nxt):
                     body_lines.append(nxt)
@@ -687,11 +722,38 @@ def parse_pdf(pdf_path: str, use_llm: bool = False) -> dict:
         if p['no'] == stage1:
             vocab, ox, is_background = parse_vocabulary_and_ox(p, log)
             if is_background:
-                # 어휘/OX 표가 없는 중등 교재 - 1단계를 배경지식 설명글로 분류
-                background_text = p['text'].strip() or None
+                # 어휘/OX 표가 없는 교재 - 1단계를 배경지식 설명글로 분류.
+                # 저학년 교재는 1단계가 "1-1 어휘"+"1-2 사고" 두 페이지에 걸쳐 있어서
+                # stage1페이지 하나만이 아니라 stage2 시작 전까지 전부 묶어서 담음.
+                bg_end = stage2 if stage2 else p['no'] + 1
+                background_text = '\n\n'.join(
+                    bp['text'].strip() for bp in pages if p['no'] <= bp['no'] < bg_end and bp['text'].strip()
+                ) or None
                 log.append({'level': 'info', 'stage': 'background_text',
                             'message': f'{p["no"]}페이지에 어휘/OX 표가 없어 배경지식 설명글로 분류함'})
             break
+
+    if not ox:
+        # 저학년 교재는 OX퀴즈가 1단계가 아니라 2단계 첫 페이지 맨 앞에 있는 경우가 있음
+        for p in pages:
+            if stage2 and p['no'] == stage2:
+                tables = [t for t in p['plumber'].extract_tables() if len(t) > 1]
+                ox_table = next((t for t in tables if _is_ox_table(t)), None)
+                if ox_table:
+                    ox = []
+                    for i, row in enumerate(ox_table, start=1):
+                        statement_raw = _ox_row_text(row)
+                        m = re.search(r'\((\d+)\s*페이지\)\s*$', statement_raw)
+                        page_no = int(m.group(1)) if m else None
+                        statement = re.sub(r'\s*\(\d+\s*페이지\)\s*$', '', statement_raw).strip()
+                        ox.append({
+                            'order_no': i, 'question': statement, 'answer': None,
+                            'evidence_page': page_no, 'explanation': None, 'source_page': p['no'],
+                            'raw_text': ' | '.join(c for c in row if c) or None,
+                        })
+                    log.append({'level': 'info', 'stage': 'ox_quiz',
+                                'message': f'{p["no"]}페이지(2단계)에서 OX 표를 찾음 - 1단계가 아니라 2단계에 있는 교재'})
+                break
 
     discussion = parse_discussion(pages, stage2, stage3, log, use_llm=use_llm) if stage2 and stage3 else []
     essay = parse_essay(pages, stage3, log) if stage3 else {}

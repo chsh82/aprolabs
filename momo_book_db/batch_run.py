@@ -83,10 +83,11 @@ def run_batch(folder: str, year: int, quarter_num: int, grade_folder: str, use_l
     curriculum_conn = sqlite3.connect(APROLABS_DB)
     curriculum_conn.row_factory = sqlite3.Row
 
-    # "학생용" 표시가 없는 파일도 있어서, "교사용"이 아닌 pdf를 학생용으로 취급
+    # "학생용" 표시가 없는 파일도 있어서, "교사용"이 아닌 pdf를 학생용으로 취급.
+    # 초1/초2는 같은 주차에 정규 학생용과 별도로 "베이직"(쉬운 버전) 파일도 있어서 제외함.
     raw_pdf_files = [
         p for p in glob.glob(os.path.join(folder, '*.pdf'))
-        if '교사용' not in os.path.basename(p)
+        if '교사용' not in os.path.basename(p) and '베이직' not in os.path.basename(p)
     ]
     results = {'success': [], 'skipped': [], 'warning': [], 'failed': []}
 
