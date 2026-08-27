@@ -4,8 +4,40 @@
 {% block content %}
 <div class="mb-6">
   <h2 class="text-2xl font-bold text-gray-800">✅ 모모의책장 교재DB 검수</h2>
-  <p class="text-sm text-gray-400 mt-1">전체 {{ docs|length }}건</p>
+  <p class="text-sm text-gray-400 mt-1">{{ docs|length }}건 표시 중</p>
 </div>
+
+<form method="GET" action="/momo-review" class="mb-4 bg-white rounded-xl border border-gray-100 shadow-sm p-3 flex flex-wrap items-center gap-2">
+  <select name="level" class="px-2 py-1.5 border border-gray-200 rounded text-sm">
+    <option value="">전체 학년</option>
+    {% for lv in filter_options.levels %}
+    <option value="{{ lv }}" {% if filters.level == lv %}selected{% endif %}>{{ lv }}</option>
+    {% endfor %}
+  </select>
+  <select name="quarter" class="px-2 py-1.5 border border-gray-200 rounded text-sm">
+    <option value="">전체 분기</option>
+    {% for qt in filter_options.quarters %}
+    <option value="{{ qt }}" {% if filters.quarter == qt %}selected{% endif %}>{{ qt }}</option>
+    {% endfor %}
+  </select>
+  <select name="week" class="px-2 py-1.5 border border-gray-200 rounded text-sm">
+    <option value="">전체 주차</option>
+    {% for wk in filter_options.weeks %}
+    <option value="{{ wk }}" {% if filters.week == wk|string %}selected{% endif %}>{{ wk }}주차</option>
+    {% endfor %}
+  </select>
+  <select name="status" class="px-2 py-1.5 border border-gray-200 rounded text-sm">
+    <option value="">전체 상태</option>
+    <option value="pending" {% if filters.status == 'pending' %}selected{% endif %}>검수 대기</option>
+    <option value="approved" {% if filters.status == 'approved' %}selected{% endif %}>승인 완료</option>
+  </select>
+  <input type="text" name="q" value="{{ filters.q }}" placeholder="도서명 · 저자 · doc_id 검색"
+         class="flex-1 min-w-[180px] px-2 py-1.5 border border-gray-200 rounded text-sm">
+  <button type="submit" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition">검색</button>
+  {% if filters.level or filters.quarter or filters.week or filters.status or filters.q %}
+  <a href="/momo-review" class="text-xs text-gray-400 hover:text-gray-600">필터 초기화</a>
+  {% endif %}
+</form>
 
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
   <table class="w-full text-sm">

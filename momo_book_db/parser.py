@@ -239,6 +239,24 @@ def _parse_vocab_table_hint_quiz(rows, page_no):
     return vocab
 
 
+def _parse_vocab_table_words_only(rows, page_no):
+    """선 잇기(매칭) 형식 - 단어 목록과 뜻 목록이 각각 한 칸짜리 표로 따로 뽑히는데,
+    인쇄 순서가 정답 짝이 아니라서(일부러 순서를 꼬아서 줄로 잇게 만듦) 뜻과 자동으로
+    맞출 수 없음. 단어만 채우고 definition은 비워둠(요청자 확인, 2026-08-26)."""
+    vocab = []
+    order = 0
+    for row in rows:
+        word = (row[0] or '').replace('\n', ' ').strip()
+        if not word:
+            continue
+        order += 1
+        vocab.append({
+            'order_no': order, 'word': word, 'book_page': None, 'definition': None,
+            'example_sentence': None, 'source_page': page_no, 'raw_text': word,
+        })
+    return vocab
+
+
 def parse_vocabulary_and_ox(page, log):
     """1단계 페이지의 표(어휘, OX)를 파싱.
 
@@ -264,7 +282,28 @@ def parse_vocabulary_and_ox(page, log):
             vocab_table, vocab_format = t, 'standard'
             break
 
-    if vocab_table is None and ox_table is None:
+    matching_words = None
+    if vocab_table is None:
+        # 선 잇기(매칭) 형식: 단어 목록, 뜻 목록이 각각 한 칸짜리 표로 따로 뽑힘(초1/초2)
+        single_col_tables = [
+            t for t in real_tables
+            if t is not ox_table and all(len([c for c in row if (c or '').strip()]) <= 1 for row in t)
+        ]
+        if len(single_col_tables) >= 2:
+            def _avg_len(t):
+                cells = [(row[0] or '').strip() for row in t if (row[0] or '').strip()]
+                return sum(len(c) for c in cells) / max(len(cells), 1)
+            # 단어가 뜻보다 훨씬 짧으므로, 평균 글자수가 가장 짧은 표를 단어 목록으로 판단
+            word_table = min(single_col_tables, key=_avg_len)
+            vocab_table, vocab_format = word_table, 'matching_words_only'
+        else:
+            # 표로도 못 뽑히는 경우가 있음 - "단어  ∙       ∙  뜻..." 처럼 단어 옆에 항상
+            # 연결점(∙)이 붙어 나오므로, 표 대신 원문 줄에서 "∙" 앞 단어를 직접 찾음
+            found = [m.group(1) for m in (re.match(r'^\s*([^\s∙]+)\s*∙', l) for l in page['text'].splitlines()) if m]
+            if found:
+                matching_words = found
+
+    if vocab_table is None and matching_words is None and ox_table is None:
         # 표가 없거나, 있어도 어휘/OX로 알려진 형식이 아님 - 배경지식 설명글로 보임(중등 교재에서 흔함)
         return [], [], True
 
@@ -275,8 +314,20 @@ def parse_vocabulary_and_ox(page, log):
             vocab = _parse_vocab_table_hint_quiz(vocab_table, page['no'])
             log.append({'level': 'info', 'stage': 'vocabulary',
                         'message': '이 페이지는 "의미/용어(자음 힌트)" 퀴즈 형식 - word 칸에 자음 힌트, definition 칸에 뜻을 넣음'})
+        elif vocab_format == 'matching_words_only':
+            vocab = _parse_vocab_table_words_only(vocab_table, page['no'])
+            log.append({'level': 'info', 'stage': 'vocabulary',
+                        'message': '이 페이지는 선 잇기(매칭) 형식 - 인쇄 순서가 정답 짝이 아니라서 단어만 자동 추출함(뜻은 직접 확인 필요)'})
         else:
             vocab = _parse_vocab_table_standard(vocab_table, page['no'])
+    elif matching_words is not None:
+        vocab = [
+            {'order_no': i, 'word': w, 'book_page': None, 'definition': None,
+             'example_sentence': None, 'source_page': page['no'], 'raw_text': w}
+            for i, w in enumerate(matching_words, start=1)
+        ]
+        log.append({'level': 'info', 'stage': 'vocabulary',
+                    'message': '이 페이지는 선 잇기(매칭) 형식 - 인쇄 순서가 정답 짝이 아니라서 단어만 자동 추출함(뜻은 직접 확인 필요)'})
     else:
         log.append({'level': 'error', 'stage': 'vocabulary', 'message': f'{page["no"]}페이지에서 표를 찾지 못함'})
 
@@ -720,14 +771,16 @@ def parse_pdf(pdf_path: str, use_llm: bool = False) -> dict:
     for p in pages:
         if p['no'] == stage1:
             vocab, ox, is_background = parse_vocabulary_and_ox(p, log)
+            # 저학년 교재는 1단계가 "1-1 어휘"+"1-2 사고" 두 페이지에 걸쳐 있음.
+            # 1-1에서 표(어휘/OX/선잇기 단어)를 찾았어도 "1-2 사고" 같은 다음 페이지 내용은
+            # 어디에도 안 담기니, stage1 다음 페이지부터는 항상 배경지식으로 같이 담음
+            # (1-1 자체가 표를 못 찾은 경우는 stage1페이지부터 포함).
+            bg_start = p['no'] if is_background else p['no'] + 1
+            bg_end = stage2 if stage2 else p['no'] + 1
+            background_text = '\n\n'.join(
+                bp['text'].strip() for bp in pages if bg_start <= bp['no'] < bg_end and bp['text'].strip()
+            ) or None
             if is_background:
-                # 어휘/OX 표가 없는 교재 - 1단계를 배경지식 설명글로 분류.
-                # 저학년 교재는 1단계가 "1-1 어휘"+"1-2 사고" 두 페이지에 걸쳐 있어서
-                # stage1페이지 하나만이 아니라 stage2 시작 전까지 전부 묶어서 담음.
-                bg_end = stage2 if stage2 else p['no'] + 1
-                background_text = '\n\n'.join(
-                    bp['text'].strip() for bp in pages if p['no'] <= bp['no'] < bg_end and bp['text'].strip()
-                ) or None
                 log.append({'level': 'info', 'stage': 'background_text',
                             'message': f'{p["no"]}페이지에 어휘/OX 표가 없어 배경지식 설명글로 분류함'})
             break

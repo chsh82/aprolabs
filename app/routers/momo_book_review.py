@@ -63,12 +63,43 @@ def _db():
 
 
 @router.get("", response_class=HTMLResponse)
-def momo_review_list(request: Request):
-    """문서 목록: 검수 상태와 손봐야 할 항목 개수를 같이 보여줌"""
+def momo_review_list(request: Request, level: str = "", quarter: str = "", week: str = "",
+                      status: str = "", q: str = ""):
+    """문서 목록: 학년/분기/주차/문서상태 필터 + 검색, 미검토 문서가 위로 오게 정렬"""
     conn = _db()
+
+    filter_options = {
+        "levels": [r[0] for r in conn.execute(
+            "SELECT DISTINCT level FROM documents WHERE level IS NOT NULL ORDER BY level")],
+        "quarters": [r[0] for r in conn.execute(
+            "SELECT DISTINCT quarter FROM documents WHERE quarter IS NOT NULL ORDER BY quarter")],
+        "weeks": [r[0] for r in conn.execute(
+            "SELECT DISTINCT week FROM documents WHERE week IS NOT NULL ORDER BY week")],
+    }
+
+    where, params = [], []
+    if level:
+        where.append("level = ?")
+        params.append(level)
+    if quarter:
+        where.append("quarter = ?")
+        params.append(quarter)
+    if week.isdigit():
+        where.append("week = ?")
+        params.append(int(week))
+    if status:
+        where.append("review_status = ?")
+        params.append(status)
+    if q:
+        where.append("(book_title LIKE ? OR doc_id LIKE ? OR book_author LIKE ?)")
+        params.extend([f"%{q}%", f"%{q}%", f"%{q}%"])
+    where_sql = f"WHERE {' AND '.join(where)}" if where else ""
+
     docs = conn.execute(
-        "SELECT doc_id, level, quarter, week, book_title, book_author, review_status, version "
-        "FROM documents ORDER BY level, quarter, week"
+        f"SELECT doc_id, level, quarter, week, book_title, book_author, review_status, version "
+        f"FROM documents {where_sql} "
+        f"ORDER BY (review_status = 'approved'), level, quarter, week",
+        params,
     ).fetchall()
 
     pending_counts = {}
@@ -92,6 +123,8 @@ def momo_review_list(request: Request):
         "docs": docs,
         "pending_counts": pending_counts,
         "low_conf_counts": low_conf_counts,
+        "filter_options": filter_options,
+        "filters": {"level": level, "quarter": quarter, "week": week, "status": status, "q": q},
     })
 
 
