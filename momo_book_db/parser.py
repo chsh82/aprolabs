@@ -106,7 +106,7 @@ QNUM_RE = re.compile(r'^(\d+(?:-\d+)?)\.\s*(.*)')
 # 중등 교재는 1단계가 어휘/OX가 아니라 배경지식 설명글이라 어휘 관련 키워드가 전혀 없음.
 # 그래도 1단계 번호 자체는 항상 "1단계"로 나오므로(뒤 단계만 중간에 밀리는 경우가 있음)
 # 어휘 키워드가 없으면 "1단계" 표기만으로도 인식되게 함(첫 줄만 보므로 오탐 위험 낮음).
-STAGE1_RE = re.compile(r'어휘|단어.*(?:퀴즈|문장|O\.?X)|^1\s*단계')
+STAGE1_RE = re.compile(r'어휘|단어.*(?:퀴즈|문장|O\.?X)|^[\[【]?\s*1\s*단계')
 # 폰트 손상 교재는 "심화# 문제"처럼 단어 사이에 이상한 문자(#)가 끼어 나옴 - 공백 대신
 # 그런 문자도 허용해서 인식되게 함(요청자 확인 - 폰트 손상은 검수 때 수정)
 STAGE2_RE = re.compile(r'질문과\s*토론|심화\s*이해\s*질문|심화[\s#]*문제')
@@ -148,11 +148,12 @@ def load_pages(pdf_path: str):
 
 def find_stage_boundaries(pages):
     """어휘/토론/글쓰기 단계가 시작하는 페이지 번호(1-based) 찾기.
-    각 단계 표제는 항상 그 페이지의 첫 줄에 나오므로, 첫 줄만 검사함."""
+    각 단계 표제는 보통 그 페이지의 첫 줄에 나오지만, "이름/날짜" 기입란처럼 표제 앞에
+    한 줄이 더 끼어 나오는 교재가 있어서(예: "누가 내 시간을 훔쳐갔지?") 첫 두 줄까지 검사함."""
     stage1 = stage2 = stage3 = None
     for p in pages:
         head_lines = [l.strip() for l in p['text'].splitlines() if l.strip()]
-        head = head_lines[0] if head_lines else ''
+        head = ' '.join(head_lines[:2])
         if stage1 is None and STAGE1_RE.search(head):
             stage1 = p['no']
         if stage2 is None and STAGE2_RE.search(head):
