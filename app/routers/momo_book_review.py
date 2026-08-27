@@ -16,6 +16,7 @@ POST /momo-review/{doc_id}/image/{image_id}/delete
 import os
 import sqlite3
 import uuid
+from urllib.parse import quote
 
 from fastapi import APIRouter, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -23,6 +24,11 @@ from fastapi.templating import Jinja2Templates
 
 router = APIRouter(prefix="/momo-review")
 templates = Jinja2Templates(directory="app/templates")
+
+
+def _detail_url(doc_id: str, back: str = "") -> str:
+    """상세 페이지로 돌아갈 때 목록의 필터(back)를 그대로 들고 가게 함"""
+    return f"/momo-review/{doc_id}?back={quote(back)}" if back else f"/momo-review/{doc_id}"
 
 _DB_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
@@ -102,6 +108,9 @@ def momo_review_list(request: Request, level: str = "", quarter: str = "", week:
         params,
     ).fetchall()
 
+    # 상세 페이지로 이동한 뒤 다시 목록으로 돌아올 때 이 필터 상태를 그대로 유지하기 위함
+    list_query = str(request.query_params)
+
     pending_counts = {}
     low_conf_counts = {}
     for table in EDITABLE_TABLES:
@@ -125,11 +134,12 @@ def momo_review_list(request: Request, level: str = "", quarter: str = "", week:
         "low_conf_counts": low_conf_counts,
         "filter_options": filter_options,
         "filters": {"level": level, "quarter": quarter, "week": week, "status": status, "q": q},
+        "list_query": list_query,
     })
 
 
 @router.get("/{doc_id}", response_class=HTMLResponse)
-def momo_review_detail(request: Request, doc_id: str):
+def momo_review_detail(request: Request, doc_id: str, back: str = ""):
     conn = _db()
     doc = conn.execute("SELECT * FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
     if not doc:
@@ -187,11 +197,12 @@ def momo_review_detail(request: Request, doc_id: str):
         "cover_image": cover_image,
         "illustrations_by_page": illustrations_by_page,
         "image_by_path": image_by_path,
+        "back": back,
     })
 
 
 @router.post("/{doc_id}/{table}/{item_id}")
-async def momo_review_update_item(doc_id: str, table: str, item_id: int, request: Request):
+async def momo_review_update_item(doc_id: str, table: str, item_id: int, request: Request, back: str = ""):
     """항목 필드 수정 + review_status를 approved로 변경"""
     if table not in EDITABLE_TABLES:
         raise HTTPException(status_code=404, detail="알 수 없는 테이블입니다.")
@@ -213,21 +224,21 @@ async def momo_review_update_item(doc_id: str, table: str, item_id: int, request
     )
     conn.commit()
     conn.close()
-    return RedirectResponse(url=f"/momo-review/{doc_id}", status_code=303)
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
 
 
 @router.post("/{doc_id}/approve")
-def momo_review_approve_document(doc_id: str):
+def momo_review_approve_document(doc_id: str, back: str = ""):
     """문서 전체를 approved로(하위 항목 개별 검수와 별개로, 문서 단위 최종 승인)"""
     conn = _db()
     conn.execute("UPDATE documents SET review_status = 'approved' WHERE doc_id = ?", (doc_id,))
     conn.commit()
     conn.close()
-    return RedirectResponse(url=f"/momo-review/{doc_id}", status_code=303)
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
 
 
 @router.post("/{doc_id}/discussion_qa/{item_id}/upload-reference-image")
-async def momo_review_upload_reference_image(doc_id: str, item_id: int, file: UploadFile = File(...)):
+async def momo_review_upload_reference_image(doc_id: str, item_id: int, file: UploadFile = File(...), back: str = ""):
     """자동 추출된 이미지 중에 원하는 "보기" 이미지가 없을 때, 직접 파일을 올려서 등록함.
     파일을 extracted_images/{doc_id}/ 안에 저장하고 document_image에 기록한 뒤,
     해당 문항의 reference_image_path를 바로 그 이미지로 설정함."""
@@ -262,11 +273,11 @@ async def momo_review_upload_reference_image(doc_id: str, item_id: int, file: Up
     )
     conn.commit()
     conn.close()
-    return RedirectResponse(url=f"/momo-review/{doc_id}", status_code=303)
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
 
 
 @router.post("/{doc_id}/image/{image_id}/delete")
-def momo_review_delete_image(doc_id: str, image_id: int):
+def momo_review_delete_image(doc_id: str, image_id: int, back: str = ""):
     """자동 추출됐거나 업로드된 이미지가 잘못 캡처된 경우 삭제함(표지/삽화/보기 공통).
     파일과 document_image 행을 지우고, 그 이미지를 "보기"로 쓰던 문항이 있으면 연결도 끊음."""
     conn = _db()
@@ -290,4 +301,4 @@ def momo_review_delete_image(doc_id: str, image_id: int):
     if os.path.isfile(abs_path):
         os.remove(abs_path)
 
-    return RedirectResponse(url=f"/momo-review/{doc_id}", status_code=303)
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
