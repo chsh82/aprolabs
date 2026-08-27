@@ -97,6 +97,8 @@
 <div class="space-y-3 mb-8">
   {% for d in discussion_qa %}
   {% set flagged = (d.review_status != 'approved') or (d.ui_type == 'unknown') or (d.extraction_confidence is not none and d.extraction_confidence < 0.7) %}
+  {% set ref_image = image_by_path.get(d.reference_image_path) %}
+  {% set excerpt_image = image_by_path.get(d.excerpt_image_path) %}
   <div class="bg-white rounded-lg border {% if flagged %}border-red-300{% else %}border-gray-100{% endif %} shadow-sm p-4">
     <div class="flex items-center gap-2 mb-2">
       <span class="text-xs font-mono text-gray-400">#{{ d.order_label }}</span>
@@ -131,6 +133,18 @@
         {% set erows = [((d.excerpt_text or '')|length // 55) + 2, 3]|max %}
         <textarea name="excerpt_text" rows="{{ erows }}" class="w-full px-2 py-1.5 border border-gray-200 rounded text-sm">{{ d.excerpt_text or '' }}</textarea>
       </div>
+      <div class="bg-sky-50 border border-sky-100 rounded p-2 space-y-2">
+        <label class="text-xs text-gray-500 font-medium">발췌문 이미지 (있는 경우)</label>
+        <select name="excerpt_image_path" class="w-full px-2 py-1.5 border border-gray-200 rounded text-sm">
+          <option value="">발췌문 이미지 없음</option>
+          {% for im in images_by_page.get(d.source_page, []) %}
+          <option value="{{ im.file_path }}" {% if im.file_path == d.excerpt_image_path %}selected{% endif %}>{{ im.file_path }} ({{ im.image_type }})</option>
+          {% endfor %}
+        </select>
+        {% if d.excerpt_image_path %}
+        <img src="/momo-images/{{ d.excerpt_image_path }}" class="max-h-32 rounded border border-gray-200" alt="발췌문 이미지">
+        {% endif %}
+      </div>
       <div>
         <label class="text-xs text-gray-400">질문</label>
         {% set qrows = [((d.question_text or '')|length // 55) + 2, 3]|max %}
@@ -149,7 +163,6 @@
         {% if d.reference_image_path %}
         <img src="/momo-images/{{ d.reference_image_path }}" class="max-h-32 rounded border border-gray-200" alt="보기 이미지">
         {% endif %}
-        {% set ref_image = image_by_path.get(d.reference_image_path) %}
       </div>
       <div>
         <label class="text-xs text-gray-400">ui_config (JSON)</label>
@@ -169,6 +182,18 @@
     {% if ref_image %}
     <form id="delete-ref-{{ d.id }}" method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ ref_image.id }}/delete?back={{ back|urlencode }}"></form>
     {% endif %}
+    <form method="POST" action="/momo-review/{{ doc.doc_id }}/discussion_qa/{{ d.id }}/upload-excerpt-image?back={{ back|urlencode }}"
+          enctype="multipart/form-data" class="mt-2 flex items-center gap-2">
+      <input type="file" name="file" accept=".jpg,.jpeg,.png,.gif,.webp" required
+             class="text-xs text-gray-500 flex-1">
+      <button type="submit" class="px-3 py-1 bg-sky-100 hover:bg-sky-200 text-sky-800 text-xs font-medium rounded transition">발췌문 이미지 업로드</button>
+      {% if excerpt_image %}
+      <button type="submit" form="delete-excerpt-{{ d.id }}" title="발췌문 이미지 삭제" class="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium rounded transition">발췌문 이미지 삭제</button>
+      {% endif %}
+    </form>
+    {% if excerpt_image %}
+    <form id="delete-excerpt-{{ d.id }}" method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ excerpt_image.id }}/delete?back={{ back|urlencode }}"></form>
+    {% endif %}
     <details class="mt-2">
       <summary class="text-xs text-gray-400 cursor-pointer">원문 보기</summary>
       <pre class="text-xs text-gray-500 whitespace-pre-wrap bg-gray-50 rounded p-2 mt-1">{{ d.raw_text }}</pre>
@@ -181,6 +206,7 @@
 <h3 class="text-lg font-bold text-gray-700 mt-8 mb-3">📙 3단계 · 글쓰기 ({{ essay_prompts|length }}건)</h3>
 <div class="space-y-3 mb-8">
   {% for e in essay_prompts %}
+  {% set essay_image = image_by_path.get(e.image_path) %}
   <div class="bg-white rounded-lg border {% if e.review_status != 'approved' %}border-amber-300{% else %}border-gray-100{% endif %} shadow-sm p-4">
     <form method="POST" action="/momo-review/{{ doc.doc_id }}/essay_prompt/{{ e.id }}?back={{ back|urlencode }}" class="space-y-2">
       <div>
@@ -191,6 +217,18 @@
         <label class="text-xs text-gray-400">글쓰기 안내 (주제와 Step 사이 설명)</label>
         {% set wgrows = [((e.writing_guide or '')|length // 55) + 2, 2]|max %}
         <textarea name="writing_guide" rows="{{ wgrows }}" class="w-full px-2 py-1.5 border border-gray-200 rounded text-sm">{{ e.writing_guide or '' }}</textarea>
+      </div>
+      <div class="bg-sky-50 border border-sky-100 rounded p-2 space-y-2">
+        <label class="text-xs text-gray-500 font-medium">글쓰기 이미지 (있는 경우)</label>
+        <select name="image_path" class="w-full px-2 py-1.5 border border-gray-200 rounded text-sm">
+          <option value="">글쓰기 이미지 없음</option>
+          {% for im in images_by_page.get(e.source_page, []) %}
+          <option value="{{ im.file_path }}" {% if im.file_path == e.image_path %}selected{% endif %}>{{ im.file_path }} ({{ im.image_type }})</option>
+          {% endfor %}
+        </select>
+        {% if e.image_path %}
+        <img src="/momo-images/{{ e.image_path }}" class="max-h-32 rounded border border-gray-200" alt="글쓰기 이미지">
+        {% endif %}
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
@@ -217,6 +255,18 @@
       <p class="text-xs font-semibold text-gray-400">Step2.</p>
       <p class="text-sm text-gray-600">{{ e.closing_instruction }}</p>
     </div>
+    {% endif %}
+    <form method="POST" action="/momo-review/{{ doc.doc_id }}/essay_prompt/{{ e.id }}/upload-image?back={{ back|urlencode }}"
+          enctype="multipart/form-data" class="mt-2 flex items-center gap-2">
+      <input type="file" name="file" accept=".jpg,.jpeg,.png,.gif,.webp" required
+             class="text-xs text-gray-500 flex-1">
+      <button type="submit" class="px-3 py-1 bg-sky-100 hover:bg-sky-200 text-sky-800 text-xs font-medium rounded transition">글쓰기 이미지 업로드</button>
+      {% if essay_image %}
+      <button type="submit" form="delete-essay-{{ e.id }}" title="글쓰기 이미지 삭제" class="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-medium rounded transition">글쓰기 이미지 삭제</button>
+      {% endif %}
+    </form>
+    {% if essay_image %}
+    <form id="delete-essay-{{ e.id }}" method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ essay_image.id }}/delete?back={{ back|urlencode }}"></form>
     {% endif %}
     <details class="mt-2">
       <summary class="text-xs text-gray-400 cursor-pointer">원문 보기</summary>

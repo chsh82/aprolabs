@@ -60,6 +60,7 @@ CREATE TABLE discussion_qa (
     reading_type    TEXT,
     excerpt_text    TEXT,
     excerpt_page    INTEGER,
+    excerpt_image_path TEXT,            -- 발췌문 삽화(있는 경우) - document_image 중에서 선택/업로드, 2026-08-27 추가
     question_text   TEXT NOT NULL,
     reference_text  TEXT,               -- "보기" 텍스트(질문에 따라붙는 참고자료) - 검수 중 수동 분리, 2026-08-26 추가
     reference_image_path TEXT,          -- "보기" 이미지(있는 경우) - document_image 중에서 선택, 2026-08-26 추가
@@ -77,6 +78,7 @@ CREATE TABLE essay_prompt (
     doc_id          TEXT NOT NULL REFERENCES documents(doc_id),
     main_topic      TEXT NOT NULL,
     writing_guide   TEXT,               -- 주제와 Step1 사이의 글쓰기 안내/설명 - 2026-08-26 추가
+    image_path      TEXT,               -- 글쓰기 페이지 삽화(있는 경우) - document_image 중에서 선택/업로드, 2026-08-27 추가
     writing_format  TEXT,
     min_length      INTEGER,
     closing_instruction TEXT,           -- Step2 안내문("앞선 질문들에...") - 2026-08-26 추가

@@ -10,8 +10,12 @@ POST /momo-review/{doc_id}/{table}/{item_id}    -> 항목 수정 후 승인
 POST /momo-review/{doc_id}/approve              -> 문서 전체를 approved로
 POST /momo-review/{doc_id}/discussion_qa/{item_id}/upload-reference-image
                                                  -> "보기" 이미지 직접 업로드
+POST /momo-review/{doc_id}/discussion_qa/{item_id}/upload-excerpt-image
+                                                 -> "발췌문" 이미지 직접 업로드
+POST /momo-review/{doc_id}/essay_prompt/{item_id}/upload-image
+                                                 -> "글쓰기" 이미지 직접 업로드
 POST /momo-review/{doc_id}/image/{image_id}/delete
-                                                 -> 잘못 캡처된 이미지 삭제(표지/삽화/보기)
+                                                 -> 잘못 캡처된 이미지 삭제(표지/삽화/보기/발췌문/글쓰기)
 POST /momo-review/{doc_id}/reparse              -> 원본 PDF로 다시 파싱(파서 수정 후 재추출용)
 """
 import os
@@ -52,12 +56,12 @@ EDITABLE_TABLES = {
         "id_col": "id",
     },
     "discussion_qa": {
-        "fields": ["reading_type", "excerpt_text", "excerpt_page", "question_text",
+        "fields": ["reading_type", "excerpt_text", "excerpt_page", "excerpt_image_path", "question_text",
                    "reference_text", "reference_image_path", "ui_type", "ui_config"],
         "id_col": "id",
     },
     "essay_prompt": {
-        "fields": ["main_topic", "writing_guide", "writing_format", "min_length", "closing_instruction"],
+        "fields": ["main_topic", "writing_guide", "image_path", "writing_format", "min_length", "closing_instruction"],
         "id_col": "id",
     },
 }
@@ -238,43 +242,57 @@ def momo_review_approve_document(doc_id: str, back: str = ""):
     return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
 
 
-@router.post("/{doc_id}/discussion_qa/{item_id}/upload-reference-image")
-async def momo_review_upload_reference_image(doc_id: str, item_id: int, file: UploadFile = File(...), back: str = ""):
-    """자동 추출된 이미지 중에 원하는 "보기" 이미지가 없을 때, 직접 파일을 올려서 등록함.
+async def _upload_slot_image(doc_id, table, item_id, column, image_type, file, back):
+    """"보기"/"발췌문"/"글쓰기" 이미지 직접 업로드 공통 로직.
     파일을 extracted_images/{doc_id}/ 안에 저장하고 document_image에 기록한 뒤,
-    해당 문항의 reference_image_path를 바로 그 이미지로 설정함."""
+    해당 항목의 {column}을 바로 그 이미지로 설정함."""
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in _ALLOWED_IMAGE_EXT:
         raise HTTPException(status_code=400, detail=f"지원하지 않는 이미지 형식입니다: {ext or '(확장자 없음)'}")
 
     conn = _db()
     row = conn.execute(
-        "SELECT source_page FROM discussion_qa WHERE id = ? AND doc_id = ?", (item_id, doc_id)
+        f"SELECT source_page FROM {table} WHERE id = ? AND doc_id = ?", (item_id, doc_id)
     ).fetchone()
     if not row:
         conn.close()
-        raise HTTPException(status_code=404, detail="문항을 찾을 수 없습니다.")
+        raise HTTPException(status_code=404, detail="항목을 찾을 수 없습니다.")
     source_page = row["source_page"]
 
     doc_dir = os.path.join(_IMAGES_DIR, doc_id)
     os.makedirs(doc_dir, exist_ok=True)
-    fname = f"reference_{item_id}_{uuid.uuid4().hex[:8]}{ext}"
+    fname = f"{image_type}_{item_id}_{uuid.uuid4().hex[:8]}{ext}"
     with open(os.path.join(doc_dir, fname), "wb") as f:
         f.write(await file.read())
     file_path = f"{doc_id}/{fname}"
 
     conn.execute(
         "INSERT INTO document_image (doc_id, image_type, source_page, file_path, extraction_confidence) "
-        "VALUES (?, 'reference', ?, ?, 1.0)",
-        (doc_id, source_page, file_path),
+        "VALUES (?, ?, ?, ?, 1.0)",
+        (doc_id, image_type, source_page, file_path),
     )
     conn.execute(
-        "UPDATE discussion_qa SET reference_image_path = ? WHERE id = ? AND doc_id = ?",
+        f"UPDATE {table} SET {column} = ? WHERE id = ? AND doc_id = ?",
         (file_path, item_id, doc_id),
     )
     conn.commit()
     conn.close()
     return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
+
+
+@router.post("/{doc_id}/discussion_qa/{item_id}/upload-reference-image")
+async def momo_review_upload_reference_image(doc_id: str, item_id: int, file: UploadFile = File(...), back: str = ""):
+    return await _upload_slot_image(doc_id, "discussion_qa", item_id, "reference_image_path", "reference", file, back)
+
+
+@router.post("/{doc_id}/discussion_qa/{item_id}/upload-excerpt-image")
+async def momo_review_upload_excerpt_image(doc_id: str, item_id: int, file: UploadFile = File(...), back: str = ""):
+    return await _upload_slot_image(doc_id, "discussion_qa", item_id, "excerpt_image_path", "excerpt", file, back)
+
+
+@router.post("/{doc_id}/essay_prompt/{item_id}/upload-image")
+async def momo_review_upload_essay_image(doc_id: str, item_id: int, file: UploadFile = File(...), back: str = ""):
+    return await _upload_slot_image(doc_id, "essay_prompt", item_id, "image_path", "essay", file, back)
 
 
 @router.post("/{doc_id}/image/{image_id}/delete")
@@ -293,6 +311,14 @@ def momo_review_delete_image(doc_id: str, image_id: int, back: str = ""):
     conn.execute("DELETE FROM document_image WHERE id = ? AND doc_id = ?", (image_id, doc_id))
     conn.execute(
         "UPDATE discussion_qa SET reference_image_path = NULL WHERE doc_id = ? AND reference_image_path = ?",
+        (doc_id, file_path),
+    )
+    conn.execute(
+        "UPDATE discussion_qa SET excerpt_image_path = NULL WHERE doc_id = ? AND excerpt_image_path = ?",
+        (doc_id, file_path),
+    )
+    conn.execute(
+        "UPDATE essay_prompt SET image_path = NULL WHERE doc_id = ? AND image_path = ?",
         (doc_id, file_path),
     )
     conn.commit()
