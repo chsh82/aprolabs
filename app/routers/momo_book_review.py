@@ -12,6 +12,7 @@ POST /momo-review/{doc_id}/discussion_qa/{item_id}/upload-reference-image
                                                  -> "보기" 이미지 직접 업로드
 POST /momo-review/{doc_id}/image/{image_id}/delete
                                                  -> 잘못 캡처된 이미지 삭제(표지/삽화/보기)
+POST /momo-review/{doc_id}/reparse              -> 원본 PDF로 다시 파싱(파서 수정 후 재추출용)
 """
 import os
 import sqlite3
@@ -301,4 +302,41 @@ def momo_review_delete_image(doc_id: str, image_id: int, back: str = ""):
     if os.path.isfile(abs_path):
         os.remove(abs_path)
 
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
+
+
+@router.post("/{doc_id}/reparse")
+def momo_review_reparse(doc_id: str, back: str = ""):
+    """원본 PDF를 파서로 다시 돌려서 덮어씀(파서 버그를 고친 뒤 재추출할 때 사용).
+    기존에 검수자가 손으로 고친 내용은 다시 파싱하면서 다 지워지니, 확인 후에 눌러야 함."""
+    import sys
+    momo_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "momo_book_db")
+    if momo_dir not in sys.path:
+        sys.path.insert(0, momo_dir)
+    from loader import load_pdf_into_db
+
+    conn = _db()
+    doc = conn.execute("SELECT * FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
+    conn.close()
+    if not doc:
+        raise HTTPException(status_code=404, detail="문서를 찾을 수 없습니다.")
+
+    source_file = doc["source_file"]
+    if not os.path.isfile(source_file):
+        raise HTTPException(
+            status_code=400,
+            detail=f"원본 PDF를 찾을 수 없습니다: {source_file} (USB/외장 드라이브 연결 확인 필요)",
+        )
+
+    doc_meta = {
+        "doc_id": doc_id,
+        "curriculum_id": doc["curriculum_id"],
+        "level": doc["level"],
+        "quarter": doc["quarter"],
+        "week": doc["week"],
+        "book_title": doc["book_title"],
+        "book_author": doc["book_author"],
+        "isbn": doc["isbn"],
+    }
+    load_pdf_into_db(source_file, doc_meta, use_llm=True, force=True)
     return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)

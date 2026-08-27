@@ -63,14 +63,16 @@ def _delete_document_children(conn, doc_id):
             os.remove(os.path.join(doc_image_dir, fname))
 
 
-def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
+def save_document(conn, doc_meta: dict, parsed: dict, force: bool = False) -> dict:
     """doc_meta: documents 테이블에 넣을 값들(doc_id, curriculum_id, level, quarter, week,
     book_title, book_author, isbn, source_file, source_format, source_hash).
+    force=True면 source_hash가 같아도(원본 파일이 안 바뀌었어도) 다시 파싱해서 덮어씀
+    (검수 화면의 "다시 파싱" 버튼용 - 파서 자체를 고친 뒤 재추출할 때 씀).
     반환: {'skipped': bool, 'stats': {...}}"""
     doc_id = doc_meta['doc_id']
     existing = conn.execute('SELECT source_hash, version FROM documents WHERE doc_id=?', (doc_id,)).fetchone()
 
-    if existing and existing[0] == doc_meta['source_hash']:
+    if existing and existing[0] == doc_meta['source_hash'] and not force:
         return {'skipped': True, 'stats': {}}
 
     version = (existing[1] + 1) if existing else 1
@@ -174,7 +176,7 @@ def save_document(conn, doc_meta: dict, parsed: dict) -> dict:
     }}
 
 
-def load_pdf_into_db(pdf_path: str, doc_meta: dict, use_llm: bool = False) -> dict:
+def load_pdf_into_db(pdf_path: str, doc_meta: dict, use_llm: bool = False, force: bool = False) -> dict:
     doc_meta = dict(doc_meta)
     doc_meta['source_file'] = pdf_path
     doc_meta.setdefault('source_format', 'pdf')
@@ -183,7 +185,7 @@ def load_pdf_into_db(pdf_path: str, doc_meta: dict, use_llm: bool = False) -> di
     parsed = parse_pdf(pdf_path, use_llm=use_llm)
     conn = get_conn()
     try:
-        result = save_document(conn, doc_meta, parsed)
+        result = save_document(conn, doc_meta, parsed, force=force)
     finally:
         conn.close()
     return result

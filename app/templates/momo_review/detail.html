@@ -29,6 +29,12 @@
         {% if doc.review_status == 'approved' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-600{% endif %}">
       {{ doc.review_status }}
     </span>
+    <form method="POST" action="/momo-review/{{ doc.doc_id }}/reparse?back={{ back|urlencode }}"
+          onsubmit="return confirm('원본 PDF로 다시 파싱합니다. 지금까지 손으로 고친 내용은 전부 사라지고 새로 추출한 내용으로 덮어씁니다. 계속할까요?');">
+      <button type="submit" class="px-4 py-2 bg-white border border-red-300 hover:bg-red-50 text-red-600 text-sm font-medium rounded-lg transition">
+        원본 다시 파싱
+      </button>
+    </form>
     <form method="POST" action="/momo-review/{{ doc.doc_id }}/approve?back={{ back|urlencode }}">
       <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
         문서 전체 승인
