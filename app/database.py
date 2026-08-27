@@ -25,6 +25,7 @@ def init_db():
     from app.models import isbn_cache  # noqa: F401
     from app.models import reading_list  # noqa: F401
     from app.models import momo_bookshelf  # noqa: F401
+    from app.models import journal  # noqa: F401
     Base.metadata.create_all(bind=engine)
     # 기존 DB에 신규 컬럼 안전하게 추가 (SQLite ALTER TABLE은 IF NOT EXISTS 미지원)
     _safe_add_columns()

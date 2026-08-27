@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}작업일지 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-800">📝 작업일지</h2>
+  <p class="text-sm text-gray-400 mt-1">작업 내용과 주요 사항을 기록해두는 게시판</p>
+</div>
+
+<!-- 구분 필터 탭 -->
+<div class="flex gap-2 mb-4">
+  <a href="/journal"
+     class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+            {% if not filter_type %}bg-blue-600 text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+    전체 <span class="text-xs opacity-70">{{ counts.get('전체', 0) }}</span>
+  </a>
+  {% for t in entry_types %}
+  <a href="/journal?entry_type={{ t }}"
+     class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+            {% if filter_type == t %}bg-blue-600 text-white{% else %}bg-white text-gray-600 border border-gray-200 hover:bg-gray-50{% endif %}">
+    {{ t }} <span class="text-xs opacity-70">{{ counts.get(t, 0) }}</span>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- 새 글 작성 -->
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+  <form method="POST" action="/journal" class="space-y-3">
+    <div class="flex gap-2">
+      <select name="entry_type" class="px-3 py-2 border border-gray-200 rounded-lg text-sm">
+        {% for t in entry_types %}
+        <option value="{{ t }}" {% if filter_type == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+      <input name="title" placeholder="제목" required
+             class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm">
+    </div>
+    <textarea name="content" rows="3" placeholder="내용"
+              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"></textarea>
+    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+      등록
+    </button>
+  </form>
+</div>
+
+<!-- 목록 -->
+<div class="space-y-2">
+  {% for e in entries %}
+  <a href="/journal/{{ e.id }}" class="block bg-white rounded-xl border border-gray-100 shadow-sm p-4 hover:border-blue-300 transition">
+    <div class="flex items-center justify-between mb-1">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded text-xs font-medium
+              {% if e.entry_type == '주요사항' %}bg-amber-100 text-amber-700{% else %}bg-blue-50 text-blue-700{% endif %}">
+          {{ e.entry_type }}
+        </span>
+        <h3 class="font-semibold text-gray-800">{{ e.title }}</h3>
+      </div>
+      <span class="text-xs text-gray-400 whitespace-nowrap">{{ e.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+    </div>
+    {% if e.content %}
+    <p class="text-sm text-gray-500 line-clamp-2 whitespace-pre-wrap">{{ e.content }}</p>
+    {% endif %}
+  </a>
+  {% else %}
+  <p class="text-center text-gray-400 py-12">아직 작성된 글이 없습니다.</p>
+  {% endfor %}
+</div>
+{% endblock %}

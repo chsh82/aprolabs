@@ -63,6 +63,10 @@
 
       <div class="pt-3 border-t border-gray-100 mt-2">
         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">관리</p>
+        <a href="/journal" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                {% if request.url.path.startswith('/journal') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+          📝 작업일지
+        </a>
         <a href="/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
           ➕ 문항 추가
         </a>
