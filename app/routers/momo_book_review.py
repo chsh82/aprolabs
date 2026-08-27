@@ -7,6 +7,8 @@ suneung.py의 _ans_db() 패턴처럼 sqlite3를 직접 열어서 씀.
 GET  /momo-review                              -> 문서 목록(검수 상태·낮은신뢰도 건수)
 GET  /momo-review/{doc_id}                     -> 문서 상세 검수(섹션별 추출결과 vs 원문)
 POST /momo-review/{doc_id}/{table}/{item_id}    -> 항목 수정 후 승인
+POST /momo-review/{doc_id}/{table}/add          -> 항목 직접 추가(파서가 못 뽑은 항목을 손으로 채울 때)
+POST /momo-review/{doc_id}/{table}/{item_id}/delete -> 항목 삭제
 POST /momo-review/{doc_id}/approve              -> 문서 전체를 approved로
 POST /momo-review/{doc_id}/discussion_qa/{item_id}/upload-reference-image
                                                  -> "보기" 이미지 직접 업로드
@@ -204,6 +206,69 @@ def momo_review_detail(request: Request, doc_id: str, back: str = ""):
         "image_by_path": image_by_path,
         "back": back,
     })
+
+
+# 새 항목을 손으로 추가할 때 NOT NULL인 필드에 넣는 임시값(추가 직후 바로 수정 폼이 뜨므로
+# 검수자가 채워 넣으면 됨) - 파서가 아예 못 뽑은 책(예: SECTION 형식)을 검수자가 직접
+# 채워 넣을 수 있게 하기 위한 기능.
+ADD_ITEM_DEFAULTS = {
+    "vocabulary": {"required_field": "word", "has_order_no": True},
+    "ox_quiz": {"required_field": "question", "has_order_no": True},
+    "discussion_qa": {"required_field": "question_text", "has_order_no": True},
+    "essay_prompt": {"required_field": "main_topic", "has_order_no": False},
+}
+
+
+@router.post("/{doc_id}/{table}/add")
+def momo_review_add_item(doc_id: str, table: str, back: str = ""):
+    """검수자가 항목을 직접 추가함(파서가 못 뽑았거나 놓친 항목을 손으로 채울 때 사용).
+    빈 값으로 하나 만들어두면 바로 아래 수정 폼에서 채워서 승인하면 됨."""
+    if table not in ADD_ITEM_DEFAULTS:
+        raise HTTPException(status_code=404, detail="알 수 없는 테이블입니다.")
+    cfg = ADD_ITEM_DEFAULTS[table]
+
+    conn = _db()
+    if cfg["has_order_no"]:
+        max_order = conn.execute(
+            f"SELECT COALESCE(MAX(order_no), 0) FROM {table} WHERE doc_id = ?", (doc_id,)
+        ).fetchone()[0]
+        new_order = max_order + 1
+        if table == "discussion_qa":
+            conn.execute(
+                "INSERT INTO discussion_qa (doc_id, order_no, order_label, question_text, review_status) "
+                "VALUES (?, ?, ?, '(직접 입력)', 'pending')",
+                (doc_id, new_order, str(new_order)),
+            )
+        else:
+            conn.execute(
+                f"INSERT INTO {table} (doc_id, order_no, {cfg['required_field']}, review_status) "
+                f"VALUES (?, ?, '(직접 입력)', 'pending')",
+                (doc_id, new_order),
+            )
+    else:
+        conn.execute(
+            f"INSERT INTO {table} (doc_id, {cfg['required_field']}, review_status) "
+            f"VALUES (?, '(직접 입력)', 'pending')",
+            (doc_id,),
+        )
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
+
+
+@router.post("/{doc_id}/{table}/{item_id}/delete")
+def momo_review_delete_item(doc_id: str, table: str, item_id: int, back: str = ""):
+    """검수자가 잘못 추출됐거나 잘못 추가한 항목을 지움."""
+    if table not in EDITABLE_TABLES:
+        raise HTTPException(status_code=404, detail="알 수 없는 테이블입니다.")
+
+    conn = _db()
+    if table == "essay_prompt":
+        conn.execute("DELETE FROM essay_outline_question WHERE essay_id = ?", (item_id,))
+    conn.execute(f"DELETE FROM {table} WHERE id = ? AND doc_id = ?", (item_id, doc_id))
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
 
 
 @router.post("/{doc_id}/{table}/{item_id}")
