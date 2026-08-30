@@ -43,10 +43,36 @@ CREATE TABLE IF NOT EXISTS instructor (
 
 CREATE TABLE IF NOT EXISTS class (
     id              INTEGER PRIMARY KEY,
-    class_code      TEXT NOT NULL UNIQUE,   -- 예: MB-3A
+    class_code      TEXT NOT NULL UNIQUE,   -- 예: H-YG-SAT1500
     name            TEXT,
+    course_type     TEXT NOT NULL DEFAULT '하크니스',
     instructor_id   INTEGER REFERENCES instructor(id),
-    FOREIGN KEY (instructor_id) REFERENCES instructor(id)
+    active          INTEGER NOT NULL DEFAULT 1
+);
+
+-- (강사, 요일, 시각) 조합 → 반. 시간표가 바뀌면 같은 class_id에 키를 하나 더 단다.
+-- 학기가 바뀌어도 class 행은 그대로 유지된다.
+CREATE TABLE IF NOT EXISTS class_key (
+    id              INTEGER PRIMARY KEY,
+    class_id        INTEGER NOT NULL REFERENCES class(id),
+    instructor_id   INTEGER NOT NULL REFERENCES instructor(id),
+    weekday         INTEGER NOT NULL,       -- 0=월 ... 6=일
+    start_time      TEXT NOT NULL,          -- 'HH:MM'
+    valid_from      TEXT,
+    UNIQUE (instructor_id, weekday, start_time)
+);
+
+-- 규칙상 처음 보는 (강사,요일,시각) 조합. 자동으로 class를 만들지 않고 여기 쌓는다.
+-- 운영자가 확인해 기존 class에 class_key를 추가하거나 새 class를 발급한다.
+CREATE TABLE IF NOT EXISTS pending_class_key (
+    id              INTEGER PRIMARY KEY,
+    instructor_id   INTEGER NOT NULL REFERENCES instructor(id),
+    weekday         INTEGER NOT NULL,
+    start_time      TEXT NOT NULL,
+    sample_topic    TEXT,
+    first_seen_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    resolved        INTEGER NOT NULL DEFAULT 0,
+    UNIQUE (instructor_id, weekday, start_time)
 );
 
 CREATE TABLE IF NOT EXISTS student (
@@ -55,39 +81,61 @@ CREATE TABLE IF NOT EXISTS student (
     class_id        INTEGER NOT NULL REFERENCES class(id)
 );
 
--- 수업 회차. raw 1건 = session 1건.
--- status: mapped | unmapped | mismatch  (mismatch = 배정표 담당자와 host 불일치)
+-- Zoom 회의 1건. raw 1건 = session 1건 (UUID 단위, 그대로 - 가공하지 않는다).
+-- 재접속/재시작으로 같은 실제 수업이 meeting_uuid를 여러 번 받으면 session도
+-- 여러 건 생긴다 - 이게 정상이다. 회차 단위로 묶는 건 class_meeting이 한다.
+-- status: mapped | unmapped | mismatch | out_of_scope
+--   mismatch     = 배정표 담당자와 host 불일치
+--   out_of_scope = 1차 적용 범위(하크니스 그룹수업) 밖. 수집은 하되 리포트를 만들지 않는다.
+-- session_type: regular | makeup
 CREATE TABLE IF NOT EXISTS session (
+    id                INTEGER PRIMARY KEY,
+    meeting_uuid      TEXT NOT NULL UNIQUE REFERENCES zoom_summary_raw(meeting_uuid),
+    host_email        TEXT NOT NULL,
+    instructor_id     INTEGER REFERENCES instructor(id),
+    class_id          INTEGER REFERENCES class(id),
+    class_meeting_id  INTEGER REFERENCES class_meeting(id),
+    lesson_no         INTEGER,
+    text_label        TEXT,
+    session_type      TEXT NOT NULL DEFAULT 'regular',
+    topic_raw         TEXT NOT NULL,
+    started_at        TEXT,
+    status            TEXT NOT NULL DEFAULT 'unmapped',
+    note              TEXT
+);
+
+-- 회차 단위. 같은 (class_id, 날짜)로 묶인 session들을 대표한다 - 리포트는
+-- 이 단위로 만든다(session이 아니라). 재접속으로 session이 여러 건이어도
+-- class_meeting은 하나다.
+CREATE TABLE IF NOT EXISTS class_meeting (
     id              INTEGER PRIMARY KEY,
-    meeting_uuid    TEXT NOT NULL UNIQUE REFERENCES zoom_summary_raw(meeting_uuid),
-    host_email      TEXT NOT NULL,
-    instructor_id   INTEGER REFERENCES instructor(id),
-    class_id        INTEGER REFERENCES class(id),
+    class_id        INTEGER NOT NULL REFERENCES class(id),
+    meeting_date    TEXT NOT NULL,          -- 'YYYY-MM-DD' (KST 기준)
     lesson_no       INTEGER,
     text_label      TEXT,
-    topic_raw       TEXT NOT NULL,
-    started_at      TEXT,
-    status          TEXT NOT NULL DEFAULT 'unmapped',
-    note            TEXT
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (class_id, meeting_date)
 );
 
--- 세션 1건에서 학생 수만큼 생성된다 (1:4 수업이면 4건).
+-- class_meeting 1건에서 학생 수만큼 생성된다 (1:4 수업이면 4건).
 -- status: draft | review | published
 CREATE TABLE IF NOT EXISTS report (
-    id              INTEGER PRIMARY KEY,
-    session_id      INTEGER NOT NULL REFERENCES session(id),
-    student_id      INTEGER NOT NULL REFERENCES student(id),
-    body_md         TEXT,
-    status          TEXT NOT NULL DEFAULT 'draft',
-    approved_by     INTEGER REFERENCES instructor(id),
-    approved_at     TEXT,
-    published_at    TEXT,
-    UNIQUE (session_id, student_id)
+    id                INTEGER PRIMARY KEY,
+    class_meeting_id  INTEGER NOT NULL REFERENCES class_meeting(id),
+    student_id        INTEGER NOT NULL REFERENCES student(id),
+    body_md           TEXT,
+    status            TEXT NOT NULL DEFAULT 'draft',
+    approved_by       INTEGER REFERENCES instructor(id),
+    approved_at       TEXT,
+    published_at      TEXT,
+    UNIQUE (class_meeting_id, student_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_session_status    ON session(status);
-CREATE INDEX IF NOT EXISTS idx_session_started   ON session(started_at);
-CREATE INDEX IF NOT EXISTS idx_report_status     ON report(status);
+CREATE INDEX IF NOT EXISTS idx_session_status      ON session(status);
+CREATE INDEX IF NOT EXISTS idx_session_started     ON session(started_at);
+CREATE INDEX IF NOT EXISTS idx_session_meeting     ON session(class_meeting_id);
+CREATE INDEX IF NOT EXISTS idx_class_meeting_class  ON class_meeting(class_id, meeting_date);
+CREATE INDEX IF NOT EXISTS idx_report_status       ON report(status);
 """
 
 
@@ -107,7 +155,12 @@ class ParsedTopic:
     class_code: str | None = None
     lesson_no: int | None = None
     text_label: str | None = None
+    is_makeup: bool = False
     errors: list[str] = field(default_factory=list)
+
+    @property
+    def session_type(self) -> str:
+        return "makeup" if self.is_makeup else "regular"
 
     @property
     def ok(self) -> bool:
@@ -117,6 +170,11 @@ class ParsedTopic:
 # 전각 괄호, 공백 변형, 07차시 / 7차시 / 07강 을 모두 허용한다.
 _BRACKET = re.compile(r"[\[\uff3b]\s*([A-Za-z0-9\-]+)\s*[\]\uff3d]")
 _LESSON = re.compile(r"(\d{1,2})\s*(?:차시|강)")
+
+# 보강 표식은 반 코드와 별개의 대괄호로 둔다.
+# class_code 자체에 하이픈이 들어가므로 접미사(-R) 방식은 쓸 수 없다.
+#   [H-YG-SAT1500][보강] 07차시_...
+_MAKEUP = re.compile(r"[\[\uff3b]\s*(?:보강|makeup|R)\s*[\]\uff3d]", re.IGNORECASE)
 
 
 def _normalize(s: str) -> str:
@@ -138,6 +196,11 @@ def parse_topic(topic: str) -> ParsedTopic:
         return result
 
     s = _normalize(topic)
+
+    m = _MAKEUP.search(s)
+    if m:
+        result.is_makeup = True
+        s = (s[:m.start()] + " " + s[m.end():]).strip()
 
     m = _BRACKET.search(s)
     if m:
@@ -204,31 +267,36 @@ def resolve_session_status(
 
 if __name__ == "__main__":
     cases = [
-        ("[MB-3A] 07차시_카프카_변신", "MB-3A", 7, "카프카 변신"),
-        ("[mb-3a] 7차시_이방인", "MB-3A", 7, "이방인"),
-        ("［MB-9C］ 12강_곰브리치 세계사", "MB-9C", 12, "곰브리치 세계사"),
-        ("[MB-5B]03차시_신화의 숲", "MB-5B", 3, "신화의 숲"),
+        ("[H-YG-SAT1500] 07차시_카프카_변신", "H-YG-SAT1500", 7, "카프카 변신", False),
+        ("[h-yg-sat1500] 7차시_이방인", "H-YG-SAT1500", 7, "이방인", False),
+        ("［H-YG-MON1900］ 12강_곰브리치 세계사", "H-YG-MON1900", 12, "곰브리치 세계사", False),
+        ("[H-YG-SAT1500]03차시_신화의 숲", "H-YG-SAT1500", 3, "신화의 숲", False),
+        # 보강 — 표식 위치가 앞이든 뒤든 인식한다.
+        ("[H-YG-SAT1500][보강] 07차시_카프카_변신", "H-YG-SAT1500", 7, "카프카 변신", True),
+        ("[보강][H-YG-SAT1500] 07차시_카프카_변신", "H-YG-SAT1500", 7, "카프카 변신", True),
     ]
-    for topic, code, lesson, label in cases:
+    for topic, code, lesson, label, makeup in cases:
         p = parse_topic(topic)
         assert p.ok, (topic, p.errors)
         assert (p.class_code, p.lesson_no, p.text_label) == (code, lesson, label), (topic, p)
+        assert p.is_makeup is makeup and p.session_type == ("makeup" if makeup else "regular"), (topic, p)
 
     # 규칙 위반 건은 실패로 잡히되 부분 결과는 살아남아야 한다.
     bad = parse_topic("카프카 변신 수업")
     assert not bad.ok and bad.class_code is None
-    partial = parse_topic("[MB-3A] 카프카_변신")
-    assert not partial.ok and partial.class_code == "MB-3A"
+    partial = parse_topic("[H-YG-SAT1500] 카프카_변신")
+    assert not partial.ok and partial.class_code == "H-YG-SAT1500"
 
     conn = init_db(":memory:")
     conn.execute("INSERT INTO instructor (id, name, zoom_email) VALUES (1, '윤영기', 'momo@example.com')")
     conn.execute("INSERT INTO instructor (id, name, zoom_email) VALUES (2, '강사B', 'b@example.com')")
-    conn.execute("INSERT INTO class (id, class_code, instructor_id) VALUES (1, 'MB-3A', 1)")
+    conn.execute("INSERT INTO class (id, class_code, instructor_id) VALUES (1, 'H-YG-SAT1500', 1)")
     conn.commit()
 
-    assert resolve_session_status(conn, "momo@example.com", parse_topic("[MB-3A] 07차시_변신"))[0] == "mapped"
-    assert resolve_session_status(conn, "b@example.com", parse_topic("[MB-3A] 07차시_변신"))[0] == "mismatch"
-    assert resolve_session_status(conn, "nobody@example.com", parse_topic("[MB-3A] 07차시_변신"))[0] == "unmapped"
+    t = parse_topic("[H-YG-SAT1500] 07차시_변신")
+    assert resolve_session_status(conn, "momo@example.com", t)[0] == "mapped"
+    assert resolve_session_status(conn, "b@example.com", t)[0] == "mismatch"
+    assert resolve_session_status(conn, "nobody@example.com", t)[0] == "unmapped"
     assert resolve_session_status(conn, "momo@example.com", parse_topic("아무 제목"))[0] == "unmapped"
 
     print("all checks passed")

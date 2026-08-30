@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from app.database import get_db, init_db
-from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, journal
+from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, journal, zoom_summaries
 from app.routers import auth as auth_router
 from app import isbn
 from app.auth import get_current_user_id
@@ -31,6 +31,7 @@ app.include_router(isbn.router)
 app.include_router(momo_bookshelf.router)
 app.include_router(momo_book_review.router)
 app.include_router(journal.router)
+app.include_router(zoom_summaries.router)
 
 
 @app.middleware("http")

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Zoom 파이프라인 검토 큐</title>
+<style>
+  body { font-family: -apple-system, "Malgun Gothic", sans-serif; margin: 2rem; color: #222; }
+  h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+  .subtitle { color: #666; font-size: 0.85rem; margin-bottom: 1.5rem; }
+  nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #ddd; }
+  nav a { padding: 0.6rem 1rem; text-decoration: none; color: #555; border-bottom: 3px solid transparent; }
+  nav a.active { color: #1a56db; border-bottom-color: #1a56db; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid #eee; vertical-align: top; }
+  th { background: #fafafa; color: #444; font-weight: 600; }
+  tr:hover td { background: #fbfbfb; }
+  .muted { color: #999; }
+  .badge { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+  .badge-ok { background: #e6f4ea; color: #1e7e34; }
+  .badge-no { background: #fdecea; color: #b02a37; }
+  .empty { color: #999; padding: 2rem 0; text-align: center; }
+  .class-group { margin-bottom: 1.5rem; }
+  .class-group h3 { margin: 0 0 0.4rem; font-size: 1rem; }
+  form.inline { display: inline; }
+  button.confirm { background: #1a56db; color: white; border: none; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+  button.confirm:hover { background: #1543a8; }
+</style>
+</head>
+<body>
+  <h1>Zoom 파이프라인 검토 큐</h1>
+  <p class="subtitle">읽기 전용 화면 - "확인함" 버튼 외 수정/삭제 없음. 시각은 전부 KST.</p>
+
+  <nav>
+    <a href="/?tab=pending" class="{{ 'active' if tab == 'pending' else '' }}">미확인 키</a>
+    <a href="/?tab=unmapped" class="{{ 'active' if tab == 'unmapped' else '' }}">미매핑 세션</a>
+    <a href="/?tab=mapped" class="{{ 'active' if tab == 'mapped' else '' }}">매핑됨</a>
+  </nav>
+
+  {% if tab == 'pending' %}
+    {% if pending_keys %}
+    <table>
+      <thead>
+        <tr>
+          <th>강사</th><th>요일</th><th>시각</th><th>반복 횟수</th>
+          <th>표본 회의명</th><th>최초 발견(KST)</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for k in pending_keys %}
+        <tr>
+          <td>{{ k.instructor_name }}</td>
+          <td>{{ k.weekday_kr }}</td>
+          <td>{{ k.start_time }}</td>
+          <td>{{ k.repeat_count }}</td>
+          <td class="muted">{{ k.sample_topic or '-' }}</td>
+          <td>{{ k.first_seen_at_kst.strftime('%Y-%m-%d %H:%M') if k.first_seen_at_kst else '-' }}</td>
+          <td>
+            <form class="inline" method="post" action="/pending/{{ k.id }}/resolve">
+              <button class="confirm" type="submit">확인함</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">미확인 키가 없습니다.</p>
+    {% endif %}
+
+  {% elif tab == 'unmapped' %}
+    {% if unmapped_sessions %}
+    <table>
+      <thead>
+        <tr><th>시작 시각(KST)</th><th>강사</th><th>meeting_topic</th><th>길이(분)</th><th>본문 글자 수</th></tr>
+      </thead>
+      <tbody>
+        {% for s in unmapped_sessions %}
+        <tr>
+          <td>{{ s.kst_time.strftime('%Y-%m-%d %H:%M') if s.kst_time else '-' }}</td>
+          <td>{{ s.instructor_name }}</td>
+          <td>{{ s.topic }}</td>
+          <td>{{ s.duration_min if s.duration_min is not none else '-' }}</td>
+          <td>{{ s.overview_len if s.overview_len is not none else '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">미매핑 세션이 없습니다.</p>
+    {% endif %}
+
+  {% else %}
+    {% if mapped_groups %}
+    {% for g in mapped_groups %}
+    <div class="class-group">
+      <h3>{{ g.class_code }} <span class="muted">— {{ g.class_name }}</span></h3>
+      <table>
+        <thead><tr><th>회차 날짜</th><th>class_meeting 연결</th></tr></thead>
+        <tbody>
+          {% for item in g.meetings %}
+          <tr>
+            <td>{{ item.meeting_date or '-' }}</td>
+            <td>
+              {% if item.has_class_meeting %}
+              <span class="badge badge-ok">연결됨</span>
+              {% else %}
+              <span class="badge badge-no">미연결</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="empty">매핑된 세션이 없습니다.</p>
+    {% endif %}
+  {% endif %}
+</body>
+</html>
