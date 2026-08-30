@@ -1,0 +1,11 @@
+[Unit]
+Description=4시간마다 Zoom 요약 파이프라인 실행
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=4h
+Persistent=true
+Unit=zoom-pipeline.service
+
+[Install]
+WantedBy=timers.target

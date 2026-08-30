@@ -1,0 +1,9 @@
+[Unit]
+Description=Zoom 요약 수집/매핑/리포트 생성 파이프라인 (1회 실행 - zoom-pipeline.timer가 주기 실행)
+After=network.target
+
+[Service]
+Type=oneshot
+User=USER_PLACEHOLDER
+WorkingDirectory=/home/USER_PLACEHOLDER/aprolabs/zoom_reports
+ExecStart=/home/USER_PLACEHOLDER/aprolabs/zoom_reports/run_pipeline.sh

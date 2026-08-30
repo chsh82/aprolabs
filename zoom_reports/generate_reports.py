@@ -17,7 +17,15 @@ UNIQUE라 이미 생성된 건 API를 다시 부르지 않고 건너뛴다(재�
 비용 절약).
 
 실행:
-    python generate_reports.py <class_meeting_id> [<class_meeting_id> ...]
+    python generate_reports.py                              # 전체 class_meeting 자동 탐색
+    python generate_reports.py <class_meeting_id> [...]      # 특정 회차만
+    python generate_reports.py --verbose ...                 # 로그에 학생 실명까지 출력
+
+기본 실행은 로그에 학생 실명을 안 찍는다(집계 수치·class_meeting_id·
+student_id만) - 스케줄러로 무인 실행되면 출력이 journald 등 서버 로그로
+그대로 들어가므로, 로그 자체가 새로운 PII 유출 지점이 되는 걸 피한다.
+실패한 학생을 실제로 찾아 고쳐야 할 때는 --verbose로 로컬에서 다시
+돌려서 본다.
 
 .env에 ANTHROPIC_API_KEY 필요(zoom_reports가 독립 앱이라 자체 .env에 둠 -
 aprolabs/.env와 별개).
@@ -169,7 +177,11 @@ def call_claude(api_key: str, prompt: str) -> str:
     return message.content[0].text.strip()
 
 
-def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
+def find_all_class_meetings(conn) -> list[int]:
+    return [r[0] for r in conn.execute("SELECT id FROM class_meeting ORDER BY id").fetchall()]
+
+
+def process_class_meeting(conn, api_key: str, class_meeting_id: int, verbose: bool = False) -> dict:
     cm_row = conn.execute(
         """
         SELECT cm.class_id, cm.meeting_date, c.name, c.class_code, i.name
@@ -204,28 +216,31 @@ def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
             skipped += 1
             continue
 
+        who = student_name if verbose else f"student_id={student_id}"
         other_names = sorted(n for sid, n in students if sid != student_id)
         try:
             masked_text = mask_other_students(raw_text, student_name, other_names)
         except MaskingError as e:
-            failed.append((student_name, str(e)))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: {e}", file=sys.stderr)
+            failed.append((student_id, student_name, str(e) if verbose else "마스킹 실패"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} / {who}: "
+                  f"{e if verbose else '마스킹 실패'}", file=sys.stderr)
             continue
 
         prompt = build_prompt(class_name, meeting_date, instructor_name, student_name, masked_text)
         try:
             body_md = call_claude(api_key, prompt)
         except Exception as e:
-            failed.append((student_name, f"API 호출 실패: {e}"))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: API 호출 실패: {e}", file=sys.stderr)
+            failed.append((student_id, student_name, f"API 호출 실패: {e}"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} / {who}: API 호출 실패: {e}", file=sys.stderr)
             continue
 
         leaked = [name for name in other_names if name and name in body_md]
         if leaked:
             # 입력을 마스킹해도 모델이 라벨을 실명으로 "복원"해 출력할 가능성은 남아 있다 -
             # 저장 전에 출력도 검사한다. 입력 검사(mask_other_students)와 같은 원칙.
-            failed.append((student_name, f"LLM 출력에 다른 학생 실명이 나타나 저장하지 않음: {leaked}"))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: 출력에 실명 유출: {leaked}", file=sys.stderr)
+            failed.append((student_id, student_name, "LLM 출력에 다른 학생 실명이 나타나 저장하지 않음"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} / {who}: 출력에 실명 유출 (건수 {len(leaked)})",
+                  file=sys.stderr)
             continue
 
         conn.execute(
@@ -238,15 +253,19 @@ def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
         )
         conn.commit()  # 학생 1명씩 즉시 커밋 - 중간에 실패해도 이미 만든 초안은 지킨다
         generated += 1
-        print(f"  생성 완료 - {class_code} {meeting_date} / {student_name}")
+        if verbose:
+            print(f"  생성 완료 - {class_code} {meeting_date} / {student_name}")
 
     return {"generated": generated, "skipped": skipped, "failed": failed}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="class_meeting 단위 학생별 리포트 초안 생성 배치")
-    parser.add_argument("class_meeting_ids", type=int, nargs="+",
-                       help="처리할 class_meeting id (여러 개 지정 가능)")
+    parser.add_argument("class_meeting_ids", type=int, nargs="*",
+                       help="처리할 class_meeting id (생략하면 전체 class_meeting을 자동 탐색 - "
+                            "학생별로 이미 있으면 건너뛰니 안전)")
+    parser.add_argument("--verbose", "-v", action="store_true",
+                       help="로그에 학생 실명을 출력한다(기본은 student_id만 - 서버 로그에 실명이 안 남게)")
     args = parser.parse_args()
 
     env = load_env(Path(__file__).resolve().parent / ".env")
@@ -257,23 +276,30 @@ def main() -> int:
 
     conn = init_db()
 
+    class_meeting_ids = args.class_meeting_ids or find_all_class_meetings(conn)
+    if not class_meeting_ids:
+        print("처리할 class_meeting이 없습니다.")
+        conn.close()
+        return 0
+
     total_generated = total_skipped = 0
-    total_failed: list[tuple[int, str, str]] = []
-    for cmid in args.class_meeting_ids:
+    total_failed: list[tuple[int, int, str, str]] = []
+    for cmid in class_meeting_ids:
         print(f"class_meeting_id={cmid} 처리 중...")
-        result = process_class_meeting(conn, api_key, cmid)
+        result = process_class_meeting(conn, api_key, cmid, verbose=args.verbose)
         total_generated += result["generated"]
         total_skipped += result["skipped"]
-        for name, reason in result["failed"]:
-            total_failed.append((cmid, name, reason))
+        for student_id, name, reason in result["failed"]:
+            total_failed.append((cmid, student_id, name, reason))
 
     conn.close()
 
     print(f"\n초안 생성 {total_generated}건, 이미 있어서 건너뜀 {total_skipped}건, 실패 {len(total_failed)}건")
     if total_failed:
         print("실패 내역:")
-        for cmid, name, reason in total_failed:
-            print(f"  class_meeting_id={cmid} / {name}: {reason}")
+        for cmid, student_id, name, reason in total_failed:
+            who = name if args.verbose else f"student_id={student_id}"
+            print(f"  class_meeting_id={cmid} / {who}: {reason}")
 
     return 1 if total_failed else 0
 

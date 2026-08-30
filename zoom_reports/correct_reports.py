@@ -22,18 +22,30 @@ Companion 요약은 음성 인식 기반이라 인명·지명·책 제목·역�
 다시 검사한다(모델이 익명 라벨을 실명으로 "복원"할 가능성 대비) - 입력과
 출력 양쪽 다 코드로 강제한다.
 
-대상: report.status='draft'인 것만. review/published(승인 후)는 검토
-화면에서 "편집 불가"로 잠기는 것과 같은 원칙으로 이 배치도 건드리지
-않는다.
+대상: report.status='draft'이고 corrected_at이 아직 없는 것만.
+review/published(승인 후)는 검토 화면에서 "편집 불가"로 잠기는 것과
+같은 원칙으로 이 배치도 건드리지 않는다. corrected_at은 교정이 실제로
+성공해서 저장될 때만 찍힌다 - 이미 교정된 draft를 스케줄러가 4시간마다
+또 교정 API에 태우는 낭비를 막는다(운영자가 검토 화면에서 본문을 직접
+고친 뒤에도 corrected_at은 그대로 남아 재교정 대상이 되지 않는다 -
+사람이 손댄 걸 배치가 다시 덮어쓰지 않는다).
 
 실행:
-    python correct_reports.py <class_meeting_id> [<class_meeting_id> ...]
+    python correct_reports.py                              # draft 중 미교정 전부 자동 탐색
+    python correct_reports.py <class_meeting_id> [...]      # 특정 회차만
+    python correct_reports.py --verbose ...                 # 로그에 학생 실명까지 출력
+
+기본 실행은 로그에 학생 실명을 안 찍는다(집계 수치·class_meeting_id만) -
+이 배치는 스케줄러로 무인 실행되고 출력이 journald 등 서버 로그로 그대로
+들어가므로, 로그 자체가 새로운 PII 유출 지점이 되는 걸 피한다. 실패한
+학생을 실제로 찾아 고쳐야 할 때는 --verbose로 로컬에서 다시 돌려서 본다.
 
 .env에 ANTHROPIC_API_KEY 필요(zoom_reports 자체 .env - generate_reports.py와 동일).
 """
 from __future__ import annotations
 
 import argparse
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -47,6 +59,19 @@ from generate_reports import (
 )
 from verify_zoom_auth import load_env
 from zoom_pipeline_core import init_db
+
+
+def _has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    cols = [row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()]
+    return column in cols
+
+
+def ensure_corrected_at_column(conn: sqlite3.Connection) -> None:
+    """오래된 momo_zoom.db에는 corrected_at이 없을 수 있다 - 있으면 건너뜀(재실행 안전)."""
+    if _has_column(conn, "report", "corrected_at"):
+        return
+    conn.execute("ALTER TABLE report ADD COLUMN corrected_at TEXT")
+    conn.commit()
 
 
 def find_leaked_names(text: str, other_names: list[str]) -> list[str]:
@@ -89,20 +114,31 @@ def build_correction_prompt(class_name: str, meeting_date: str, instructor_name:
 
 
 def load_draft_reports(conn, class_meeting_id: int) -> list[tuple[int, int, str, str]]:
-    """(report_id, student_id, student_name, body_md) - status='draft'만."""
+    """(report_id, student_id, student_name, body_md) - status='draft'이고 아직 안 교정된 것만."""
     return conn.execute(
         """
         SELECT r.id, r.student_id, s.name, r.body_md
         FROM report r
         JOIN student s ON r.student_id = s.id
-        WHERE r.class_meeting_id = ? AND r.status = 'draft'
+        WHERE r.class_meeting_id = ? AND r.status = 'draft' AND r.corrected_at IS NULL
         ORDER BY s.name
         """,
         (class_meeting_id,),
     ).fetchall()
 
 
-def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
+def find_class_meetings_with_pending_correction(conn) -> list[int]:
+    rows = conn.execute(
+        """
+        SELECT DISTINCT class_meeting_id FROM report
+        WHERE status = 'draft' AND corrected_at IS NULL
+        ORDER BY class_meeting_id
+        """
+    ).fetchall()
+    return [r[0] for r in rows]
+
+
+def process_class_meeting(conn, api_key: str, class_meeting_id: int, verbose: bool = False) -> dict:
     cm_row = conn.execute(
         """
         SELECT cm.class_id, cm.meeting_date, c.name, c.class_code, i.name
@@ -127,12 +163,13 @@ def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
 
     drafts = load_draft_reports(conn, class_meeting_id)
     if not drafts:
-        print(f"  {class_code} {meeting_date}: 교정할 draft 없음 - 건너뜀")
+        if verbose:
+            print(f"  {class_code} {meeting_date}: 교정할 draft 없음 - 건너뜀")
         return {"corrected": 0, "locked": locked, "failed": []}
 
     segments = load_meeting_segments(conn, class_meeting_id)
     if not segments:
-        print(f"  {class_code} {meeting_date}: 연결된 mapped 세션 없음 - 건너뜀")
+        print(f"  class_meeting_id={class_meeting_id}: 연결된 mapped 세션 없음 - 건너뜀")
         return {"corrected": 0, "locked": locked, "failed": []}
     raw_text = build_raw_text(segments)
 
@@ -140,21 +177,23 @@ def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
 
     corrected, failed = 0, []
     for report_id, student_id, student_name, body_md in drafts:
+        who = student_name if verbose else f"student_id={student_id}"
         other_names = sorted(n for sid, n in students if sid != student_id)
 
         leaked_before = find_leaked_names(body_md, other_names)
         if leaked_before:
-            failed.append((student_name,
-                           f"현재 draft 본문에 다른 학생 실명이 이미 있어 API를 호출하지 않음: {leaked_before}"))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: 기존 본문에 실명 유출: {leaked_before}",
-                  file=sys.stderr)
+            failed.append((report_id, student_name,
+                           "현재 draft 본문에 다른 학생 실명이 이미 있어 API를 호출하지 않음"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} report_id={report_id} / {who}: "
+                  f"기존 본문에 실명 유출 (건수 {len(leaked_before)})", file=sys.stderr)
             continue
 
         try:
             masked_source = mask_other_students(raw_text, student_name, other_names)
         except MaskingError as e:
-            failed.append((student_name, str(e)))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: {e}", file=sys.stderr)
+            failed.append((report_id, student_name, str(e) if verbose else "마스킹 실패"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} report_id={report_id} / {who}: "
+                  f"{e if verbose else '마스킹 실패'}", file=sys.stderr)
             continue
 
         prompt = build_correction_prompt(class_name, meeting_date, instructor_name,
@@ -162,29 +201,36 @@ def process_class_meeting(conn, api_key: str, class_meeting_id: int) -> dict:
         try:
             corrected_body = call_claude(api_key, prompt)
         except Exception as e:
-            failed.append((student_name, f"API 호출 실패: {e}"))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: API 호출 실패: {e}", file=sys.stderr)
+            failed.append((report_id, student_name, f"API 호출 실패: {e}"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} report_id={report_id} / {who}: "
+                  f"API 호출 실패: {e}", file=sys.stderr)
             continue
 
         leaked_after = find_leaked_names(corrected_body, other_names)
         if leaked_after:
-            failed.append((student_name, f"교정 결과에 다른 학생 실명이 나타나 저장하지 않음: {leaked_after}"))
-            print(f"  실패 - {class_code} {meeting_date} / {student_name}: 교정 결과에 실명 유출: {leaked_after}",
-                  file=sys.stderr)
+            failed.append((report_id, student_name, "교정 결과에 다른 학생 실명이 나타나 저장하지 않음"))
+            print(f"  실패 - class_meeting_id={class_meeting_id} report_id={report_id} / {who}: "
+                  f"교정 결과에 실명 유출 (건수 {len(leaked_after)})", file=sys.stderr)
             continue
 
-        conn.execute("UPDATE report SET body_md = ? WHERE id = ?", (corrected_body, report_id))
+        conn.execute(
+            "UPDATE report SET body_md = ?, corrected_at = datetime('now') WHERE id = ?",
+            (corrected_body, report_id),
+        )
         conn.commit()
         corrected += 1
-        print(f"  교정 완료 - {class_code} {meeting_date} / {student_name}")
+        if verbose:
+            print(f"  교정 완료 - {class_code} {meeting_date} / {student_name}")
 
     return {"corrected": corrected, "locked": locked, "failed": failed}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="class_meeting 단위 리포트 초안 고유명사 교정 배치")
-    parser.add_argument("class_meeting_ids", type=int, nargs="+",
-                       help="처리할 class_meeting id (여러 개 지정 가능)")
+    parser.add_argument("class_meeting_ids", type=int, nargs="*",
+                       help="처리할 class_meeting id (생략하면 미교정 draft가 있는 회차를 전부 자동 탐색)")
+    parser.add_argument("--verbose", "-v", action="store_true",
+                       help="로그에 학생 실명을 출력한다(기본은 student_id만 - 서버 로그에 실명이 안 남게)")
     args = parser.parse_args()
 
     env = load_env(Path(__file__).resolve().parent / ".env")
@@ -194,24 +240,32 @@ def main() -> int:
         return 1
 
     conn = init_db()
+    ensure_corrected_at_column(conn)
+
+    class_meeting_ids = args.class_meeting_ids or find_class_meetings_with_pending_correction(conn)
+    if not class_meeting_ids:
+        print("교정할 draft가 없습니다.")
+        conn.close()
+        return 0
 
     total_corrected = total_locked = 0
-    total_failed: list[tuple[int, str, str]] = []
-    for cmid in args.class_meeting_ids:
+    total_failed: list[tuple[int, int, str, str]] = []
+    for cmid in class_meeting_ids:
         print(f"class_meeting_id={cmid} 처리 중...")
-        result = process_class_meeting(conn, api_key, cmid)
+        result = process_class_meeting(conn, api_key, cmid, verbose=args.verbose)
         total_corrected += result["corrected"]
         total_locked += result["locked"]
-        for name, reason in result["failed"]:
-            total_failed.append((cmid, name, reason))
+        for report_id, name, reason in result["failed"]:
+            total_failed.append((cmid, report_id, name, reason))
 
     conn.close()
 
     print(f"\n교정 완료 {total_corrected}건, 승인돼서 건너뜀 {total_locked}건, 실패 {len(total_failed)}건")
     if total_failed:
         print("실패 내역:")
-        for cmid, name, reason in total_failed:
-            print(f"  class_meeting_id={cmid} / {name}: {reason}")
+        for cmid, report_id, name, reason in total_failed:
+            who = name if args.verbose else f"report_id={report_id}"
+            print(f"  class_meeting_id={cmid} / {who}: {reason}")
 
     return 1 if total_failed else 0
 

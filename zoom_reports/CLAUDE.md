@@ -376,10 +376,48 @@ Server-to-Server OAuth (app type: Server-to-Server OAuth)
 - **PDF 발행은 이 파이프라인 범위에 넣지 않음** (사용자 결정, 2026-08-31).
   `review` 상태(교사 승인 완료)가 이 시스템의 최종 상태 - `published`
   전환 및 학부모 발행 경로는 만들지 않는다. 승인된 리포트를 실제로
-  학부모에게 전달하는 방법은 이 시스템 밖의 별도 절차.
+  학부모에게 전달하는 방법은 이 시스템 밖의 별도 절차. 부모에게 직접
+  전송하지 않고, 강사에게만 제공한다(aprolabs 로그인 뒤 검토·승인 화면) -
+  사용자 결정.
+- **운영 배치 자동화 완료** (2026-08-31): `run_pipeline.sh`가 collector →
+  map_sessions → migrate_class_meeting → generate_reports →
+  correct_reports를 순서대로 실행. GCP 서버에 `zoom-pipeline.service`
+  (oneshot) + `zoom-pipeline.timer`(4시간마다, `aprolabs.service`와 같은
+  systemd 패턴)로 등록. 한 단계가 실패해도 다음 단계는 계속 시도하고,
+  하나라도 실패하면 전체 종료 코드만 1로 남긴다(개별 실패가 배치를
+  막지 않음).
+  - **`report.corrected_at` 컬럼 추가**: `correct_reports.py`가 draft를
+    딱 한 번만 교정하게 하는 마커. 4시간마다 도는데 매번 같은 draft를
+    또 교정 API에 태우면 승인 대기 중인 draft를 계속 비용 들여 재교정하는
+    낭비가 생기므로 필요해짐. 검토 화면에서 운영자가 본문을 직접 고친
+    뒤에도 `corrected_at`은 그대로라 재교정 대상이 안 됨(사람이 손댄 걸
+    배치가 다시 덮어쓰지 않음). 기존 momo_zoom.db에는 없던 컬럼이라
+    `_has_column` 체크 후 자동 `ALTER TABLE`(재실행 안전) - 스키마
+    (`zoom_pipeline_core.py`)에도 반영해 새 DB는 처음부터 컬럼이 있음.
+    로컬 DB의 기존 78건은 전부 "이미 교정 완료"로 backfill함(다음 실행 때
+    전부 재교정되는 걸 막기 위함).
+  - **`generate_reports.py`/`correct_reports.py` 둘 다 인자 없이 실행하면
+    자동 탐색 모드**: `generate_reports.py`는 전체 class_meeting을 (학생별
+    기존 report는 그대로 스킵하니 안전), `correct_reports.py`는
+    `status='draft' AND corrected_at IS NULL`인 것만 있는 class_meeting을
+    탐색. 특정 class_meeting id를 인자로 주면 그것만 처리(수동 운영은
+    그대로 가능).
+  - **로그에서 학생 실명 제거(기본 실행)**: 이 배치들은 이제 무인으로
+    돌고 출력이 서버 journald로 그대로 들어간다 - momoai_web에서 겪은
+    "DEBUG 로그에 이메일 PII 유출" 사고와 같은 유형의 위험이라, 기본
+    실행에서는 로그에 `student_id`/`report_id`만 찍고 실명은 안 찍는다.
+    `--verbose`를 줘야 실명까지 찍는다(로컬에서 실패 원인 파악할 때만
+    사용). collector.py가 이미 같은 원칙(기본 요약 한 줄, --verbose로
+    상세)이었던 걸 두 스크립트에도 맞춤.
+- **push + GCP 배포 완료** (2026-08-31): 로컬 커밋을 push해서
+  `.github/workflows/deploy.yml`이 자동으로 GCP 서버에 aprolabs 코드를
+  반영. `momo_zoom.db`와 zoom_reports 자체 `.env`(ANTHROPIC_API_KEY 등)는
+  git에 없는 파일이라 배포에 포함 안 됨 - 별도로 서버에 직접 옮김(scp).
+  기존 로컬 DB(78건 draft, 이미 교정까지 완료)를 그대로 서버로 복사해서
+  시작(사용자 결정) - 서버에서 처음부터 다시 수집·생성하지 않음.
 
 **다음 작업 (우선순위 순)**
-- 운영(백필, 재시도, 알림) - 필요해지면
+- 운영(재시도, 알림) - 필요해지면. 백필은 서버 DB 이전으로 이미 해결됨
 
 ---
 

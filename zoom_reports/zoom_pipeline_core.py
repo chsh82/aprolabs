@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS report (
     student_id        INTEGER NOT NULL REFERENCES student(id),
     body_md           TEXT,
     status            TEXT NOT NULL DEFAULT 'draft',
+    corrected_at      TEXT,   -- 고유명사 교정 완료 시각. NULL이면 correct_reports.py가 아직 처리 안 함
     approved_by       INTEGER REFERENCES instructor(id),
     approved_at       TEXT,
     published_at      TEXT,
