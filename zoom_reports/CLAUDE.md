@@ -412,9 +412,22 @@ Server-to-Server OAuth (app type: Server-to-Server OAuth)
 - **push + GCP 배포 완료** (2026-08-31): 로컬 커밋을 push해서
   `.github/workflows/deploy.yml`이 자동으로 GCP 서버에 aprolabs 코드를
   반영. `momo_zoom.db`와 zoom_reports 자체 `.env`(ANTHROPIC_API_KEY 등)는
-  git에 없는 파일이라 배포에 포함 안 됨 - 별도로 서버에 직접 옮김(scp).
+  git에 없는 파일이라 배포에 포함 안 됨 - 별도로 서버에 직접 옮김(scp,
+  `.env`/`momo_zoom.db` 둘 다 `chmod 600`으로 제한).
   기존 로컬 DB(78건 draft, 이미 교정까지 완료)를 그대로 서버로 복사해서
   시작(사용자 결정) - 서버에서 처음부터 다시 수집·생성하지 않음.
+  - **서버에서 실측 확인**: `zoom-pipeline.timer` 설치 직후(`Persistent=true`
+    + 첫 활성화) 파이프라인이 즉시 1회 자동 실행됨 - collector가 실제
+    Zoom API에서 12건 조회(신규 0건, 로컬과 이미 동기화된 상태),
+    map_sessions/migrate_class_meeting/generate_reports/correct_reports
+    전부 로컬과 동일한 결과로 idempotent 확인(생성 0건, 교정 0건, 전부
+    이미 처리됨). **journald 로그 전체에 학생 실명 0건** - PII 안전장치
+    실측 확인. aprolabs 로그인 후 `/zoom-summaries`, `/zoom-summaries/1`
+    둘 다 로컬과 동일한 데이터로 정상 렌더링 확인.
+  - **주의**: 이제 서버가 "진짜" 운영 DB다. 로컬에서 collector/generate/
+    correct를 다시 돌리면 로컬 DB와 서버 DB가 서로 다르게 갈라진다 -
+    앞으로 정기 실행은 서버 타이머에 맡기고, 로컬에서는 코드 수정·테스트
+    목적으로만 돌릴 것(돌린 뒤에는 서버 DB와 동기화할 필요 없는지 확인).
 
 **다음 작업 (우선순위 순)**
 - 운영(재시도, 알림) - 필요해지면. 백필은 서버 DB 이전으로 이미 해결됨
