@@ -31,7 +31,8 @@ class Term(Base):
     pos = Column(Text, nullable=True)
     sense_category = Column(Text, nullable=True, index=True)
     subject_category = Column(Text, nullable=True)
-    grade_level = Column(Integer, nullable=True, index=True)  # 1~12 (초1=1 ... 고3=12)
+    grade_level = Column(Integer, nullable=True, index=True)  # 1~12 (초1=1 ... 고3=12) - 삭제하지 않음
+    level = Column(Integer, nullable=True, index=True)  # 0~6 (초1~2=0 ... 고3=6) - docs/literacy/04-스키마리딩어휘.md
     grade_source = Column(Text, nullable=False, default="auto")  # auto/manual
     source = Column(Text, nullable=False)
     license = Column(Text, nullable=True)
