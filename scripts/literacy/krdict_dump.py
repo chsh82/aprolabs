@@ -32,6 +32,9 @@ class Entry:
     headword: str
     lexical_unit: str  # 단어/구/관용구/속담/문법‧표현
     definitions: list[str] = field(default_factory=list)  # Sense 순서대로
+    pos: str | None = None              # 품사(단어/구/문법·표현에만 있음, 속담/관용구는 None)
+    sense_category: str | None = None   # feat[@att='semanticCategory']
+    subject_category: str | None = None  # feat[@att='subjectCategiory'] - 원본 덤프 자체가 이 스펠링(오타)임
 
 
 def download_dump(force: bool = False) -> Path:
@@ -90,9 +93,18 @@ def iter_entries(xml_paths: list[Path]):
                 dfeat = sense.find("feat[@att='definition']")
                 definitions.append(dfeat.get("val") if dfeat is not None else "")
 
+            pos_feat = lex_entry.find("feat[@att='partOfSpeech']")
+            sense_cat_feat = lex_entry.find("feat[@att='semanticCategory']")
+            # 원본 덤프 자체에 오타(subjectCategiory)가 있음 - subjectCategory(정상 스펠링)는
+            # 0건, subjectCategiory가 6,381건으로 실제로 쓰이는 값. 그대로 맞춰서 읽는다.
+            subject_cat_feat = lex_entry.find("feat[@att='subjectCategiory']")
+
             yield Entry(
                 external_id=external_id,
                 headword=headword_feat.get("val"),
                 lexical_unit=unit_feat.get("val"),
                 definitions=definitions,
+                pos=pos_feat.get("val") if pos_feat is not None else None,
+                sense_category=sense_cat_feat.get("val") if sense_cat_feat is not None else None,
+                subject_category=subject_cat_feat.get("val") if subject_cat_feat is not None else None,
             )
