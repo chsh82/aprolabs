@@ -47,3 +47,13 @@ aprolabs.db.bak_*
 # Internal reports (not for repo)
 golden_tests/resegment_report.json
 golden_tests/stem_bogi_before.json
+
+# 문해력 DB 원본 덤프/API 응답 (용량 크고 재수집 가능 - .gitkeep만 유지, data/literacy.db는 이미 *.db로 무시됨)
+raw/*
+!raw/.gitkeep
+
+# 교재 어휘 적재 시 생성되는 매칭 실패 목록 - 재생성 가능, 커밋 안 함
+data/literacy/unmatched.csv
+
+# 퀴즈 생성 검수용 엑셀 - 재생성 가능, 커밋 안 함
+data/literacy/quiz_review_*.xlsx

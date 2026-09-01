@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}문항 검수 통계{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-bold">문항 검수 통계</h1>
+  <a href="/literacy/review/quiz" class="text-sm text-blue-600 hover:underline">← 검수로 돌아가기</a>
+</div>
+
+<h2 class="text-sm font-semibold text-gray-500 mb-2">review_status 분포</h2>
+<div class="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100 mb-8">
+  {% for status, cnt in status_counts.items() %}
+  <div class="flex justify-between px-4 py-2 text-sm">
+    <span>{{ status }}</span><span class="text-gray-500">{{ cnt }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<h2 class="text-sm font-semibold text-gray-500 mb-2">X 판정 사유 분포 (다음 프롬프트 개선 근거)</h2>
+<div class="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100">
+  {% for reason, cnt in reason_counts.items() %}
+  <div class="flex justify-between px-4 py-2 text-sm">
+    <span>{{ reason }}</span><span class="text-gray-500">{{ cnt }}</span>
+  </div>
+  {% else %}
+  <div class="px-4 py-3 text-sm text-gray-400">아직 X 판정 없음</div>
+  {% endfor %}
+</div>
+{% endblock %}

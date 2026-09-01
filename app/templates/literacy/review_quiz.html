@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}문항 검수{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-3xl mx-auto px-6 py-6" style="height:100%; display:flex; flex-direction:column;">
+
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl font-bold">문항 검수</h1>
+    <div class="text-sm text-gray-500">검수완료 {{ done }} / {{ total }}</div>
+  </div>
+  <div class="w-full bg-gray-100 rounded-full h-2 mb-4">
+    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (done / total * 100) if total else 0 }}%"></div>
+  </div>
+
+  <form class="flex gap-2 mb-4 text-sm" method="get" action="/literacy/review/quiz">
+    <select name="level" class="border rounded px-2 py-1">
+      <option value="">레벨 전체</option>
+      {% for l in range(0,7) %}<option value="{{ l }}" {% if level == l|string %}selected{% endif %}>레벨 {{ l }}</option>{% endfor %}
+    </select>
+    <select name="source" class="border rounded px-2 py-1">
+      <option value="">출처 전체</option>
+      {% for s in ["momo-textbook","schemareading-tooldict","schemareading-schema","krdict"] %}
+      <option value="{{ s }}" {% if source == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <select name="category" class="border rounded px-2 py-1">
+      <option value="">카테고리 전체</option>
+      {% for c in ["어휘","속담"] %}<option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+    <button class="bg-gray-200 rounded px-3 py-1">필터 적용</button>
+  </form>
+
+  {% if not quiz %}
+  <div class="text-gray-400 text-center py-20">검수 대상이 없습니다.</div>
+  {% else %}
+  <div id="card" class="bg-white border border-gray-200 rounded-xl p-6 flex-1 overflow-y-auto"
+       data-id="{{ quiz.id }}" data-prev="{{ prev_id or '' }}" data-next="{{ next_id or '' }}">
+    <div class="text-sm text-gray-500 mb-1">
+      {{ term.headword }} · 레벨 {{ term.level if term.level is not none else '-' }} · {{ term.source }}
+      {% if term.sense_category %}· {{ term.sense_category }}{% endif %}
+    </div>
+    <div class="text-lg font-medium mb-4">{{ quiz.question }}</div>
+
+    <div class="space-y-2 mb-4">
+      {% for opt in distractors + [quiz.correct_answer] %}
+      <div class="px-3 py-2 rounded-lg border {% if opt == quiz.correct_answer %}border-green-400 bg-green-50{% else %}border-gray-200{% endif %}">
+        {% if opt == quiz.correct_answer %}<span class="text-green-600 font-semibold">[정답]</span>{% endif %}
+        {{ opt }}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-xs text-gray-400 mb-4">
+      원본 정답(terms.definition): {{ term.definition }}
+    </div>
+
+    <div class="flex gap-2 mb-3">
+      <button onclick="judge('O')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">O 합격 (1)</button>
+      <button onclick="showReject()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium">X 불합격 (2)</button>
+      <button onclick="judge('보류')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium">보류 (3)</button>
+    </div>
+
+    <div id="reject-panel" class="hidden mb-3 border border-red-200 rounded-lg p-3 bg-red-50">
+      <div class="text-sm font-medium mb-2">불합격 사유(필수)</div>
+      {% for code, label in reject_reasons %}
+      <label class="flex items-center gap-2 text-sm mb-1">
+        <input type="radio" name="reject_reason" value="{{ code }}"> {{ label }}
+      </label>
+      {% endfor %}
+      <button onclick="judge('X')" class="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm">X로 저장</button>
+    </div>
+
+    <textarea id="note" placeholder="메모(선택)" class="w-full border rounded-lg px-3 py-2 text-sm" rows="2">{{ quiz.note or '' }}</textarea>
+    <div id="save-error" class="text-red-600 text-sm mt-2 hidden"></div>
+  </div>
+
+  <div class="flex justify-between items-center mt-4 text-sm">
+    <a href="/literacy/review/quiz?id={{ prev_id }}&level={{ level or '' }}&source={{ source or '' }}&category={{ category or '' }}"
+       class="{% if not prev_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전 (←)</a>
+    <div class="text-gray-400">단축키: 1=O 2=X 3=보류 ←/→=이동</div>
+    <a href="/literacy/review/quiz?id={{ next_id }}&level={{ level or '' }}&source={{ source or '' }}&category={{ category or '' }}"
+       class="{% if not next_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 (→) →</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const NEXT_URL = "/literacy/review/quiz?id={{ next_id or '' }}&level={{ level or '' }}&source={{ source or '' }}&category={{ category or '' }}";
+const PREV_URL = "/literacy/review/quiz?id={{ prev_id or '' }}&level={{ level or '' }}&source={{ source or '' }}&category={{ category or '' }}";
+const HAS_NEXT = {{ 'true' if next_id else 'false' }};
+const HAS_PREV = {{ 'true' if prev_id else 'false' }};
+
+function showReject() {
+  document.getElementById('reject-panel').classList.remove('hidden');
+}
+
+async function judge(verdict) {
+  const card = document.getElementById('card');
+  const id = card.dataset.id;
+  let reject_reason = null;
+  if (verdict === 'X') {
+    const checked = document.querySelector('input[name="reject_reason"]:checked');
+    if (!checked) { showSaveError('불합격 사유를 선택하세요'); return; }
+    reject_reason = checked.value;
+  }
+  const note = document.getElementById('note').value;
+  try {
+    const res = await fetch('/literacy/review/quiz/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: Number(id), verdict, reject_reason, note}),
+    });
+    const data = await res.json();
+    if (!data.ok) { showSaveError(data.error || '저장 실패'); return; }
+    window.location = HAS_NEXT ? NEXT_URL : '/literacy/review';
+  } catch (e) {
+    showSaveError('네트워크 오류: ' + e);
+  }
+}
+
+function showSaveError(msg) {
+  const el = document.getElementById('save-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.key === '1') judge('O');
+  else if (e.key === '2') showReject();
+  else if (e.key === '3') judge('보류');
+  else if (e.key === 'ArrowLeft') { if (HAS_PREV) window.location = PREV_URL; }
+  else if (e.key === 'ArrowRight') { if (HAS_NEXT) window.location = NEXT_URL; }
+});
+</script>
+{% endblock %}

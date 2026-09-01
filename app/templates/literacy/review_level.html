@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}속담·관용구 레벨 부여{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-3xl mx-auto px-6 py-6" style="height:100%; display:flex; flex-direction:column;">
+
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl font-bold">속담·관용구 레벨 부여</h1>
+    <div class="text-sm text-gray-500">완료 {{ done }} / {{ total }}</div>
+  </div>
+  <div class="w-full bg-gray-100 rounded-full h-2 mb-4">
+    <div class="bg-purple-500 h-2 rounded-full" style="width: {{ (done / total * 100) if total else 0 }}%"></div>
+  </div>
+
+  <form class="flex gap-2 mb-4 text-sm" method="get" action="/literacy/review/level">
+    <select name="category" class="border rounded px-2 py-1">
+      <option value="">카테고리 전체</option>
+      {% for c in ["속담","관용구"] %}<option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+    <button class="bg-gray-200 rounded px-3 py-1">필터 적용</button>
+  </form>
+
+  {% if not term %}
+  <div class="text-gray-400 text-center py-20">대상이 없습니다.</div>
+  {% else %}
+  <div id="card" class="bg-white border border-gray-200 rounded-xl p-6 flex-1 overflow-y-auto" data-id="{{ term.id }}">
+    <div class="text-sm text-gray-500 mb-1">{{ term.category }} · 현재 level={{ term.level if term.level is not none else 'NULL' }}</div>
+    <div class="text-2xl font-bold mb-2">{{ term.headword }}</div>
+    <div class="text-gray-700 mb-4">{{ term.definition }}</div>
+
+    {% if similar %}
+    <div class="mb-4 text-sm">
+      <div class="text-gray-400 mb-1">같은 레벨의 다른 {{ term.category }}(참고)</div>
+      <ul class="list-disc list-inside space-y-1 text-gray-600">
+        {% for s in similar %}<li>{{ s.headword }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-4 gap-2 mb-3">
+      {% for l in range(0,7) %}
+      <button onclick="save({{ l }})" class="bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-3 rounded-lg font-medium">
+        레벨 {{ l }} <span class="text-xs text-purple-500">({{ l }})</span>
+      </button>
+      {% endfor %}
+      <button onclick="save(null)" class="bg-gray-200 hover:bg-gray-300 px-3 py-3 rounded-lg font-medium col-span-1">해당 없음</button>
+    </div>
+    <div id="save-error" class="text-red-600 text-sm mt-2 hidden"></div>
+    <button onclick="skip()" class="text-sm text-gray-500 hover:underline">건너뛰기</button>
+  </div>
+
+  <div class="flex justify-between items-center mt-4 text-sm">
+    <a href="/literacy/review/level?id={{ prev_id }}&category={{ category or '' }}"
+       class="{% if not prev_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전</a>
+    <div class="text-gray-400">단축키: 0~6=레벨 선택</div>
+    <a href="/literacy/review/level?id={{ next_id }}&category={{ category or '' }}"
+       class="{% if not next_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 →</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const NEXT_URL = "/literacy/review/level?id={{ next_id or '' }}&category={{ category or '' }}";
+const HAS_NEXT = {{ 'true' if next_id else 'false' }};
+
+async function save(level) {
+  const card = document.getElementById('card');
+  const id = card.dataset.id;
+  try {
+    const res = await fetch('/literacy/review/level/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: Number(id), level}),
+    });
+    const data = await res.json();
+    if (!data.ok) { showSaveError(data.error || '저장 실패'); return; }
+    window.location = HAS_NEXT ? NEXT_URL : '/literacy/review';
+  } catch (e) {
+    showSaveError('네트워크 오류: ' + e);
+  }
+}
+
+function skip() {
+  window.location = HAS_NEXT ? NEXT_URL : '/literacy/review';
+}
+
+function showSaveError(msg) {
+  const el = document.getElementById('save-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key >= '0' && e.key <= '6') save(Number(e.key));
+});
+</script>
+{% endblock %}

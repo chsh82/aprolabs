@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}뜻풀이 작성{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-3xl mx-auto px-6 py-6" style="height:100%; display:flex; flex-direction:column;">
+
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl font-bold">뜻풀이 작성</h1>
+    <div class="text-sm text-gray-500">작성완료 {{ done }} / {{ total }}</div>
+  </div>
+  <div class="w-full bg-gray-100 rounded-full h-2 mb-4">
+    <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (done / total * 100) if total else 0 }}%"></div>
+  </div>
+
+  <form class="flex gap-2 mb-4 text-sm" method="get" action="/literacy/review/definition">
+    <select name="level" class="border rounded px-2 py-1">
+      <option value="">레벨 전체</option>
+      {% for l in range(0,7) %}<option value="{{ l }}" {% if level == l|string %}selected{% endif %}>레벨 {{ l }}</option>{% endfor %}
+    </select>
+    <select name="source" class="border rounded px-2 py-1">
+      <option value="">출처 전체</option>
+      {% for s in ["momo-textbook","schemareading-tooldict","schemareading-schema"] %}
+      <option value="{{ s }}" {% if source == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    <button class="bg-gray-200 rounded px-3 py-1">필터 적용</button>
+  </form>
+
+  {% if not term %}
+  <div class="text-gray-400 text-center py-20">작성 대상이 없습니다.</div>
+  {% else %}
+  <div id="card" class="bg-white border border-gray-200 rounded-xl p-6 flex-1 overflow-y-auto" data-id="{{ term.id }}">
+    <div class="text-sm text-gray-500 mb-1">
+      레벨 {{ term.level if term.level is not none else '-' }} ·
+      {{ term.subject_category or '-' }} / {{ term.sense_category or '-' }} · {{ term.source }}
+    </div>
+    <div class="text-2xl font-bold mb-4">{{ term.headword }}</div>
+
+    {% if references %}
+    <div class="mb-4 text-sm">
+      <div class="text-gray-400 mb-1">같은 소분류의 다른 어휘 뜻풀이(문체 참고)</div>
+      <ul class="list-disc list-inside space-y-1 text-gray-600">
+        {% for ref in references %}
+        <li><b>{{ ref.headword }}</b>: {{ ref.definition }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <textarea id="definition" placeholder="뜻풀이를 입력하세요" class="w-full border rounded-lg px-3 py-2" rows="3"></textarea>
+    <div id="save-error" class="text-red-600 text-sm mt-2 hidden"></div>
+    <div class="flex gap-2 mt-3">
+      <button onclick="save()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium">저장 (Enter)</button>
+      <button onclick="skip()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">건너뛰기</button>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center mt-4 text-sm">
+    <a href="/literacy/review/definition?id={{ prev_id }}&level={{ level or '' }}&source={{ source or '' }}"
+       class="{% if not prev_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전</a>
+    <div class="text-gray-400">단축키: Enter=저장</div>
+    <a href="/literacy/review/definition?id={{ next_id }}&level={{ level or '' }}&source={{ source or '' }}"
+       class="{% if not next_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 →</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const NEXT_URL = "/literacy/review/definition?id={{ next_id or '' }}&level={{ level or '' }}&source={{ source or '' }}";
+const HAS_NEXT = {{ 'true' if next_id else 'false' }};
+
+async function save() {
+  const card = document.getElementById('card');
+  const id = card.dataset.id;
+  const definition = document.getElementById('definition').value;
+  try {
+    const res = await fetch('/literacy/review/definition/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: Number(id), definition}),
+    });
+    const data = await res.json();
+    if (!data.ok) { showSaveError(data.error || '저장 실패'); return; }
+    window.location = HAS_NEXT ? NEXT_URL : '/literacy/review';
+  } catch (e) {
+    showSaveError('네트워크 오류: ' + e);
+  }
+}
+
+function skip() {
+  window.location = HAS_NEXT ? NEXT_URL : '/literacy/review';
+}
+
+function showSaveError(msg) {
+  const el = document.getElementById('save-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.id !== 'definition') save();
+});
+</script>
+{% endblock %}
