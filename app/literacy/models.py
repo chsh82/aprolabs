@@ -41,6 +41,7 @@ class Term(Base):
     updated_at = Column(DateTime, nullable=True)
     review_status = Column(Text, nullable=False, default="검수전", index=True)  # 검수전/검수완료/보류/제외
     note = Column(Text, nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)  # 검수 UI(Phase 6)에서 판정한 시각
 
     __table_args__ = (
         UniqueConstraint("source", "external_id", name="uq_terms_source_external_id"),
@@ -101,6 +102,9 @@ class QuizItem(Base):
     generated_by = Column(Text, nullable=True)  # api/manual
     model = Column(Text, nullable=True)  # 생성에 사용한 모델명
     review_status = Column(Text, nullable=False, default="검수전", index=True)
+    note = Column(Text, nullable=True)  # 검수 메모(자유 입력)
+    reject_reason = Column(Text, nullable=True, index=True)  # X 판정 사유 코드 - 집계 대상이라 note와 분리
+    reviewed_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
 
 

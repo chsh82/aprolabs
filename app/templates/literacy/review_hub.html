@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}문해력 DB 검수{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">문해력 DB 검수</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+  <a href="/literacy/review/quiz" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+    <div class="text-sm text-gray-500 mb-1">문항 검수</div>
+    <div class="text-2xl font-bold text-blue-600">{{ quiz_done }} / {{ quiz_total }}</div>
+    <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+      <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (quiz_done / quiz_total * 100) if quiz_total else 0 }}%"></div>
+    </div>
+  </a>
+  <a href="/literacy/review/definition" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+    <div class="text-sm text-gray-500 mb-1">뜻풀이 작성</div>
+    <div class="text-2xl font-bold text-emerald-600">{{ def_done }} / {{ def_total }}</div>
+    <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+      <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (def_done / def_total * 100) if def_total else 0 }}%"></div>
+    </div>
+  </a>
+  <a href="/literacy/review/level" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+    <div class="text-sm text-gray-500 mb-1">속담·관용구 레벨 부여</div>
+    <div class="text-2xl font-bold text-purple-600">{{ level_done }} / {{ level_total }}</div>
+    <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+      <div class="bg-purple-500 h-2 rounded-full" style="width: {{ (level_done / level_total * 100) if level_total else 0 }}%"></div>
+    </div>
+  </a>
+</div>
+
+<div class="mb-2">
+  <a href="/literacy/review/quiz/stats" class="text-sm text-blue-600 hover:underline">문항 검수 사유 통계 →</a>
+</div>
+
+<h2 class="text-lg font-semibold mt-8 mb-3">terms 현황</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+  <div class="bg-white border border-gray-200 rounded-xl p-4">
+    <div class="text-xs text-gray-400 mb-2">카테고리별</div>
+    {% for cat, cnt in category_counts.items() %}
+    <div class="flex justify-between text-sm"><span>{{ cat }}</span><span class="text-gray-500">{{ cnt }}</span></div>
+    {% endfor %}
+  </div>
+  <div class="bg-white border border-gray-200 rounded-xl p-4">
+    <div class="text-xs text-gray-400 mb-2">레벨별</div>
+    {% for lvl, cnt in level_counts.items() %}
+    <div class="flex justify-between text-sm"><span>{{ lvl if lvl is not none else 'NULL' }}</span><span class="text-gray-500">{{ cnt }}</span></div>
+    {% endfor %}
+  </div>
+  <div class="bg-white border border-gray-200 rounded-xl p-4">
+    <div class="text-xs text-gray-400 mb-2">review_status별</div>
+    {% for st, cnt in review_status_counts.items() %}
+    <div class="flex justify-between text-sm"><span>{{ st }}</span><span class="text-gray-500">{{ cnt }}</span></div>
+    {% endfor %}
+  </div>
+</div>
+
+<h2 class="text-lg font-semibold mt-8 mb-3">최근 검수 활동 (20건)</h2>
+<div class="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100">
+  {% for r in recent %}
+  <div class="flex justify-between px-4 py-2 text-sm">
+    <span>{% if r.kind == 'term' %}📖 {{ r.headword }}{% else %}❓ 문항 #{{ r.id }}{% endif %}</span>
+    <span class="text-gray-400">{{ r.at.strftime('%Y-%m-%d %H:%M') if r.at else '' }}</span>
+  </div>
+  {% else %}
+  <div class="px-4 py-3 text-sm text-gray-400">아직 검수 기록 없음</div>
+  {% endfor %}
+</div>
+{% endblock %}
