@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Zoom 요약 수집 -> 매핑 -> 회차 그룹핑 -> 초안 생성 -> 고유명사 교정.
+# Zoom 요약 수집 -> 매핑 -> 회차 그룹핑 -> 초안 생성 -> 고유명사 교정 -> QA 검수.
 # zoom-pipeline.timer(systemd)가 이 스크립트를 주기적으로 실행한다.
 #
 # 각 단계는 전부 재실행 안전(idempotent)하다 - 한 단계가 실패해도 다음
@@ -30,6 +30,7 @@ run_step map_sessions.py
 run_step migrate_class_meeting.py
 run_step generate_reports.py
 run_step correct_reports.py
+run_step qa_reports.py
 echo "=== $(date -Iseconds) 파이프라인 종료 (상태 $STATUS) ==="
 
 exit $STATUS
