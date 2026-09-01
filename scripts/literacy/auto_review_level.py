@@ -1,12 +1,15 @@
-"""속담·관용구(level IS NULL) 레벨 자동 부여 - 완전자동(사람 확인 없음).
+"""속담·관용구·사자성어(level IS NULL) 레벨 자동 부여 - 완전자동(사람 확인 없음).
 
 사용자 결정(2026-09-02): 검수 UI(수동)와 별개로, Gemini가 판정하면 사람
 확인 없이 바로 확정한다. 다만 "누가/무엇이 판정했는지"는 note에 남겨서
 나중에 구분할 수 있게 한다 - review_status='검수완료'가 사람 검수인지
 AI 자동 판정인지 note로만 구분 가능(스키마는 안 바꿈).
 
-대상: terms WHERE category IN ('속담','관용구') AND level IS NULL
-      AND review_status != '제외'
+대상: terms WHERE category IN ('속담','관용구','사자성어') AND level IS NULL
+      AND definition IS NOT NULL AND review_status != '제외'
+      (사자성어 225건 중 정의가 없는 6건은 review_status='보류'라 여기서
+      같이 걸릴 뻔했는데, definition IS NOT NULL 조건으로 제외했다 - 정의가
+      생기기 전에는 레벨을 판단할 근거가 없다)
 
 레벨 0~6 중 하나 또는 "해당없음"(교육과정에 낼 만하지 않음 - review_UI의
 "해당없음" 버튼과 같은 의미) 판정. "해당없음"이면 review_status='제외'.
@@ -58,7 +61,8 @@ def select_targets(conn: sqlite3.Connection, limit: int | None) -> list[dict]:
         """
         SELECT id, headword, definition, category
         FROM terms
-        WHERE category IN ('속담','관용구') AND level IS NULL AND review_status != '제외'
+        WHERE category IN ('속담','관용구','사자성어') AND level IS NULL
+          AND definition IS NOT NULL AND review_status != '제외'
         ORDER BY id
         """
     ).fetchall()
