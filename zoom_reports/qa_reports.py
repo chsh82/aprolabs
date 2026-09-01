@@ -144,11 +144,15 @@ def build_qa_prompt(class_name: str, meeting_date: str, target_name: str,
 
 
 def _extract_json(text: str) -> dict:
+    """모델이 지시를 안 지키고 JSON 뒤에 부가 설명을 덧붙이는 경우가 있어
+    (실측: "Extra data" 오류로 2/78건 실패), json.loads 대신 raw_decode로
+    첫 JSON 값만 읽고 뒤에 남는 텍스트는 무시한다."""
     text = text.strip()
     m = re.search(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
     if m:
         text = m.group(1).strip()
-    return json.loads(text)
+    obj, _ = json.JSONDecoder().raw_decode(text)
+    return obj
 
 
 def parse_qa_response(raw_text: str) -> list[dict]:
