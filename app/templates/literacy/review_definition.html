@@ -55,10 +55,10 @@
   </div>
 
   <div class="flex justify-between items-center mt-4 text-sm">
-    <a href="/literacy/review/definition?id={{ prev_id }}&level={{ level or '' }}&source={{ source or '' }}"
+    <a href="/literacy/review/definition?id={{ prev_id or '' }}&level={{ level or '' }}&source={{ source or '' }}"
        class="{% if not prev_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전</a>
     <div class="text-gray-400">단축키: Enter=저장</div>
-    <a href="/literacy/review/definition?id={{ next_id }}&level={{ level or '' }}&source={{ source or '' }}"
+    <a href="/literacy/review/definition?id={{ next_id or '' }}&level={{ level or '' }}&source={{ source or '' }}"
        class="{% if not next_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 →</a>
   </div>
   {% endif %}

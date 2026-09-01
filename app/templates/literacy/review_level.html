@@ -49,10 +49,10 @@
   </div>
 
   <div class="flex justify-between items-center mt-4 text-sm">
-    <a href="/literacy/review/level?id={{ prev_id }}&category={{ category or '' }}"
+    <a href="/literacy/review/level?id={{ prev_id or '' }}&category={{ category or '' }}"
        class="{% if not prev_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전</a>
     <div class="text-gray-400">단축키: 0~6=레벨 선택</div>
-    <a href="/literacy/review/level?id={{ next_id }}&category={{ category or '' }}"
+    <a href="/literacy/review/level?id={{ next_id or '' }}&category={{ category or '' }}"
        class="{% if not next_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 →</a>
   </div>
   {% endif %}
