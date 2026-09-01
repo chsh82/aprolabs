@@ -132,11 +132,38 @@ CREATE TABLE IF NOT EXISTS report (
     UNIQUE (class_meeting_id, student_id)
 );
 
+-- qa_reports.py 배치 결과. report는 절대 건드리지 않고 여기에만 쌓는다.
+-- status: fail_masking | fail_length | pass_clean | pass_with_flags
+-- 1단계(코드) 실패는 fail_masking/fail_length로 끝나고 2단계(LLM)로 안 간다.
+CREATE TABLE IF NOT EXISTS report_qa (
+    id              INTEGER PRIMARY KEY,
+    report_id       INTEGER NOT NULL REFERENCES report(id),
+    status          TEXT NOT NULL,
+    fail_reason     TEXT,
+    body_length     INTEGER,
+    median_length   REAL,
+    model           TEXT,
+    raw_response    TEXT,
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (report_id)
+);
+
+-- flag_type: 근거없음 | 모순 | 금칙_비교 | 금칙_단정
+-- sentence는 report.body_md에서 인용한 문장(이미 마스킹된 상태의 본문에서 뽑음).
+CREATE TABLE IF NOT EXISTS report_qa_flag (
+    id              INTEGER PRIMARY KEY,
+    report_qa_id    INTEGER NOT NULL REFERENCES report_qa(id),
+    flag_type       TEXT NOT NULL,
+    sentence        TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_session_status      ON session(status);
 CREATE INDEX IF NOT EXISTS idx_session_started     ON session(started_at);
 CREATE INDEX IF NOT EXISTS idx_session_meeting     ON session(class_meeting_id);
 CREATE INDEX IF NOT EXISTS idx_class_meeting_class  ON class_meeting(class_id, meeting_date);
 CREATE INDEX IF NOT EXISTS idx_report_status       ON report(status);
+CREATE INDEX IF NOT EXISTS idx_report_qa_status    ON report_qa(status);
+CREATE INDEX IF NOT EXISTS idx_report_qa_flag_qa   ON report_qa_flag(report_qa_id);
 """
 
 

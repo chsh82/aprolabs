@@ -229,10 +229,26 @@ def report_detail(
     if not row:
         raise HTTPException(status_code=404, detail="리포트를 찾을 수 없습니다.")
 
+    qa = conn.execute(
+        "SELECT status, fail_reason, body_length, median_length, model, created_at "
+        "FROM report_qa WHERE report_id = ?",
+        (report_id,),
+    ).fetchone()
+    qa_flags = []
+    if qa:
+        qa_flags = conn.execute(
+            "SELECT flag_type, sentence FROM report_qa_flag "
+            "WHERE report_qa_id = (SELECT id FROM report_qa WHERE report_id = ?) "
+            "ORDER BY flag_type",
+            (report_id,),
+        ).fetchall()
+
     return templates.TemplateResponse("zoom_summaries/report_detail.html", {
         "request": request,
         "report": dict(row),
         "class_meeting_id": class_meeting_id,
+        "qa": dict(qa) if qa else None,
+        "qa_flags": qa_flags,
     })
 
 

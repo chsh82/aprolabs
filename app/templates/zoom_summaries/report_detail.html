@@ -66,6 +66,57 @@
   </div>
 </div>
 
+{% set qa_status_label = {
+  'fail_masking': '1단계 실패 - 마스킹', 'fail_length': '1단계 실패 - 길이 이상치',
+  'pass_clean': '통과 - 문제 없음', 'pass_with_flags': '통과 - 지적사항 있음'
+} %}
+{% set qa_status_color = {
+  'fail_masking': 'bg-red-100 text-red-700', 'fail_length': 'bg-orange-100 text-orange-700',
+  'pass_clean': 'bg-green-100 text-green-700', 'pass_with_flags': 'bg-yellow-100 text-yellow-700'
+} %}
+{% set flag_label = {
+  '근거없음': '근거 없음', '모순': '원문과 모순',
+  '금칙_비교': '금칙 표현 - 다른 학생과 비교', '금칙_단정': '금칙 표현 - 부정적 단정'
+} %}
+
+<div class="mt-6">
+  <p class="text-xs font-semibold text-gray-500 mb-2">QA 검수 결과 (qa_reports.py)</p>
+  {% if not qa %}
+  <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm text-gray-400">
+    아직 QA 배치가 이 리포트를 검사하지 않았습니다.
+  </div>
+  {% else %}
+  <div class="bg-white border border-gray-100 rounded-xl p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-xs px-2 py-0.5 rounded-full {{ qa_status_color.get(qa.status, 'bg-gray-100 text-gray-500') }}">
+        {{ qa_status_label.get(qa.status, qa.status) }}
+      </span>
+      <span class="text-xs text-gray-400">{{ qa.created_at }}</span>
+    </div>
+    {% if qa.fail_reason %}
+    <p class="text-sm text-gray-600 mb-2">사유: {{ qa.fail_reason }}</p>
+    {% endif %}
+    {% if qa.body_length and qa.median_length %}
+    <p class="text-xs text-gray-400 mb-2">
+      본문 {{ qa.body_length }}자 · 같은 회차 내 중앙값 {{ "%.0f"|format(qa.median_length) }}자
+    </p>
+    {% endif %}
+    {% if qa_flags %}
+    <ul class="space-y-2 mt-2">
+      {% for f in qa_flags %}
+      <li class="text-sm border-l-2 border-yellow-300 pl-3">
+        <span class="text-xs font-semibold text-yellow-700">{{ flag_label.get(f.flag_type, f.flag_type) }}</span>
+        <p class="text-gray-700">"{{ f.sentence }}"</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% elif qa.status == 'pass_clean' %}
+    <p class="text-sm text-gray-500">지적된 문장 없음.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
   const textarea = document.getElementById('body-md');
