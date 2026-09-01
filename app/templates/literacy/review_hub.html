@@ -4,27 +4,36 @@
 <h1 class="text-2xl font-bold mb-6">문해력 DB 검수</h1>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-  <a href="/literacy/review/quiz" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
-    <div class="text-sm text-gray-500 mb-1">문항 검수</div>
-    <div class="text-2xl font-bold text-blue-600">{{ quiz_done }} / {{ quiz_total }}</div>
-    <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
-      <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (quiz_done / quiz_total * 100) if quiz_total else 0 }}%"></div>
-    </div>
-  </a>
-  <a href="/literacy/review/definition" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
-    <div class="text-sm text-gray-500 mb-1">뜻풀이 작성</div>
-    <div class="text-2xl font-bold text-emerald-600">{{ def_done }} / {{ def_total }}</div>
-    <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
-      <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (def_done / def_total * 100) if def_total else 0 }}%"></div>
-    </div>
-  </a>
-  <a href="/literacy/review/level" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
-    <div class="text-sm text-gray-500 mb-1">속담·관용구 레벨 부여</div>
-    <div class="text-2xl font-bold text-purple-600">{{ level_done }} / {{ level_total }}</div>
-    <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
-      <div class="bg-purple-500 h-2 rounded-full" style="width: {{ (level_done / level_total * 100) if level_total else 0 }}%"></div>
-    </div>
-  </a>
+  <div class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+    <a href="/literacy/review/quiz">
+      <div class="text-sm text-gray-500 mb-1">문항 검수</div>
+      <div class="text-2xl font-bold text-blue-600">{{ quiz_done }} / {{ quiz_total }}</div>
+      <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (quiz_done / quiz_total * 100) if quiz_total else 0 }}%"></div>
+      </div>
+    </a>
+    <a href="/literacy/review/quiz/results" class="text-xs text-blue-500 mt-2 underline block">결과 보기 →</a>
+  </div>
+  <div class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+    <a href="/literacy/review/definition">
+      <div class="text-sm text-gray-500 mb-1">뜻풀이 작성</div>
+      <div class="text-2xl font-bold text-emerald-600">{{ def_done }} / {{ def_total }}</div>
+      <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+        <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (def_done / def_total * 100) if def_total else 0 }}%"></div>
+      </div>
+    </a>
+    <a href="/literacy/review/definition/results" class="text-xs text-emerald-600 mt-2 underline block">결과 보기 →</a>
+  </div>
+  <div class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition">
+    <a href="/literacy/review/level">
+      <div class="text-sm text-gray-500 mb-1">속담·관용구 레벨 부여</div>
+      <div class="text-2xl font-bold text-purple-600">{{ level_done }} / {{ level_total }}</div>
+      <div class="w-full bg-gray-100 rounded-full h-2 mt-3">
+        <div class="bg-purple-500 h-2 rounded-full" style="width: {{ (level_done / level_total * 100) if level_total else 0 }}%"></div>
+      </div>
+    </a>
+    <a href="/literacy/review/level/results" class="text-xs text-purple-600 mt-2 underline block">결과 보기 →</a>
+  </div>
 </div>
 
 <div class="mb-2">

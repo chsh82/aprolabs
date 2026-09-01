@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}문항 검수 결과{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-xl font-bold">문항 검수 결과</h1>
+  <div class="flex gap-3">
+    <a href="/literacy/review/quiz/stats" class="text-sm text-blue-600 hover:underline">통계</a>
+    <a href="/literacy/review" class="text-sm text-blue-600 hover:underline">← 허브로</a>
+  </div>
+</div>
+<div class="text-sm text-gray-500 mb-3">전체 {{ total }}건 (페이지 {{ page }}/{{ total_pages }})</div>
+
+<form class="flex gap-2 mb-4 text-sm" method="get">
+  <select name="review_status" class="border rounded px-2 py-1">
+    <option value="">판정 전체</option>
+    {% for s in ["검수완료","제외","보류"] %}<option value="{{ s }}" {% if review_status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+  </select>
+  <select name="reject_reason" class="border rounded px-2 py-1">
+    <option value="">사유 전체</option>
+    {% for code, label in reject_reasons %}<option value="{{ code }}" {% if reject_reason == code %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <button class="bg-gray-200 rounded px-3 py-1">필터 적용</button>
+</form>
+
+<table class="w-full text-sm bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <thead class="bg-gray-50 text-gray-500">
+    <tr>
+      <th class="px-3 py-2 text-left">표제어</th>
+      <th class="px-3 py-2 text-left">레벨</th>
+      <th class="px-3 py-2 text-left">정답</th>
+      <th class="px-3 py-2 text-left">판정</th>
+      <th class="px-3 py-2 text-left">사유</th>
+      <th class="px-3 py-2 text-left">근거(AI)</th>
+    </tr>
+  </thead>
+  <tbody class="divide-y divide-gray-100">
+    {% for quiz, term in rows %}
+    {% set status_color = {'검수완료': 'bg-green-100 text-green-700', '제외': 'bg-red-100 text-red-700', '보류': 'bg-yellow-100 text-yellow-700'} %}
+    <tr>
+      <td class="px-3 py-2 font-medium">{{ term.headword }}</td>
+      <td class="px-3 py-2">{{ term.level if term.level is not none else '-' }}</td>
+      <td class="px-3 py-2 text-gray-600">{{ quiz.correct_answer }}</td>
+      <td class="px-3 py-2"><span class="text-xs px-2 py-0.5 rounded-full {{ status_color.get(quiz.review_status, 'bg-gray-100') }}">{{ quiz.review_status }}</span></td>
+      <td class="px-3 py-2 text-xs text-gray-500">{{ quiz.reject_reason or '' }}</td>
+      <td class="px-3 py-2 text-xs text-gray-400">{{ quiz.note or '' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="flex justify-between mt-4 text-sm">
+  <a href="?page={{ page-1 }}&review_status={{ review_status or '' }}&reject_reason={{ reject_reason or '' }}"
+     class="{% if page <= 1 %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전 페이지</a>
+  <a href="?page={{ page+1 }}&review_status={{ review_status or '' }}&reject_reason={{ reject_reason or '' }}"
+     class="{% if page >= total_pages %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 페이지 →</a>
+</div>
+{% endblock %}

@@ -399,3 +399,97 @@ async def review_level_save(request: Request, db: Session = Depends(get_literacy
     term.reviewed_at = datetime.now()
     db.commit()
     return {"ok": True}
+
+
+# ── 결과 보기(목록) - 검수 끝난 내용을 훑어보는 화면. 한 건씩 판정하는
+# review_quiz/definition/level과는 목적이 다르다(판정 아니라 결과 확인이라
+# 지시서의 "목록형 화면 금지"는 여기 해당 안 됨) ──
+
+PAGE_SIZE = 100
+
+
+@router.get("/review/level/results")
+def review_level_results(
+    request: Request,
+    page: int = 1,
+    category: str | None = None,
+    level: str | None = None,
+    db: Session = Depends(get_literacy_db),
+):
+    q = db.query(Term).filter(Term.category.in_(["속담", "관용구"]), Term.reviewed_at.isnot(None))
+    if category:
+        q = q.filter(Term.category == category)
+    if level == "제외":
+        q = q.filter(Term.review_status == "제외")
+    elif level:
+        q = q.filter(Term.level == int(level))
+
+    total = q.count()
+    rows = (
+        q.order_by(Term.level.is_(None), Term.level, Term.id)
+        .offset((page - 1) * PAGE_SIZE)
+        .limit(PAGE_SIZE)
+        .all()
+    )
+    ctx = _base_ctx(
+        request, rows=rows, total=total, page=page,
+        total_pages=max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE),
+        category=category, level=level,
+    )
+    return templates.TemplateResponse("literacy/results_level.html", ctx)
+
+
+@router.get("/review/definition/results")
+def review_definition_results(
+    request: Request,
+    page: int = 1,
+    level: str | None = None,
+    source: str | None = None,
+    db: Session = Depends(get_literacy_db),
+):
+    q = db.query(Term).filter(
+        Term.category == "어휘", Term.reviewed_at.isnot(None),
+        Term.note.like("%AI 자동 생성 뜻풀이%"),
+    )
+    if level:
+        q = q.filter(Term.level == int(level))
+    if source:
+        q = q.filter(Term.source == source)
+
+    total = q.count()
+    rows = q.order_by(Term.id).offset((page - 1) * PAGE_SIZE).limit(PAGE_SIZE).all()
+    ctx = _base_ctx(
+        request, rows=rows, total=total, page=page,
+        total_pages=max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE),
+        level=level, source=source,
+    )
+    return templates.TemplateResponse("literacy/results_definition.html", ctx)
+
+
+@router.get("/review/quiz/results")
+def review_quiz_results(
+    request: Request,
+    page: int = 1,
+    review_status: str | None = None,
+    reject_reason: str | None = None,
+    db: Session = Depends(get_literacy_db),
+):
+    q = (
+        db.query(QuizItem, Term)
+        .join(Term, Term.id == QuizItem.term_id)
+        .filter(QuizItem.quiz_type == QUIZ_TYPE, QuizItem.reviewed_at.isnot(None))
+    )
+    if review_status:
+        q = q.filter(QuizItem.review_status == review_status)
+    if reject_reason:
+        q = q.filter(QuizItem.reject_reason == reject_reason)
+
+    total = q.count()
+    rows = q.order_by(QuizItem.id).offset((page - 1) * PAGE_SIZE).limit(PAGE_SIZE).all()
+    ctx = _base_ctx(
+        request, rows=rows, total=total, page=page,
+        total_pages=max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE),
+        review_status=review_status, reject_reason=reject_reason,
+        reject_reasons=REJECT_REASONS,
+    )
+    return templates.TemplateResponse("literacy/results_quiz.html", ctx)
