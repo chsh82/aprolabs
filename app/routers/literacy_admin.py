@@ -493,3 +493,42 @@ def review_quiz_results(
         reject_reasons=REJECT_REASONS,
     )
     return templates.TemplateResponse("literacy/results_quiz.html", ctx)
+
+
+# ── 전체 조회 - terms 7,087건 전체를 카테고리(어휘/속담/관용구) 무관하게
+# 훑어보는 범용 화면. 위 results_*는 "AI가 손댄 것"만 좁게 보여주는 반면,
+# 이건 AI가 손댔는지와 무관하게 DB에 있는 걸 전부 보여준다. ──
+
+@router.get("/terms")
+def terms_browse(
+    request: Request,
+    page: int = 1,
+    category: str | None = None,
+    level: str | None = None,
+    source: str | None = None,
+    q: str | None = None,
+    db: Session = Depends(get_literacy_db),
+):
+    query = db.query(Term)
+    if category:
+        query = query.filter(Term.category == category)
+    if level:
+        query = query.filter(Term.level == int(level))
+    if source:
+        query = query.filter(Term.source == source)
+    if q:
+        query = query.filter(Term.headword.contains(q))
+
+    total = query.count()
+    rows = query.order_by(Term.id).offset((page - 1) * PAGE_SIZE).limit(PAGE_SIZE).all()
+
+    category_counts = dict(db.query(Term.category, func.count(Term.id)).group_by(Term.category).all())
+    source_counts = dict(db.query(Term.source, func.count(Term.id)).group_by(Term.source).all())
+
+    ctx = _base_ctx(
+        request, rows=rows, total=total, page=page,
+        total_pages=max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE),
+        category=category, level=level, source=source, q=q,
+        category_counts=category_counts, source_counts=source_counts,
+    )
+    return templates.TemplateResponse("literacy/terms_browse.html", ctx)

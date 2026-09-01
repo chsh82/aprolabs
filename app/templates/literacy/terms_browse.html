@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}어휘·속담·관용구 전체 조회{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-xl font-bold">어휘·속담·관용구 전체 조회</h1>
+  <a href="/literacy/review" class="text-sm text-blue-600 hover:underline">← 검수 허브로</a>
+</div>
+<div class="text-sm text-gray-500 mb-3">전체 {{ total }}건 (페이지 {{ page }}/{{ total_pages }})</div>
+
+<div class="flex gap-4 mb-4 text-sm text-gray-500">
+  {% for cat, cnt in category_counts.items() %}<span>{{ cat }}: {{ cnt }}</span>{% endfor %}
+</div>
+
+<form class="flex gap-2 mb-4 text-sm flex-wrap" method="get">
+  <input type="text" name="q" value="{{ q or '' }}" placeholder="표제어 검색" class="border rounded px-2 py-1">
+  <select name="category" class="border rounded px-2 py-1">
+    <option value="">카테고리 전체</option>
+    {% for cat in category_counts.keys() %}<option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>{% endfor %}
+  </select>
+  <select name="level" class="border rounded px-2 py-1">
+    <option value="">레벨 전체</option>
+    {% for l in range(0,7) %}<option value="{{ l }}" {% if level == l|string %}selected{% endif %}>레벨 {{ l }}</option>{% endfor %}
+  </select>
+  <select name="source" class="border rounded px-2 py-1">
+    <option value="">출처 전체</option>
+    {% for src in source_counts.keys() %}<option value="{{ src }}" {% if source == src %}selected{% endif %}>{{ src }}</option>{% endfor %}
+  </select>
+  <button class="bg-gray-200 rounded px-3 py-1">필터 적용</button>
+</form>
+
+<table class="w-full text-sm bg-white border border-gray-200 rounded-xl overflow-hidden">
+  <thead class="bg-gray-50 text-gray-500">
+    <tr>
+      <th class="px-3 py-2 text-left">표제어</th>
+      <th class="px-3 py-2 text-left">카테고리</th>
+      <th class="px-3 py-2 text-left">뜻풀이</th>
+      <th class="px-3 py-2 text-left">레벨</th>
+      <th class="px-3 py-2 text-left">출처</th>
+      <th class="px-3 py-2 text-left">검수상태</th>
+    </tr>
+  </thead>
+  <tbody class="divide-y divide-gray-100">
+    {% for t in rows %}
+    <tr>
+      <td class="px-3 py-2 font-medium">{{ t.headword }}</td>
+      <td class="px-3 py-2">{{ t.category }}</td>
+      <td class="px-3 py-2 text-gray-600">{{ t.definition or '' }}</td>
+      <td class="px-3 py-2">{{ t.level if t.level is not none else '-' }}</td>
+      <td class="px-3 py-2 text-xs text-gray-400">{{ t.source }}</td>
+      <td class="px-3 py-2">{{ t.review_status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="flex justify-between mt-4 text-sm">
+  <a href="?page={{ page-1 }}&category={{ category or '' }}&level={{ level or '' }}&source={{ source or '' }}&q={{ q or '' }}"
+     class="{% if page <= 1 %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전 페이지</a>
+  <a href="?page={{ page+1 }}&category={{ category or '' }}&level={{ level or '' }}&source={{ source or '' }}&q={{ q or '' }}"
+     class="{% if page >= total_pages %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 페이지 →</a>
+</div>
+{% endblock %}
