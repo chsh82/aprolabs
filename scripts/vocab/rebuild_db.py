@@ -1,10 +1,10 @@
-"""data/vocab/idiom.db를 schema.sql부터 published 150건 상태까지 한 번에
-재구성한다. 로컬에서 실제로 밟았던 단계들(seed_from_literacy.py,
+"""data/vocab/idiom.db를 schema.sql부터 published 150건 + 혼동쌍(relation)
+66쌍까지 한 번에 재구성한다. 로컬에서 실제로 밟았던 단계들(seed_from_literacy.py,
 split_hanja.py, fix_duplicates.py, split_exam_date_prefix.py,
 normalize_hanja_nfkc.py, populate_hanja_strokes.py, calc_level.py,
-promote_published.py + 마이그레이션 2개)을 의존관계가 맞는 순서로
-고정해서 순서대로 실행한다. 각 스크립트의 로직을 복제하지 않고 그대로
-서브프로세스로 호출한다 - 이 파일은 오케스트레이션만 한다.
+promote_published.py, seed_relations.py + 마이그레이션 2개)을 의존관계가
+맞는 순서로 고정해서 순서대로 실행한다. 각 스크립트의 로직을 복제하지
+않고 그대로 서브프로세스로 호출한다 - 이 파일은 오케스트레이션만 한다.
 
 순서와 그 이유:
     0. schema.sql             - 8개 기본 테이블 생성
@@ -18,6 +18,9 @@ promote_published.py + 마이그레이션 2개)을 의존관계가 맞는 순서
     8. populate_hanja_strokes.py - hanja.stroke_count 채움 (7번이 만든 hanja 행이 있어야 함)
     9. calc_level.py          - level_min 등 계산 (7·8번의 결과가 재료)
    10. promote_published.py   - published 승격 (4·6·9번이 끝난 meaning/level_min/idiom_hanja가 기준)
+   11. seed_relations.py      - 혼동쌍(relation) 66쌍 적재 (사람이 published idiom_id를
+                                 기준으로 직접 검수해서 만든 scripts/vocab/seed_relations.sql을
+                                 실행만 한다 - 그래서 10번 뒤에 온다)
 
 --dry-run: 실제 data/vocab/idiom.db를 전혀 건드리지 않는다. schema.sql로
 임시 파일에 빈 DB를 새로 만들고, VOCAB_DB_PATH 환경변수로 각 하위
@@ -51,7 +54,7 @@ if sys.platform == "win32" and (sys.stdout.encoding or "").lower() != "utf-8":
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = REPO_ROOT / "data" / "vocab" / "schema.sql"
 
-TARGET = {"idiom": 221, "published": 150, "hanja": 404, "idiom_hanja": 616}
+TARGET = {"idiom": 221, "published": 150, "hanja": 404, "idiom_hanja": 616, "relation": 66}
 
 # (표시 이름, REPO_ROOT 기준 스크립트 경로)
 STEPS = [
@@ -65,6 +68,8 @@ STEPS = [
     ("populate_hanja_strokes", "scripts/vocab/populate_hanja_strokes.py"),
     ("calc_level", "scripts/vocab/calc_level.py"),
     ("promote_published", "scripts/vocab/promote_published.py"),
+    # seed_relations는 published 이후 - 혼동쌍은 published idiom_id를 기준으로 수작업 검수됐다
+    ("seed_relations", "scripts/vocab/seed_relations.py"),
 ]
 
 
@@ -88,12 +93,13 @@ def snapshot(db_path: Path) -> dict:
             "SELECT name FROM sqlite_master WHERE type='table'"
         ).fetchall()}
         if "idiom" not in tables:
-            return {"idiom": 0, "published": 0, "hanja": 0, "idiom_hanja": 0}
+            return {"idiom": 0, "published": 0, "hanja": 0, "idiom_hanja": 0, "relation": 0}
         return {
             "idiom": scalar("SELECT COUNT(*) FROM idiom"),
             "published": scalar("SELECT COUNT(*) FROM idiom WHERE status='published'"),
             "hanja": scalar("SELECT COUNT(*) FROM hanja") if "hanja" in tables else 0,
             "idiom_hanja": scalar("SELECT COUNT(*) FROM idiom_hanja") if "idiom_hanja" in tables else 0,
+            "relation": scalar("SELECT COUNT(*) FROM relation") if "relation" in tables else 0,
         }
     finally:
         conn.close()
@@ -113,7 +119,7 @@ def run_step(name: str, script_rel_path: str, db_path: Path, env: dict) -> int:
             print(result.stderr.rstrip(), file=sys.stderr)
     snap = snapshot(db_path)
     print(f"  -> 현재 상태: idiom={snap['idiom']} published={snap['published']} "
-          f"hanja={snap['hanja']} idiom_hanja={snap['idiom_hanja']}")
+          f"hanja={snap['hanja']} idiom_hanja={snap['idiom_hanja']} relation={snap['relation']}")
     return result.returncode
 
 
@@ -157,7 +163,7 @@ def main() -> int:
 
     snap0 = snapshot(db_path)
     print(f"시작 상태: idiom={snap0['idiom']} published={snap0['published']} "
-          f"hanja={snap0['hanja']} idiom_hanja={snap0['idiom_hanja']}")
+          f"hanja={snap0['hanja']} idiom_hanja={snap0['idiom_hanja']} relation={snap0['relation']}")
 
     failed = []
     for name, script_rel_path in STEPS:
