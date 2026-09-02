@@ -53,6 +53,7 @@ from __future__ import annotations
 
 import argparse
 import io
+import os
 import re
 import sqlite3
 import sys
@@ -69,7 +70,13 @@ if str(REPO_ROOT) not in sys.path:
 
 from app.vocab.db import get_db_path as get_vocab_db_path  # noqa: E402
 
-MISSING_MD_PATH = REPO_ROOT / "docs" / "vocab" / "MISSING.md"
+# VOCAB_MISSING_MD_PATH로 오버라이드 가능 - rebuild_db.py --dry-run이 임시
+# DB로 이 스크립트를 다시 돌릴 때 실제 docs/vocab/MISSING.md에 중복 기록되지
+# 않게 하는 용도(평소 운영/개발 실행에는 영향 없음).
+MISSING_MD_PATH = (
+    Path(os.environ["VOCAB_MISSING_MD_PATH"]) if os.environ.get("VOCAB_MISSING_MD_PATH")
+    else REPO_ROOT / "docs" / "vocab" / "MISSING.md"
+)
 
 # "1994학년도 1차 수능 <정의>" 처럼 출제 정보가 정의 앞에 그대로 남은 경우 분리한다.
 _EXAM_DATE_PREFIX_RE = re.compile(r"^(\d{4}학년도\s+\d차\s+수능)\s+(?=\S)")
