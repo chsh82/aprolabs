@@ -2,12 +2,16 @@
 
 GET /vocab/quiz?format=&count=&level=&strict=&topic=&exclude=
 
-지금 실제로 문항을 내려주는 형식은 gate3/assemble/hanja 셋뿐이다
-(app/vocab/services/quiz_builder.py 참고). mc4/situation4/usage는
-필요한 원천 데이터(example/오용문 등)가 아직 없다(docs/vocab/MISSING.md) -
-이 셋은 501 같은 에러가 아니라 `items: []` + `note`로 정상 응답한다.
-게임 쪽 코드가 빈 배열만 보고 "지금은 문항이 없다"로 처리할 수 있게
-하기 위함이다(에러 처리 분기를 게임마다 새로 안 만들어도 됨).
+지금 실제로 문항을 내려주는 형식은 gate3/assemble/hanja/situation4 넷이다
+(app/vocab/services/quiz_builder.py 참고). situation4는 example 테이블에
+context_type='situation' 데이터가 있어야 실제로 문항이 나온다 - 없으면
+다른 형식과 똑같이 자연스럽게 `items: []`가 된다(라우터가 따로 처리 안 함).
+
+mc4/usage는 필요한 원천 데이터(example의 문맥 빈칸 문장, 검수된 오용문)가
+아직 없다(docs/vocab/MISSING.md) - 이 둘은 501 같은 에러가 아니라
+`items: []` + `note`로 정상 응답한다. 게임 쪽 코드가 빈 배열만 보고
+"지금은 문항이 없다"로 처리할 수 있게 하기 위함이다(에러 처리 분기를
+게임마다 새로 안 만들어도 됨).
 
 format이 위 6개 중 아무것도 아니면(오타 등) 그건 클라이언트 입력 오류라
 400으로 처리한다 - "아직 구현 안 됨"과 "잘못된 값"은 다른 문제다.
@@ -24,7 +28,6 @@ router = APIRouter(prefix="/vocab")
 
 _NOT_READY_NOTES = {
     "mc4": "mc4는 문맥 빈칸 문장이 필요한데 example 테이블이 비어 있어 아직 생성할 수 없습니다.",
-    "situation4": "situation4는 상황문이 필요한데 아직 확보된 데이터가 없습니다.",
     "usage": "usage는 검수된 오용/정상 문장이 필요한데 아직 확보된 데이터가 없습니다.",
 }
 

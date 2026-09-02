@@ -1,9 +1,14 @@
 """GET /vocab/quiz 응답 조립 - 형식별 필드는 docs/vocab/quiz-api.md 계약을 그대로 따른다.
 
-지금 실제로 만들 수 있는 형식은 gate3/assemble/hanja 셋뿐이다(다른 셋은
-필요한 데이터(example/relation 등)가 없다 - docs/vocab/MISSING.md 참고).
-나머지 형식(mc4/situation4/usage)은 이 파일이 아니라 라우터에서 빈 items +
-note로 처리한다 - 이 파일은 데이터가 있는 형식만 안다.
+지금 실제로 만들 수 있는 형식은 gate3/assemble/hanja/situation4 넷이다
+(mc4/usage는 필요한 데이터(example의 문맥 빈칸 문장, 검수된 오용문)가
+없다 - docs/vocab/MISSING.md 참고). situation4는 example 테이블에
+context_type='situation' 행이 있는 idiom만 후보가 된다 - 데이터가
+아직 없으면(2026-09-03 기준 그렇다) 다른 형식과 똑같이 자연스럽게
+빈 items를 돌려준다(라우터에서 따로 처리하지 않는다).
+
+나머지 형식(mc4/usage)은 이 파일이 아니라 라우터에서 빈 items + note로
+처리한다 - 이 파일은 데이터가 있는(또는 있을 수 있는) 형식만 안다.
 """
 from __future__ import annotations
 
@@ -12,10 +17,10 @@ import random
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.vocab.models import Hanja, Idiom, IdiomHanja, TopicLink
+from app.vocab.models import Example, Hanja, Idiom, IdiomHanja, TopicLink
 from app.vocab.services import distractor
 
-SUPPORTED_FORMATS = {"gate3", "assemble", "hanja"}
+SUPPORTED_FORMATS = {"gate3", "assemble", "hanja", "situation4"}
 
 DEFAULT_ASSEMBLE_DISTRACT_SIZE = 8
 
@@ -109,6 +114,18 @@ def _hanja_ready_ids(db: Session, candidate_ids: list[int]) -> set[int]:
     }
 
 
+def _situation_ready_ids(db: Session, candidate_ids: list[int]) -> set[int]:
+    """example에 context_type='situation' 행이 있는 idiom_id만 남긴다."""
+    if not candidate_ids:
+        return set()
+    rows = db.execute(
+        select(Example.idiom_id).where(
+            Example.idiom_id.in_(candidate_ids), Example.context_type == "situation"
+        )
+    ).all()
+    return {r[0] for r in rows}
+
+
 def build_gate3(db: Session, idioms: list[Idiom], exclude_ids: set[int]) -> list[dict]:
     used = set(exclude_ids) | {i.idiom_id for i in idioms}
     items = []
@@ -176,6 +193,32 @@ def build_hanja(db: Session, idioms: list[Idiom]) -> dict:
     return {"format": "hanja", "items": items, "hun": hun}
 
 
+def build_situation4(db: Session, idioms: list[Idiom], exclude_ids: set[int]) -> list[dict]:
+    used = set(exclude_ids) | {i.idiom_id for i in idioms}
+    items = []
+    for idiom in idioms:
+        row = db.execute(
+            select(Example.sentence).where(
+                Example.idiom_id == idiom.idiom_id, Example.context_type == "situation"
+            )
+        ).first()
+        if not row:
+            continue  # select_pool이 이미 걸러주지만, 방어적으로 한 번 더 확인
+        wrong = distractor.pick_distractors(db, idiom, 3, used)
+        if len(wrong) < 3:
+            continue  # 계약(wrong은 정확히 3개)을 어기니 건너뛴다
+        items.append({
+            "id": idiom.idiom_id,
+            "kor": idiom.headword,
+            "han": idiom.hanja,
+            "mean": idiom.meaning,
+            "situation": row[0],
+            "wrong": [w.headword for w in wrong],
+        })
+        used |= {w.idiom_id for w in wrong}
+    return items
+
+
 def build(
     db: Session,
     format: str,
@@ -190,6 +233,9 @@ def build(
     if format == "hanja":
         ready_ids = _hanja_ready_ids(db, [i.idiom_id for i in pool])
         pool = [i for i in pool if i.idiom_id in ready_ids]
+    elif format == "situation4":
+        ready_ids = _situation_ready_ids(db, [i.idiom_id for i in pool])
+        pool = [i for i in pool if i.idiom_id in ready_ids]
 
     sample = _pick_sample(pool, count, level, strict)
 
@@ -199,5 +245,7 @@ def build(
         return build_assemble(db, sample)
     if format == "hanja":
         return build_hanja(db, sample)
+    if format == "situation4":
+        return {"format": "situation4", "items": build_situation4(db, sample, exclude_ids)}
 
     raise ValueError(f"quiz_builder는 {format}을 모른다")  # 라우터가 SUPPORTED_FORMATS로 미리 막아야 함
