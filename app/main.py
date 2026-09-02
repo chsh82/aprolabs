@@ -8,6 +8,7 @@ from app.database import get_db, init_db
 from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, journal, zoom_summaries
 from app.routers import auth as auth_router
 from app.routers import literacy_admin, literacy_api
+from app.vocab.routers import quiz_api as vocab_quiz_api
 from app import isbn
 from app.auth import get_current_user_id
 
@@ -16,6 +17,7 @@ app = FastAPI(title="Aprolabs")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.mount("/momo-images", StaticFiles(directory="momo_book_db/extracted_images"), name="momo_images")
+app.mount("/vocab/games", StaticFiles(directory="app/vocab/static/games"), name="vocab_games")
 
 # 인증 라우터 (로그인/로그아웃 — 보호 불필요)
 app.include_router(auth_router.router)
@@ -35,6 +37,7 @@ app.include_router(journal.router)
 app.include_router(zoom_summaries.router)
 app.include_router(literacy_admin.router)
 app.include_router(literacy_api.router)
+app.include_router(vocab_quiz_api.router)
 
 
 @app.middleware("http")

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>태평양 폭풍우</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#f2e8d5; --paper-dim:#a8bcc6; --geum:#c9a227; --injoo:#a8322d; --ink:#101d28; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1100px 700px at 50% -15%, #24404f 0%, transparent 62%), #0a141c;
+    color:var(--paper);font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;user-select:none;
+  }
+  .frame{
+    width:min(940px,100%);height:min(700px,100vh - 32px);
+    display:flex;flex-direction:column;border:1px solid rgba(201,162,39,.28);
+    background:rgba(9,17,24,.6);position:relative;overflow:hidden;
+  }
+  .clock{display:flex;align-items:center;gap:8px;flex:0 0 auto;padding-right:14px;
+         border-right:1px solid rgba(201,162,39,.22)}
+  .clock svg{display:block}
+  .clock b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:20px;
+           line-height:1;font-variant-numeric:tabular-nums;color:#f2e8d5}
+  .clock em{font-style:normal;font-size:10.5px;opacity:.7;display:block;margin-top:2px;letter-spacing:.08em}
+  .gauges{flex:0 0 auto;display:flex;align-items:center;gap:18px;
+          padding:10px 18px;border-bottom:1px solid rgba(201,162,39,.2)}
+  .stam{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+  .stam i{width:10px;height:10px;border-radius:50%;background:var(--geum);display:block;transition:opacity .25s}
+  .stam i.spent{opacity:.15}
+  .stam span{font-size:11px;color:var(--paper-dim);margin-left:3px}
+  .track{flex:1 1 auto;min-width:0}
+  .track .lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--paper-dim);margin-bottom:4px;letter-spacing:.06em}
+  .track .bar{height:4px;background:rgba(255,255,255,.09);position:relative}
+  .track .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--geum);width:0;transition:width .3s}
+  .score{flex:0 0 auto;text-align:right;font-size:11px;color:var(--paper-dim);line-height:1.5}
+  .score b{display:block;font-family:"Noto Serif KR",serif;font-size:16px;color:var(--geum);font-variant-numeric:tabular-nums}
+
+  .qbar{flex:0 0 auto;padding:14px 22px 13px;border-bottom:1px solid rgba(201,162,39,.14);
+        background:linear-gradient(180deg, rgba(201,162,39,.05), transparent);
+        min-height:72px;display:flex;align-items:center}
+  .qbar p{font-family:"Noto Serif KR",serif;font-size:19px;line-height:1.55;max-width:56ch;margin:0 auto;text-align:center}
+  .qbar p small{display:block;font-family:"Noto Sans KR",sans-serif;font-size:11.5px;
+                color:var(--paper-dim);letter-spacing:.06em;margin-bottom:5px}
+
+  .stage{position:relative;flex:1 1 auto;overflow:hidden;touch-action:none}
+  canvas{display:block;width:100%;height:100%}
+
+  .overlay{position:absolute;inset:0;background:rgba(9,17,24,.94);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 26px;gap:10px;z-index:5;overflow-y:auto}
+  .overlay.hidden{display:none}
+  .title{font-family:"Noto Serif KR",serif;font-weight:900;font-size:37px;letter-spacing:.12em;line-height:1.15}
+  .title em{display:block;font-style:normal;font-size:13.5px;letter-spacing:.38em;color:var(--geum);margin-bottom:12px;font-weight:400}
+  .rules{margin:20px 0 24px;font-size:14px;line-height:1.95;color:var(--paper-dim);max-width:44ch}
+  .rules b{color:var(--paper);font-weight:500}
+  .big{font-family:"Noto Serif KR",serif;font-weight:900;font-size:38px;color:var(--geum);line-height:1.15}
+  .sub{font-family:"Noto Serif KR",serif;font-size:17px;line-height:1.7;max-width:44ch;color:var(--paper-dim)}
+  .sub b{color:var(--paper);font-weight:600}
+  .review{margin:18px 0 20px;width:min(470px,100%);text-align:left;
+          border-top:1px solid rgba(201,162,39,.25);padding-top:13px}
+  .review h3{font-size:12.5px;font-weight:500;color:var(--geum);margin-bottom:10px}
+  .review li{list-style:none;padding:7px 0;border-bottom:1px solid rgba(242,232,213,.08);
+             font-size:13.5px;line-height:1.55;color:var(--paper-dim)}
+  .review li b{color:var(--paper);font-family:"Noto Serif KR",serif;font-weight:600}
+  .go{font-family:inherit;font-size:15px;padding:13px 38px;background:transparent;
+      color:var(--geum);border:1px solid var(--geum);cursor:pointer;letter-spacing:.08em;transition:.15s}
+  .go:hover,.go:focus-visible{background:var(--geum);color:var(--ink)}
+  button:focus-visible{outline:2px solid var(--paper);outline-offset:2px}
+  @media (max-width:640px){ .qbar p{font-size:16.5px} .title{font-size:28px} .big{font-size:30px} }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="gauges">
+    <div class="clock">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <circle cx="13" cy="14" r="9.4" fill="none" stroke="#c9a227" stroke-width="1.6"/>
+        <rect x="11" y="1.6" width="4" height="3.4" fill="#c9a227"/>
+        <rect x="12.2" y="4.4" width="1.6" height="1.8" fill="#c9a227"/>
+        <line id="hand" x1="13" y1="14" x2="13" y2="8" stroke="#f2e8d5" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="14" r="1.2" fill="#f2e8d5"/>
+      </svg>
+      <div><b id="clockN">0:00</b><em>걸린 시간</em></div>
+    </div>
+    <div class="stam" id="stam"><i></i><i></i><i></i><span>선원</span></div>
+    <div class="track">
+      <div class="lbl"><span>요코하마</span><span>샌프란시스코</span></div>
+      <div class="bar"><i id="prog"></i></div>
+    </div>
+    <div class="score"><b id="scoreN">0</b>실은 화물</div>
+  </div>
+
+  <div class="qbar"><p id="qText"></p></div>
+
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+
+    <div class="overlay" id="start">
+      <h1 class="title"><em>80일간의 어휘 일주 · 태평양</em>폭풍우 갑판</h1>
+      <div class="rules">
+        배가 <b>계속 기웁니다</b>. 화물은 기운 쪽으로 미끄러집니다.<br>
+        <b>포그가 선 쪽이 눌립니다.</b> 반대편으로 가면 배가 다시 섭니다.<br>
+        <b>← →</b> 로 갑판을 오가고, 뜻에 맞는 상자 앞에서<br>
+        <b>스페이스</b> 를 눌러 붙잡으세요. 스쳐 지나가는 것은 괜찮습니다.<br>
+        오르막은 느리고 내리막은 미끄러집니다.<br>
+        <b>파도</b>는 몸을 밀치고 잠시 휘청이게 합니다.<br>
+        돛대 앞에서 <b>↓</b> 를 눌러 붙잡으면 버틸 수 있습니다.
+      </div>
+      <button class="go" id="startBtn">갑판으로</button>
+    </div>
+
+    <div class="overlay hidden" id="endScreen">
+      <div class="big" id="endBig"></div>
+      <div class="sub" id="endSub"></div>
+      <div class="review" id="reviewBox"></div>
+      <button class="go" id="againBtn">다시 항해</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   문항 — 연동 시 GET /quiz?type=academic 로 대체
+   ════════════════════════════════════════════ */
+const ITEMS = [
+  { mean:"두 대상의 같은 점과 다른 점을 따져 봄", a:"비교", w:["분류","관찰","요약"],
+    why:"비교는 둘 이상을 견주어 같고 다름을 살피는 것입니다." },
+  { mean:"아는 사실을 바탕으로 모르는 것을 미루어 생각함", a:"추론", w:["암기","서술","인용"],
+    why:"추론은 근거에서 결론으로 나아가는 생각입니다." },
+  { mean:"일정한 기준에 따라 여럿을 나누어 묶음", a:"분류", w:["비유","분석","반박"],
+    why:"분류에는 반드시 기준이 있어야 합니다." },
+  { mean:"글쓴이가 가장 말하고 싶은 중심 생각", a:"주제", w:["소재","배경","줄거리"],
+    why:"소재는 다루는 재료, 주제는 그것으로 말하려는 생각입니다." },
+  { mean:"글의 내용을 짧게 간추림", a:"요약", w:["감상","비판","묘사"],
+    why:"요약은 중심 내용만 남기고 줄이는 것입니다." },
+  { mean:"전체를 이루는 부분으로 나누어 자세히 살핌", a:"분석", w:["종합","비교","추론"],
+    why:"분석은 나누어 보는 것, 종합은 모아 보는 것입니다." },
+  { mean:"남의 글이나 말을 끌어다 씀", a:"인용", w:["요약","반박","서술"],
+    why:"인용할 때는 출처를 반드시 밝혀야 합니다." },
+  { mean:"어떤 주장에 맞서 다른 의견을 폄", a:"반박", w:["동의","인용","분류"],
+    why:"반박은 상대 주장의 약한 곳을 근거로 되받는 것입니다." }
+];
+
+/* ════════════════════════════════════════════
+   무대
+   ════════════════════════════════════════════ */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+let W=0, H=0, PIV=0, DECK=0;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  PIV  = Math.round(H*0.72);
+  DECK = Math.min(330, W*0.42);      // 갑판 반너비
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── 상태 ────────────────────────────────── */
+let qi = 0, order = [], stamina = 3, score = 0;
+let crates = [], px = 0, pv = 0, holding = false;
+let tilt = 0, tiltV = 0, tA = 0.10, tW = 0.62, t = 0;
+const K_REST = 6.0;      // 부력 복원력
+const C_DAMP = 2.0;      // 물의 저항
+const K_BODY = 0.60;     // 포그가 한쪽 끝에 섰을 때 주는 기울임
+let wave = null, waveT = 4.2, stagger = 0, pileN = { '-1':0, '1':0 };
+let playing = false, locked = false, missed = [];
+let toast = null, toastT = 0, spray = [], flash = 0, rain = [];
+let lastTs = 0, rafId = null;
+const keys = {};
+
+const rnd = (a,b) => a + Math.random()*(b-a);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 라운드 ──────────────────────────────── */
+function nextQ(){
+  if(qi >= order.length) return end(true);
+  locked = false;
+  const item = order[qi];
+  document.getElementById('qText').innerHTML =
+    '<small>이 뜻에 맞는 화물을 붙잡으세요</small>' + item.mean;
+
+  tA = 0.58 + qi*0.07;        // 파도가 배를 미는 힘
+  tW = 0.60 + qi*0.020;       // 주기는 느리게 (한 번 기우는 데 약 10초)
+
+  const opts = shuffle([{text:item.a, ok:true}, ...item.w.map(x=>({text:x, ok:false}))]);
+  const spots = shuffle([-0.78, -0.28, 0.28, 0.78]);
+  crates = opts.map((o,i) => ({
+    text:o.text, ok:o.ok, x:spots[i]*DECK, v:rnd(-25,25), gone:false
+  }));
+  waveT = 3.6;
+  updateHud();
+}
+
+function updateHud(){
+  [...document.getElementById('stam').children].forEach((el,i) => {
+    if(el.tagName === 'I') el.classList.toggle('spent', i >= stamina);
+  });
+  document.getElementById('prog').style.width = (qi/order.length*100) + '%';
+  document.getElementById('scoreN').textContent = score;
+}
+
+function toastMsg(text, bad){ toast = {text, bad}; toastT = 1.7; }
+
+function hurt(msg){
+  stamina--; flash = .4;
+  toastMsg(msg, true);
+  updateHud();
+  if(stamina <= 0) end(false);
+}
+
+function tryGrab(){
+  if(!playing || locked) return;
+  let best = null, bd = 999;
+  crates.forEach(c => {
+    if(c.gone) return;
+    const d = Math.abs(c.x - px);
+    if(d < 40 && d < bd){ bd = d; best = c; }
+  });
+  if(best) grab(best);
+  else toastMsg('손이 닿지 않습니다', true);
+}
+
+function grab(c){
+  if(locked || c.gone) return;
+  c.gone = true;
+  locked = true;
+  const item = order[qi];
+  if(c.ok){
+    score++;
+    toastMsg('화물칸에 실었습니다', false);
+    updateHud();
+    setTimeout(() => { qi++; nextQ(); }, 900);
+  } else {
+    if(!missed.includes(item)) missed.push(item);
+    hurt('정답은 ' + item.a);
+    setTimeout(() => {
+      if(stamina <= 0) return;
+      qi++; nextQ();
+    }, 1700);
+  }
+}
+
+function lostCorrect(){
+  if(locked) return;
+  locked = true;
+  const item = order[qi];
+  if(!missed.includes(item)) missed.push(item);
+  hurt('화물을 놓쳤습니다 · ' + item.a);
+  setTimeout(() => {
+    if(stamina <= 0) return;
+    qi++; nextQ();
+  }, 1700);
+}
+
+function end(win){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  document.getElementById('endBig').textContent = win ? '폭풍우를 벗어났습니다' : '화물을 잃었습니다';
+  document.getElementById('endSub').innerHTML = win
+    ? '샌프란시스코가 보입니다.<br>화물 ' + order.length + '개 가운데 <b>' + score + '개</b>를 지켜 냈습니다.'
+    : '지켜야 할 화물이 모두 바다로 넘어갔습니다.<br>싣고 갈 것이 <b>남지 않았습니다.</b>';
+  const box = document.getElementById('reviewBox');
+  box.innerHTML = '<h3>다시 볼 말</h3>' + (missed.length
+    ? '<ul>' + missed.map(m => '<li><b>' + m.a + '</b> · ' + m.why + '</li>').join('') + '</ul>'
+    : '<li>한 상자도 놓치지 않았습니다</li>');
+  document.getElementById('endScreen').classList.remove('hidden');
+}
+
+/* ── 진행 ────────────────────────────────── */
+
+/* ── 전체 걸린 시간 ─────────────────────── */
+let elapsed = 0;
+function fmt(sec){
+  const m = Math.floor(sec/60), ss = Math.floor(sec%60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+function tickClock(dt){
+  elapsed += dt;
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = fmt(elapsed);
+  const hand = document.getElementById('hand');
+  if(hand){
+    const a = (elapsed % 60) / 60 * Math.PI*2;
+    hand.setAttribute('x2', (13 + Math.sin(a)*6).toFixed(2));
+    hand.setAttribute('y2', (14 - Math.cos(a)*6).toFixed(2));
+  }
+}
+function resetClock(){
+  elapsed = 0;
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = '0:00';
+}
+
+function step(dt){
+  tickClock(dt);
+  t += dt;
+  if(flash > 0) flash -= dt;
+  if(toastT > 0){ toastT -= dt; if(toastT <= 0) toast = null; }
+
+  // 배의 기울기 — 파도가 밀고, 포그의 몸무게가 되받고, 부력이 되돌린다
+  const wavePush = Math.sin(t*tW)*tA + Math.sin(t*tW*1.9 + 1)*tA*0.20;
+  const bodyPush = K_BODY * (px / DECK);        // 선 쪽이 눌린다
+  tiltV += (wavePush + bodyPush - C_DAMP*tiltV - K_REST*tilt) * dt;
+  tilt  += tiltV * dt;
+  if(tilt >  0.30){ tilt =  0.30; tiltV = Math.min(tiltV, 0); }
+  if(tilt < -0.30){ tilt = -0.30; tiltV = Math.max(tiltV, 0); }
+  const slope = Math.sin(tilt);
+
+  // 사람
+  const mast = Math.abs(px) < 62;
+  holding = !!keys.down && mast;
+  if(stagger > 0) stagger -= dt;
+  let move = 0;
+  if(!holding && stagger <= 0){
+    if(keys.left) move -= 1;
+    if(keys.right) move += 1;
+  }
+  const uphill = move !== 0 && Math.sign(move) !== Math.sign(slope) && Math.abs(slope) > 0.02;
+  const spd = 360 * (uphill ? 0.78 : (move !== 0 && Math.abs(slope) > 0.02 ? 1.3 : 1));
+  pv = move * spd + (holding ? 0 : slope * 190);
+  px += pv * dt;
+  if(px < -DECK+16){ px = -DECK+16; }
+  if(px >  DECK-16){ px =  DECK-16; }
+
+  // 화물
+  let lost = false;
+  const RAIL = DECK - 4;            // 난간 안쪽 벽
+  const CW   = 62;                  // 상자 한 칸 너비
+
+  crates.forEach(c => {
+    if(c.gone) return;
+    c.v += slope * 700 * dt;
+    c.v -= c.v * 0.6 * dt;
+    if(wave && wave.on) c.v += wave.side * 190 * dt;      // 파도는 밀기만 한다
+    c.x += c.v * dt;
+    if(c.x >  RAIL){ c.x =  RAIL; c.v = Math.min(c.v, 0) * 0.25; }
+    if(c.x < -RAIL){ c.x = -RAIL; c.v = Math.max(c.v, 0) * 0.25; }
+  });
+
+  // 상자끼리 겹치지 않게 밀어낸다 — 난간에는 나란히 쌓인다
+  for(let it=0; it<3; it++){
+    const live = crates.filter(c => !c.gone).sort((a,b) => a.x - b.x);
+    for(let i=0; i<live.length-1; i++){
+      const A = live[i], B = live[i+1];
+      const gap = B.x - A.x;
+      if(gap < CW){
+        const push = (CW - gap) / 2;
+        A.x -= push; B.x += push;
+        const avg = (A.v + B.v) / 2;      // 부딪히면 함께 움직인다
+        A.v = avg; B.v = avg;
+      }
+    }
+    live.forEach(c => {
+      if(c.x >  RAIL){ c.x =  RAIL; c.v = Math.min(c.v, 0); }
+      if(c.x < -RAIL){ c.x = -RAIL; c.v = Math.max(c.v, 0); }
+    });
+  }
+
+  // 붙잡을 수 있는 상자는 가장 가까운 하나뿐
+  let nearest = null, nd = 999;
+  crates.forEach(c => {
+    c.near = false;
+    if(c.gone) return;
+    const d = Math.abs(c.x - px);
+    if(d < 42 && d < nd){ nd = d; nearest = c; }
+  });
+  if(nearest) nearest.near = true;
+
+  // 남은 상자가 모두 한쪽 난간에 줄지어 붙으면, 맨 끝 하나가 밀려 넘어간다
+  pileN = { '-1':0, '1':0 };
+  const alive = crates.filter(c => !c.gone).length;
+  [-1, 1].forEach(side => {
+    const pile = crates.filter(c => !c.gone && Math.sign(c.x) === side)
+                       .sort((a,b) => Math.abs(b.x) - Math.abs(a.x));
+    if(!pile.length || Math.abs(pile[0].x) < RAIL - 3) return;
+    let chain = 1;
+    for(let i=0; i<pile.length-1; i++){
+      if(Math.abs(Math.abs(pile[i].x) - Math.abs(pile[i+1].x)) <= CW + 7) chain++;
+      else break;
+    }
+    pileN[side] = chain;
+    if(chain >= alive && alive >= 4 && Math.sign(slope) === side && Math.abs(slope) > 0.05){
+      const edge = pile[0];                 // 난간에 가장 바짝 붙은 하나
+      edge.gone = true;
+      spraySplash(edge.x);
+      if(edge.ok) lost = true;
+      toastMsg('맨 끝 상자가 넘어갔습니다', true);
+    }
+  });
+  if(lost) lostCorrect();
+
+  // 파도
+  waveT -= dt;
+  if(!wave && waveT <= 0){
+    wave = { side: Math.random() < .5 ? -1 : 1, warn: 1.25, on:false, life: .95 };
+  }
+  if(wave){
+    if(!wave.on){
+      wave.warn -= dt;
+      if(wave.warn <= 0){
+        wave.on = true;
+        tiltV += wave.side * 0.85;                 // 배가 그쪽으로 확 눌린다
+        const swept = Math.sign(px) === wave.side && Math.abs(px) > 40;
+        if(swept && !holding){
+          px = Math.max(-DECK+16, Math.min(DECK-16, px - wave.side * DECK * 0.45));
+          stagger = .4;
+          flash = .25;
+          toastMsg('파도에 밀렸습니다', true);
+        }
+      }
+    } else {
+      wave.life -= dt;
+      if(wave.life <= 0){ wave = null; waveT = rnd(4.2, 6.2); }
+    }
+  }
+
+  spray.forEach(s => { s.x += s.vx*dt; s.y += s.vy*dt; s.vy += 520*dt; s.a -= dt*1.3; });
+  spray = spray.filter(s => s.a > 0);
+
+  if(rain.length < 90) rain.push({ x:rnd(-100,W+100), y:-20, v:rnd(680,900), len:rnd(12,26) });
+  rain.forEach(r => { r.y += r.v*dt; r.x -= r.v*0.22*dt; });
+  rain = rain.filter(r => r.y < H+20);
+}
+
+function spraySplash(x){
+  for(let i=0;i<16;i++) spray.push({ x: x, y: 0, vx: rnd(-140,140), vy: rnd(-260,-80), a:1 });
+}
+
+/* ════════════════════════════════════════════
+   그리기
+   ════════════════════════════════════════════ */
+function drawSailor(){
+  const bob = Math.sin(t*7)*(Math.abs(pv) > 40 ? 2.4 : 0.7);
+  ctx.save();
+  ctx.translate(px, bob);
+  if(holding) ctx.rotate(-tilt*0.5);
+  else if(stagger > 0) ctx.rotate(Math.sin(t*26)*0.22);
+
+  // ── 파스파르투 (프랑스인 하인, 붉은 조끼 차림)
+  const sw = Math.sin(t*11) * (Math.abs(pv) > 40 ? 6 : 1);
+
+  // 바지
+  ctx.strokeStyle = '#2b3346'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-2, -16); ctx.lineTo(-4 - sw, -2);
+  ctx.moveTo( 2, -16); ctx.lineTo( 4 + sw, -2);
+  ctx.stroke();
+  // 구두
+  ctx.fillStyle = '#1b2029';
+  ctx.fillRect(-9 - sw, -3, 10, 3.4);
+  ctx.fillRect(-1 + sw, -3, 10, 3.4);
+
+  // 셔츠
+  ctx.fillStyle = '#efe6d2';
+  ctx.beginPath();
+  ctx.moveTo(-9.5, -41); ctx.lineTo(9.5, -41); ctx.lineTo(11, -14); ctx.lineTo(-11, -14);
+  ctx.closePath(); ctx.fill();
+
+  // 붉은 조끼
+  ctx.fillStyle = '#9e2f2a';
+  ctx.beginPath();
+  ctx.moveTo(-9.5, -40); ctx.lineTo(-2.6, -40); ctx.lineTo(-3.4, -16); ctx.lineTo(-10.6, -16);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(9.5, -40); ctx.lineTo(2.6, -40); ctx.lineTo(3.4, -16); ctx.lineTo(10.6, -16);
+  ctx.closePath(); ctx.fill();
+  // 조끼 금단추
+  ctx.fillStyle = '#c9a227';
+  for(let i=0;i<3;i++){ ctx.fillRect(-4.4, -36 + i*7, 2, 2); ctx.fillRect(2.4, -36 + i*7, 2, 2); }
+
+  // 목수건
+  ctx.fillStyle = '#c9a227';
+  ctx.beginPath();
+  ctx.moveTo(-7, -42); ctx.lineTo(7, -42); ctx.lineTo(0, -34);
+  ctx.closePath(); ctx.fill();
+
+  // 팔 (걷어붙인 셔츠 소매)
+  ctx.strokeStyle = '#efe6d2'; ctx.lineWidth = 5;
+  ctx.beginPath();
+  if(holding){ ctx.moveTo(-6,-37); ctx.lineTo(-14,-53); ctx.moveTo(6,-37); ctx.lineTo(14,-53); }
+  else { ctx.moveTo(-8,-36); ctx.lineTo(-15,-23+sw); ctx.moveTo(8,-36); ctx.lineTo(15,-23-sw); }
+  ctx.stroke();
+  // 손
+  ctx.fillStyle = '#e9c9a4';
+  if(holding){
+    ctx.beginPath(); ctx.arc(-14,-53, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc( 14,-53, 3, 0, Math.PI*2); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.arc(-15,-23+sw, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc( 15,-23-sw, 3, 0, Math.PI*2); ctx.fill();
+  }
+
+  // 얼굴
+  ctx.fillStyle = '#e9c9a4';
+  ctx.beginPath(); ctx.arc(0, -50, 7.6, 0, Math.PI*2); ctx.fill();
+  // 헝클어진 갈색 머리
+  ctx.fillStyle = '#6b4526';
+  ctx.beginPath();
+  ctx.arc(0, -54, 7.8, Math.PI*1.02, Math.PI*2.02);
+  ctx.fill();
+  ctx.beginPath(); ctx.arc(-6.4, -54, 3.1, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( 6.4, -54, 3.1, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(-2.4, -59.6, 3.4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc( 2.8, -59, 2.9, 0, Math.PI*2); ctx.fill();
+  // 눈
+  ctx.fillStyle = '#2b2118';
+  ctx.fillRect(-3.6, -50.4, 1.8, 2);
+  ctx.fillRect( 1.8, -50.4, 1.8, 2);
+
+  ctx.restore();
+}
+
+function drawShip(){
+  // 갑판
+  ctx.fillStyle = '#6d5137';
+  ctx.fillRect(-DECK-24, 0, (DECK+24)*2, 28);
+  ctx.fillStyle = '#7d5f42';
+  ctx.fillRect(-DECK-24, 0, (DECK+24)*2, 5);
+  ctx.strokeStyle = 'rgba(40,26,16,.45)'; ctx.lineWidth = 1;
+  for(let x=-DECK-16; x<DECK+24; x+=34){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 28); ctx.stroke();
+  }
+  // 선체
+  ctx.fillStyle = '#3a2c20';
+  ctx.beginPath();
+  ctx.moveTo(-DECK-24, 28); ctx.lineTo(DECK+24, 28);
+  ctx.lineTo(DECK-30, 96); ctx.lineTo(-DECK+30, 96);
+  ctx.closePath(); ctx.fill();
+
+  // 난간
+  ctx.strokeStyle = '#8a6a49'; ctx.lineWidth = 3;
+  [-1,1].forEach(s => {
+    ctx.beginPath(); ctx.moveTo(s*(DECK+18), 0); ctx.lineTo(s*(DECK+18), -34); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(s*(DECK+18), -30); ctx.lineTo(s*(DECK-46), -30); ctx.stroke();
+  });
+
+  // 돛대
+  ctx.fillStyle = '#5c452f';
+  ctx.fillRect(-7, -230, 14, 230);
+  ctx.fillStyle = '#c9a227';
+  ctx.fillRect(-9, -232, 18, 6);
+  ctx.strokeStyle = 'rgba(201,162,39,.4)'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(0,-210); ctx.lineTo(-DECK+30, -30); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-210); ctx.lineTo( DECK-30, -30); ctx.stroke();
+  // 찢긴 돛
+  ctx.fillStyle = 'rgba(226,215,189,.5)';
+  ctx.beginPath();
+  ctx.moveTo(0,-206); ctx.lineTo(64,-186); ctx.lineTo(40,-150);
+  ctx.lineTo(58,-128); ctx.lineTo(0,-120);
+  ctx.closePath(); ctx.fill();
+
+  // 난간 위험 표시
+  [-1, 1].forEach(side => {
+    const n = pileN[side] || 0;
+    if(n >= 3){
+      ctx.strokeStyle = n >= 4 ? 'rgba(224,144,138,.95)' : 'rgba(201,162,39,.6)';
+      ctx.lineWidth = n >= 4 ? 4 : 2.5;
+      ctx.beginPath();
+      ctx.moveTo(side*(DECK+18), -34); ctx.lineTo(side*(DECK+18), 2);
+      ctx.stroke();
+    }
+  });
+
+  // 돛대 표시 (붙잡을 수 있는 자리)
+  const mast = Math.abs(px) < 62;
+  ctx.strokeStyle = mast ? 'rgba(201,162,39,.75)' : 'rgba(201,162,39,.2)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-62, 2); ctx.lineTo(62, 2); ctx.stroke();
+
+  // 화물
+  crates.forEach(c => {
+    if(c.gone) return;
+    ctx.save();
+    ctx.translate(c.x, 0);
+    ctx.rotate(Math.sin(c.v*0.006)*0.12);
+    ctx.fillStyle = 'rgba(0,0,0,.3)';
+    ctx.fillRect(-27, -46, 56, 48);
+    ctx.fillStyle = '#e2d7bd';
+    ctx.fillRect(-29, -48, 58, 48);
+    ctx.strokeStyle = c.near ? '#ffe08a' : 'rgba(201,162,39,.85)';
+    ctx.lineWidth = c.near ? 3 : 2;
+    ctx.strokeRect(-28, -47, 56, 46);
+    if(c.near && !locked){
+      ctx.fillStyle = 'rgba(255,224,138,.9)';
+      ctx.font = '600 11px "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('붙잡기', 0, -60);
+    }
+    ctx.strokeStyle = 'rgba(90,70,44,.5)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(-29,-24); ctx.lineTo(29,-24); ctx.stroke();
+    ctx.fillStyle = '#20242e';
+    ctx.font = '700 19px "Noto Serif KR", serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(c.text, 0, -24);
+    ctx.restore();
+  });
+
+  drawSailor();
+}
+
+function render(){
+  // 하늘
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, '#1d3341');
+  g.addColorStop(.45, '#2c4a58');
+  g.addColorStop(1, '#16303e');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  if(flash > 0.28){
+    ctx.fillStyle = 'rgba(200,225,235,' + ((flash-0.28)*1.4) + ')';
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // 파도 (배경)
+  ctx.fillStyle = '#12303f';
+  const sea = H*0.55;
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  for(let x=0;x<=W;x+=16){
+    ctx.lineTo(x, sea + Math.sin(x*0.014 + t*1.7)*16 + Math.sin(x*0.03 - t*2.4)*8);
+  }
+  ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+
+  ctx.strokeStyle = 'rgba(190,225,235,.22)'; ctx.lineWidth = 2;
+  for(let k=0;k<3;k++){
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=16){
+      ctx.lineTo(x, sea + 34 + k*46 + Math.sin(x*0.02 + t*(2+k*0.5))*11);
+    }
+    ctx.stroke();
+  }
+
+  // 배
+  ctx.save();
+  ctx.translate(W/2, PIV);
+  ctx.rotate(tilt);
+  drawShip();
+  ctx.restore();
+
+  // 물보라
+  ctx.save();
+  ctx.translate(W/2, PIV);
+  ctx.rotate(tilt);
+  spray.forEach(s => {
+    ctx.fillStyle = 'rgba(210,238,246,' + s.a + ')';
+    ctx.fillRect(s.x, s.y, 3, 3);
+  });
+  ctx.restore();
+
+  // 수평계
+  (function(){
+    const cx = W/2, cy = 16, rw = 78;
+    ctx.strokeStyle = 'rgba(242,232,213,.25)'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(cx, cy+22, rw, Math.PI*1.16, Math.PI*1.84); ctx.stroke();
+    ctx.strokeStyle = 'rgba(242,232,213,.45)';
+    ctx.beginPath(); ctx.moveTo(cx, cy-6); ctx.lineTo(cx, cy+2); ctx.stroke();
+    const a = Math.PI*1.5 + tilt*2.6;
+    const bx = cx + Math.cos(a)*rw, by = cy+22 + Math.sin(a)*rw;
+    const level = Math.abs(tilt) < 0.045;
+    ctx.fillStyle = level ? '#8fd6a8' : (Math.abs(tilt) > 0.19 ? '#e0908a' : '#c9a227');
+    ctx.beginPath(); ctx.arc(bx, by, 6, 0, Math.PI*2); ctx.fill();
+  })();
+
+  // 파도 경보와 덮침
+  if(wave){
+    if(!wave.on){
+      const a = 0.35 + Math.sin(t*18)*0.25;
+      ctx.fillStyle = 'rgba(168,50,45,' + a + ')';
+      const bw = W*0.42;
+      ctx.fillRect(wave.side < 0 ? 0 : W-bw, 0, bw, 5);
+      ctx.font = '700 14px "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillStyle = 'rgba(245,215,210,.95)';
+      ctx.fillText(wave.side < 0 ? '◀ 좌현 파도' : '우현 파도 ▶',
+                   wave.side < 0 ? bw/2 : W - bw/2, 12);
+    } else {
+      const p = 1 - wave.life/0.95;
+      const w2 = W*0.5 * Math.min(1, p*2.2);
+      ctx.fillStyle = 'rgba(190,228,238,.42)';
+      if(wave.side < 0) ctx.fillRect(0, PIV-150, w2, 200);
+      else ctx.fillRect(W-w2, PIV-150, w2, 200);
+      ctx.fillStyle = 'rgba(255,255,255,.35)';
+      for(let i=0;i<14;i++){
+        const yy = PIV-140 + Math.random()*180;
+        const xx = wave.side < 0 ? Math.random()*w2 : W - Math.random()*w2;
+        ctx.fillRect(xx, yy, 16, 2);
+      }
+    }
+  }
+
+  // 비
+  ctx.strokeStyle = 'rgba(200,225,235,.28)'; ctx.lineWidth = 1.2;
+  rain.forEach(r => {
+    ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x + r.len*0.22, r.y - r.len); ctx.stroke();
+  });
+
+  if(toast){
+    const a = Math.min(1, toastT*1.6);
+    ctx.font = '500 15px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const tw = ctx.measureText(toast.text).width + 30;
+    ctx.fillStyle = 'rgba(9,17,24,' + (a*.82) + ')';
+    ctx.fillRect(W/2 - tw/2, H-46, tw, 30);
+    ctx.fillStyle = toast.bad ? 'rgba(240,190,186,' + a + ')' : 'rgba(201,162,39,' + a + ')';
+    ctx.fillText(toast.text, W/2, H-31);
+  }
+}
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!playing) return;
+  const dt = Math.min((ts-lastTs)/1000, .05);
+  lastTs = ts;
+  step(dt);
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 입력 ────────────────────────────────── */
+const MAP = { ArrowLeft:'left', ArrowRight:'right', ArrowDown:'down',
+              a:'left', d:'right', s:'down' };
+window.addEventListener('keydown', e => {
+  if(!playing){
+    if(e.code === 'Space' && !document.getElementById('endScreen').classList.contains('hidden')) startGame();
+    return;
+  }
+  if(e.code === 'Space'){ e.preventDefault(); tryGrab(); return; }
+  const k = MAP[e.key];
+  if(k){ e.preventDefault(); keys[k] = true; }
+});
+window.addEventListener('keyup', e => { const k = MAP[e.key]; if(k) keys[k] = false; });
+
+let touch = null;
+stage.addEventListener('pointerdown', e => {
+  if(!playing) return;
+  const r = stage.getBoundingClientRect();
+  touch = { x:e.clientX - r.left, y:e.clientY - r.top };
+  apply(true);
+});
+stage.addEventListener('pointermove', e => {
+  if(!touch || !playing) return;
+  const r = stage.getBoundingClientRect();
+  touch = { x:e.clientX - r.left, y:e.clientY - r.top };
+  apply();
+});
+window.addEventListener('pointerup', () => {
+  touch = null; keys.left = keys.right = keys.down = false;
+});
+function apply(tap){
+  if(!touch) return;
+  keys.left = keys.right = keys.down = false;
+  if(touch.y > H*0.80){ keys.down = true; return; }
+  const target = touch.x - W/2;
+  if(tap && Math.abs(target - px) < 40){ tryGrab(); return; }   // 제자리를 누르면 집기
+  if(target < px - 14) keys.left = true;
+  else if(target > px + 14) keys.right = true;
+}
+
+/* ── 시작 ────────────────────────────────── */
+function startGame(){
+  resetClock();
+  document.getElementById('start').classList.add('hidden');
+  document.getElementById('endScreen').classList.add('hidden');
+  resize();
+  order = shuffle(ITEMS.slice());
+  qi = 0; stamina = 3; score = 0; missed = [];
+  px = 0; pv = 0; crates = []; spray = []; rain = [];
+  wave = null; toast = null; flash = 0; t = 0; tilt = 0; tiltV = 0; stagger = 0;
+  updateHud();
+  nextQ();
+  playing = true; lastTs = performance.now();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('againBtn').addEventListener('click', startGame);
+render();
+</script>
+</body>
+</html>

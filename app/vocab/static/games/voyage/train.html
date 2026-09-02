@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>대륙 횡단 열차</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16283c; --ink-2:#2c4460;
+    --paper:#f2e8d5; --paper-dim:#a9b8c7;
+    --geum:#c9a227; --injoo:#a8322d; --ok:#3f8f68;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1100px 700px at 50% -15%, #23405c 0%, transparent 62%), #0d1a27;
+    color:var(--paper);
+    font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;
+    user-select:none;
+  }
+  .frame{
+    width:min(940px,100%);height:min(690px,100vh - 32px);
+    display:flex;flex-direction:column;
+    border:1px solid rgba(201,162,39,.28);
+    background:rgba(9,18,28,.6);position:relative;overflow:hidden;
+  }
+
+  /* ── 계기판 ───────────────────────────── */
+  .clock{display:flex;align-items:center;gap:8px;flex:0 0 auto;padding-right:14px;
+         border-right:1px solid rgba(201,162,39,.22)}
+  .clock svg{display:block}
+  .clock b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:20px;
+           line-height:1;font-variant-numeric:tabular-nums;color:#f2e8d5}
+  .clock em{font-style:normal;font-size:10.5px;opacity:.7;display:block;margin-top:2px;letter-spacing:.08em}
+  .gauges{
+    flex:0 0 auto;display:flex;align-items:center;gap:18px;
+    padding:10px 18px;border-bottom:1px solid rgba(201,162,39,.2);
+  }
+  .spd{display:flex;align-items:baseline;gap:5px;flex:0 0 auto}
+  .spd b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:30px;line-height:1;
+         color:var(--geum);font-variant-numeric:tabular-nums;transition:color .2s}
+  .spd b.slow{color:var(--injoo)}
+  .spd span{font-size:11px;color:var(--paper-dim)}
+  .track{flex:1 1 auto;min-width:0}
+  .track .lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--paper-dim);margin-bottom:4px;letter-spacing:.06em}
+  .track .bar{height:4px;background:rgba(255,255,255,.09);position:relative}
+  .track .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--geum);width:0;transition:width .4s}
+  .track .bar u{position:absolute;top:-3px;width:2px;height:10px;background:var(--paper-dim);right:0}
+  .fix{flex:0 0 auto;text-align:right;font-size:11px;color:var(--paper-dim);line-height:1.5}
+  .fix b{display:block;font-family:"Noto Serif KR",serif;font-size:13.5px;color:var(--paper)}
+  .fix.near b{color:var(--injoo)}
+
+  /* ── 문제 ─────────────────────────────── */
+  .qbar{
+    flex:0 0 auto;padding:14px 22px 13px;
+    border-bottom:1px solid rgba(201,162,39,.14);
+    background:linear-gradient(180deg, rgba(201,162,39,.05), transparent);
+    min-height:78px;display:flex;align-items:center;
+  }
+  .qbar p{
+    font-family:"Noto Serif KR",serif;font-size:18.5px;line-height:1.6;
+    max-width:60ch;margin:0 auto;text-align:center;
+  }
+  .qbar em{font-style:normal;font-weight:900;border-bottom:2px solid var(--geum)}
+
+  .stage{position:relative;flex:1 1 auto;overflow:hidden;cursor:crosshair;touch-action:manipulation}
+  canvas{display:block;width:100%;height:100%}
+
+  .overlay{
+    position:absolute;inset:0;background:rgba(9,18,28,.93);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 26px;gap:10px;z-index:5;overflow-y:auto;
+  }
+  .overlay.hidden{display:none}
+  .title{font-family:"Noto Serif KR",serif;font-weight:900;font-size:38px;letter-spacing:.12em;line-height:1.15}
+  .title em{display:block;font-style:normal;font-size:13.5px;letter-spacing:.38em;color:var(--geum);margin-bottom:12px;font-weight:400}
+  .rules{margin:20px 0 24px;font-size:14px;line-height:1.95;color:var(--paper-dim);max-width:42ch}
+  .rules b{color:var(--paper);font-weight:500}
+  .big{font-family:"Noto Serif KR",serif;font-weight:900;font-size:40px;color:var(--geum);line-height:1.15}
+  .sub{font-family:"Noto Serif KR",serif;font-size:17px;line-height:1.7;max-width:44ch;color:var(--paper-dim)}
+  .sub b{color:var(--paper);font-weight:600}
+  .review{margin:18px 0 20px;width:min(470px,100%);text-align:left;
+          border-top:1px solid rgba(201,162,39,.25);padding-top:13px}
+  .review h3{font-size:12.5px;font-weight:500;color:var(--geum);margin-bottom:10px}
+  .review li{list-style:none;padding:7px 0;border-bottom:1px solid rgba(242,232,213,.08);font-size:13.5px;line-height:1.55;color:var(--paper-dim)}
+  .review li b{color:var(--paper);font-family:"Noto Serif KR",serif;font-weight:600}
+  .go{
+    font-family:inherit;font-size:15px;padding:13px 38px;background:transparent;
+    color:var(--geum);border:1px solid var(--geum);cursor:pointer;letter-spacing:.08em;transition:.15s;
+  }
+  .go:hover,.go:focus-visible{background:var(--geum);color:var(--ink)}
+  button:focus-visible{outline:2px solid var(--paper);outline-offset:2px}
+
+  @media (max-width:640px){
+    .qbar p{font-size:16px}
+    .spd b{font-size:24px}
+    .title{font-size:29px}
+    .big{font-size:31px}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="gauges">
+    <div class="clock">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <circle cx="13" cy="14" r="9.4" fill="none" stroke="#c9a227" stroke-width="1.6"/>
+        <rect x="11" y="1.6" width="4" height="3.4" fill="#c9a227"/>
+        <rect x="12.2" y="4.4" width="1.6" height="1.8" fill="#c9a227"/>
+        <line id="hand" x1="13" y1="14" x2="13" y2="8" stroke="#f2e8d5" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="14" r="1.2" fill="#f2e8d5"/>
+      </svg>
+      <div><b id="clockN">0:00</b><em>걸린 시간</em></div>
+    </div>
+    <div class="spd"><b id="spd">60</b><span>km/h</span></div>
+    <div class="track">
+      <div class="lbl"><span id="stationL">샌프란시스코</span><span id="stationR">메디신보 다리</span></div>
+      <div class="bar"><i id="prog"></i><u></u></div>
+    </div>
+    <div class="fix" id="fixBox"><b id="fixCar">5칸 뒤</b>픽스 형사</div>
+  </div>
+
+  <div class="qbar"><p id="qText"></p></div>
+
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+
+    <div class="overlay" id="start">
+      <h1 class="title"><em>80일간의 어휘 일주 · 미국 구간</em>대륙 횡단 열차</h1>
+      <div class="rules">
+        선로 위로 낱말이 날아옵니다. 문맥에 맞는 것을 <b>갈고리로 낚아채세요</b>.<br>
+        맞히면 속도가 오르고 틀리면 떨어집니다.<br>
+        앞의 <b>메디신보 다리</b>는 무너지기 직전입니다.<br>
+        시속 <b>80</b>이 안 되면 건너지 못합니다.<br>
+        틀릴 때마다 <b>픽스 형사</b>가 한 칸씩 다가옵니다.
+      </div>
+      <button class="go" id="startBtn">기관차에 오르기</button>
+    </div>
+
+    <div class="overlay hidden" id="endScreen">
+      <div class="big" id="endBig"></div>
+      <div class="sub" id="endSub"></div>
+      <div class="review" id="reviewBox"></div>
+      <button class="go" id="againBtn">다시 달리기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   문항 — 연동 시 GET /quiz?type=context 로 대체
+   ════════════════════════════════════════════ */
+const ITEMS = [
+  { q:"밑줄 친 말의 뜻은?  “서둘러 떠난 덕분에 하루를 <em>벌었다</em>.”",
+    opts:["여유를 얻다","돈을 모으다","힘껏 일하다","길을 잃다"], a:0,
+    why:"'벌다'에는 시간이나 여유를 얻는다는 뜻도 있습니다." },
+  { q:"밑줄 친 말의 뜻은?  “열차는 무너지는 다리를 <em>가까스로</em> 건넜다.”",
+    opts:["느긋하게","겨우, 간신히","곧장","되돌아서"], a:1,
+    why:"가까스로는 힘들게 겨우 해냈다는 뜻입니다." },
+  { q:"“일정을 <em>단축하다</em>”와 뜻이 가장 가까운 말은?",
+    opts:["미루다","늘이다","줄이다","바꾸다"], a:2,
+    why:"단축은 짧게 줄인다는 뜻입니다. 반대말은 연장입니다." },
+  { q:"“그 소문은 <em>근거</em>가 없다”에서 '근거'의 뜻은?",
+    opts:["까닭이나 바탕","소문의 크기","재미","사람의 이름"], a:0,
+    why:"근거는 주장이 기대고 있는 바탕입니다. 글을 쓸 때 늘 필요합니다." },
+  { q:"밑줄 친 말의 뜻은?  “그는 약속 시간에 <em>대었다</em>.”",
+    opts:["무엇을 갖다 붙였다","늦지 않게 이르렀다","크게 화를 냈다","값을 치렀다"], a:1,
+    why:"'대다'는 정해진 때에 맞추어 이른다는 뜻으로도 쓰입니다." },
+  { q:"밑줄 친 말의 뜻은?  “그는 실수를 <em>덮으려</em> 했다.”",
+    opts:["위를 가리다","감추다","끝내다","되풀이하다"], a:1,
+    why:"물건을 덮는다는 뜻에서 나아가, 잘못을 감춘다는 뜻으로도 씁니다." },
+  { q:"밑줄 친 말의 뜻은?  “역에서 차표를 <em>끊었다</em>.”",
+    opts:["잘라 냈다","사서 마련했다","그만두었다","나누어 주었다"], a:1,
+    why:"표나 영수증을 산다는 뜻의 '끊다'입니다." },
+  { q:"<em>말이 씨가 된다</em>는 속담의 뜻은?",
+    opts:["말은 곧 잊힌다","무심코 한 말이 사실이 된다","말이 많으면 실수한다","말보다 행동이 낫다"], a:1,
+    why:"내뱉은 말이 정말로 그렇게 되어 버린다는 뜻입니다." },
+  { q:"밑줄 친 말의 뜻은?  “오래된 밧줄이 <em>삭아</em> 끊어졌다.”",
+    opts:["오래되어 약해지다","물에 젖다","단단해지다","길어지다"], a:0,
+    why:"삭다는 오래되어 힘이 없어지고 부스러진다는 뜻입니다." },
+  { q:"“속도를 <em>늦추다</em>”에서 '늦추다'의 뜻은?",
+    opts:["느리게 하다","시간을 어기다","높이 올리다","완전히 멈추다"], a:0,
+    why:"빠르기를 줄인다는 뜻입니다. 약속을 미룬다는 뜻으로도 씁니다." },
+  { q:"“집안 <em>형편</em>이 나아졌다”에서 '형편'의 뜻은?",
+    opts:["집의 모양","살림살이나 사정","가족의 수","사는 동네"], a:1,
+    why:"형편은 일이 되어 가는 사정이나 살림의 상태입니다." },
+  { q:"밑줄 친 말의 뜻은?  “<em>무리하게</em> 밀어붙이다 일을 그르쳤다.”",
+    opts:["여럿이 함께","정도를 넘어 억지로","조심스럽게","몰래 숨어서"], a:1,
+    why:"무리하다는 정도에 지나쳐 억지스럽다는 뜻입니다." }
+];
+
+const BRIDGE_SPEED = 80;
+const FIX_CARS = 5;
+
+/* ════════════════════════════════════════════
+   무대
+   ════════════════════════════════════════════ */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+let W = 0, H = 0, GROUND = 0;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  GROUND = Math.round(H*0.80);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── 상태 ────────────────────────────────── */
+let order = [], qi = 0, speed = 60, wrongs = 0, fixAt = FIX_CARS;
+let cards = [], hooks = [], smoke = [], sparks = [];
+let scroll = 0, wheel = 0, t = 0;
+let playing = false, locked = false, bridge = null;
+let missed = [], toast = null, toastT = 0;
+let lastTs = 0, rafId = null, shake = 0;
+
+const rnd = (a,b) => a + Math.random()*(b-a);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 라운드 ──────────────────────────────── */
+function nextQ(){
+  if(qi >= order.length) return startBridge();
+  locked = false;
+  cards = [];
+  const item = order[qi];
+  document.getElementById('qText').innerHTML = item.q;
+
+  const idxs = shuffle([0,1,2,3]);
+  const topY = 44, botY = GROUND - 150;
+  idxs.forEach((oi, slot) => {
+    cards.push({
+      text: item.opts[oi],
+      correct: oi === item.a,
+      n: slot + 1,
+      x: W + 30 + slot*168,
+      y: topY + (botY-topY) * (slot/3) + rnd(-14,14),
+      w: 132, h: 46, dead:false
+    });
+  });
+  updateHud();
+}
+
+function updateHud(){
+  const s = document.getElementById('spd');
+  s.textContent = Math.round(speed);
+  s.classList.toggle('slow', speed < BRIDGE_SPEED);
+  document.getElementById('prog').style.width = (qi/order.length*100) + '%';
+  const f = document.getElementById('fixBox');
+  document.getElementById('fixCar').textContent = fixAt <= 0 ? '기관실 앞' : fixAt + '칸 뒤';
+  f.classList.toggle('near', fixAt <= 2);
+}
+
+/* ── 발사 ────────────────────────────────── */
+function fireAt(x, y){
+  if(!playing || locked || bridge) return;
+  const target = cards.find(c => !c.dead && x >= c.x && x <= c.x+c.w && y >= c.y && y <= c.y+c.h);
+  hooks.push({ x:150, y:GROUND-96, target, tx:x, ty:y, dead:false });
+}
+
+function resolve(c){
+  if(c.dead || locked) return;
+  c.dead = true;
+  const item = order[qi];
+
+  if(c.correct){
+    locked = true;
+    speed = Math.min(140, speed + 11);
+    toastMsg('전속', false);
+    updateHud();
+    setTimeout(() => { qi++; nextQ(); }, 850);
+  } else {
+    wrongs++;
+    fixAt = Math.max(0, fixAt - 1);
+    speed = Math.max(18, speed - 14);
+    shake = .5;
+    toastMsg(item.why, true);
+    if(!missed.includes(item)) missed.push(item);
+    updateHud();
+    if(fixAt <= 0){ locked = true; setTimeout(arrested, 700); }
+  }
+}
+
+function missQ(){
+  if(locked) return;
+  locked = true;
+  const item = order[qi];
+  speed = Math.max(18, speed - 9);
+  if(!missed.includes(item)) missed.push(item);
+  toastMsg('놓쳤습니다 · ' + item.opts[item.a], true);
+  updateHud();
+  setTimeout(() => { qi++; nextQ(); }, 1100);
+}
+
+function toastMsg(text, bad){ toast = {text, bad}; toastT = 1.7; }
+
+/* ── 다리 ────────────────────────────────── */
+function startBridge(){
+  locked = true;
+  bridge = { x: W + 120, crossed:null, fall:0, done:false };
+  document.getElementById('qText').innerHTML =
+    speed >= BRIDGE_SPEED
+      ? '<em>메디신보 다리</em>가 보입니다. 기관사는 속도를 늦추지 않습니다.'
+      : '<em>메디신보 다리</em>가 보입니다. 속도가 모자랍니다.';
+}
+
+function arrested(){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  finish('체포', '픽스 형사가 기관실 문을 열었습니다.<br>포그는 <b>여기서 멈춰야</b> 했습니다.');
+}
+
+function finish(big, sub){
+  playing = false;
+  document.getElementById('endBig').textContent = big;
+  document.getElementById('endSub').innerHTML = sub;
+  const box = document.getElementById('reviewBox');
+  box.innerHTML = '<h3>다시 볼 말</h3>' + (missed.length
+    ? '<ul>' + missed.map(m => '<li><b>' + m.opts[m.a] + '</b> · ' + m.why + '</li>').join('') + '</ul>'
+    : '<li>한 문항도 놓치지 않았습니다</li>');
+  document.getElementById('endScreen').classList.remove('hidden');
+}
+
+/* ── 진행 ────────────────────────────────── */
+
+/* ── 전체 걸린 시간 ─────────────────────── */
+let elapsed = 0;
+function fmt(sec){
+  const m = Math.floor(sec/60), ss = Math.floor(sec%60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+function tickClock(dt){
+  elapsed += dt;
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = fmt(elapsed);
+  const hand = document.getElementById('hand');
+  if(hand){
+    const a = (elapsed % 60) / 60 * Math.PI*2;
+    hand.setAttribute('x2', (13 + Math.sin(a)*6).toFixed(2));
+    hand.setAttribute('y2', (14 - Math.cos(a)*6).toFixed(2));
+  }
+}
+function resetClock(){
+  elapsed = 0;
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = '0:00';
+}
+
+function step(dt){
+  tickClock(dt);
+  t += dt;
+  scroll += speed * dt * 2.6;
+  wheel += speed * dt * 0.14;
+  if(shake > 0) shake -= dt;
+  if(toastT > 0){ toastT -= dt; if(toastT <= 0) toast = null; }
+
+  if(Math.random() < dt * (3 + speed/22)){
+    smoke.push({ x:124, y:GROUND-118, r:rnd(5,9), a:.5, vx:rnd(-38,-14) - speed*0.25, vy:rnd(-26,-12) });
+  }
+  smoke.forEach(s => { s.x += s.vx*dt; s.y += s.vy*dt; s.r += 13*dt; s.a -= dt*0.34; });
+  smoke = smoke.filter(s => s.a > 0);
+
+  sparks.forEach(s => { s.x += s.vx*dt; s.y += s.vy*dt; s.vy += 320*dt; s.a -= dt*1.6; });
+  sparks = sparks.filter(s => s.a > 0);
+
+  if(bridge){
+    bridge.x -= speed * dt * 2.6;
+    if(!bridge.done && bridge.x < 150){
+      bridge.done = true;
+      bridge.crossed = speed >= BRIDGE_SPEED;
+      setTimeout(() => {
+        if(bridge.crossed){
+          finish('통과', '다리는 열차가 지나간 <b>직후에</b> 무너져 내렸습니다.<br>뉴욕까지 남은 선로는 온전합니다.');
+        } else {
+          finish('추락', '속도가 모자라 다리가 <b>먼저</b> 주저앉았습니다.<br>시속 ' + BRIDGE_SPEED + '이 필요했습니다.');
+        }
+      }, 1400);
+    }
+    if(bridge.done && !bridge.crossed) bridge.fall += dt;
+    return;
+  }
+
+  // 낱말 카드
+  let correctGone = false;
+  cards.forEach(c => {
+    if(c.dead) return;
+    c.x -= (46 + speed*0.16) * dt;
+    c.y += Math.sin(t*1.4 + c.n) * 7 * dt;
+    if(c.x + c.w < -10){
+      c.dead = true;
+      if(c.correct) correctGone = true;
+    }
+  });
+  if(correctGone) missQ();
+
+  // 갈고리
+  hooks.forEach(h => {
+    if(h.dead) return;
+    let tx = h.tx, ty = h.ty;
+    if(h.target && !h.target.dead){ tx = h.target.x + h.target.w/2; ty = h.target.y + h.target.h/2; }
+    const dx = tx-h.x, dy = ty-h.y, d = Math.hypot(dx,dy) || 1;
+    const stepLen = 1250*dt;
+    if(d <= stepLen){
+      h.dead = true;
+      if(h.target && !h.target.dead){
+        for(let i=0;i<10;i++) sparks.push({ x:tx, y:ty, vx:rnd(-120,120), vy:rnd(-160,20), a:1 });
+        resolve(h.target);
+      }
+      return;
+    }
+    h.x += dx/d*stepLen; h.y += dy/d*stepLen;
+    if(h.x > W+40 || h.y < -40) h.dead = true;
+  });
+  hooks = hooks.filter(h => !h.dead);
+}
+
+/* ── 그리기 ──────────────────────────────── */
+function drawTrain(){
+  const yb = GROUND;
+  const jolt = shake > 0 ? Math.sin(t*60)*2.2 : 0;
+  ctx.save();
+  ctx.translate(0, jolt);
+
+  // 객차 세 량
+  for(let i=0;i<3;i++){
+    const x = 8 + i*66;
+    ctx.fillStyle = '#16283c';
+    ctx.fillRect(x, yb-72, 58, 46);
+    ctx.strokeStyle = 'rgba(201,162,39,.5)'; ctx.lineWidth = 1;
+    ctx.strokeRect(x+.5, yb-71.5, 57, 45);
+    ctx.fillStyle = 'rgba(255,216,138,.75)';
+    for(let k=0;k<2;k++) ctx.fillRect(x+12+k*24, yb-62, 13, 13);
+    ctx.fillStyle = '#0d1a27';
+    for(let k=0;k<2;k++){
+      ctx.beginPath(); ctx.arc(x+15+k*28, yb-18, 8, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // 기관차
+  const bx = 206;
+  ctx.fillStyle = '#16283c';
+  ctx.fillRect(bx, yb-84, 40, 58);                 // 운전실
+  ctx.fillRect(bx+40, yb-62, 68, 36);              // 보일러
+  ctx.beginPath(); ctx.moveTo(bx+108, yb-62); ctx.lineTo(bx+126, yb-40);
+  ctx.lineTo(bx+126, yb-26); ctx.lineTo(bx+108, yb-26); ctx.closePath(); ctx.fill();
+  // 배장기
+  ctx.beginPath(); ctx.moveTo(bx+126, yb-26); ctx.lineTo(bx+146, yb-6);
+  ctx.lineTo(bx+126, yb-6); ctx.closePath(); ctx.fill();
+  // 굴뚝
+  ctx.fillRect(bx+56, yb-104, 16, 44);
+  ctx.fillStyle = '#0d1a27'; ctx.fillRect(bx+52, yb-110, 24, 8);
+  // 금테
+  ctx.strokeStyle = 'rgba(201,162,39,.75)'; ctx.lineWidth = 1.4;
+  ctx.strokeRect(bx+.5, yb-83.5, 39, 57);
+  ctx.beginPath(); ctx.moveTo(bx+40, yb-48); ctx.lineTo(bx+108, yb-48); ctx.stroke();
+  // 창과 전조등
+  ctx.fillStyle = 'rgba(255,216,138,.8)';
+  ctx.fillRect(bx+9, yb-74, 22, 17);
+  ctx.beginPath(); ctx.arc(bx+112, yb-52, 6, 0, Math.PI*2); ctx.fill();
+
+  // 바퀴
+  ctx.fillStyle = '#0d1a27';
+  [bx+16, bx+52, bx+86, bx+114].forEach((wx,i) => {
+    const r = i < 2 ? 12 : 9;
+    ctx.beginPath(); ctx.arc(wx, yb-14, r, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(201,162,39,.6)'; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(wx, yb-14);
+    ctx.lineTo(wx + Math.cos(wheel + i)*r*0.75, yb-14 + Math.sin(wheel + i)*r*0.75);
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+function drawFix(){
+  // 지붕 위를 기어 오는 픽스
+  const carX = [24, 90, 156, 214, 240];
+  const x = carX[Math.max(0, Math.min(4, FIX_CARS - fixAt))] + Math.sin(t*3)*2;
+  const y = GROUND - (fixAt <= 0 ? 96 : 74);
+  ctx.save();
+  ctx.fillStyle = '#0b1420';
+  ctx.beginPath(); ctx.ellipse(x, y-6, 6, 8, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillRect(x-7, y-17, 14, 2.4);
+  ctx.fillRect(x-4.6, y-24, 9.2, 7);
+  ctx.strokeStyle = '#0b1420'; ctx.lineWidth = 2.4;
+  ctx.beginPath();
+  ctx.moveTo(x-2, y+2); ctx.lineTo(x-5 + Math.sin(t*7)*3, y+11);
+  ctx.moveTo(x+2, y+2); ctx.lineTo(x+5 - Math.sin(t*7)*3, y+11);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function render(){
+  // 하늘
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, '#2c4a68');
+  g.addColorStop(.55, '#3d5570');
+  g.addColorStop(1, '#5d6674');
+  ctx.fillStyle = g; ctx.fillRect(0,0,H>0?W:0,H);
+
+  // 먼 산
+  ctx.fillStyle = 'rgba(20,34,50,.55)';
+  const off1 = (scroll*0.12) % 300;
+  for(let x=-off1; x<W+300; x+=300){
+    ctx.beginPath();
+    ctx.moveTo(x, GROUND-40);
+    ctx.lineTo(x+90, GROUND-150); ctx.lineTo(x+150, GROUND-88);
+    ctx.lineTo(x+220, GROUND-172); ctx.lineTo(x+300, GROUND-40);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // 설원
+  ctx.fillStyle = '#c8cfd6';
+  ctx.fillRect(0, GROUND-38, W, H-GROUND+38);
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  ctx.fillRect(0, GROUND-38, W, 8);
+
+  // 전신주
+  const off2 = (scroll*0.55) % 220;
+  ctx.strokeStyle = 'rgba(20,34,50,.4)'; ctx.lineWidth = 2;
+  for(let x=-off2; x<W+220; x+=220){
+    ctx.beginPath(); ctx.moveTo(x, GROUND-40); ctx.lineTo(x, GROUND-118); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x-10, GROUND-112); ctx.lineTo(x+10, GROUND-112); ctx.stroke();
+  }
+
+  // 선로
+  ctx.fillStyle = '#7c6a55';
+  const off3 = scroll % 30;
+  for(let x=-off3; x<W+30; x+=30) ctx.fillRect(x, GROUND-3, 17, 9);
+  ctx.fillStyle = '#4a4b52';
+  ctx.fillRect(0, GROUND-6, W, 3);
+  ctx.fillRect(0, GROUND+4, W, 3);
+
+  // 다리
+  if(bridge){
+    const bxp = bridge.x, gap = 210;
+    ctx.fillStyle = '#5d5145';
+    for(let i=0;i<3;i++){
+      const px = bxp + i*(gap/2.4);
+      const drop = bridge.done && !bridge.crossed ? Math.min(70, bridge.fall*150) : 0;
+      ctx.fillRect(px, GROUND+6+drop, 10, H-GROUND);
+      ctx.save();
+      ctx.translate(px+5, GROUND+drop);
+      ctx.rotate(drop*0.006);
+      ctx.fillRect(-gap/4.8, -4, gap/2.4, 7);
+      ctx.restore();
+    }
+    ctx.fillStyle = 'rgba(20,34,50,.5)';
+    ctx.fillRect(bxp-2, GROUND+9, gap, H-GROUND);
+  }
+
+  smoke.forEach(s => {
+    ctx.fillStyle = 'rgba(226,232,238,' + s.a + ')';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+  });
+
+  drawTrain();
+  drawFix();
+
+  // 갈고리 줄
+  hooks.forEach(h => {
+    ctx.strokeStyle = 'rgba(201,162,39,.85)'; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(150, GROUND-96); ctx.lineTo(h.x, h.y); ctx.stroke();
+    ctx.fillStyle = '#c9a227';
+    ctx.beginPath(); ctx.arc(h.x, h.y, 4, 0, Math.PI*2); ctx.fill();
+  });
+
+  // 낱말 카드
+  cards.forEach(c => {
+    if(c.dead) return;
+    ctx.fillStyle = 'rgba(0,0,0,.28)';
+    ctx.fillRect(c.x+3, c.y+4, c.w, c.h);
+    ctx.fillStyle = '#f2e8d5';
+    ctx.fillRect(c.x, c.y, c.w, c.h);
+    ctx.strokeStyle = 'rgba(201,162,39,.85)'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(c.x+1.5, c.y+1.5, c.w-3, c.h-3);
+    ctx.fillStyle = '#16283c';
+    ctx.font = '600 17px "Noto Serif KR", serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(c.text, c.x + c.w/2, c.y + c.h/2 + 1);
+    // 번호
+    ctx.fillStyle = '#16283c';
+    ctx.beginPath(); ctx.arc(c.x, c.y, 10, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#c9a227';
+    ctx.font = '700 11px "Noto Sans KR", sans-serif';
+    ctx.fillText(c.n, c.x, c.y+1);
+  });
+
+  sparks.forEach(s => {
+    ctx.fillStyle = 'rgba(255,214,140,' + s.a + ')';
+    ctx.fillRect(s.x, s.y, 2.5, 2.5);
+  });
+
+  if(toast){
+    const a = Math.min(1, toastT*1.6);
+    ctx.font = '500 15px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(9,18,28,' + (a*.78) + ')';
+    const tw = ctx.measureText(toast.text).width + 30;
+    ctx.fillRect(W/2 - tw/2, H-46, tw, 30);
+    ctx.fillStyle = toast.bad ? 'rgba(240,190,186,' + a + ')' : 'rgba(201,162,39,' + a + ')';
+    ctx.fillText(toast.text, W/2, H-31);
+  }
+}
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!playing) return;
+  const dt = Math.min((ts-lastTs)/1000, .05);
+  lastTs = ts;
+  step(dt);
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 입력 ────────────────────────────────── */
+stage.addEventListener('pointerdown', e => {
+  if(!playing) return;
+  const r = stage.getBoundingClientRect();
+  fireAt(e.clientX - r.left, e.clientY - r.top);
+});
+window.addEventListener('keydown', e => {
+  if(!playing || locked || bridge) return;
+  const n = parseInt(e.key, 10);
+  if(n >= 1 && n <= 4){
+    const c = cards.find(x => x.n === n && !x.dead);
+    if(c) fireAt(c.x + c.w/2, c.y + c.h/2);
+  }
+});
+
+/* ── 시작 ────────────────────────────────── */
+function startGame(){
+  resetClock();
+  document.getElementById('start').classList.add('hidden');
+  document.getElementById('endScreen').classList.add('hidden');
+  resize();
+  order = shuffle(ITEMS.slice());
+  qi = 0; speed = 60; wrongs = 0; fixAt = FIX_CARS;
+  cards = []; hooks = []; smoke = []; sparks = []; missed = [];
+  bridge = null; toast = null; scroll = 0;
+  playing = true; lastTs = performance.now();
+  nextQ();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('againBtn').addEventListener('click', startGame);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>성어 감별소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --meok:#14161d;
+    --hanji:#f2e8d5;
+    --hanji-dim:#cbbfa6;
+    --geum:#c9a227;
+    --injoo:#a8322d;
+    --puleun:#4d7a86;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1200px 700px at 50% -10%, #232a3d 0%, transparent 60%), var(--meok);
+    color:var(--hanji);
+    font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;overflow:hidden;
+  }
+  .frame{
+    width:min(820px,100%);
+    height:min(720px,100vh - 32px);
+    display:flex;flex-direction:column;
+    border:1px solid rgba(201,162,39,.28);
+    background:rgba(10,12,18,.55);
+    position:relative;overflow:hidden;
+  }
+
+  /* ── 상단 ─────────────────────────────── */
+  .hud{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:11px 18px;border-bottom:1px solid rgba(201,162,39,.2);flex:0 0 auto;
+  }
+  .hud .left{display:flex;align-items:baseline;gap:14px}
+  .score{font-family:"Noto Serif KR",serif;font-weight:900;font-size:25px;color:var(--geum);line-height:1;font-variant-numeric:tabular-nums}
+  .progress{font-size:13px;color:var(--hanji-dim)}
+  .combo{font-size:13px;color:var(--geum);opacity:0;transition:opacity .2s}
+  .combo.on{opacity:1}
+  .lives{display:flex;gap:7px}
+  .lives i{width:9px;height:9px;border-radius:50%;background:var(--geum);display:block;transition:opacity .25s}
+  .lives i.spent{opacity:.16}
+
+  /* ── 시간 ─────────────────────────────── */
+  .timebar{height:2px;background:rgba(201,162,39,.12);flex:0 0 auto}
+  .timebar span{display:block;height:100%;width:100%;background:var(--geum);transform-origin:left}
+  .timebar span.low{background:var(--injoo)}
+
+  /* ── 심사대 ───────────────────────────── */
+  .desk{
+    position:relative;flex:1 1 auto;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;touch-action:none;overflow:hidden;
+  }
+
+  .card{
+    position:absolute;
+    width:min(520px,100%);
+    background:var(--hanji);
+    color:#20242e;
+    padding:34px 32px 30px;
+    box-shadow:0 14px 40px rgba(0,0,0,.55);
+    will-change:transform,opacity;
+  }
+  .card .idiom{
+    font-family:"Noto Serif KR",serif;
+    font-size:13px;color:#8a7a55;letter-spacing:.1em;
+    margin-bottom:14px;
+  }
+  .card .sentence{
+    font-family:"Noto Serif KR",serif;
+    font-size:20px;line-height:1.8;
+    max-width:34ch;
+  }
+  .card .sentence b{font-weight:900;border-bottom:2px solid var(--geum);padding-bottom:1px}
+  .card.behind-1{transform:translateY(12px) scale(.965);opacity:.5;box-shadow:none}
+  .card.behind-2{transform:translateY(24px) scale(.93);opacity:.25;box-shadow:none}
+
+  .stamp{
+    position:absolute;top:50%;left:50%;
+    width:118px;height:118px;
+    margin:-59px 0 0 -59px;
+    border:4px solid var(--injoo);
+    color:var(--injoo);
+    border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Noto Serif KR",serif;font-weight:900;font-size:56px;
+    opacity:0;transform:scale(2.4) rotate(-18deg);
+    pointer-events:none;z-index:3;
+  }
+  .stamp.pass{border-color:var(--puleun);color:var(--puleun)}
+  .stamp.on{animation:stamp .34s cubic-bezier(.2,.8,.3,1) forwards}
+  @keyframes stamp{
+    0%{opacity:0;transform:scale(2.4) rotate(-18deg)}
+    55%{opacity:.95;transform:scale(.92) rotate(-9deg)}
+    100%{opacity:.9;transform:scale(1) rotate(-9deg)}
+  }
+
+  /* ── 판정 버튼 ─────────────────────────── */
+  .controls{
+    flex:0 0 auto;
+    display:flex;gap:12px;
+    padding:14px 18px 18px;
+    border-top:1px solid rgba(201,162,39,.16);
+  }
+  .controls button{
+    flex:1;padding:15px 10px;
+    font-family:"Noto Serif KR",serif;font-size:17px;font-weight:600;
+    background:transparent;border:1px solid;cursor:pointer;
+    letter-spacing:.04em;transition:background .14s,color .14s;
+  }
+  .controls .reject{color:var(--injoo);border-color:rgba(168,50,45,.65)}
+  .controls .reject:hover,.controls .reject:focus-visible{background:var(--injoo);color:var(--hanji)}
+  .controls .pass{color:var(--puleun);border-color:rgba(77,122,134,.65)}
+  .controls .pass:hover,.controls .pass:focus-visible{background:var(--puleun);color:var(--hanji)}
+  .controls button small{display:block;font-family:"Noto Sans KR",sans-serif;font-size:11px;font-weight:400;opacity:.7;margin-top:3px;letter-spacing:0}
+  .controls button:focus-visible{outline:2px solid var(--hanji);outline-offset:2px}
+
+  /* ── 피드백 ───────────────────────────── */
+  .feedback{
+    position:absolute;inset:0;
+    background:rgba(10,12,18,.93);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:12px;text-align:center;padding:30px;
+    opacity:0;pointer-events:none;transition:opacity .16s;z-index:4;
+  }
+  .feedback.on{opacity:1}
+  .feedback .verdict{font-family:"Noto Serif KR",serif;font-size:27px;font-weight:900;color:var(--geum)}
+  .feedback .verdict.bad{color:var(--injoo)}
+  .feedback .tag{
+    font-size:12px;color:var(--meok);background:var(--hanji-dim);
+    padding:3px 11px;letter-spacing:.05em;
+  }
+  .feedback .why{
+    font-family:"Noto Serif KR",serif;
+    font-size:17px;line-height:1.7;max-width:40ch;color:var(--hanji);
+  }
+  .feedback .fix{font-size:14px;color:var(--hanji-dim);line-height:1.6;max-width:40ch}
+
+  /* ── 화면 ─────────────────────────────── */
+  .screen{
+    position:absolute;inset:0;background:rgba(12,14,20,.96);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:32px 26px;text-align:center;z-index:6;overflow-y:auto;
+  }
+  .screen.hidden{display:none}
+  .title{font-family:"Noto Serif KR",serif;font-weight:900;font-size:42px;letter-spacing:.14em;line-height:1.1}
+  .title em{display:block;font-style:normal;font-size:15px;letter-spacing:.42em;color:var(--geum);margin-bottom:14px;font-weight:400}
+  .rules{margin:24px 0 28px;font-size:14.5px;line-height:2;color:var(--hanji-dim);max-width:42ch}
+  .rules b{color:var(--hanji);font-weight:500}
+  .go{
+    font-family:"Noto Sans KR",sans-serif;font-size:15px;font-weight:500;
+    padding:13px 40px;background:transparent;color:var(--geum);
+    border:1px solid var(--geum);cursor:pointer;letter-spacing:.08em;
+    transition:background .15s,color .15s;
+  }
+  .go:hover,.go:focus-visible{background:var(--geum);color:var(--meok)}
+
+  .result-score{font-family:"Noto Serif KR",serif;font-size:60px;font-weight:900;color:var(--geum);line-height:1;font-variant-numeric:tabular-nums}
+  .result-sub{font-size:14px;color:var(--hanji-dim);margin-top:8px}
+  .review{margin:24px 0 26px;width:min(480px,100%);text-align:left;border-top:1px solid rgba(201,162,39,.25);padding-top:14px}
+  .review h3{font-size:13px;font-weight:500;color:var(--geum);margin-bottom:11px}
+  .review li{list-style:none;padding:9px 0;border-bottom:1px solid rgba(242,232,213,.08)}
+  .review .s{font-family:"Noto Serif KR",serif;font-size:15.5px;line-height:1.55}
+  .review .r{font-size:13px;color:var(--hanji-dim);margin-top:4px;line-height:1.5}
+
+  @media (max-width:600px){
+    .card{padding:26px 22px 24px}
+    .card .sentence{font-size:17.5px}
+    .title{font-size:32px}
+    .stamp{width:96px;height:96px;margin:-48px 0 0 -48px;font-size:44px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .stamp.on{animation-duration:.01ms}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="hud">
+    <div class="left">
+      <span class="score" id="score">0</span>
+      <span class="progress" id="progress">1 / 20</span>
+      <span class="combo" id="combo"></span>
+    </div>
+    <div class="lives" id="lives"><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="timebar"><span id="timefill"></span></div>
+
+  <div class="desk" id="desk">
+    <div class="stamp" id="stamp"></div>
+    <div class="feedback" id="feedback">
+      <div class="verdict" id="fVerdict"></div>
+      <div class="tag" id="fTag"></div>
+      <div class="why" id="fWhy"></div>
+      <div class="fix" id="fFix"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="reject" id="btnReject">잘못 쓰였다<small>← 왼쪽</small></button>
+    <button class="pass" id="btnPass">바르게 쓰였다<small>오른쪽 →</small></button>
+  </div>
+
+  <div class="screen" id="startScreen">
+    <h1 class="title"><em>성어 쓰임 판별</em>성어 감별소</h1>
+    <div class="rules">
+      문장 속 성어가 <b>제자리에 쓰였는지</b> 판정하세요.<br>
+      방향키 <b>← →</b> 또는 카드를 <b>좌우로 밀어서</b> 도장을 찍습니다.<br>
+      연속으로 맞히면 점수가 붙습니다.<br>
+      시간을 넘기면 하나를 잃습니다.
+    </div>
+    <button class="go" id="startBtn">시작하기</button>
+  </div>
+
+  <div class="screen hidden" id="endScreen">
+    <div class="result-score" id="finalScore">0</div>
+    <div class="result-sub" id="finalSub"></div>
+    <div class="review" id="reviewBox"></div>
+    <button class="go" id="againBtn">다시 하기</button>
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────
+   문항 — 실제 연동 시 GET /quiz?type=usage 로 대체
+   ok:true  → 바르게 쓰인 문장
+   ok:false → 오용. type 은 오류 유형, fix 는 교정
+   ──────────────────────────────────────────── */
+const ITEMS = [
+  {idiom:"우공이산", ok:true,
+   s:"하루에 한 문단씩 옮겨 적기를 삼 년, 그는 <b>우공이산</b>이라는 말을 몸으로 알게 되었다."},
+
+  {idiom:"반포지효", ok:false, type:"혼동",
+   s:"부모님이 떠나신 뒤에야 효도하지 못한 것이 한스러워 <b>반포지효</b>의 심정이 되었다.",
+   why:"이미 부모가 안 계신 뒤의 한탄입니다.",
+   fix:"풍수지탄이 맞습니다. 반포지효는 부모가 계실 때 은혜를 갚는 효도입니다."},
+
+  {idiom:"과유불급", ok:true,
+   s:"체력을 기르겠다며 무리하게 운동하다 도리어 다쳤으니 <b>과유불급</b>이다."},
+
+  {idiom:"와신상담", ok:false, type:"혼동",
+   s:"결승에서 진 그날 밤, 그는 분함을 이기지 못해 <b>와신상담</b>하며 눈물을 흘렸다.",
+   why:"그 자리의 분한 감정을 말하고 있습니다.",
+   fix:"절치부심이 맞습니다. 와신상담은 오랜 기간 스스로 고통을 견디며 준비하는 쪽입니다."},
+
+  {idiom:"사면초가", ok:true,
+   s:"믿었던 협력사까지 등을 돌리면서 회사는 <b>사면초가</b>에 놓였다."},
+
+  {idiom:"청출어람", ok:false, type:"상황 불일치",
+   s:"동생이 형보다 키가 훌쩍 커버려서 그야말로 <b>청출어람</b>이다.",
+   why:"타고난 신체 조건에는 쓰지 않습니다.",
+   fix:"배움이나 실력이 스승·선배를 넘어설 때 쓰는 말입니다."},
+
+  {idiom:"조삼모사", ok:true,
+   s:"총액은 그대로면서 이름만 바꿔 내놓은 요금제라니 <b>조삼모사</b>에 지나지 않는다."},
+
+  {idiom:"고진감래", ok:false, type:"의미 중복",
+   s:"<b>고진감래</b>라더니, 고생 끝에 낙이 찾아왔다.",
+   why:"성어의 뜻을 뒤에서 그대로 반복했습니다.",
+   fix:"'고진감래라더니, 마침내 합격 소식이 왔다'처럼 뒤에는 구체적인 사실을 씁니다."},
+
+  {idiom:"새옹지마", ok:true,
+   s:"떨어졌던 그 학교에서 평생의 스승을 만났으니 인생은 <b>새옹지마</b>다."},
+
+  {idiom:"각주구검", ok:false, type:"상황 불일치",
+   s:"그는 날마다 다른 길로 돌아 출근하는 습관이 있어 <b>각주구검</b>이라 불렸다.",
+   why:"융통성이 지나친 쪽을 두고 말하고 있습니다.",
+   fix:"각주구검은 상황이 바뀌었는데도 낡은 방법만 고집하는 경우에 씁니다."},
+
+  {idiom:"표리부동", ok:true,
+   s:"회의에서는 찬성하더니 뒤로는 반대 서명을 받고 다녔다니 <b>표리부동</b>하다."},
+
+  {idiom:"대기만성", ok:false, type:"상황 불일치",
+   s:"시험 전날 벼락치기로 붙었으니 <b>대기만성</b>이라 할 만하다.",
+   why:"짧은 기간에 빠르게 이룬 일입니다.",
+   fix:"대기만성은 오랜 세월이 지나 뒤늦게 이루는 경우에 씁니다."},
+
+  {idiom:"각골난망", ok:true,
+   s:"어려울 때 손을 내밀어 준 그 은혜를 <b>각골난망</b>이라 여기고 살았다."},
+
+  {idiom:"반포지효", ok:false, type:"주체 오류",
+   s:"아버지는 어린 아들을 밤낮으로 돌보며 <b>반포지효</b>를 실천했다.",
+   why:"부모가 자식을 돌보는 쪽으로 썼습니다.",
+   fix:"반포지효는 자식이 자라 부모의 은혜를 갚는 것입니다. 방향이 반대입니다."},
+
+  {idiom:"자가당착", ok:true,
+   s:"규칙을 지키자고 목소리를 높이던 그가 정작 제 차례에는 슬쩍 넘어갔으니 <b>자가당착</b>이다."},
+
+  {idiom:"표리부동", ok:false, type:"반대로 씀",
+   s:"그는 겉과 속이 한결같은 사람이라 모두가 <b>표리부동</b>하다고 칭찬했다.",
+   why:"칭찬하는 자리에 흉보는 말을 놓았습니다.",
+   fix:"겉과 속이 다를 때 쓰는 말입니다. 여기에는 표리일체나 언행일치가 어울립니다."},
+
+  {idiom:"청출어람", ok:true,
+   s:"스승은 제자의 연주를 끝까지 듣고는 <b>청출어람</b>이라며 흐뭇하게 웃었다."},
+
+  {idiom:"과유불급", ok:false, type:"상황 불일치",
+   s:"준비물을 하나 빠뜨리고 온 친구를 보며 그는 <b>과유불급</b>이라고 말했다.",
+   why:"모자란 경우에 썼습니다.",
+   fix:"과유불급은 지나친 쪽을 지적할 때 씁니다."},
+
+  {idiom:"와신상담", ok:true,
+   s:"그는 패배한 뒤 삼 년을 <b>와신상담</b>하며 다음 대회를 준비했다."},
+
+  {idiom:"사면초가", ok:false, type:"상황 불일치",
+   s:"복권에 당첨되어 기뻐하는 그를 두고 사람들은 <b>사면초가</b>라며 부러워했다.",
+   why:"좋은 처지에 썼습니다.",
+   fix:"사면초가는 사방이 막혀 도움받을 곳이 없는 상태입니다."}
+];
+
+const ROUND_MS = 7000;
+
+/* ── 상태 ────────────────────────────────── */
+const desk    = document.getElementById('desk');
+const stampEl = document.getElementById('stamp');
+const fill    = document.getElementById('timefill');
+const fb      = document.getElementById('feedback');
+
+let order = [], idx = 0, score = 0, lives = 3, combo = 0, best = 0;
+let wrong = [], card = null, locked = false;
+let tStart = 0, rafId = null, playing = false;
+
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 카드 ────────────────────────────────── */
+function buildCard(item, layer){
+  const el = document.createElement('div');
+  el.className = 'card' + (layer ? ' behind-' + layer : '');
+  el.innerHTML = '<div class="idiom">' + item.idiom + '</div>' +
+                 '<div class="sentence">' + item.s + '</div>';
+  return el;
+}
+
+function nextCard(){
+  if(idx >= order.length || lives <= 0) return endGame();
+  locked = false;
+  desk.querySelectorAll('.card').forEach(c => c.remove());
+
+  // 뒤에 쌓인 두 장 먼저
+  for(let k = 2; k >= 1; k--){
+    if(order[idx+k]) desk.appendChild(buildCard(order[idx+k], k));
+  }
+  card = buildCard(order[idx], 0);
+  desk.appendChild(card);
+
+  document.getElementById('progress').textContent = (idx+1) + ' / ' + order.length;
+  stampEl.className = 'stamp';
+  tStart = performance.now();
+}
+
+/* ── 판정 ────────────────────────────────── */
+function judge(saidOk){
+  if(locked || !playing) return;
+  locked = true;
+  const item = order[idx];
+  const right = (saidOk === item.ok);
+
+  stampEl.textContent = saidOk ? '可' : '誤';
+  stampEl.className = 'stamp on' + (saidOk ? ' pass' : '');
+
+  if(card){
+    const dx = saidOk ? 460 : -460;
+    card.style.transition = 'transform .34s cubic-bezier(.4,0,.6,1), opacity .34s';
+    card.style.transform = 'translateX(' + dx + 'px) rotate(' + (saidOk?9:-9) + 'deg)';
+    card.style.opacity = '0';
+  }
+
+  if(right){
+    combo++; best = Math.max(best, combo);
+    const left = Math.max(0, ROUND_MS - (performance.now()-tStart));
+    score += 100 + Math.round(left/70) + combo*15;
+    document.getElementById('score').textContent = score;
+    const c = document.getElementById('combo');
+    if(combo >= 2){ c.textContent = combo + '연속'; c.classList.add('on'); }
+    setTimeout(() => { idx++; nextCard(); }, 480);
+  } else {
+    combo = 0;
+    document.getElementById('combo').classList.remove('on');
+    loseLife();
+    wrong.push(item);
+    setTimeout(() => showFeedback(item), 380);
+  }
+}
+
+function timeout(){
+  if(locked) return;
+  locked = true;
+  combo = 0;
+  document.getElementById('combo').classList.remove('on');
+  loseLife();
+  wrong.push(order[idx]);
+  showFeedback(order[idx], true);
+}
+
+function loseLife(){
+  lives--;
+  [...document.getElementById('lives').children].forEach((el,i) => {
+    el.classList.toggle('spent', i >= lives);
+  });
+}
+
+function showFeedback(item, timedOut){
+  const v = document.getElementById('fVerdict');
+  const tag = document.getElementById('fTag');
+
+  if(item.ok){
+    v.textContent = timedOut ? '시간 초과' : '바르게 쓰인 문장입니다';
+    v.className = 'verdict bad';
+    tag.style.display = 'none';
+    document.getElementById('fWhy').textContent = item.s.replace(/<\/?b>/g,'');
+    document.getElementById('fFix').textContent = '';
+  } else {
+    v.textContent = timedOut ? '시간 초과' : '잘못 쓰인 문장입니다';
+    v.className = 'verdict bad';
+    tag.style.display = '';
+    tag.textContent = item.type;
+    document.getElementById('fWhy').textContent = item.why;
+    document.getElementById('fFix').textContent = item.fix;
+  }
+
+  fb.classList.add('on');
+  setTimeout(() => {
+    fb.classList.remove('on');
+    idx++;
+    nextCard();
+  }, item.ok ? 2000 : 3000);
+}
+
+/* ── 입력 ────────────────────────────────── */
+document.getElementById('btnReject').addEventListener('click', () => judge(false));
+document.getElementById('btnPass').addEventListener('click', () => judge(true));
+window.addEventListener('keydown', e => {
+  if(!playing) return;
+  if(e.key === 'ArrowLeft'){ e.preventDefault(); judge(false); }
+  if(e.key === 'ArrowRight'){ e.preventDefault(); judge(true); }
+});
+
+let down = null;
+desk.addEventListener('pointerdown', e => { if(!locked) down = e.clientX; });
+desk.addEventListener('pointermove', e => {
+  if(down === null || locked || !card) return;
+  const dx = e.clientX - down;
+  card.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx/26) + 'deg)';
+});
+desk.addEventListener('pointerup', e => {
+  if(down === null) return;
+  const dx = e.clientX - down;
+  down = null;
+  if(!card || locked) return;
+  if(Math.abs(dx) > 70) judge(dx > 0);
+  else { card.style.transition = 'transform .2s'; card.style.transform = ''; }
+});
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!playing) return;
+  if(!locked){
+    const p = 1 - (ts - tStart)/ROUND_MS;
+    fill.style.transform = 'scaleX(' + Math.max(0,p) + ')';
+    fill.className = p < .3 ? 'low' : '';
+    if(p <= 0) timeout();
+  }
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 시작 · 종료 ─────────────────────────── */
+function startGame(){
+  order = shuffle(ITEMS.slice());
+  idx = 0; score = 0; lives = 3; combo = 0; best = 0; wrong = [];
+  document.getElementById('score').textContent = '0';
+  document.getElementById('combo').classList.remove('on');
+  [...document.getElementById('lives').children].forEach(el => el.classList.remove('spent'));
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('endScreen').classList.add('hidden');
+  playing = true;
+  nextCard();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+
+function endGame(){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  desk.querySelectorAll('.card').forEach(c => c.remove());
+  stampEl.className = 'stamp';
+
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalSub').textContent =
+    idx + '문장 심사, ' + (idx - wrong.length) + '문장 정확  ·  최고 ' + best + '연속';
+
+  const box = document.getElementById('reviewBox');
+  box.innerHTML = '<h3>다시 볼 문장</h3>' + (wrong.length
+    ? '<ul>' + wrong.map(w =>
+        '<li><div class="s">' + w.s.replace(/<\/?b>/g,'') + '</div>' +
+        '<div class="r">' + (w.ok ? '바르게 쓰인 문장입니다.' : (w.type + ' · ' + w.fix)) +
+        '</div></li>').join('') + '</ul>'
+    : '<p class="r">모두 정확히 심사했습니다.</p>');
+
+  document.getElementById('endScreen').classList.remove('hidden');
+}
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('againBtn').addEventListener('click', startGame);
+</script>
+</body>
+</html>

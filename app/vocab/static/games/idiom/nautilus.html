@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>노틸러스 성어 탐사</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1b2e;        /* 딥 네이비 */
+    --navy-2:#12263f;
+    --geum:#c9a227;        /* 노틸러스 골드 */
+    --geum-dim:rgba(201,162,39,.34);
+    --hanji:#f2e8d5;
+    --hanji-dim:#93a8bd;
+    --injoo:#a8322d;
+    --lamp:#ffd88a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1100px 700px at 50% -20%, #17334f 0%, transparent 62%), #071322;
+    color:var(--hanji);
+    font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;
+    user-select:none;
+  }
+  .frame{
+    width:min(900px,100%);height:min(600px,100vh - 32px);
+    display:flex;flex-direction:column;
+    border:1px solid var(--geum-dim);
+    background:rgba(7,19,34,.66);position:relative;overflow:hidden;
+  }
+  /* 선체 리벳 */
+  .frame::before,.frame::after{
+    content:"";position:absolute;left:0;right:0;height:7px;z-index:6;pointer-events:none;
+    background-image:radial-gradient(circle, rgba(201,162,39,.5) 1.1px, transparent 1.6px);
+    background-size:22px 7px;
+  }
+  .frame::before{top:0}
+  .frame::after{bottom:0}
+
+  .hud{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:12px 18px 10px;border-bottom:1px solid var(--geum-dim);flex:0 0 auto;
+  }
+  .goal{font-family:"Noto Serif KR",serif;font-size:16.5px;font-weight:600;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .right{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+  .slots{display:flex;gap:5px}
+  .slots div{
+    width:28px;height:28px;border:1px solid var(--geum-dim);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Noto Serif KR",serif;font-size:15px;color:var(--geum);
+  }
+  .slots div.done{background:var(--geum);color:var(--navy)}
+  .caught{display:flex;align-items:baseline;gap:5px}
+  .caught b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:19px;color:var(--geum);font-variant-numeric:tabular-nums}
+  .caught span{font-size:11px;color:var(--hanji-dim)}
+
+  .gauge{display:flex;align-items:center;gap:8px;padding:6px 18px;border-bottom:1px solid rgba(201,162,39,.14);flex:0 0 auto}
+  .gauge label{font-size:10.5px;color:var(--hanji-dim);letter-spacing:.14em;flex:0 0 auto}
+  .gauge .bar{flex:1;height:4px;background:rgba(255,255,255,.07);position:relative;overflow:hidden}
+  .gauge .bar span{display:block;height:100%;width:100%;background:#7fc4d8;transform-origin:left}
+  .gauge .bar span.low{background:var(--injoo)}
+
+  .stage{position:relative;flex:1 1 auto;overflow:hidden;touch-action:none}
+  canvas{display:block;width:100%;height:100%}
+
+  .overlay{
+    position:absolute;inset:0;background:rgba(7,19,34,.92);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:26px;gap:9px;z-index:4;
+  }
+  .overlay.hidden{display:none}
+  .ov-word{font-family:"Noto Serif KR",serif;font-weight:900;font-size:38px;color:var(--geum);letter-spacing:.05em}
+  .ov-han{font-family:"Noto Serif KR",serif;font-size:17px;color:var(--hanji-dim);letter-spacing:.3em}
+  .ov-mean{font-family:"Noto Serif KR",serif;font-size:21px;line-height:1.6;max-width:38ch}
+  .ov-hint{font-size:12.5px;color:var(--hanji-dim);margin-top:8px;line-height:1.75}
+  .ov-hint b{color:var(--hanji);font-weight:500;font-family:"Noto Serif KR",serif}
+
+  .title{font-family:"Noto Serif KR",serif;font-weight:900;font-size:38px;letter-spacing:.12em;line-height:1.15}
+  .title em{display:block;font-style:normal;font-size:13.5px;letter-spacing:.38em;color:var(--geum);margin-bottom:12px;font-weight:400}
+  .log{
+    margin:18px 0 2px;font-family:"Noto Serif KR",serif;
+    font-size:14.5px;line-height:1.85;color:var(--hanji-dim);max-width:41ch;
+  }
+  .log b{color:var(--hanji);font-weight:600}
+  .modes{display:flex;gap:8px;margin:18px 0 20px}
+  .modes button{
+    font-family:inherit;font-size:13px;padding:10px 18px;line-height:1.4;
+    background:transparent;color:var(--hanji-dim);
+    border:1px solid rgba(242,232,213,.2);cursor:pointer;transition:.14s;
+  }
+  .modes button small{display:block;font-size:11px;opacity:.7;margin-top:2px}
+  .modes button.sel{border-color:var(--geum);color:var(--geum)}
+  .go{
+    font-family:inherit;font-size:15px;padding:13px 38px;
+    background:transparent;color:var(--geum);border:1px solid var(--geum);
+    cursor:pointer;letter-spacing:.08em;transition:.15s;
+  }
+  .go:hover,.go:focus-visible{background:var(--geum);color:var(--navy)}
+  button:focus-visible{outline:2px solid var(--hanji);outline-offset:2px}
+
+  @media (max-width:620px){
+    .goal{font-size:14px}
+    .title{font-size:29px}
+    .slots div{width:24px;height:24px;font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="hud">
+    <div class="goal" id="goal"></div>
+    <div class="right">
+      <div class="slots" id="slots"><div></div><div></div><div></div><div></div></div>
+      <div class="caught"><b id="caught">0</b><span>인양</span></div>
+    </div>
+  </div>
+
+  <div class="gauge">
+    <label>산소</label>
+    <div class="bar"><span id="airfill"></span></div>
+    <label id="depth">0 m</label>
+  </div>
+
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+
+    <div class="overlay hidden" id="intro">
+      <div class="ov-word" id="iWord"></div>
+      <div class="ov-han" id="iHan"></div>
+      <div class="ov-mean" id="iMean"></div>
+      <div class="ov-hint" id="iHint"></div>
+    </div>
+
+    <div class="overlay hidden" id="dead">
+      <div class="ov-word" id="dScore"></div>
+      <div class="ov-hint" id="dInfo"></div>
+      <div class="ov-hint" style="margin-top:14px">아무 키나 눌러 다시 항해</div>
+    </div>
+
+    <div class="overlay" id="start">
+      <h1 class="title"><em>해저 이만 리</em>노틸러스 성어 탐사</h1>
+      <div class="log">
+        네모 선장의 항해 일지에는 뜻만 적혀 있고<br>
+        정작 <b>성어의 이름이 지워져</b> 있습니다.<br>
+        심해에 흩어진 글자판 넷을 인양해 복원하세요.
+      </div>
+      <div class="modes">
+        <button id="mElem" class="sel">견습 항해사<small>한글 · 순서 없음</small></button>
+        <button id="mMid">네모 선장<small>한자 · 순서대로</small></button>
+      </div>
+      <button class="go" id="startBtn">잠항 개시</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────
+   데이터 — 연동 시 GET /quiz?type=dive 로 대체
+   ──────────────────────────────────────────── */
+const ITEMS = [
+  {kor:"우공이산", han:"愚公移山", mean:"우직하게 밀고 나가면 결국 이룬다"},
+  {kor:"와신상담", han:"臥薪嘗膽", mean:"고통을 견디며 오래 준비함"},
+  {kor:"각주구검", han:"刻舟求劍", mean:"낡은 방법만 고집하는 어리석음"},
+  {kor:"새옹지마", han:"塞翁之馬", mean:"화와 복은 미리 알 수 없다"},
+  {kor:"표리부동", han:"表裏不同", mean:"겉과 속이 다름"},
+  {kor:"조삼모사", han:"朝三暮四", mean:"눈앞의 차이만 보고 속음"},
+  {kor:"과유불급", han:"過猶不及", mean:"지나침은 모자람과 같다"},
+  {kor:"대기만성", han:"大器晩成", mean:"큰 인물은 늦게 이루어짐"},
+  {kor:"청출어람", han:"靑出於藍", mean:"제자가 스승보다 나아짐"},
+  {kor:"고진감래", han:"苦盡甘來", mean:"고생 끝에 낙이 온다"},
+  {kor:"사면초가", han:"四面楚歌", mean:"사방이 막혀 도움받을 곳이 없음"},
+  {kor:"자가당착", han:"自家撞着", mean:"앞뒤가 서로 맞지 않음"}
+];
+
+const HUN = {
+  "愚":"어리석을 우","公":"공평할 공","移":"옮길 이","山":"뫼 산",
+  "臥":"누울 와","薪":"섶 신","嘗":"맛볼 상","膽":"쓸개 담",
+  "刻":"새길 각","舟":"배 주","求":"구할 구","劍":"칼 검",
+  "塞":"변방 새","翁":"늙은이 옹","之":"갈 지","馬":"말 마",
+  "表":"겉 표","裏":"속 리","不":"아닐 부","同":"한가지 동",
+  "朝":"아침 조","三":"석 삼","暮":"저물 모","四":"넉 사",
+  "過":"지날 과","猶":"오히려 유","及":"미칠 급",
+  "大":"큰 대","器":"그릇 기","晩":"늦을 만","成":"이룰 성",
+  "靑":"푸를 청","出":"날 출","於":"어조사 어","藍":"쪽 람",
+  "苦":"쓸 고","盡":"다할 진","甘":"달 감","來":"올 래",
+  "面":"낯 면","楚":"초나라 초","歌":"노래 가",
+  "自":"스스로 자","家":"집 가","撞":"칠 당","着":"붙을 착"
+};
+
+let LEVEL = 'elem';
+const isMid = () => LEVEL === 'mid';
+const piecesOf = it => (isMid() ? it.han : it.kor).split('');
+const ALL_PIECES = () => [...new Set(ITEMS.flatMap(piecesOf))];
+
+/* ────────────────────────────────────────────
+   무대
+   ──────────────────────────────────────────── */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+let W = 0, H = 0;
+const SURFACE = 54;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── 상태 ────────────────────────────────── */
+const P = { x:0, y:0, vx:0, vy:0, face:1, prop:0 };
+const PR = 17;
+const ACC = 760, DRAG = 1.85, VMAX = 330, BUOY = 48;
+
+let letters = [], squids = [], snow = [], bubbles = [];
+let item = null, order4 = [], got = [], caught = 0;
+let air = 100, running = false, paused = false;
+let lastTs = 0, rafId = null, t = 0, flash = 0, msg = null, msgT = 0;
+const keys = {};
+let touchTarget = null;
+
+const rnd = (a,b) => a + Math.random()*(b-a);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 라운드 ──────────────────────────────── */
+function newIdiom(){
+  const pool = ITEMS.filter(i => i !== item);
+  item = pool[Math.floor(Math.random()*pool.length)];
+  order4 = piecesOf(item);
+  got = [];
+
+  document.getElementById('goal').textContent = item.mean;
+  drawSlots();
+
+  const others = shuffle(ALL_PIECES().filter(c => !order4.includes(c))).slice(0,5);
+  letters = shuffle([...order4, ...others]).map(ch => makeLetter(ch, order4.includes(ch)));
+
+  const n = 2 + Math.min(2, Math.floor(caught/3));
+  squids = [];
+  for(let i=0;i<n;i++){
+    squids.push({ x: rnd(W*0.35, W-70), y: rnd(SURFACE+130, H-70),
+                  vx: rnd(-42,42), vy: rnd(-26,26), ph: Math.random()*6, face:1 });
+  }
+
+  document.getElementById('iWord').textContent = '';
+  document.getElementById('iHan').textContent  = '';
+  document.getElementById('iMean').textContent = item.mean;
+  document.getElementById('iHint').textContent = isMid()
+    ? '항해 일지의 이 항목을 한자 네 자로, 순서대로 인양하십시오'
+    : '이 뜻에 맞는 성어의 글자판 넷을 인양하십시오';
+  show('intro');
+  paused = true;
+  setTimeout(() => { hide('intro'); paused = false; lastTs = performance.now(); }, 2300);
+}
+
+function makeLetter(ch, good){
+  const sp = 25 + caught*3;
+  return {
+    ch, good,
+    x: rnd(W*0.35, W-70), y: rnd(SURFACE+90, H-70),
+    vx: rnd(-sp,sp) || sp, vy: rnd(-sp,sp) || sp,
+    w: 40, h: 40, ph: Math.random()*6
+  };
+}
+
+function drawSlots(){
+  const s = document.getElementById('slots').children;
+  for(let i=0;i<4;i++){
+    s[i].textContent = got[i] || '';
+    s[i].classList.toggle('done', !!got[i]);
+  }
+}
+
+function toast(text, bad){ msg = { text, bad }; msgT = 1.6; }
+
+/* ── 진행 ────────────────────────────────── */
+function step(dt){
+  t += dt;
+
+  let ax = 0, ay = 0;
+  if(keys.left) ax -= 1;
+  if(keys.right) ax += 1;
+  if(keys.up) ay -= 1;
+  if(keys.down) ay += 1;
+  if(touchTarget){
+    const dx = touchTarget.x - P.x, dy = touchTarget.y - P.y;
+    const d = Math.hypot(dx,dy);
+    if(d > 14){ ax = dx/d; ay = dy/d; }
+  }
+  const m = Math.hypot(ax,ay) || 1;
+  P.vx += (ax/m) * ACC * dt;
+  P.vy += (ay/m) * ACC * dt;
+
+  P.vx -= P.vx * DRAG * dt;
+  P.vy -= P.vy * DRAG * dt;
+  P.vy -= BUOY * dt;
+
+  const sp = Math.hypot(P.vx,P.vy);
+  if(sp > VMAX){ P.vx *= VMAX/sp; P.vy *= VMAX/sp; }
+  if(Math.abs(P.vx) > 12) P.face = P.vx > 0 ? 1 : -1;
+  P.prop += dt * (4 + sp/22);
+
+  P.x += P.vx * dt; P.y += P.vy * dt;
+  if(P.x < PR){ P.x = PR; P.vx *= -.3; }
+  if(P.x > W-PR){ P.x = W-PR; P.vx *= -.3; }
+  if(P.y < PR){ P.y = PR; P.vy *= -.3; }
+  if(P.y > H-PR){ P.y = H-PR; P.vy *= -.3; }
+
+  // 산소 · 수심
+  if(P.y < SURFACE + 16){
+    air = Math.min(100, air + 50*dt);
+  } else {
+    air -= (5.5 + caught*0.35) * dt;
+  }
+  const fill = document.getElementById('airfill');
+  fill.style.transform = 'scaleX(' + Math.max(0, air/100) + ')';
+  fill.className = air < 28 ? 'low' : '';
+  document.getElementById('depth').textContent =
+    Math.max(0, Math.round((P.y - SURFACE) * 1.4)) + ' m';
+  if(air <= 0) return die();
+
+  if(sp > 80 && Math.random() < dt*16){
+    bubbles.push({ x:P.x - P.face*24, y:P.y+4, r:rnd(1.4,3.4), a:1 });
+  }
+
+  // 글자판
+  letters.forEach(L => {
+    L.x += L.vx * dt; L.y += L.vy * dt; L.ph += dt;
+    if(L.x < 8 || L.x + L.w > W-8) L.vx *= -1;
+    if(L.y < SURFACE+30 || L.y + L.h > H-8) L.vy *= -1;
+    L.x = Math.max(8, Math.min(W-8-L.w, L.x));
+    L.y = Math.max(SURFACE+30, Math.min(H-8-L.h, L.y));
+    if(hitRect(L)) eat(L);
+  });
+
+  // 대왕오징어
+  squids.forEach(S => {
+    S.ph += dt*2;
+    S.x += S.vx * dt; S.y += (S.vy + Math.sin(S.ph)*16) * dt;
+    if(S.x < 26 || S.x > W-26){ S.vx *= -1; }
+    if(S.y < SURFACE+70 || S.y > H-30) S.vy *= -1;
+    S.face = S.vx > 0 ? 1 : -1;
+    const d = Math.hypot(S.x-P.x, S.y-P.y);
+    if(d < PR+20 && !S.cool){
+      S.cool = true;
+      setTimeout(() => S.cool = false, 900);
+      air -= 9; flash = .35;
+      toast('선체가 촉수에 걸렸습니다', true);
+      const a = Math.atan2(P.y-S.y, P.x-S.x);
+      P.vx += Math.cos(a)*300; P.vy += Math.sin(a)*300;
+    }
+  });
+
+  bubbles.forEach(b => { b.y -= 42*dt; b.a -= dt*0.9; });
+  bubbles = bubbles.filter(b => b.a > 0);
+
+  snow.forEach(s => {
+    s.y += s.v * dt; s.x += Math.sin(t*0.4 + s.ph)*4*dt;
+    if(s.y > H) { s.y = -4; s.x = rnd(0,W); }
+  });
+
+  if(flash > 0) flash -= dt;
+  if(msgT > 0){ msgT -= dt; if(msgT <= 0) msg = null; }
+}
+
+function hitRect(L){
+  const cx = Math.max(L.x, Math.min(P.x, L.x+L.w));
+  const cy = Math.max(L.y, Math.min(P.y, L.y+L.h));
+  return Math.hypot(P.x-cx, P.y-cy) < PR;
+}
+
+function eat(L){
+  const ok = isMid()
+    ? (L.ch === order4[got.length])
+    : (order4.includes(L.ch) && !got.includes(L.ch));
+
+  if(ok){
+    got.push(L.ch);
+    letters = letters.filter(x => x !== L);
+    drawSlots();
+    toast('인양  ' + L.ch + (HUN[L.ch] ? '  ' + HUN[L.ch] : ''), false);
+    if(got.length === 4) return complete();
+  } else {
+    air -= 11; flash = .4;
+    toast(isMid() && order4.includes(L.ch) ? '순서가 맞지 않습니다' : '일지의 글자가 아닙니다', true);
+    L.x = rnd(20, W-70); L.y = rnd(SURFACE+70, H-70);
+    L.vx *= -1; L.vy *= -1;
+    P.vx *= -.5; P.vy *= -.5;
+    if(air <= 0) die();
+  }
+}
+
+function complete(){
+  caught++;
+  document.getElementById('caught').textContent = caught;
+  air = Math.min(100, air + 22);
+  paused = true;
+  document.getElementById('iWord').textContent = item.kor;
+  document.getElementById('iHan').textContent  = isMid() ? item.han : '';
+  document.getElementById('iMean').textContent = item.mean;
+  document.getElementById('iHint').textContent = isMid()
+    ? order4.map(c => c + ' ' + (HUN[c]||'')).join('   ')
+    : '일지 한 줄이 복원되었습니다';
+  show('intro');
+  setTimeout(newIdiom, 1900);
+}
+
+function die(){
+  if(!running) return;
+  running = false;
+  cancelAnimationFrame(rafId);
+  document.getElementById('dScore').textContent = caught + '줄 복원';
+  document.getElementById('dInfo').innerHTML =
+    (item ? '인양하지 못한 항목 · <b>' + item.kor + '</b>' + (isMid() ? ' ' + item.han : '') : '') +
+    '<br>' + (isMid() ? '네모 선장' : '견습 항해사') + ' 항해';
+  show('dead');
+}
+
+/* ── 그리기 ──────────────────────────────── */
+function drawNautilus(){
+  ctx.save();
+  ctx.translate(P.x, P.y);
+  ctx.scale(P.face, 1);
+
+  // 탐조등
+  const gl = ctx.createRadialGradient(20, -1, 4, 20, -1, 190);
+  gl.addColorStop(0, 'rgba(255,216,138,.28)');
+  gl.addColorStop(1, 'rgba(255,216,138,0)');
+  ctx.fillStyle = gl;
+  ctx.beginPath();
+  ctx.moveTo(18, -3); ctx.lineTo(200, -66); ctx.lineTo(200, 62); ctx.lineTo(18, 4);
+  ctx.closePath(); ctx.fill();
+
+  // 추진기
+  ctx.strokeStyle = 'rgba(201,162,39,.85)'; ctx.lineWidth = 2;
+  const pr = 7 * Math.abs(Math.cos(P.prop));
+  ctx.beginPath(); ctx.moveTo(-26, -pr); ctx.lineTo(-26, pr); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-24, 0); ctx.lineTo(-30, 0); ctx.stroke();
+
+  // 꼬리 지느러미
+  ctx.fillStyle = '#0f2740';
+  ctx.beginPath();
+  ctx.moveTo(-14, -3); ctx.lineTo(-24, -13); ctx.lineTo(-22, -1);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-14, 3); ctx.lineTo(-24, 13); ctx.lineTo(-22, 1);
+  ctx.closePath(); ctx.fill();
+
+  // 선체
+  ctx.fillStyle = '#14304d';
+  ctx.beginPath(); ctx.ellipse(0, 0, 24, 10.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(201,162,39,.75)'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.ellipse(0, 0, 24, 10.5, 0, 0, Math.PI*2); ctx.stroke();
+
+  // 함교
+  ctx.fillStyle = '#14304d';
+  ctx.beginPath();
+  ctx.moveTo(-6, -9); ctx.lineTo(6, -9); ctx.lineTo(4, -17); ctx.lineTo(-4, -17);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(201,162,39,.6)'; ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // 리벳
+  ctx.fillStyle = 'rgba(201,162,39,.55)';
+  for(let i=-2;i<=2;i++) ctx.fillRect(i*7 - 1, -1, 1.6, 1.6);
+
+  // 현창
+  ctx.fillStyle = 'var(--lamp)';
+  ctx.fillStyle = '#ffd88a';
+  ctx.beginPath(); ctx.arc(15, -1, 4.4, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.arc(15, -1, 4.4, 0, Math.PI*2); ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawSquid(S){
+  ctx.save();
+  ctx.translate(S.x, S.y);
+  ctx.scale(S.face, 1);
+  const w = Math.sin(S.ph);
+
+  ctx.strokeStyle = 'rgba(158,86,102,.55)'; ctx.lineWidth = 2;
+  for(let i=-2;i<=2;i++){
+    ctx.beginPath();
+    ctx.moveTo(i*4, 6);
+    ctx.quadraticCurveTo(i*4 - 10 + w*6, 18, i*5 - 20 + w*10, 26);
+    ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(168,80,98,.62)';
+  ctx.beginPath();
+  ctx.moveTo(-4, 8); ctx.lineTo(22, 2); ctx.lineTo(-4, -8);
+  ctx.quadraticCurveTo(-18, 0, -4, 8);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#ffe6b8';
+  ctx.beginPath(); ctx.arc(8, -1, 2.6, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+/* 피보나치 나선 — 노틸러스 문양 */
+function drawSpiral(cx, cy, a0, alpha){
+  const b = Math.log(1.6180339) / (Math.PI/2);
+  ctx.save();
+  ctx.strokeStyle = 'rgba(201,162,39,' + alpha + ')';
+  ctx.lineWidth = 1.4;
+  ctx.beginPath();
+  for(let th = 0; th < Math.PI*5; th += 0.06){
+    const r = a0 * Math.exp(b*th);
+    const x = cx + Math.cos(th + t*0.05) * r;
+    const y = cy + Math.sin(th + t*0.05) * r;
+    th === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function render(){
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, '#1c4763');
+  g.addColorStop(.4, '#12263f');
+  g.addColorStop(1, '#07141f');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  drawSpiral(W*0.74, H*0.62, 2.2, .07);
+
+  // 수면
+  ctx.fillStyle = 'rgba(150,205,225,.14)';
+  ctx.fillRect(0, 0, W, SURFACE);
+  ctx.strokeStyle = 'rgba(190,235,245,.45)'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for(let x=0;x<=W;x+=8){
+    const y = SURFACE + Math.sin(x/34 + t*1.5)*3;
+    x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // 빛줄기
+  ctx.save();
+  ctx.globalAlpha = .05; ctx.fillStyle = '#cfeef8';
+  for(let i=0;i<4;i++){
+    const x = (i*W/4 + Math.sin(t*.3+i)*30);
+    ctx.beginPath();
+    ctx.moveTo(x, SURFACE); ctx.lineTo(x+40, SURFACE);
+    ctx.lineTo(x+120, H); ctx.lineTo(x-10, H);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+
+  // 부유물
+  snow.forEach(s => {
+    ctx.fillStyle = 'rgba(210,232,240,' + s.a + ')';
+    ctx.fillRect(s.x, s.y, s.r, s.r);
+  });
+
+  bubbles.forEach(b => {
+    ctx.fillStyle = 'rgba(200,240,250,' + (b.a*.5) + ')';
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+  });
+
+  squids.forEach(drawSquid);
+
+  // 글자판 (놋쇠 테를 두른 판)
+  letters.forEach(L => {
+    const bob = Math.sin(L.ph*1.6)*2;
+    ctx.fillStyle = 'rgba(0,0,0,.3)';
+    ctx.fillRect(L.x+2, L.y+bob+3, L.w, L.h);
+    ctx.fillStyle = '#f2e8d5';
+    ctx.fillRect(L.x, L.y+bob, L.w, L.h);
+    ctx.strokeStyle = 'rgba(201,162,39,.9)'; ctx.lineWidth = 1.6;
+    ctx.strokeRect(L.x+1.5, L.y+bob+1.5, L.w-3, L.h-3);
+    ctx.fillStyle = '#152537';
+    ctx.font = '600 24px "Noto Serif KR", serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(L.ch, L.x + L.w/2, L.y + bob + L.h/2 + 1);
+  });
+
+  drawNautilus();
+
+  if(msg){
+    ctx.font = '500 15px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const a = Math.min(1, msgT*2);
+    ctx.fillStyle = msg.bad ? 'rgba(240,190,186,' + a + ')' : 'rgba(242,232,213,' + a + ')';
+    ctx.fillText(msg.text, W/2, H - 26);
+  }
+
+  if(flash > 0){
+    ctx.fillStyle = 'rgba(168,50,45,' + (flash*.45) + ')';
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!running) return;
+  const dt = Math.min((ts-lastTs)/1000, .05);
+  lastTs = ts;
+  if(!paused) step(dt);
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 입력 ────────────────────────────────── */
+const KEYMAP = {
+  ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down',
+  a:'left', d:'right', w:'up', s:'down'
+};
+window.addEventListener('keydown', e => {
+  if(!document.getElementById('dead').classList.contains('hidden')){ restart(); return; }
+  const k = KEYMAP[e.key];
+  if(k){ e.preventDefault(); keys[k] = true; }
+});
+window.addEventListener('keyup', e => {
+  const k = KEYMAP[e.key];
+  if(k) keys[k] = false;
+});
+
+function pt(e){
+  const r = stage.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+stage.addEventListener('pointerdown', e => {
+  if(!document.getElementById('dead').classList.contains('hidden')) return restart();
+  if(!document.getElementById('start').classList.contains('hidden')) return;
+  touchTarget = pt(e);
+});
+stage.addEventListener('pointermove', e => { if(touchTarget) touchTarget = pt(e); });
+window.addEventListener('pointerup', () => touchTarget = null);
+
+/* ── 시작 ────────────────────────────────── */
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+document.getElementById('mElem').addEventListener('click', () => {
+  LEVEL = 'elem';
+  document.getElementById('mElem').classList.add('sel');
+  document.getElementById('mMid').classList.remove('sel');
+});
+document.getElementById('mMid').addEventListener('click', () => {
+  LEVEL = 'mid';
+  document.getElementById('mMid').classList.add('sel');
+  document.getElementById('mElem').classList.remove('sel');
+});
+
+function startGame(){
+  hide('start'); hide('dead');
+  resize();
+  P.x = W*0.2; P.y = H*0.45; P.vx = 0; P.vy = 0; P.face = 1;
+  air = 100; caught = 0; item = null; bubbles = []; flash = 0; msg = null;
+  snow = [];
+  for(let i=0;i<70;i++) snow.push({ x:rnd(0,W), y:rnd(0,H), r:rnd(1,2.2), v:rnd(8,26), a:rnd(.06,.2), ph:rnd(0,6) });
+  document.getElementById('caught').textContent = '0';
+  running = true; lastTs = performance.now();
+  newIdiom();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+function restart(){ hide('dead'); startGame(); }
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+render();
+</script>
+</body>
+</html>

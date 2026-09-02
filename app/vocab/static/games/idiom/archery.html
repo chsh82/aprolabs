@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>성어 활쏘기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --meok:#14161d;        /* 먹 */
+    --meok-2:#1c2030;      /* 밤하늘 */
+    --hanji:#f2e8d5;       /* 한지 */
+    --hanji-dim:#cbbfa6;
+    --geum:#c9a227;        /* 금박 */
+    --geum-deep:#b8860b;
+    --injoo:#a8322d;       /* 인주 */
+    --pool:#4a6b7c;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #232a3d 0%, transparent 60%),
+      var(--meok);
+    color:var(--hanji);
+    font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    overflow:hidden;
+  }
+
+  .frame{
+    width:min(880px,100%);
+    height:min(700px,100vh - 32px);
+    display:flex;
+    flex-direction:column;
+    border:1px solid rgba(201,162,39,.28);
+    border-radius:2px;
+    background:rgba(10,12,18,.55);
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* ── 상단 계기 ─────────────────────────── */
+  .hud{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 18px;
+    border-bottom:1px solid rgba(201,162,39,.2);
+    flex:0 0 auto;
+  }
+  .hud .left{display:flex;align-items:baseline;gap:14px}
+  .score{
+    font-family:"Noto Serif KR",serif;
+    font-weight:900;
+    font-size:26px;
+    color:var(--geum);
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .progress{font-size:13px;color:var(--hanji-dim);letter-spacing:.02em}
+  .arrows{display:flex;gap:7px}
+  .arrows i{
+    width:4px;height:22px;
+    background:var(--geum);
+    display:block;
+    clip-path:polygon(50% 0,100% 26%,100% 100%,0 100%,0 26%);
+    transition:opacity .25s, transform .25s;
+  }
+  .arrows i.spent{opacity:.18;transform:translateY(3px) rotate(12deg)}
+
+  /* ── 상황 문장 ─────────────────────────── */
+  .prompt{
+    flex:0 0 auto;
+    padding:20px 26px 18px;
+    border-bottom:1px solid rgba(201,162,39,.12);
+    min-height:96px;
+    display:flex;
+    align-items:center;
+    background:linear-gradient(180deg, rgba(201,162,39,.05), transparent);
+  }
+  .prompt p{
+    font-family:"Noto Serif KR",serif;
+    font-size:19px;
+    line-height:1.65;
+    max-width:64ch;
+    color:#fbf5e8;
+  }
+
+  /* ── 사대(射臺) ─────────────────────────── */
+  .stage{
+    position:relative;
+    flex:1 1 auto;
+    overflow:hidden;
+    cursor:crosshair;
+    touch-action:manipulation;
+  }
+  .stage::after{  /* 바닥선 */
+    content:"";
+    position:absolute;left:0;right:0;bottom:56px;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(201,162,39,.35),transparent);
+  }
+
+  .tile{
+    position:absolute;
+    width:132px;
+    padding:11px 8px 13px;
+    background:var(--hanji);
+    color:#20242e;
+    text-align:center;
+    border-radius:1px;
+    box-shadow:0 6px 22px rgba(0,0,0,.5);
+    will-change:transform;
+    user-select:none;
+  }
+  .tile .han{
+    font-family:"Noto Serif KR",serif;
+    font-weight:600;
+    font-size:15px;
+    color:#7a6a48;
+    letter-spacing:.16em;
+    margin-bottom:3px;
+  }
+  .tile .kor{
+    font-family:"Noto Serif KR",serif;
+    font-weight:900;
+    font-size:21px;
+    letter-spacing:.03em;
+  }
+  .tile .key{
+    position:absolute;top:-9px;left:-9px;
+    width:20px;height:20px;border-radius:50%;
+    background:var(--meok-2);
+    border:1px solid var(--geum);
+    color:var(--geum);
+    font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tile.hit-good{animation:burst .28s ease-out forwards}
+  .tile.hit-bad{animation:tear .32s ease-in forwards}
+  @keyframes burst{
+    to{transform:scale(1.35);opacity:0;filter:brightness(1.9)}
+  }
+  @keyframes tear{
+    30%{transform:translateX(-5px) rotate(-3deg)}
+    to{transform:translateY(26px) rotate(9deg);opacity:0}
+  }
+
+  .arrow{
+    position:absolute;
+    width:26px;height:3px;
+    background:linear-gradient(90deg, rgba(201,162,39,.15), var(--geum));
+    will-change:transform;
+    pointer-events:none;
+  }
+  .arrow::before{
+    content:"";position:absolute;right:-5px;top:-2.5px;
+    border-left:7px solid var(--geum);
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
+  }
+
+  .bow{position:absolute;bottom:12px;pointer-events:none;transform-origin:50% 50%}
+
+  /* ── 정답 공개 ─────────────────────────── */
+  .reveal{
+    position:absolute;inset:0;
+    background:rgba(10,12,18,.9);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:10px;
+    text-align:center;
+    padding:24px;
+    opacity:0;pointer-events:none;
+    transition:opacity .18s;
+  }
+  .reveal.on{opacity:1}
+  .reveal .verdict{
+    font-size:13px;letter-spacing:.1em;
+    color:var(--hanji-dim);
+  }
+  .reveal .verdict.bad{color:var(--injoo)}
+  .reveal .word{
+    font-family:"Noto Serif KR",serif;
+    font-weight:900;font-size:40px;
+    color:var(--geum);
+    letter-spacing:.04em;
+  }
+  .reveal .han{
+    font-family:"Noto Serif KR",serif;
+    font-size:17px;color:var(--hanji-dim);letter-spacing:.3em;
+  }
+  .reveal .mean{
+    font-family:"Noto Serif KR",serif;
+    font-size:17px;line-height:1.6;max-width:46ch;margin-top:6px;
+  }
+
+  /* ── 시작 · 종료 화면 ───────────────────── */
+  .screen{
+    position:absolute;inset:0;
+    background:rgba(12,14,20,.96);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:32px 28px;
+    text-align:center;
+    z-index:5;
+    overflow-y:auto;
+  }
+  .screen.hidden{display:none}
+  .title{
+    font-family:"Noto Serif KR",serif;
+    font-weight:900;
+    font-size:44px;
+    letter-spacing:.14em;
+    color:var(--hanji);
+    line-height:1.1;
+  }
+  .title em{display:block;font-style:normal;font-size:15px;letter-spacing:.42em;color:var(--geum);margin-bottom:14px;font-weight:400}
+  .rules{
+    margin:26px 0 30px;
+    font-size:14.5px;line-height:2;color:var(--hanji-dim);
+    max-width:40ch;
+  }
+  .rules b{color:var(--hanji);font-weight:500}
+  button{
+    font-family:inherit;font-size:15px;font-weight:500;
+    padding:13px 40px;
+    background:transparent;
+    color:var(--geum);
+    border:1px solid var(--geum);
+    border-radius:1px;
+    cursor:pointer;
+    letter-spacing:.08em;
+    transition:background .15s,color .15s;
+  }
+  button:hover,button:focus-visible{background:var(--geum);color:var(--meok)}
+  button:focus-visible{outline:2px solid var(--hanji);outline-offset:3px}
+
+  .result-score{
+    font-family:"Noto Serif KR",serif;
+    font-size:64px;font-weight:900;color:var(--geum);line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .result-sub{font-size:14px;color:var(--hanji-dim);margin-top:8px}
+  .review{
+    margin:26px 0 28px;
+    width:min(460px,100%);
+    text-align:left;
+    border-top:1px solid rgba(201,162,39,.25);
+    padding-top:14px;
+  }
+  .review h3{
+    font-size:13px;font-weight:500;color:var(--geum);
+    margin-bottom:12px;letter-spacing:.04em;
+  }
+  .review li{list-style:none;padding:8px 0;border-bottom:1px solid rgba(242,232,213,.08)}
+  .review .w{font-family:"Noto Serif KR",serif;font-weight:600;font-size:17px}
+  .review .m{font-size:13.5px;color:var(--hanji-dim);margin-top:3px;line-height:1.5}
+
+  @media (max-width:560px){
+    .tile{width:106px;padding:9px 6px 11px}
+    .tile .kor{font-size:18px}
+    .tile .han{font-size:13px}
+    .prompt{padding:16px 18px}
+    .prompt p{font-size:16.5px}
+    .title{font-size:34px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .tile.hit-good,.tile.hit-bad{animation-duration:.01ms}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="hud">
+    <div class="left">
+      <span class="score" id="score">0</span>
+      <span class="progress" id="progress">1 / 15</span>
+    </div>
+    <div class="arrows" id="lives"><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="prompt"><p id="promptText"></p></div>
+
+  <div class="stage" id="stage">
+    <svg class="bow" id="bow" width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+      <path d="M14 40 A 26 26 0 0 1 14 6" fill="none" stroke="#c9a227" stroke-width="2.4" stroke-linecap="round"/>
+      <line x1="14" y1="6" x2="14" y2="40" stroke="#f2e8d5" stroke-width="1" opacity=".55"/>
+    </svg>
+    <div class="reveal" id="reveal">
+      <div class="verdict" id="verdict"></div>
+      <div class="word" id="rWord"></div>
+      <div class="han" id="rHan"></div>
+      <div class="mean" id="rMean"></div>
+    </div>
+  </div>
+
+  <!-- 시작 -->
+  <div class="screen" id="startScreen">
+    <h1 class="title"><em>사자성어</em>성어 활쏘기</h1>
+    <div class="rules">
+      상황에 <b>어울리는 성어</b>를 맞히세요.<br>
+      성어를 <b>탭하거나 클릭</b>하면 화살이 날아갑니다.<br>
+      숫자키 <b>1 2 3 4</b> 로도 쏠 수 있습니다.<br>
+      틀리거나 정답을 놓치면 화살을 하나 잃습니다.
+    </div>
+    <button id="startBtn">시작하기</button>
+  </div>
+
+  <!-- 결과 -->
+  <div class="screen hidden" id="endScreen">
+    <div class="result-score" id="finalScore">0</div>
+    <div class="result-sub" id="finalSub"></div>
+    <div class="review" id="reviewBox"></div>
+    <button id="againBtn">다시 하기</button>
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────
+   문항 데이터 (프로토타입: 하드코딩 15문항)
+   실제 연동 시 GET /quiz 응답으로 대체
+   ──────────────────────────────────────────── */
+const ITEMS = [
+  { kor:"우공이산", han:"愚公移山",
+    mean:"어리석어 보일 만큼 우직하게 밀고 나가면 결국 큰일을 이룬다는 뜻.",
+    situation:"매일 겨우 한 쪽씩 읽던 지훈이가 삼 년 만에 백 권을 채웠다.",
+    wrong:["대기만성","고진감래","사면초가"] },
+
+  { kor:"와신상담", han:"臥薪嘗膽",
+    mean:"목적을 이루기 위해 스스로 고통을 견디며 오랫동안 준비함.",
+    situation:"패배한 장수는 딱딱한 나무 위에서 자며 십 년을 벼렸다.",
+    wrong:["절치부심","자가당착","표리부동"] },
+
+  { kor:"절치부심", han:"切齒腐心",
+    mean:"몹시 분하여 이를 갈고 속을 썩임. 감정 자체에 초점이 있다.",
+    situation:"결승에서 진 그날 밤, 민서는 분해서 이를 갈며 잠을 이루지 못했다.",
+    wrong:["와신상담","새옹지마","반포지효"] },
+
+  { kor:"각주구검", han:"刻舟求劍",
+    mean:"달라진 상황은 보지 못하고 낡은 방법만 고집하는 어리석음.",
+    situation:"강물에 칼을 빠뜨린 자리를 뱃전에 표시해 두고, 배가 다 간 뒤 그 표시 아래를 뒤졌다.",
+    wrong:["조삼모사","과유불급","청출어람"] },
+
+  { kor:"새옹지마", han:"塞翁之馬",
+    mean:"인생의 화와 복은 뒤바뀌기 마련이라 미리 단정할 수 없음.",
+    situation:"떨어진 학교에 갔다가 평생 스승을 만났고, 붙었던 친구는 적성이 맞지 않아 고생했다.",
+    wrong:["전화위복","고진감래","우공이산"] },
+
+  { kor:"표리부동", han:"表裏不同",
+    mean:"겉으로 드러내는 것과 속마음이 서로 다름.",
+    situation:"앞에서는 웃으며 칭찬하더니 돌아서자마자 험담을 늘어놓았다.",
+    wrong:["자가당착","조삼모사","각주구검"] },
+
+  { kor:"조삼모사", han:"朝三暮四",
+    mean:"결국 같은 것을 눈앞의 차이만 보고 다르게 여겨 속아 넘어감.",
+    situation:"아침에 셋 저녁에 넷이라 하자 화내던 원숭이들이, 아침에 넷 저녁에 셋이라 하자 기뻐했다.",
+    wrong:["각주구검","표리부동","과유불급"] },
+
+  { kor:"과유불급", han:"過猶不及",
+    mean:"지나친 것은 모자란 것과 다를 바 없다.",
+    situation:"몸에 좋다고 영양제를 한 움큼씩 삼키다 오히려 탈이 났다.",
+    wrong:["고진감래","대기만성","새옹지마"] },
+
+  { kor:"대기만성", han:"大器晩成",
+    mean:"큰 그릇은 늦게 만들어진다. 큰 인물은 뒤늦게 이루어짐.",
+    situation:"학창 시절 내내 눈에 띄지 않던 그가 마흔이 넘어 대표작을 내놓았다.",
+    wrong:["우공이산","청출어람","고진감래"] },
+
+  { kor:"청출어람", han:"靑出於藍",
+    mean:"제자나 후배가 스승이나 선배보다 나아짐.",
+    situation:"기술을 가르쳐 준 선생님이 이제는 제자의 작품을 보며 배운다고 말했다.",
+    wrong:["대기만성","반포지효","우공이산"] },
+
+  { kor:"반포지효", han:"反哺之孝",
+    mean:"까마귀가 자란 뒤 어미를 먹이듯, 자식이 부모의 은혜를 갚는 효도.",
+    situation:"평생 자신을 키운 어머니를 이제는 아들이 곁에서 돌본다.",
+    wrong:["풍수지탄","청출어람","절치부심"] },
+
+  { kor:"풍수지탄", han:"風樹之嘆",
+    mean:"효도하려 할 때는 이미 부모가 계시지 않음을 한탄함.",
+    situation:"첫 월급으로 무엇을 해 드릴지 궁리하던 밤, 그는 아버지가 안 계심을 떠올렸다.",
+    wrong:["반포지효","새옹지마","절치부심"] },
+
+  { kor:"고진감래", han:"苦盡甘來",
+    mean:"쓴 것이 다하면 단 것이 온다. 고생 끝에 즐거움이 옴.",
+    situation:"삼 년을 새벽에 일어나 준비한 끝에 합격 소식을 들었다.",
+    wrong:["우공이산","대기만성","과유불급"] },
+
+  { kor:"사면초가", han:"四面楚歌",
+    mean:"사방이 적에게 둘러싸여 누구의 도움도 받을 수 없는 처지.",
+    situation:"믿었던 동료들까지 등을 돌리자 그는 기댈 곳 하나 없이 홀로 남았다.",
+    wrong:["진퇴양난","자가당착","와신상담"] },
+
+  { kor:"자가당착", han:"自家撞着",
+    mean:"같은 사람의 말이나 행동이 앞뒤가 서로 맞지 않음.",
+    situation:"규칙을 지키자고 목소리를 높이던 그가 정작 자기 차례에는 슬쩍 넘어갔다.",
+    wrong:["표리부동","조삼모사","각주구검"] }
+];
+
+/* ────────────────────────────────────────────
+   상태
+   ──────────────────────────────────────────── */
+const HAN = {};
+ITEMS.forEach(i => HAN[i.kor] = i.han);
+const EXTRA_HAN = { "전화위복":"轉禍爲福", "진퇴양난":"進退兩難" };
+Object.assign(HAN, EXTRA_HAN);
+
+const stage    = document.getElementById('stage');
+const bow      = document.getElementById('bow');
+const reveal   = document.getElementById('reveal');
+const $score   = document.getElementById('score');
+const $prog    = document.getElementById('progress');
+const $lives   = document.getElementById('lives');
+const $prompt  = document.getElementById('promptText');
+
+let order = [], round = 0, score = 0, lives = 3;
+let tiles = [], arrows = [];
+let playing = false, roundLocked = false;
+let missed = [];
+let lastTime = 0, rafId = null;
+let aimX = 0, aimY = 0;
+
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 라운드 시작 ─────────────────────────── */
+function startRound(){
+  if(round >= order.length || lives <= 0) return endGame();
+
+  roundLocked = false;
+  clearField();
+
+  const item = order[round];
+  $prompt.textContent = item.situation;
+  $prog.textContent = (round+1) + " / " + order.length;
+
+  const choices = shuffle([
+    {kor:item.kor, correct:true},
+    ...item.wrong.map(w => ({kor:w, correct:false}))
+  ]);
+
+  const W = stage.clientWidth;
+  const tileW = W < 560 ? 106 : 132;
+  const gap = (W - tileW*4) / 5;
+  const speed = 30 + round * 2.6;   // px/s, 라운드가 갈수록 빨라짐
+
+  choices.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'tile';
+    el.innerHTML =
+      '<span class="key">' + (i+1) + '</span>' +
+      '<div class="han">' + (HAN[c.kor] || '') + '</div>' +
+      '<div class="kor">' + c.kor + '</div>';
+    stage.appendChild(el);
+
+    tiles.push({
+      el, correct:c.correct, kor:c.kor, dead:false,
+      x: gap + i*(tileW+gap),
+      y: -90 - i*64 - Math.random()*30,
+      w: tileW, h: 66,
+      speed: speed + Math.random()*8
+    });
+  });
+  place();
+}
+
+function place(){
+  tiles.forEach(t => {
+    t.el.style.transform = 'translate(' + t.x + 'px,' + t.y + 'px)';
+  });
+}
+
+function clearField(){
+  tiles.forEach(t => t.el.remove());
+  arrows.forEach(a => a.el.remove());
+  tiles = []; arrows = [];
+}
+
+/* ── 발사 ────────────────────────────────── */
+function shootAt(target, px, py){
+  const bx = stage.clientWidth/2;
+  const by = stage.clientHeight - 30;
+  const el = document.createElement('div');
+  el.className = 'arrow';
+  stage.appendChild(el);
+  arrows.push({ el, x:bx, y:by, target, tx:px, ty:py, dead:false });
+}
+
+function aimAt(x, y){
+  aimX = x; aimY = y;
+  const bx = stage.clientWidth/2;
+  const by = stage.clientHeight - 30;
+  const deg = Math.atan2(y-by, x-bx) * 180/Math.PI + 90;
+  bow.style.left = (bx - 23) + 'px';
+  bow.style.transform = 'rotate(' + deg + 'deg)';
+}
+
+function hitTest(x, y){
+  for(let i = tiles.length-1; i >= 0; i--){
+    const t = tiles[i];
+    if(t.dead) continue;
+    if(x >= t.x && x <= t.x+t.w && y >= t.y && y <= t.y+t.h) return t;
+  }
+  return null;
+}
+
+/* ── 판정 ────────────────────────────────── */
+function resolveHit(t){
+  if(t.dead || roundLocked) return;
+  t.dead = true;
+
+  if(t.correct){
+    t.el.classList.add('hit-good');
+    score += 100 + Math.max(0, 60 - Math.round(t.y/8));
+    $score.textContent = score;
+    roundLocked = true;
+    setTimeout(() => showReveal(order[round], true), 260);
+  } else {
+    t.el.classList.add('hit-bad');
+    setTimeout(() => t.el.remove(), 340);
+    loseLife();
+    if(lives <= 0){
+      roundLocked = true;
+      setTimeout(() => showReveal(order[round], false), 300);
+    }
+  }
+}
+
+function loseLife(){
+  lives--;
+  [...$lives.children].forEach((el, i) => {
+    el.classList.toggle('spent', i >= lives);
+  });
+}
+
+function showReveal(item, good){
+  document.getElementById('verdict').textContent = good ? "명중" : "정답은";
+  document.getElementById('verdict').className = 'verdict' + (good ? '' : ' bad');
+  document.getElementById('rWord').textContent = item.kor;
+  document.getElementById('rHan').textContent  = item.han;
+  document.getElementById('rMean').textContent = item.mean;
+  reveal.classList.add('on');
+
+  if(!good && !missed.includes(item)) missed.push(item);
+
+  setTimeout(() => {
+    reveal.classList.remove('on');
+    clearField();
+    round++;
+    startRound();
+  }, good ? 1300 : 2100);
+}
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!playing) return;
+  const dt = Math.min((ts - lastTime)/1000, .05);
+  lastTime = ts;
+
+  const floor = stage.clientHeight - 56;
+
+  if(!roundLocked){
+    tiles.forEach(t => {
+      if(t.dead) return;
+      t.y += t.speed * dt;
+      if(t.y + t.h >= floor){
+        t.dead = true;
+        t.el.remove();
+        if(t.correct){
+          roundLocked = true;
+          loseLife();
+          showReveal(order[round], false);
+        }
+      }
+    });
+    place();
+  }
+
+  arrows.forEach(a => {
+    if(a.dead) return;
+    let tx = a.tx, ty = a.ty;
+    if(a.target && !a.target.dead){
+      tx = a.target.x + a.target.w/2;
+      ty = a.target.y + a.target.h/2;
+    }
+    const dx = tx - a.x, dy = ty - a.y;
+    const d = Math.hypot(dx, dy) || 1;
+    const step = 1150 * dt;
+
+    if(d <= step){
+      a.dead = true; a.el.remove();
+      if(a.target && !a.target.dead) resolveHit(a.target);
+      return;
+    }
+    a.x += dx/d*step;
+    a.y += dy/d*step;
+    if(a.y < -40 || a.x < -40 || a.x > stage.clientWidth+40){
+      a.dead = true; a.el.remove(); return;
+    }
+    const deg = Math.atan2(dy, dx) * 180/Math.PI;
+    a.el.style.transform = 'translate(' + a.x + 'px,' + a.y + 'px) rotate(' + deg + 'deg)';
+  });
+  arrows = arrows.filter(a => !a.dead);
+
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 입력 ────────────────────────────────── */
+stage.addEventListener('pointermove', e => {
+  const r = stage.getBoundingClientRect();
+  aimAt(e.clientX - r.left, e.clientY - r.top);
+});
+
+stage.addEventListener('pointerdown', e => {
+  if(!playing || roundLocked) return;
+  const r = stage.getBoundingClientRect();
+  const x = e.clientX - r.left, y = e.clientY - r.top;
+  aimAt(x, y);
+  shootAt(hitTest(x, y), x, y);
+});
+
+window.addEventListener('keydown', e => {
+  if(!playing || roundLocked) return;
+  const n = parseInt(e.key, 10);
+  if(n >= 1 && n <= 4 && tiles[n-1] && !tiles[n-1].dead){
+    const t = tiles[n-1];
+    shootAt(t, t.x + t.w/2, t.y + t.h/2);
+  }
+});
+
+/* ── 게임 시작 · 종료 ────────────────────── */
+function startGame(){
+  order = shuffle(ITEMS.slice());
+  round = 0; score = 0; lives = 3; missed = [];
+  $score.textContent = '0';
+  [...$lives.children].forEach(el => el.classList.remove('spent'));
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('endScreen').classList.add('hidden');
+  playing = true;
+  lastTime = performance.now();
+  startRound();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+
+function endGame(){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  clearField();
+  $prompt.textContent = '';
+
+  const cleared = round;
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalSub').textContent =
+    order.length + '문항 중 ' + (cleared - missed.length) + '문항 명중';
+
+  const box = document.getElementById('reviewBox');
+  if(missed.length){
+    box.innerHTML = '<h3>다시 볼 성어</h3><ul>' + missed.map(m =>
+      '<li><div class="w">' + m.kor + ' <span style="color:var(--hanji-dim);font-size:14px;letter-spacing:.2em">' + m.han + '</span></div>' +
+      '<div class="m">' + m.mean + '</div></li>').join('') + '</ul>';
+  } else {
+    box.innerHTML = '<h3>다시 볼 성어</h3><p class="m">놓친 성어가 없습니다.</p>';
+  }
+  document.getElementById('endScreen').classList.remove('hidden');
+}
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('againBtn').addEventListener('click', startGame);
+aimAt(stage.clientWidth/2, 0);
+</script>
+</body>
+</html>

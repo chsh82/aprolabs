@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>대서양 화로실</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#f2e4cc; --paper-dim:#9c8d7c; --geum:#c9a227; --injoo:#a8322d;
+         --ember:#e8722c; --iron:#1a1714; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1100px 700px at 50% -15%, #3a2a1e 0%, transparent 62%), #0e0c0a;
+    color:var(--paper);font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;user-select:none;
+  }
+  .frame{
+    width:min(960px,100%);height:min(700px,100vh - 32px);
+    display:flex;flex-direction:column;border:1px solid rgba(201,162,39,.3);
+    background:rgba(14,12,10,.65);position:relative;overflow:hidden;
+  }
+  .clock{display:flex;align-items:center;gap:8px;flex:0 0 auto;padding-right:14px;
+         border-right:1px solid rgba(201,162,39,.22)}
+  .clock svg{display:block}
+  .clock b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:20px;
+           line-height:1;font-variant-numeric:tabular-nums;color:#f2e4cc}
+  .clock em{font-style:normal;font-size:10.5px;opacity:.7;display:block;margin-top:2px;letter-spacing:.08em}
+  .gauges{flex:0 0 auto;display:flex;align-items:center;gap:16px;
+          padding:10px 18px;border-bottom:1px solid rgba(201,162,39,.22)}
+  .fire{flex:1 1 auto;min-width:0}
+  .fire .lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--paper-dim);margin-bottom:4px;letter-spacing:.08em}
+  .fire .lbl b{color:var(--ember);font-family:"Noto Serif KR",serif;font-size:13px}
+  .fire .bar{height:9px;background:rgba(255,255,255,.07);position:relative;overflow:hidden}
+  .fire .bar i{position:absolute;left:0;top:0;bottom:0;width:0;
+               background:linear-gradient(90deg,#a8322d,#e8722c,#f2b03c)}
+  .fire .bar u{position:absolute;top:0;bottom:0;left:25%;width:2px;background:rgba(242,228,204,.4)}
+  .track{flex:0 0 190px}
+  .track .lbl{display:flex;justify-content:space-between;font-size:10.5px;color:var(--paper-dim);margin-bottom:4px;letter-spacing:.06em}
+  .track .bar{height:4px;background:rgba(255,255,255,.09);position:relative}
+  .track .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--geum);width:0;transition:width .3s}
+  .score{flex:0 0 auto;text-align:right;font-size:11px;color:var(--paper-dim);line-height:1.5}
+  .score b{display:block;font-family:"Noto Serif KR",serif;font-size:16px;color:var(--geum);font-variant-numeric:tabular-nums}
+
+  .qbar{flex:0 0 auto;padding:14px 22px 13px;border-bottom:1px solid rgba(201,162,39,.16);
+        background:linear-gradient(180deg, rgba(232,114,44,.07), transparent);
+        min-height:72px;display:flex;align-items:center}
+  .qbar p{font-family:"Noto Serif KR",serif;font-size:19px;line-height:1.55;max-width:56ch;margin:0 auto;text-align:center}
+  .qbar p small{display:block;font-family:"Noto Sans KR",sans-serif;font-size:11.5px;
+                color:var(--paper-dim);letter-spacing:.06em;margin-bottom:5px}
+
+  .stage{position:relative;flex:1 1 auto;overflow:hidden;touch-action:none}
+  canvas{display:block;width:100%;height:100%}
+
+  .overlay{position:absolute;inset:0;background:rgba(14,12,10,.94);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 26px;gap:10px;z-index:5;overflow-y:auto}
+  .overlay.hidden{display:none}
+  .title{font-family:"Noto Serif KR",serif;font-weight:900;font-size:37px;letter-spacing:.12em;line-height:1.15}
+  .title em{display:block;font-style:normal;font-size:13.5px;letter-spacing:.38em;color:var(--geum);margin-bottom:12px;font-weight:400}
+  .rules{margin:20px 0 24px;font-size:14px;line-height:1.95;color:var(--paper-dim);max-width:44ch}
+  .rules b{color:var(--paper);font-weight:500}
+  .big{font-family:"Noto Serif KR",serif;font-weight:900;font-size:38px;color:var(--geum);line-height:1.15}
+  .sub{font-family:"Noto Serif KR",serif;font-size:17px;line-height:1.7;max-width:44ch;color:var(--paper-dim)}
+  .sub b{color:var(--paper);font-weight:600}
+  .review{margin:18px 0 20px;width:min(470px,100%);text-align:left;
+          border-top:1px solid rgba(201,162,39,.25);padding-top:13px}
+  .review h3{font-size:12.5px;font-weight:500;color:var(--geum);margin-bottom:10px}
+  .review li{list-style:none;padding:7px 0;border-bottom:1px solid rgba(242,228,204,.08);
+             font-size:13.5px;line-height:1.55;color:var(--paper-dim)}
+  .review li b{color:var(--paper);font-family:"Noto Serif KR",serif;font-weight:600}
+  .go{font-family:inherit;font-size:15px;padding:13px 38px;background:transparent;
+      color:var(--geum);border:1px solid var(--geum);cursor:pointer;letter-spacing:.08em;transition:.15s}
+  .go:hover,.go:focus-visible{background:var(--geum);color:var(--iron)}
+  button:focus-visible{outline:2px solid var(--paper);outline-offset:2px}
+  @media (max-width:660px){ .qbar p{font-size:16.5px} .title{font-size:28px} .big{font-size:30px} .track{flex-basis:120px} }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="gauges">
+    <div class="clock">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <circle cx="13" cy="14" r="9.4" fill="none" stroke="#c9a227" stroke-width="1.6"/>
+        <rect x="11" y="1.6" width="4" height="3.4" fill="#c9a227"/>
+        <rect x="12.2" y="4.4" width="1.6" height="1.8" fill="#c9a227"/>
+        <line id="hand" x1="13" y1="14" x2="13" y2="8" stroke="#f2e4cc" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="14" r="1.2" fill="#f2e4cc"/>
+      </svg>
+      <div><b id="clockN">0:00</b><em>걸린 시간</em></div>
+    </div>
+    <div class="fire">
+      <div class="lbl"><span>화력</span><b id="fireN">60</b></div>
+      <div class="bar"><i id="fireBar"></i><u></u></div>
+    </div>
+    <div class="track">
+      <div class="lbl"><span>대서양</span><span>런던</span></div>
+      <div class="bar"><i id="prog"></i></div>
+    </div>
+    <div class="score"><b id="scoreN">0</b><span id="scoreLbl">태운 판자</span></div>
+  </div>
+
+  <div class="qbar"><p id="qText"></p></div>
+
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+
+    <div class="overlay" id="start">
+      <h1 class="title"><em>80일간의 어휘 일주 · 대서양</em>화로실</h1>
+      <div class="rules">
+        석탄이 떨어져 <b>배의 목재를 뜯어 태웁니다.</b><br>
+        <b>스페이스</b> 를 거듭 눌러 석탄을 퍼 넣으세요.<br>
+        손을 놓으면 화력이 떨어지고 배가 섭니다.<br>
+        판자가 아가리 앞에 오면 <b>↓</b> 로 밀어 넣습니다.<br>
+        뜻에 맞는 판자만 태워야 합니다.
+      </div>
+      <button class="go" id="startBtn">화로 앞에 서다</button>
+      <button class="go" id="bonusBtn" style="margin-top:10px;border-color:#e8722c;color:#f2b03c">전속 항해 · 틀린 것이 없을 때</button>
+    </div>
+
+    <div class="overlay hidden" id="endScreen">
+      <div class="big" id="endBig"></div>
+      <div class="sub" id="endSub"></div>
+      <div class="review" id="reviewBox"></div>
+      <button class="go" id="againBtn">다시 때다</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   문항 — 연동 시 앞 구간에서 틀린 문항으로 채운다
+   ════════════════════════════════════════════ */
+const ITEMS = [
+  { mean:"두 육지 사이에 낀 좁은 바닷길", a:"해협", w:["반도","삼각주"],
+    why:"도버 해협, 대한 해협처럼 씁니다." },
+  { mean:"배가 다니도록 사람이 판 물길", a:"운하", w:["해류","항로"],
+    why:"수에즈 운하는 지중해와 홍해를 이어 뱃길을 줄였습니다." },
+  { mean:"가까이 있는 것을 도리어 알지 못함", a:"등잔 밑이 어둡다", w:["우물 안 개구리","티끌 모아 태산"],
+    why:"등잔 바로 아래가 가장 어둡다는 데서 왔습니다." },
+  { mean:"작은 것이 쌓여 크게 이루어짐", a:"티끌 모아 태산", w:["소 잃고 외양간","말이 씨가 된다"],
+    why:"티끌이 모여 태산이 됩니다." },
+  { mean:"아는 사실을 바탕으로 모르는 것을 미루어 생각함", a:"추론", w:["암기","인용"],
+    why:"근거에서 결론으로 나아가는 생각입니다." },
+  { mean:"일정한 기준에 따라 여럿을 나누어 묶음", a:"분류", w:["비교","분석"],
+    why:"분류에는 반드시 기준이 있어야 합니다." },
+  { mean:"고생이 다하면 즐거움이 옴", a:"고진감래", w:["과유불급","사면초가"],
+    why:"쓸 고, 다할 진, 달 감, 올 래입니다." },
+  { mean:"지나친 것은 모자란 것과 다를 바 없음", a:"과유불급", w:["고진감래","대기만성"],
+    why:"넘치는 것도 모자란 것과 마찬가지입니다." },
+  { mean:"“하루를 벌었다”에서 '벌다'의 뜻", a:"여유를 얻다", w:["돈을 모으다","힘껏 일하다"],
+    why:"시간이나 여유를 얻는다는 뜻으로도 씁니다." },
+  { mean:"“일정을 단축하다”와 뜻이 가까운 말", a:"줄이다", w:["미루다","늘이다"],
+    why:"단축은 짧게 줄인다는 뜻입니다. 반대말은 연장." }
+];
+
+/* ════════════════════════════════════════════
+   무대
+   ════════════════════════════════════════════ */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+let W=0, H=0, BELT=0, MOUTH=0;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  BELT  = Math.round(H*0.62);      // 컨베이어 높이
+  MOUTH = Math.round(W*0.22);      // 화로 아가리 위치
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── 상태 ────────────────────────────────── */
+let order = [], qi = 0, fire = 60, score = 0;
+let planks = [], queue = [], spawnT = 0;
+let playing = false, locked = false, missed = [];
+let shovel = 0, coolT = 0, t = 0, shake = 0;
+let MODE = 'review';               // 'review' | 'bonus'
+let voyage = 0, combo = 0, bestCombo = 0, over = 0, runT = 0;
+let bestTime = null;               // 이 자리에서 세운 최고 기록
+let embers = [], fx = [], toast = null, toastT = 0;
+let lastTs = 0, rafId = null;
+
+const rnd = (a,b) => a + Math.random()*(b-a);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 보상 구간 : 판단 없이 손맛만 ────────── */
+const CARGO = [
+  { kind:'coal',  text:'석탄 자루', fire:8,  good:true  },
+  { kind:'dry',   text:'마른 판자', fire:12, good:true  },
+  { kind:'tar',   text:'기름 먹인 널', fire:18, good:true },
+  { kind:'water', text:'젖은 물통', fire:-20, good:false }
+];
+
+function spawnCargo(){
+  const r = Math.random();
+  const wet = 0.16 + Math.min(0.2, runT*0.006);       // 갈수록 물통이 늘어난다
+  let c;
+  if(r < wet) c = CARGO[3];
+  else if(r < wet + 0.30) c = CARGO[2];
+  else if(r < wet + 0.62) c = CARGO[1];
+  else c = CARGO[0];
+  ctx.font = '700 18px "Noto Serif KR", serif';
+  const w = Math.max(120, ctx.measureText(c.text).width + 36);
+  planks.push({ text:c.text, w, x:W + 40, gone:false, cargo:c });
+}
+
+function setBonusBar(){
+  document.getElementById('qText').innerHTML = over > 0
+    ? '<small>전속 항해</small><span style="color:#f2b03c">기관이 끓어오릅니다</span>'
+    : '<small>태울 것은 넉넉합니다</small>연속으로 밀어 넣어 <b style="color:#f2b03c">전속</b>을 올리세요 · 젖은 물통만 피하면 됩니다';
+}
+
+/* ── 라운드 ──────────────────────────────── */
+function nextQ(){
+  if(qi >= order.length) return arrive();
+  locked = false;
+  planks = [];
+  const item = order[qi];
+  document.getElementById('qText').innerHTML =
+    '<small>이 뜻에 맞는 판자만 태우세요</small>' + item.mean;
+  queue = shuffle([{text:item.a, ok:true}, ...item.w.map(x=>({text:x, ok:false}))]);
+  spawnT = 0.4;
+  updateHud();
+}
+
+function updateHud(){
+  document.getElementById('fireN').textContent = Math.round(fire);
+  document.getElementById('fireBar').style.width = Math.min(100, Math.max(0, fire)) + '%';
+  if(MODE === 'bonus'){
+    document.getElementById('prog').style.width = Math.min(100, voyage) + '%';
+    document.getElementById('scoreN').textContent = combo;
+    document.getElementById('scoreLbl').textContent = '연속';
+  } else {
+    document.getElementById('prog').style.width = (qi/order.length*100) + '%';
+    document.getElementById('scoreN').textContent = score;
+  }
+}
+
+function toastMsg(text, bad){ toast = {text, bad}; toastT = 1.8; }
+
+function burst(x, y, color, n){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2, v = rnd(50, 240);
+    fx.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v - 60, a:1, c:color, r:rnd(2,4) });
+  }
+}
+function floatText(x, y, text, color){
+  fx.push({ x, y, vy:-52, a:1, c:color, text });
+}
+
+/* ── 삽질 ────────────────────────────────── */
+function stoke(){
+  if(!playing || coolT > 0) return;
+  coolT = 0.1;
+  shovel = 0.22;
+  fire = Math.min(100, fire + 5.5 * (1 - fire/130));  // 이미 뜨거우면 덜 오른다
+  for(let i=0;i<5;i++) embers.push({ x:MOUTH+rnd(-14,14), y:BELT+34, vx:rnd(-40,40), vy:rnd(-150,-60), a:1 });
+  updateHud();
+}
+
+/* ── 판자 밀어넣기 ───────────────────────── */
+function push(){
+  if(!playing || locked) return;
+  const p = planks.find(x => !x.gone && Math.abs(x.x - MOUTH) < 62);
+  if(!p){ toastMsg('아가리 앞에 판자가 없습니다', true); return; }
+  p.gone = true;
+
+  if(MODE === 'bonus'){
+    const c = p.cargo;
+    if(c.good){
+      fire = Math.min(over > 0 ? 130 : 110, fire + c.fire);
+      combo++; bestCombo = Math.max(bestCombo, combo);
+      burst(MOUTH, BELT+10, '242,176,60', 14 + combo);
+      floatText(MOUTH, BELT-30, '+' + c.fire + (combo > 1 ? '  ' + combo + '연속' : ''), '242,176,60');
+      if(combo >= 5 && over <= 0){
+        over = 9; combo = 0;
+        burst(MOUTH, BELT+10, '255,220,140', 40);
+        floatText(MOUTH, BELT-64, '전속 항해', '255,220,140');
+        toastMsg('기관이 끓어오릅니다 · 전속', false);
+        setBonusBar();
+      }
+    } else {
+      fire = Math.max(0, fire + c.fire);
+      combo = 0; shake = .45;
+      burst(MOUTH, BELT+10, '150,170,190', 20);
+      floatText(MOUTH, BELT-30, '치익', '190,210,225');
+      toastMsg('물이 끼얹어졌습니다', true);
+      if(fire <= 0) return stall();
+    }
+    updateHud();
+    return;
+  }
+
+  const item = order[qi];
+
+  if(p.ok){
+    locked = true; score++;
+    fire = Math.min(100, fire + 12);
+    burst(MOUTH, BELT+10, '242,176,60', 22);
+    floatText(MOUTH, BELT-30, '활활', '242,176,60');
+    toastMsg('잘 탑니다', false);
+    updateHud();
+    setTimeout(() => { qi++; nextQ(); }, 850);
+  } else {
+    fire = Math.max(0, fire - 22);
+    shake = .45;
+    if(!missed.includes(item)) missed.push(item);
+    burst(MOUTH, BELT+10, '150,150,158', 18);
+    floatText(MOUTH, BELT-30, '정답은 ' + item.a, '232,140,132');
+    toastMsg('젖은 판자였습니다 · 불이 죽습니다', true);
+    updateHud();
+    if(fire <= 0) stall();
+  }
+}
+
+function missQ(){
+  if(locked) return;
+  locked = true;
+  const item = order[qi];
+  if(!missed.includes(item)) missed.push(item);
+  fire = Math.max(0, fire - 10);
+  toastMsg('판자를 흘려보냈습니다 · ' + item.a, true);
+  updateHud();
+  setTimeout(() => {
+    if(fire <= 0) return stall();
+    qi++; nextQ();
+  }, 1500);
+}
+
+function arrive(){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  if(MODE === 'bonus'){
+    const secs = runT.toFixed(1);
+    const isBest = bestTime === null || runT < bestTime;
+    if(isBest) bestTime = runT;
+    finish('런던 도착', '태울 것이 넉넉했습니다. 불은 한 번도 죽지 않았습니다.<br>' +
+      '건너는 데 <b>' + secs + '초</b>, 최고 <b>' + bestCombo + '연속</b>' +
+      (isBest ? '<br><span style="color:#f2b03c">최고 기록입니다</span>'
+              : '<br>최고 기록 ' + bestTime.toFixed(1) + '초'));
+    return;
+  }
+  finish('리버풀 앞바다', '불을 꺼뜨리지 않고 대서양을 건넜습니다.<br>판자 ' + order.length + '장 가운데 <b>' + score + '장</b>을 바르게 태웠습니다.');
+}
+function stall(){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  finish('불이 꺼졌습니다', '화로가 식어 배가 멈췄습니다.<br>런던까지 <b>닿지 못했습니다.</b>');
+}
+function finish(big, sub){
+  document.getElementById('endBig').textContent = big;
+  document.getElementById('endSub').innerHTML = sub;
+  const box = document.getElementById('reviewBox');
+  if(MODE === 'bonus'){ box.innerHTML = ''; document.getElementById('endScreen').classList.remove('hidden'); return; }
+  box.innerHTML = '<h3>다시 볼 말</h3>' + (missed.length
+    ? '<ul>' + missed.map(m => '<li><b>' + m.a + '</b> · ' + m.why + '</li>').join('') + '</ul>'
+    : '<li>한 장도 잘못 태우지 않았습니다</li>');
+  document.getElementById('endScreen').classList.remove('hidden');
+}
+
+/* ── 진행 ────────────────────────────────── */
+
+/* ── 전체 걸린 시간 ─────────────────────── */
+let elapsed = 0;
+function fmt(sec){
+  const m = Math.floor(sec/60), ss = Math.floor(sec%60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+function tickClock(dt){
+  elapsed += dt;
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = fmt(elapsed);
+  const hand = document.getElementById('hand');
+  if(hand){
+    const a = (elapsed % 60) / 60 * Math.PI*2;
+    hand.setAttribute('x2', (13 + Math.sin(a)*6).toFixed(2));
+    hand.setAttribute('y2', (14 - Math.cos(a)*6).toFixed(2));
+  }
+}
+function resetClock(){
+  elapsed = 0;
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = '0:00';
+}
+
+function step(dt){
+  tickClock(dt);
+  t += dt;
+  if(coolT > 0) coolT -= dt;
+  if(shovel > 0) shovel -= dt;
+  if(shake > 0) shake -= dt;
+  if(toastT > 0){ toastT -= dt; if(toastT <= 0) toast = null; }
+
+  // 화력은 늘 떨어진다
+  const decay = MODE === 'bonus'
+    ? (12 + runT*0.30) * (over > 0 ? 0.55 : 1)
+    : (12 + qi*0.6);
+  fire -= decay * dt;
+  if(fire <= 0){ fire = 0; updateHud(); return stall(); }
+  fire = Math.min(100, fire);
+  updateHud();
+
+  // 보상 구간
+  if(MODE === 'bonus'){
+    runT += dt;
+    if(over > 0){ over -= dt; if(over <= 0) setBonusBar(); }
+
+    const speed2 = 128 + runT*1.8;
+    spawnT -= dt;
+    if(spawnT <= 0){ spawnCargo(); spawnT = (over > 0 ? 0.62 : 0.85) + Math.random()*0.35; }
+    planks.forEach(p => {
+      if(p.gone) return;
+      p.x -= speed2 * dt;
+      if(p.x + p.w/2 < -20) p.gone = true;
+    });
+    planks = planks.filter(p => !p.gone || p.x > -200);
+
+    voyage += (fire/100) * (over > 0 ? 9.5 : 5.6) * dt;
+    if(voyage >= 100){ voyage = 100; updateHud(); return arrive(); }
+    updateHud();
+
+    embers.forEach(e => { e.x += e.vx*dt; e.y += e.vy*dt; e.vy += 190*dt; e.a -= dt*1.1; });
+    embers = embers.filter(e => e.a > 0);
+    if(Math.random() < dt * (6 + fire*0.28)){
+      embers.push({ x:MOUTH+rnd(-20,20), y:BELT+30, vx:rnd(-26,26), vy:rnd(-120,-50), a:1 });
+    }
+    fx.forEach(f => {
+      f.a -= dt*(f.text ? 0.9 : 1.4);
+      if(f.vx) f.x += f.vx*dt;
+      f.y += (f.vy||0)*dt;
+      if(f.vy && !f.text) f.vy += 260*dt;
+    });
+    fx = fx.filter(f => f.a > 0);
+    return;
+  }
+
+  // 판자
+  const speed = 108 + qi*4;
+  if(queue.length && !locked){
+    spawnT -= dt;
+    if(spawnT <= 0){
+      const q = queue.shift();
+      ctx.font = '700 18px "Noto Serif KR", serif';
+      const w = Math.max(120, ctx.measureText(q.text).width + 36);
+      planks.push({ text:q.text, ok:q.ok, x:W + 40, w, gone:false });
+      spawnT = 1.5 + Math.random()*0.4;
+    }
+  }
+  let gone = false;
+  planks.forEach(p => {
+    if(p.gone) return;
+    p.x -= speed * dt;
+    if(p.x + p.w/2 < -20){ p.gone = true; if(p.ok) gone = true; }
+  });
+  if(gone) missQ();
+
+  embers.forEach(e => { e.x += e.vx*dt; e.y += e.vy*dt; e.vy += 190*dt; e.a -= dt*1.1; });
+  embers = embers.filter(e => e.a > 0);
+  if(Math.random() < dt * (6 + fire*0.22)){
+    embers.push({ x:MOUTH+rnd(-20,20), y:BELT+30, vx:rnd(-26,26), vy:rnd(-120,-50), a:1 });
+  }
+
+  fx.forEach(f => {
+    f.a -= dt*(f.text ? 0.9 : 1.4);
+    if(f.vx) f.x += f.vx*dt;
+    f.y += (f.vy||0)*dt;
+    if(f.vy && !f.text) f.vy += 260*dt;
+  });
+  fx = fx.filter(f => f.a > 0);
+}
+
+/* ════════════════════════════════════════════
+   그리기
+   ════════════════════════════════════════════ */
+function render(){
+  const glow = fire/100;
+  const jolt = shake > 0 ? Math.sin(t*70)*4 : 0;
+  ctx.save();
+  ctx.translate(jolt, 0);
+
+  // 기관실 벽
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, '#241d17');
+  g.addColorStop(.55, '#1a1512');
+  g.addColorStop(1, '#100d0b');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // 화로 불빛
+  const rg = ctx.createRadialGradient(MOUTH, BELT+10, 10, MOUTH, BELT+10, 420);
+  rg.addColorStop(0, 'rgba(255,150,60,' + (0.30*glow + 0.06) + ')');
+  rg.addColorStop(1, 'rgba(255,120,40,0)');
+  ctx.fillStyle = rg; ctx.fillRect(0,0,W,H);
+
+  // 리벳 벽판
+  ctx.strokeStyle = 'rgba(242,228,204,.05)'; ctx.lineWidth = 1;
+  for(let y=30; y<BELT-60; y+=54){
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    for(let x=26; x<W; x+=54){
+      ctx.fillStyle = 'rgba(242,228,204,.07)';
+      ctx.fillRect(x, y-2, 3, 3);
+    }
+  }
+  // 파이프
+  ctx.strokeStyle = 'rgba(90,74,56,.6)'; ctx.lineWidth = 12;
+  ctx.beginPath(); ctx.moveTo(W*0.62, 0); ctx.lineTo(W*0.62, BELT-90); ctx.lineTo(W, BELT-90); ctx.stroke();
+  ctx.strokeStyle = 'rgba(201,162,39,.18)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(W*0.62, 40); ctx.lineTo(W*0.62, BELT-90); ctx.stroke();
+
+  // 컨베이어
+  ctx.fillStyle = '#2a231c';
+  ctx.fillRect(0, BELT+24, W, 16);
+  ctx.fillStyle = 'rgba(242,228,204,.08)';
+  const off = (t*128) % 30;
+  for(let x=-off; x<W; x+=30) ctx.fillRect(x, BELT+28, 14, 8);
+
+  // 판자
+  planks.forEach(p => {
+    if(p.gone) return;
+    const inZone = Math.abs(p.x - MOUTH) < 62;
+    const y = BELT - 4;
+    ctx.fillStyle = 'rgba(0,0,0,.4)';
+    ctx.fillRect(p.x - p.w/2 + 3, y - 24, p.w, 32);
+    const kind = p.cargo ? p.cargo.kind : 'dry';
+    const base = kind === 'coal'  ? '#3a3630'
+               : kind === 'water' ? '#4a6a80'
+               : kind === 'tar'   ? '#6b4a2c' : '#8c6d48';
+    ctx.fillStyle = inZone ? base : base;
+    ctx.globalAlpha = inZone ? 1 : .88;
+    ctx.fillRect(p.x - p.w/2, y - 27, p.w, 32);
+    ctx.globalAlpha = 1;
+    if(kind === 'water'){
+      ctx.fillStyle = 'rgba(150,205,230,.55)';
+      for(let i=0;i<4;i++) ctx.beginPath(), ctx.arc(p.x - p.w/2 + 14 + i*(p.w-28)/3, y - 32, 3.2, 0, Math.PI*2), ctx.fill();
+    }
+    ctx.strokeStyle = inZone ? '#f2b03c' : 'rgba(40,30,20,.6)';
+    ctx.lineWidth = inZone ? 3 : 1.6;
+    ctx.strokeRect(p.x - p.w/2, y - 27, p.w, 32);
+    ctx.fillStyle = (p.cargo && (p.cargo.kind === 'coal' || p.cargo.kind === 'water')) ? '#eae2d2' : '#231a12';
+    ctx.font = '700 18px "Noto Serif KR", serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(p.text, p.x, y - 11);
+    if(inZone){
+      ctx.fillStyle = 'rgba(242,176,60,.9)';
+      ctx.font = '600 11px "Noto Sans KR", sans-serif';
+      ctx.fillText('↓ 밀어 넣기', p.x, y - 38);
+    }
+  });
+
+  // 화로
+  ctx.fillStyle = '#221b15';
+  ctx.fillRect(MOUTH - 92, BELT - 118, 184, 176);
+  ctx.strokeStyle = 'rgba(201,162,39,.5)'; ctx.lineWidth = 2.5;
+  ctx.strokeRect(MOUTH - 92, BELT - 118, 184, 176);
+  // 아가리
+  const mouthGrad = ctx.createLinearGradient(0, BELT-40, 0, BELT+34);
+  mouthGrad.addColorStop(0, 'rgba(255,190,90,' + (0.5+glow*0.5) + ')');
+  mouthGrad.addColorStop(1, 'rgba(200,60,25,' + (0.5+glow*0.5) + ')');
+  ctx.fillStyle = mouthGrad;
+  ctx.beginPath();
+  ctx.moveTo(MOUTH - 58, BELT + 34);
+  ctx.lineTo(MOUTH - 44, BELT - 40);
+  ctx.lineTo(MOUTH + 44, BELT - 40);
+  ctx.lineTo(MOUTH + 58, BELT + 34);
+  ctx.closePath(); ctx.fill();
+  // 불꽃
+  ctx.fillStyle = 'rgba(255,220,140,' + (0.25 + glow*0.5) + ')';
+  for(let i=0;i<6;i++){
+    const fx0 = MOUTH - 40 + i*16;
+    const hgt = (18 + Math.sin(t*7 + i)*10) * (0.4 + glow);
+    ctx.beginPath();
+    ctx.moveTo(fx0, BELT + 30);
+    ctx.quadraticCurveTo(fx0 + 6, BELT + 30 - hgt, fx0 + 12, BELT + 30);
+    ctx.closePath(); ctx.fill();
+  }
+  // 문틀
+  ctx.strokeStyle = '#3a2e22'; ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.moveTo(MOUTH - 58, BELT + 34);
+  ctx.lineTo(MOUTH - 44, BELT - 40);
+  ctx.lineTo(MOUTH + 44, BELT - 40);
+  ctx.lineTo(MOUTH + 58, BELT + 34);
+  ctx.stroke();
+  // 압력계
+  ctx.fillStyle = '#3a2e22';
+  ctx.beginPath(); ctx.arc(MOUTH, BELT - 76, 22, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#c9a227'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(MOUTH, BELT - 76, 22, 0, Math.PI*2); ctx.stroke();
+  ctx.strokeStyle = fire < 25 ? '#e0605a' : '#f2b03c'; ctx.lineWidth = 2.4;
+  const ang = Math.PI*0.8 + (fire/100)*Math.PI*1.4;
+  ctx.beginPath(); ctx.moveTo(MOUTH, BELT-76);
+  ctx.lineTo(MOUTH + Math.cos(ang)*15, BELT-76 + Math.sin(ang)*15);
+  ctx.stroke();
+
+  drawStoker();
+
+  embers.forEach(e => {
+    ctx.fillStyle = 'rgba(255,' + Math.floor(150 + e.a*80) + ',60,' + e.a + ')';
+    ctx.fillRect(e.x, e.y, 3, 3);
+  });
+
+  fx.forEach(f => {
+    if(f.text){
+      ctx.font = '700 16px "Noto Serif KR", serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(0,0,0,' + (f.a*.5) + ')';
+      ctx.fillText(f.text, f.x+1, f.y+1);
+      ctx.fillStyle = 'rgba(' + f.c + ',' + f.a + ')';
+      ctx.fillText(f.text, f.x, f.y);
+    } else {
+      ctx.fillStyle = 'rgba(' + f.c + ',' + f.a + ')';
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*f.a, 0, Math.PI*2); ctx.fill();
+    }
+  });
+
+  ctx.restore();
+
+  // 전속 항해
+  if(over > 0){
+    ctx.fillStyle = 'rgba(255,180,80,' + (0.05 + Math.sin(t*9)*0.02) + ')';
+    ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = 'rgba(242,176,60,' + (0.5 + Math.sin(t*7)*0.2) + ')';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(2, 2, W-4, H-4);
+  }
+
+  // 화력이 낮으면 어두워진다
+  if(fire < 30){
+    ctx.fillStyle = 'rgba(10,8,6,' + ((30-fire)/30*0.5) + ')';
+    ctx.fillRect(0,0,W,H);
+    if(fire < 18 && Math.sin(t*8) > 0){
+      ctx.fillStyle = 'rgba(224,96,90,.9)';
+      ctx.font = '700 15px "Noto Sans KR", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('불이 꺼져 갑니다 — 스페이스', W/2, 34);
+    }
+  }
+
+  if(toast){
+    const a = Math.min(1, toastT*1.6);
+    ctx.font = '500 15px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const tw = ctx.measureText(toast.text).width + 30;
+    ctx.fillStyle = 'rgba(14,12,10,' + (a*.85) + ')';
+    ctx.fillRect(W/2 - tw/2, H-44, tw, 30);
+    ctx.fillStyle = toast.bad ? 'rgba(240,180,174,' + a + ')' : 'rgba(242,176,60,' + a + ')';
+    ctx.fillText(toast.text, W/2, H-29);
+  }
+}
+
+/* 파스파르투 — 화부 */
+function drawStoker(){
+  const x = MOUTH + 132, y = BELT + 34;
+  const sw = shovel > 0 ? 1 - Math.abs(shovel - .11)/.11 : 0;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(-sw*0.34);
+
+  // 다리
+  ctx.strokeStyle = '#2b3346'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-2,-16); ctx.lineTo(-8,-1); ctx.moveTo(3,-16); ctx.lineTo(9,-1);
+  ctx.stroke();
+  // 셔츠
+  ctx.fillStyle = '#e6dcc6';
+  ctx.beginPath();
+  ctx.moveTo(-10,-42); ctx.lineTo(10,-42); ctx.lineTo(12,-15); ctx.lineTo(-12,-15);
+  ctx.closePath(); ctx.fill();
+  // 붉은 조끼
+  ctx.fillStyle = '#9e2f2a';
+  ctx.beginPath(); ctx.moveTo(-10,-41); ctx.lineTo(-3,-41); ctx.lineTo(-4,-17); ctx.lineTo(-11,-17); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(10,-41); ctx.lineTo(3,-41); ctx.lineTo(4,-17); ctx.lineTo(11,-17); ctx.closePath(); ctx.fill();
+  // 얼굴과 머리
+  ctx.fillStyle = '#e9c9a4';
+  ctx.beginPath(); ctx.arc(0,-51, 8, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#6b4526';
+  ctx.beginPath(); ctx.arc(0,-55, 8.2, Math.PI*1.02, Math.PI*2.02); ctx.fill();
+  ctx.beginPath(); ctx.arc(-6.6,-55, 3.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(6.6,-55, 3.2, 0, Math.PI*2); ctx.fill();
+  // 삽
+  ctx.save();
+  ctx.translate(-6,-34);
+  ctx.rotate(-0.5 - sw*1.15);
+  ctx.strokeStyle = '#8a6a49'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-46,0); ctx.stroke();
+  ctx.fillStyle = '#4a4a52';
+  ctx.beginPath();
+  ctx.moveTo(-46,-9); ctx.lineTo(-70,-6); ctx.lineTo(-70,6); ctx.lineTo(-46,9);
+  ctx.closePath(); ctx.fill();
+  if(sw > 0.3){
+    ctx.fillStyle = 'rgba(255,170,70,.8)';
+    ctx.beginPath(); ctx.arc(-60, 0, 5, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+  // 팔
+  ctx.strokeStyle = '#e6dcc6'; ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(-7,-37); ctx.lineTo(-16,-30 + sw*8);
+  ctx.moveTo(7,-37); ctx.lineTo(14,-26 - sw*6);
+  ctx.stroke();
+  ctx.restore();
+
+  // 석탄 더미
+  ctx.fillStyle = '#1c1a19';
+  ctx.beginPath();
+  ctx.ellipse(x + 96, y - 6, 70, 22, 0, Math.PI, 0);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(90,86,88,.5)';
+  for(let i=0;i<9;i++){
+    ctx.beginPath();
+    ctx.arc(x + 46 + i*11, y - 10 - Math.sin(i)*7, 4, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!playing) return;
+  const dt = Math.min((ts-lastTs)/1000, .05);
+  lastTs = ts;
+  step(dt);
+  if(playing) render();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 입력 ────────────────────────────────── */
+window.addEventListener('keydown', e => {
+  if(!playing){
+    if(e.code === 'Space' && !document.getElementById('endScreen').classList.contains('hidden')){
+      e.preventDefault(); startGame(MODE);
+    }
+    return;
+  }
+  if(e.code === 'Space'){ e.preventDefault(); stoke(); }
+  if(e.key === 'ArrowDown' || e.key === 's'){ e.preventDefault(); push(); }
+});
+
+stage.addEventListener('pointerdown', e => {
+  if(!playing) return;
+  const r = stage.getBoundingClientRect();
+  const y = e.clientY - r.top;
+  if(y > BELT - 70 && y < BELT + 60) push();     // 컨베이어 근처를 누르면 밀어 넣기
+  else stoke();                                   // 그 밖은 삽질
+});
+
+/* ── 시작 ────────────────────────────────── */
+function startGame(mode){
+  resetClock();
+  MODE = mode === 'bonus' ? 'bonus' : 'review';
+  document.getElementById('start').classList.add('hidden');
+  document.getElementById('endScreen').classList.add('hidden');
+  resize();
+  order = shuffle(ITEMS.slice());
+  qi = 0; fire = 60; score = 0; missed = [];
+  planks = []; queue = []; embers = []; fx = []; toast = null;
+  shovel = 0; coolT = 0; shake = 0; t = 0;
+  voyage = 0; combo = 0; bestCombo = 0; over = 0; runT = 0; spawnT = 0.5;
+  document.getElementById('scoreLbl').textContent = MODE === 'bonus' ? '연속' : '태운 판자';
+  updateHud();
+  if(MODE === 'bonus') setBonusBar(); else nextQ();
+  playing = true; lastTs = performance.now();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+
+document.getElementById('startBtn').addEventListener('click', () => startGame('review'));
+document.getElementById('bonusBtn').addEventListener('click', () => startGame('bonus'));
+document.getElementById('againBtn').addEventListener('click', () => startGame(MODE));
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>80일간의 어휘 일주</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#efe4cc; --paper-2:#e5d7b9;
+    --land:#ded0ac; --land-line:rgba(30,50,71,.34);
+    --ink:#1e3247; --ink-2:#4a627a;
+    --geum:#a8801f; --injoo:#a8322d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#16202b;color:var(--ink);
+    font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:16px;
+  }
+  .frame{
+    width:min(940px,100%);height:min(680px,100vh - 32px);
+    background:radial-gradient(760px 460px at 35% 25%, #f5ecd8 0%, var(--paper) 58%, var(--paper-2) 100%);
+    border:1px solid rgba(30,50,71,.35);
+    position:relative;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+
+  .clock{display:flex;align-items:center;gap:8px;flex:0 0 auto;padding-right:16px;
+         border-right:1px solid rgba(30,50,71,.28)}
+  .clock svg{display:block}
+  .clock b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:20px;
+           line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .clock em{font-style:normal;font-size:10.5px;color:var(--ink-2);display:block;margin-top:2px;letter-spacing:.08em}
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 20px;border-bottom:1px solid rgba(30,50,71,.28);flex:0 0 auto;
+  }
+  .days{display:flex;align-items:baseline;gap:7px}
+  .days b{font-family:"Noto Serif KR",serif;font-weight:900;font-size:29px;line-height:1;font-variant-numeric:tabular-nums}
+  .days span{font-size:12.5px;color:var(--ink-2)}
+  .days.tight b{color:var(--injoo)}
+  .leg{font-size:12px;color:var(--ink-2);text-align:right;line-height:1.5}
+  .leg b{display:block;font-family:"Noto Serif KR",serif;font-size:15px;color:var(--ink);font-weight:600}
+
+  .body{flex:1 1 auto;position:relative;overflow:hidden}
+  .view{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
+  .view.hidden{display:none}
+
+  .mapwrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;padding:6px 10px}
+  svg.map{width:100%;height:100%}
+  .lbl{font-family:"Noto Serif KR",serif;font-size:12px;fill:var(--ink);paint-order:stroke;
+       stroke:rgba(245,236,216,.9);stroke-width:3px;stroke-linejoin:round}
+  .lbl.dim{fill:rgba(30,50,71,.45)}
+
+  .mapfoot{flex:0 0 auto;padding:12px 24px 18px;text-align:center;border-top:1px solid rgba(30,50,71,.16)}
+  .mapfoot p{font-family:"Noto Serif KR",serif;font-size:15px;line-height:1.65;max-width:56ch;margin:0 auto 13px;color:var(--ink-2)}
+  .mapfoot p b{color:var(--ink);font-weight:600}
+
+  button{font-family:inherit;cursor:pointer}
+  .go{font-size:15px;padding:12px 38px;background:transparent;color:var(--ink);
+      border:1.5px solid var(--ink);letter-spacing:.06em;transition:background .15s,color .15s}
+  .go:hover,.go:focus-visible{background:var(--ink);color:var(--paper)}
+  .go:disabled{opacity:.35;cursor:default}
+  button:focus-visible{outline:2px solid var(--geum);outline-offset:2px}
+
+  .qhead{flex:0 0 auto;display:flex;align-items:center;gap:14px;
+         padding:13px 24px 11px;border-bottom:1px solid rgba(30,50,71,.16)}
+  .qhead .meta{font-size:12px;color:var(--ink-2);line-height:1.5}
+  .qhead .meta b{display:block;font-family:"Noto Serif KR",serif;font-size:15.5px;color:var(--ink);font-weight:600}
+  .qhead .count{margin-left:auto;font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+
+  .qbody{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+         padding:18px 26px;gap:18px;overflow-y:auto}
+  .prompt{font-family:"Noto Serif KR",serif;font-size:20px;line-height:1.75;max-width:46ch;margin:0 auto;text-align:center}
+  .prompt em{font-style:normal;font-weight:900;border-bottom:2px solid var(--geum)}
+  .kicker{font-size:12.5px;color:var(--ink-2);text-align:center;letter-spacing:.05em}
+
+  .opts{display:grid;gap:9px;max-width:460px;width:100%;margin:0 auto}
+  .opts.two{grid-template-columns:1fr 1fr}
+  .opts button{padding:13px 12px;font-size:16px;font-family:"Noto Serif KR",serif;font-weight:600;
+    background:rgba(255,255,255,.45);border:1px solid rgba(30,50,71,.3);color:var(--ink);transition:.13s}
+  .opts button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+  .opts button:disabled{cursor:default;opacity:.5}
+  .opts button.right{background:#2f6b4f;border-color:#2f6b4f;color:#f2f7f3;opacity:1}
+  .opts button.wrong{background:var(--injoo);border-color:var(--injoo);color:#f7eeed;opacity:1}
+
+  .slots{display:flex;gap:8px;justify-content:center}
+  .slots div{width:50px;height:50px;border:1.5px dashed rgba(30,50,71,.35);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Noto Serif KR",serif;font-size:23px;font-weight:900;
+    background:rgba(255,255,255,.3);cursor:pointer}
+  .slots div.filled{border-style:solid;background:rgba(255,255,255,.72)}
+  .tiles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .tiles button{width:50px;height:50px;font-family:"Noto Serif KR",serif;font-size:23px;font-weight:900;
+    background:rgba(255,255,255,.5);border:1px solid rgba(30,50,71,.3);color:var(--ink)}
+  .tiles button:disabled{opacity:.22}
+
+  .fb{flex:0 0 auto;padding:12px 24px 16px;border-top:1px solid rgba(30,50,71,.16);
+      text-align:center;min-height:92px}
+  .fb .v{font-family:"Noto Serif KR",serif;font-size:16.5px;font-weight:600;margin-bottom:4px}
+  .fb .v.ok{color:#2f6b4f}
+  .fb .v.no{color:var(--injoo)}
+  .fb .why{font-size:13.5px;color:var(--ink-2);line-height:1.6;max-width:50ch;margin:0 auto 10px}
+  .fb .next{font-size:14px;padding:8px 26px;background:transparent;border:1px solid var(--ink);color:var(--ink)}
+  .fb .next:hover{background:var(--ink);color:var(--paper)}
+  .fb.empty{visibility:hidden}
+
+  .end{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+       text-align:center;padding:32px 26px;gap:11px}
+  .end .big{font-family:"Noto Serif KR",serif;font-weight:900;font-size:42px;line-height:1.1}
+  .end .sub{font-family:"Noto Serif KR",serif;font-size:17.5px;line-height:1.7;max-width:46ch;color:var(--ink-2)}
+  .end .sub b{color:var(--ink);font-weight:600}
+  .end .tally{font-size:13px;color:var(--ink-2);margin-top:4px;line-height:1.8}
+
+  @media (max-width:640px){
+    .prompt{font-size:17.5px}
+    .days b{font-size:24px}
+    .end .big{font-size:32px}
+    .slots div,.tiles button{width:44px;height:44px;font-size:20px}
+    .mapfoot p{font-size:13.5px}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="top">
+    <div class="clock">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+        <circle cx="13" cy="14" r="9.4" fill="none" stroke="#a8801f" stroke-width="1.6"/>
+        <rect x="11" y="1.6" width="4" height="3.4" fill="#a8801f"/>
+        <rect x="12.2" y="4.4" width="1.6" height="1.8" fill="#a8801f"/>
+        <line id="hand" x1="13" y1="14" x2="13" y2="8" stroke="#1e3247" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="13" cy="14" r="1.2" fill="#1e3247"/>
+      </svg>
+      <div><b id="clockN">0:00</b><em>걸린 시간</em></div>
+    </div>
+    <div class="days" id="daysBox"><b id="daysLeft">80</b><span>일 남음</span></div>
+    <div class="leg" id="legInfo"><b>런던</b>리폼 클럽</div>
+  </div>
+
+  <div class="body">
+    <div class="view" id="vMap">
+      <div class="mapwrap"><svg class="map" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet" id="mapSvg"></svg></div>
+      <div class="mapfoot">
+        <p id="mapText"></p>
+        <button class="go" id="mapBtn">출발</button>
+      </div>
+    </div>
+
+    <div class="view hidden" id="vQuiz">
+      <div class="qhead">
+        <div class="meta"><b id="qPlace"></b><span id="qKind"></span></div>
+        <div class="count" id="qCount"></div>
+      </div>
+      <div class="qbody" id="qBody"></div>
+      <div class="fb empty" id="qFb">
+        <div class="v" id="fbV"></div>
+        <div class="why" id="fbWhy"></div>
+        <button class="next" id="fbNext">계속</button>
+      </div>
+    </div>
+
+    <div class="view hidden" id="vEnd">
+      <div class="end">
+        <div class="big" id="endBig"></div>
+        <div class="sub" id="endSub"></div>
+        <div class="tally" id="endTally"></div>
+        <button class="go" id="endBtn" style="margin-top:16px">이튿날 아침</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════
+   지도 — 위도·경도를 그대로 투영
+   x = (lon+180)/360*800,  y = (75-lat)/130*400
+   ════════════════════════════════════════════ */
+const proj = (lat, lon) => ({ x:(lon+180)/360*800, y:(75-lat)/130*400 });
+
+const NODES = [
+  {name:"런던",     ...proj(51.5,  -0.1)},
+  {name:"수에즈",   ...proj(30.0,  32.5)},
+  {name:"봄베이",   ...proj(19.0,  72.8)},
+  {name:"홍콩",     ...proj(22.3, 114.2)},
+  {name:"요코하마", ...proj(35.4, 139.6)},
+  {name:"뉴욕",     ...proj(40.7, -74.0)},
+  {name:"런던",     ...proj(51.5,  -0.1)}
+];
+
+/* 태평양 구간은 지도 오른쪽 끝으로 나가 왼쪽 끝에서 들어온다 */
+function legSegs(i){
+  const a = NODES[i], b = NODES[i+1];
+  if(i === 4){
+    return [
+      { a, c:{x:762, y:a.y-24}, b:{x:800, y:112} },
+      { a:{x:0, y:112}, c:{x:112, y:92}, b }
+    ];
+  }
+  const lift = i === 5 ? 32 : 24;
+  return [{ a, c:{x:(a.x+b.x)/2, y:Math.min(a.y,b.y)-lift}, b }];
+}
+const qpt = (s,t) => ({
+  x:(1-t)*(1-t)*s.a.x + 2*(1-t)*t*s.c.x + t*t*s.b.x,
+  y:(1-t)*(1-t)*s.a.y + 2*(1-t)*t*s.c.y + t*t*s.b.y
+});
+const segPath = s => `M${s.a.x},${s.a.y} Q${s.c.x},${s.c.y} ${s.b.x},${s.b.y}`;
+
+/* 대륙 약식 윤곽 (투영 좌표계) */
+const LAND = [
+  "M28,58 L62,36 L112,28 L178,26 L236,38 L263,62 L250,86 L263,104 L246,120 L251,146 L234,170 L241,196 L228,180 L212,152 L194,132 L158,120 L118,112 L84,92 L56,78 L34,70 Z",
+  "M238,198 L274,206 L302,224 L313,256 L300,302 L282,342 L268,388 L252,360 L246,316 L232,268 L227,230 Z",
+  "M300,20 L346,14 L364,30 L340,48 L306,42 Z",
+  "M376,60 L412,40 L450,34 L484,44 L493,62 L470,84 L448,96 L420,104 L398,96 L382,80 Z",
+  "M368,152 L402,132 L450,126 L494,133 L509,151 L500,183 L482,207 L470,241 L452,279 L430,319 L410,297 L400,258 L382,221 Z",
+  "M482,38 L562,22 L642,26 L708,40 L737,62 L724,92 L700,110 L717,128 L690,150 L660,168 L637,186 L606,178 L580,160 L548,140 L516,118 L492,92 L480,66 Z",
+  "M556,142 L574,144 L566,180 L550,158 Z",
+  "M640,196 L672,190 L690,204 L676,224 L648,220 Z",
+  "M656,284 L700,272 L733,283 L739,309 L716,331 L684,333 L660,313 Z"
+];
+
+/* ════════════════════════════════════════════
+   여정
+   ════════════════════════════════════════════ */
+const STAGES = [
+  { place:"수에즈", transport:"증기선", days:12,
+    kind:"배경지식 어휘 · 땅과 바다",
+    intro:"포그는 리폼 클럽의 신사들과 <b>이만 파운드</b>를 걸었습니다. 팔십 일 안에 세계를 돌아 이 자리로 돌아오겠다고요. 첫 항로는 지중해를 지나 <b>수에즈</b>로 향합니다.",
+    qs:[
+      {type:"mc", q:"두 육지 사이에 낀 좁은 바닷길을 무엇이라 하는가?",
+       opts:["해협","반도","군도","삼각주"], a:0,
+       why:"해협은 두 육지 사이의 좁은 바다입니다. 도버 해협, 대한 해협처럼 씁니다."},
+      {type:"mc", q:"바다 쪽으로 길게 뻗어 나온 땅을 무엇이라 하는가?",
+       opts:["운하","반도","해안","분지"], a:1,
+       why:"반도는 삼면이 바다로 둘러싸인 땅입니다. 우리나라도 한반도라 부릅니다."},
+      {type:"mc", q:"배가 다니도록 사람이 판 물길을 무엇이라 하는가?",
+       opts:["하천","항로","운하","해류"], a:2,
+       why:"수에즈 운하는 지중해와 홍해를 이어 뱃길을 크게 줄였습니다."},
+      {type:"mc", q:"강물이 바다로 들어가는 어귀에 흙이 쌓여 이루어진 땅은?",
+       opts:["삼각주","고원","산맥","평야"], a:0,
+       why:"나일강 하구처럼 강이 실어 온 흙이 쌓여 만들어진 삼각형 땅입니다."},
+      {type:"mc", q:"바다와 맞닿지 않아 배로는 밖에 나갈 수 없는 나라를 무엇이라 하는가?",
+       opts:["도서국","연안국","내륙국","제도"], a:2,
+       why:"몽골이나 스위스처럼 사방이 육지로 둘러싸인 나라입니다."}
+    ] },
+
+  { place:"봄베이", transport:"코끼리와 열차", days:14,
+    kind:"속담과 성어 · 바르게 쓰였는가",
+    intro:"인도에 닿았으나 철도가 <b>끊겨 있습니다</b>. 포그는 코끼리를 사서 정글을 가로지르기로 합니다. 길 위에서 만난 말들이 제자리에 쓰였는지 가려내야 합니다.",
+    qs:[
+      {type:"ox", q:"매일 백 원씩 모아 일 년 만에 큰돈을 만들었으니 <em>티끌 모아 태산</em>이다.",
+       ok:true, why:"작은 것이 쌓여 큰 것이 된다는 뜻 그대로입니다."},
+      {type:"ox", q:"사고가 날까 봐 미리 점검해 두었으니 <em>소 잃고 외양간 고친다</em>더니 다행이다.",
+       ok:false, why:"이 속담은 일이 벌어진 뒤에야 뒤늦게 손을 쓴다는 뜻입니다. 미리 대비한 경우에는 쓰지 않습니다."},
+      {type:"ox", q:"좁은 마을만 알던 그는 도시에 와서야 <em>우물 안 개구리</em>였음을 깨달았다.",
+       ok:true, why:"넓은 세상을 모르고 제 자리만 아는 처지를 이릅니다."},
+      {type:"ox", q:"멀리 있는 산이 잘 보이지 않으니 <em>등잔 밑이 어둡다</em>고 하겠다.",
+       ok:false, why:"등잔 밑이 어둡다는 가까이 있는 것을 도리어 모른다는 뜻입니다. 방향이 반대입니다."},
+      {type:"ox", q:"준비물을 하나 빠뜨리고 온 친구를 보며 <em>과유불급</em>이라고 말했다.",
+       ok:false, why:"과유불급은 지나친 쪽을 두고 하는 말입니다. 모자란 경우에는 맞지 않습니다."}
+    ] },
+
+  { place:"홍콩", transport:"증기선", days:13,
+    kind:"속임수와 판단 · 글자를 맞춰라",
+    intro:"홍콩에서 파스파르투가 <b>속임수에 걸려</b> 배를 놓칠 뻔합니다. 흩어진 글자를 순서대로 맞춰 말을 되살리세요.",
+    qs:[
+      {type:"as", mean:"눈앞의 차이만 보고 속아 넘어감", word:"조삼모사",
+       why:"아침에 셋 저녁에 넷이나, 아침에 넷 저녁에 셋이나 같은 수입니다."},
+      {type:"as", mean:"겉으로 드러내는 것과 속마음이 다름", word:"표리부동",
+       why:"표는 겉, 리는 속입니다. 그 둘이 같지 않다는 말입니다."},
+      {type:"as", mean:"같은 사람의 말과 행동이 앞뒤가 맞지 않음", word:"자가당착",
+       why:"제 말에 제가 부딪친다는 뜻입니다."},
+      {type:"as", mean:"상황이 바뀌었는데 낡은 방법만 고집함", word:"각주구검",
+       why:"칼을 빠뜨린 자리를 뱃전에 새겨 두고, 배가 다 간 뒤 그 아래를 찾은 이야기입니다."},
+      {type:"as", mean:"사방이 막혀 도움받을 곳이 없음", word:"사면초가",
+       why:"사방에서 초나라 노래가 들려와 고립을 깨달았다는 데서 왔습니다."}
+    ] },
+
+  { place:"요코하마", transport:"태평양 횡단 증기선", days:11,
+    kind:"교과학습 어휘 · 공부에 쓰는 말",
+    intro:"파스파르투와 헤어진 채 <b>요코하마</b>에 닿습니다. 태평양을 건너는 긴 항해 동안, 어느 과목에서나 쓰이는 말들을 점검합니다.",
+    qs:[
+      {type:"mc", q:"두 대상의 같은 점과 다른 점을 따져 보는 일을 무엇이라 하는가?",
+       opts:["비교","분류","관찰","요약"], a:0,
+       why:"비교는 둘 이상을 견주어 같고 다름을 살피는 것입니다."},
+      {type:"mc", q:"이미 아는 사실을 바탕으로 아직 모르는 것을 미루어 생각하는 일은?",
+       opts:["암기","추론","서술","인용"], a:1,
+       why:"추론은 근거에서 결론으로 나아가는 생각입니다. 글 읽기의 핵심입니다."},
+      {type:"mc", q:"일정한 기준에 따라 여럿을 나누어 묶는 일을 무엇이라 하는가?",
+       opts:["분류","비유","분석","반박"], a:0,
+       why:"분류에는 반드시 기준이 있어야 합니다. 기준이 없으면 분류가 아닙니다."},
+      {type:"mc", q:"글에서 글쓴이가 가장 말하고 싶은 중심 생각을 무엇이라 하는가?",
+       opts:["소재","배경","주제","줄거리"], a:2,
+       why:"소재는 다루는 재료이고, 주제는 그것으로 말하려는 생각입니다."}
+    ] },
+
+  { place:"샌프란시스코 → 뉴욕", transport:"대륙 횡단 열차", days:11,
+    kind:"문맥 속의 낱말 · 대륙을 가로지르며",
+    intro:"샌프란시스코에서 열차에 오릅니다. 눈보라와 들소 떼를 지나고, <b>무너지기 직전의 다리</b>를 전속력으로 건넙니다. 흔들리는 객차 안에서도 말의 뜻은 정확해야 합니다.",
+    qs:[
+      {type:"mc", q:"밑줄 친 말의 뜻은?  “서둘러 출발한 덕분에 하루를 <em>벌었다</em>.”",
+       opts:["돈을 모았다","여유를 얻었다","힘껏 일했다","길을 잃었다"], a:1,
+       why:"'벌다'에는 돈을 모은다는 뜻 말고 시간이나 여유를 얻는다는 뜻도 있습니다."},
+      {type:"mc", q:"밑줄 친 말의 뜻은?  “열차는 무너지는 다리를 <em>가까스로</em> 건넜다.”",
+       opts:["느긋하게","겨우, 간신히","곧장","되돌아서"], a:1,
+       why:"가까스로는 힘들게 겨우 해냈다는 뜻입니다."},
+      {type:"mc", q:"“일정을 <em>단축하다</em>”와 뜻이 가장 가까운 말은?",
+       opts:["미루다","줄이다","늘이다","바꾸다"], a:1,
+       why:"단축은 짧게 줄인다는 뜻입니다. 반대말은 연장입니다."},
+      {type:"mc", q:"“그 소문은 <em>근거</em>가 없다”에서 '근거'의 뜻은?",
+       opts:["재미","까닭이나 바탕","소문의 크기","사람의 이름"], a:1,
+       why:"근거는 어떤 주장이 기대고 있는 바탕이나 까닭입니다. 글을 쓸 때 늘 필요한 말입니다."},
+      {type:"mc", q:"밑줄 친 말의 뜻은?  “그는 약속 시간에 <em>대었다</em>.”",
+       opts:["늦지 않게 이르렀다","무엇을 갖다 붙였다","크게 화를 냈다","값을 치렀다"], a:0,
+       why:"'대다'는 정해진 때에 맞추어 이른다는 뜻으로도 쓰입니다."}
+    ] },
+
+  { place:"대서양 → 런던", transport:"증기선", days:8,
+    kind:"마지막 항해 · 놓친 것을 다시",
+    intro:"석탄이 떨어져 <b>배의 목재를 뜯어 태웁니다</b>. 남은 것은 앞에서 놓친 말들뿐입니다. 이것만 되찾으면 런던입니다.",
+    qs:[] }
+];
+
+const SPARE = [
+  {type:"mc", q:"“여정”의 뜻으로 알맞은 것은?",
+   opts:["여행하는 길이나 과정","여행에 드는 돈","함께 가는 일행","여행을 마친 소감"], a:0,
+   why:"여정은 여행의 노정, 곧 거쳐 가는 길과 과정입니다."},
+  {type:"mc", q:"“기한을 지키다”에서 '기한'의 뜻은?",
+   opts:["미리 정한 때","남은 거리","약속한 사람","드는 비용"], a:0,
+   why:"기한은 미리 정해 둔 때입니다. 마감과 비슷하게 씁니다."},
+  {type:"ox", q:"먼 길을 돌아왔지만 끝내 해냈으니 <em>고진감래</em>다.",
+   ok:true, why:"쓴 것이 다하면 단 것이 온다는 뜻입니다."},
+  {type:"as", mean:"지나친 것은 모자란 것과 다를 바 없다", word:"과유불급",
+   why:"넘치는 것도 모자란 것과 마찬가지라는 뜻입니다."}
+];
+
+/* ── 전체 걸린 시간 ─────────────────────── */
+let elapsed = 0, clockT = null;
+function fmt(sec){
+  const m = Math.floor(sec/60), ss = Math.floor(sec%60);
+  return m + ':' + String(ss).padStart(2,'0');
+}
+function paintClock(){
+  const el = document.getElementById('clockN');
+  if(el) el.textContent = fmt(elapsed);
+  const hand = document.getElementById('hand');
+  if(hand){
+    const a = (elapsed % 60) / 60 * Math.PI*2;
+    hand.setAttribute('x2', (13 + Math.sin(a)*6).toFixed(2));
+    hand.setAttribute('y2', (14 - Math.cos(a)*6).toFixed(2));
+  }
+}
+function startClock(){
+  stopClock(); elapsed = 0; paintClock();
+  clockT = setInterval(() => { elapsed += 0.25; paintClock(); }, 250);
+}
+function stopClock(){ if(clockT){ clearInterval(clockT); clockT = null; } }
+
+/* ════════════════════════════════════════════
+   상태
+   ════════════════════════════════════════════ */
+let used = 0, stageIdx = 0, qIdx = 0, wrongCount = 0, stageWrong = 0;
+let missedQs = [], missedWords = [];
+const $ = id => document.getElementById(id);
+
+const daysLeft = () => 80 - used;
+function updateTop(){
+  $('daysLeft').textContent = Math.max(0, daysLeft());
+  $('daysBox').classList.toggle('tight', daysLeft() <= 12);
+}
+
+/* ── 지도 ────────────────────────────────── */
+let marker = null;
+
+function drawMap(){
+  let s = '';
+  s += `<rect width="800" height="400" fill="#dde5e2" opacity=".6"/>`;
+  for(let y=42;y<400;y+=52) s += `<line x1="0" y1="${y}" x2="800" y2="${y}" stroke="rgba(30,50,71,.08)"/>`;
+  for(let x=50;x<800;x+=50) s += `<line x1="${x}" y1="0" x2="${x}" y2="400" stroke="rgba(30,50,71,.08)"/>`;
+  s += `<line x1="0" y1="230.8" x2="800" y2="230.8" stroke="rgba(30,50,71,.22)" stroke-dasharray="7 6"/>`;
+
+  LAND.forEach(d => {
+    s += `<path d="${d}" fill="var(--land)" stroke="var(--land-line)" stroke-width="1" stroke-linejoin="round"/>`;
+  });
+
+  s += `<g transform="translate(56,346)" opacity=".38">
+          <circle r="19" fill="none" stroke="#1e3247"/>
+          <path d="M0,-16 L4.5,0 L0,16 L-4.5,0 Z" fill="#1e3247"/>
+          <text y="-23" text-anchor="middle" font-size="10" fill="#1e3247">N</text>
+        </g>`;
+
+  for(let i=0;i<NODES.length-1;i++){
+    const done = i < stageIdx;
+    legSegs(i).forEach(sg => {
+      s += `<path d="${segPath(sg)}" fill="none"
+              stroke="${done ? '#a8801f' : 'rgba(30,50,71,.34)'}"
+              stroke-width="${done ? 2.4 : 1.4}" stroke-dasharray="${done ? '' : '5 5'}"/>`;
+    });
+  }
+
+  NODES.forEach((n,i) => {
+    if(i === 6) return;
+    const passed = i <= stageIdx;
+    s += `<circle cx="${n.x}" cy="${n.y}" r="${i === stageIdx ? 6 : 4}"
+            fill="${passed ? '#a8801f' : 'rgba(30,50,71,.3)'}"/>`;
+    s += `<text class="lbl ${passed ? '' : 'dim'}" x="${n.x}" y="${n.y - 12}" text-anchor="middle">${n.name}</text>`;
+  });
+
+  const at = NODES[Math.min(stageIdx, 6)];
+  s += `<g id="fogg" transform="translate(${at.x},${at.y})">
+          <ellipse cx="0" cy="4" rx="10" ry="3.4" fill="rgba(30,50,71,.18)"/>
+          <path d="M-4,2 L4,2 L3,-9 L-3,-9 Z" fill="#1e3247"/>
+          <circle cx="0" cy="-12" r="3.2" fill="#e9dcc2"/>
+          <rect x="-5.4" y="-19" width="10.8" height="2.2" fill="#1e3247"/>
+          <rect x="-3.4" y="-25" width="6.8" height="6.4" fill="#1e3247"/>
+          <rect x="-3.4" y="-21.6" width="6.8" height="1.4" fill="#a8801f"/>
+          <line x1="5" y1="-6" x2="7.5" y2="3" stroke="#a8801f" stroke-width="1.4" stroke-linecap="round"/>
+        </g>`;
+
+  $('mapSvg').innerHTML = s;
+  marker = $('fogg');
+}
+
+function travel(i){
+  const segs = legSegs(i);
+  const dur = 1600, t0 = performance.now();
+  $('mapBtn').disabled = true;
+  (function tick(now){
+    const p = Math.min(1, (now - t0)/dur);
+    const e = p < .5 ? 2*p*p : 1 - Math.pow(-2*p+2, 2)/2;
+    const which = Math.min(segs.length-1, Math.floor(e * segs.length));
+    const local = e * segs.length - which;
+    const pt = qpt(segs[which], local);
+    if(marker) marker.setAttribute('transform', `translate(${pt.x},${pt.y})`);
+    if(p < 1) requestAnimationFrame(tick);
+    else $('mapBtn').disabled = false;
+  })(t0);
+}
+
+function showMap(animateFrom){
+  drawMap();
+  updateTop();
+  const st = STAGES[stageIdx];
+  $('legInfo').innerHTML = '<b>' + NODES[stageIdx].name + '</b>다음 구간 ' + st.days + '일';
+  $('mapText').innerHTML = st.intro;
+  $('mapBtn').textContent = st.transport + '로 출발';
+  swap('vMap');
+  if(animateFrom !== undefined){
+    const segs = legSegs(animateFrom);
+    if(marker) marker.setAttribute('transform', `translate(${segs[0].a.x},${segs[0].a.y})`);
+    travel(animateFrom);
+  }
+}
+
+/* ── 문항 ────────────────────────────────── */
+function startStage(){
+  qIdx = 0; stageWrong = 0;
+  const st = STAGES[stageIdx];
+  if(stageIdx === STAGES.length - 1){
+    st.qs = missedQs.slice(0, 4);
+    let k = 0;
+    while(st.qs.length < 4) st.qs.push(SPARE[k++]);
+  }
+  $('qPlace').textContent = st.place;
+  $('qKind').textContent = st.kind;
+  swap('vQuiz');
+  renderQ();
+}
+
+function renderQ(){
+  const st = STAGES[stageIdx];
+  const q = st.qs[qIdx];
+  $('qCount').textContent = (qIdx+1) + ' / ' + st.qs.length;
+  $('qFb').classList.add('empty');
+  const body = $('qBody');
+
+  if(q.type === 'mc'){
+    body.innerHTML = `<div class="prompt">${q.q}</div><div class="opts" id="opts"></div>`;
+    const box = $('opts');
+    q.opts.forEach((o,i) => {
+      const b = document.createElement('button');
+      b.textContent = o;
+      b.onclick = () => {
+        [...box.children].forEach(c => c.disabled = true);
+        box.children[q.a].classList.add('right');
+        if(i !== q.a) b.classList.add('wrong');
+        answer(i === q.a, q.why, q.opts[q.a], q);
+      };
+      box.appendChild(b);
+    });
+
+  } else if(q.type === 'ox'){
+    body.innerHTML = `<div class="kicker">이 말이 제자리에 쓰였습니까?</div>
+      <div class="prompt">${q.q}</div>
+      <div class="opts two" id="opts">
+        <button data-v="1">바르게 쓰였다</button>
+        <button data-v="0">잘못 쓰였다</button>
+      </div>`;
+    [...$('opts').children].forEach(b => {
+      b.onclick = () => {
+        const said = b.dataset.v === '1';
+        [...$('opts').children].forEach(c => c.disabled = true);
+        b.classList.add(said === q.ok ? 'right' : 'wrong');
+        answer(said === q.ok, q.why, q.ok ? '바르게 쓰였습니다' : '잘못 쓰였습니다', q);
+      };
+    });
+
+  } else {
+    const mixed = q.word.split('').map(c=>[Math.random(),c]).sort((a,b)=>a[0]-b[0]).map(p=>p[1]);
+    body.innerHTML = `<div class="kicker">뜻에 맞는 말을 순서대로 맞추세요</div>
+      <div class="prompt">${q.mean}</div>
+      <div class="slots" id="slots">${'<div></div>'.repeat(4)}</div>
+      <div class="tiles" id="tiles"></div>`;
+    const picked = [], tiles = $('tiles'), slots = $('slots');
+    const paint = () => {
+      [...slots.children].forEach((s,i) => {
+        s.textContent = picked[i] ? picked[i].ch : '';
+        s.classList.toggle('filled', !!picked[i]);
+        s.onclick = () => { if(picked[i]){ picked[i].btn.disabled = false; picked.splice(i,1); paint(); } };
+      });
+    };
+    mixed.forEach(ch => {
+      const b = document.createElement('button');
+      b.textContent = ch;
+      b.onclick = () => {
+        if(picked.length >= 4) return;
+        b.disabled = true; picked.push({ch, btn:b}); paint();
+        if(picked.length === 4){
+          const ok = picked.map(p=>p.ch).join('') === q.word;
+          [...tiles.children].forEach(c => c.disabled = true);
+          [...slots.children].forEach(s => s.style.borderColor = ok ? '#2f6b4f' : '#a8322d');
+          answer(ok, q.why, q.word, q);
+        }
+      };
+      tiles.appendChild(b);
+    });
+    paint();
+  }
+}
+
+function answer(ok, why, correct, q){
+  if(!ok){
+    wrongCount++; stageWrong++; used += 1; updateTop();
+    if(stageIdx < STAGES.length - 1 && !missedQs.includes(q)) missedQs.push(q);
+    missedWords.push(q.type === 'as' ? q.word : correct);
+  }
+  $('fbV').textContent = ok ? '통과' : '지체 · 하루를 잃었습니다';
+  $('fbV').className = 'v ' + (ok ? 'ok' : 'no');
+  $('fbWhy').innerHTML = (ok ? '' : '정답 · <b>' + correct + '</b><br>') + why;
+  $('qFb').classList.remove('empty');
+  $('fbNext').focus();
+}
+
+$('fbNext').onclick = () => {
+  const st = STAGES[stageIdx];
+  qIdx++;
+  if(qIdx < st.qs.length) return renderQ();
+  used += st.days;
+  if(stageWrong === 0) used -= 1;
+  const finished = stageIdx;
+  stageIdx++;
+  updateTop();
+  if(stageIdx >= STAGES.length) return ending();
+  showMap(finished);
+};
+
+/* ── 결말 ────────────────────────────────── */
+function ending(){
+  stopClock();
+  swap('vEnd');
+  const arrived = used;
+  $('endBig').textContent = '제 ' + arrived + '일, 런던';
+  $('endSub').innerHTML = arrived > 80
+    ? '리폼 클럽의 시계는 이미 약속한 때를 지났습니다.<br>포그는 <b>내기에 졌다</b>고 믿었습니다.'
+    : '포그는 시계를 보고 <b>하루가 모자란다</b>고 여겼습니다.';
+  $('endTally').textContent = '';
+  $('endBtn').textContent = '이튿날 아침';
+
+  $('endBtn').onclick = () => {
+    const real = arrived - 1;
+    const win = real <= 80;
+    $('endBig').textContent = '제 ' + real + '일';
+    $('endSub').innerHTML = win
+      ? '파스파르투가 뛰어듭니다. 해를 따라 <b>동쪽으로</b> 돌았으니 하루를 벌었습니다.<br>포그는 약속한 자리에 늦지 않았습니다.'
+      : '날짜변경선으로 하루를 되찾았지만 그래도 늦었습니다.<br>다음에는 <b>지체를 줄여야</b> 합니다.';
+    $('endTally').innerHTML =
+      '걸린 시간 ' + fmt(elapsed) + '<br>' +
+      '틀린 문항 ' + wrongCount + '개 · 지체 ' + wrongCount + '일<br>' +
+      (missedWords.length ? '다시 볼 말 · ' + [...new Set(missedWords)].join(', ') : '한 문항도 놓치지 않았습니다');
+    $('endBtn').textContent = '다시 떠나기';
+    $('endBtn').onclick = reset;
+  };
+}
+
+function reset(){
+  stopClock(); elapsed = 0; paintClock();
+  used = 0; stageIdx = 0; wrongCount = 0; missedQs = []; missedWords = [];
+  STAGES[STAGES.length-1].qs = [];
+  updateTop(); showMap();
+}
+
+function swap(id){ ['vMap','vQuiz','vEnd'].forEach(v => $(v).classList.toggle('hidden', v !== id)); }
+$('mapBtn').onclick = () => { if(!clockT && stageIdx === 0) startClock(); startStage(); };
+
+updateTop();
+showMap();
+</script>
+</body>
+</html>

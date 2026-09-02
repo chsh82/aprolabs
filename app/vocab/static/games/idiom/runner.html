@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>먹줄 달리기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --meok:#14161d; --hanji:#f2e8d5; --hanji-dim:#cbbfa6;
+    --geum:#c9a227; --injoo:#a8322d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1200px 700px at 50% -10%, #232a3d 0%, transparent 60%), var(--meok);
+    color:var(--hanji);
+    font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:16px;overflow:hidden;
+    user-select:none;
+  }
+  .frame{
+    width:min(900px,100%);height:min(560px,100vh - 32px);
+    display:flex;flex-direction:column;
+    border:1px solid rgba(201,162,39,.28);
+    background:rgba(10,12,18,.55);position:relative;overflow:hidden;
+  }
+
+  .hud{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 16px;border-bottom:1px solid rgba(201,162,39,.2);flex:0 0 auto;
+  }
+  .goal{display:flex;align-items:baseline;gap:12px;min-width:0}
+  .goal .w{font-family:"Noto Serif KR",serif;font-weight:600;font-size:16.5px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .goal .m{display:none}
+  .right{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+  .slots{display:flex;gap:5px}
+  .slots div{
+    width:27px;height:27px;border:1px solid rgba(201,162,39,.35);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Noto Serif KR",serif;font-size:14px;color:var(--geum);
+  }
+  .slots div.done{background:var(--geum);color:var(--meok)}
+  .slots div.hint{color:rgba(201,162,39,.42);border-style:dashed}
+  .dist{font-family:"Noto Serif KR",serif;font-weight:900;font-size:19px;color:var(--geum);font-variant-numeric:tabular-nums}
+  .best{font-size:11.5px;color:var(--hanji-dim);font-variant-numeric:tabular-nums}
+  .lives{display:flex;gap:6px}
+  .lives i{width:8px;height:8px;border-radius:50%;background:var(--geum);display:block;transition:opacity .2s}
+  .lives i.spent{opacity:.15}
+
+  .stage{position:relative;flex:1 1 auto;overflow:hidden;touch-action:none}
+  canvas{display:block;width:100%;height:100%}
+
+  .seals{position:absolute;top:10px;right:12px;display:flex;gap:5px}
+  .seals span{
+    width:22px;height:22px;border:1.5px solid var(--injoo);color:var(--injoo);
+    font-family:"Noto Serif KR",serif;font-size:12px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+    transform:rotate(-8deg);
+  }
+
+  .overlay{
+    position:absolute;inset:0;background:rgba(12,14,20,.9);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:26px;gap:9px;z-index:4;
+  }
+  .overlay.hidden{display:none}
+  .ov-word{font-family:"Noto Serif KR",serif;font-weight:900;font-size:38px;color:var(--geum);letter-spacing:.05em}
+  .ov-han{font-family:"Noto Serif KR",serif;font-size:17px;color:var(--hanji-dim);letter-spacing:.3em}
+  .ov-mean{font-family:"Noto Serif KR",serif;font-size:21px;line-height:1.6;max-width:38ch}
+  .ov-hint{font-size:12.5px;color:var(--hanji-dim);margin-top:10px}
+  .ov-miss{font-size:13.5px;color:var(--hanji-dim);line-height:1.7;max-width:44ch}
+  .ov-miss b{color:var(--hanji);font-weight:500;font-family:"Noto Serif KR",serif}
+
+  .title{font-family:"Noto Serif KR",serif;font-weight:900;font-size:40px;letter-spacing:.14em;line-height:1.1}
+  .title em{display:block;font-style:normal;font-size:14px;letter-spacing:.4em;color:var(--geum);margin-bottom:12px;font-weight:400}
+  .rules{margin:20px 0 6px;font-size:14px;line-height:1.95;color:var(--hanji-dim);max-width:40ch}
+  .rules b{color:var(--hanji);font-weight:500}
+  .modes{display:flex;gap:8px;margin:16px 0 20px}
+  .modes button{
+    font-family:inherit;font-size:13px;padding:9px 18px;
+    background:transparent;color:var(--hanji-dim);
+    border:1px solid rgba(242,232,213,.25);cursor:pointer;transition:.14s;
+  }
+  .modes button.sel{border-color:var(--geum);color:var(--geum)}
+  .go{
+    font-family:inherit;font-size:15px;padding:13px 38px;
+    background:transparent;color:var(--geum);border:1px solid var(--geum);
+    cursor:pointer;letter-spacing:.08em;transition:.15s;
+  }
+  .go:hover,.go:focus-visible{background:var(--geum);color:var(--meok)}
+  button:focus-visible{outline:2px solid var(--hanji);outline-offset:2px}
+
+  @media (max-width:620px){
+    .goal .w{font-size:14px}
+    .title{font-size:31px}
+    .slots div{width:24px;height:24px;font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="hud">
+    <div class="goal">
+      <span class="w" id="gWord"></span>
+      <span class="m" id="gMean"></span>
+    </div>
+    <div class="right">
+      <div class="slots" id="slots"><div></div><div></div><div></div><div></div></div>
+      <div style="text-align:right">
+        <div class="dist" id="dist">0</div>
+        <div class="best" id="best">최고 0</div>
+      </div>
+      <div class="lives" id="lives"><i></i><i></i><i></i></div>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <canvas id="cv"></canvas>
+    <div class="seals" id="seals"></div>
+
+    <!-- 성어 제시 -->
+    <div class="overlay hidden" id="intro">
+      <div class="ov-word" id="iWord"></div>
+      <div class="ov-han" id="iHan"></div>
+      <div class="ov-mean" id="iMean"></div>
+      <div class="ov-hint" id="iHint"></div>
+    </div>
+
+    <!-- 죽음 -->
+    <div class="overlay hidden" id="dead">
+      <div class="ov-word" id="dDist"></div>
+      <div class="ov-miss" id="dMiss"></div>
+      <div class="ov-hint">스페이스 또는 화면을 눌러 다시</div>
+    </div>
+
+    <!-- 시작 -->
+    <div class="overlay" id="start">
+      <h1 class="title"><em>사자성어 러너</em>먹줄 달리기</h1>
+      <div class="rules">
+        <b>뜻만</b> 보여줍니다. 어떤 성어인지 떠올려<br>
+        <b>네 글자를 모으세요.</b> 아닌 글자는 점프로 넘고,<br>
+        날아오는 글자는 숙여서 피합니다.<br>
+        점프는 스페이스·↑·화면 위쪽, 숙이기는 ↓·화면 아래쪽.
+      </div>
+      <div class="modes">
+        <button id="mHanja" class="sel">한자로</button>
+        <button id="mHangul">한글로</button>
+      </div>
+      <button class="go" id="startBtn">달리기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────
+   데이터 — 연동 시 GET /quiz?type=runner 로 대체
+   ──────────────────────────────────────────── */
+const ITEMS = [
+  {kor:"우공이산", han:"愚公移山", mean:"우직하게 밀고 나가면 결국 이룬다"},
+  {kor:"와신상담", han:"臥薪嘗膽", mean:"고통을 견디며 오래 준비함"},
+  {kor:"각주구검", han:"刻舟求劍", mean:"낡은 방법만 고집하는 어리석음"},
+  {kor:"새옹지마", han:"塞翁之馬", mean:"화와 복은 미리 알 수 없다"},
+  {kor:"표리부동", han:"表裏不同", mean:"겉과 속이 다름"},
+  {kor:"조삼모사", han:"朝三暮四", mean:"눈앞의 차이만 보고 속음"},
+  {kor:"과유불급", han:"過猶不及", mean:"지나침은 모자람과 같다"},
+  {kor:"대기만성", han:"大器晩成", mean:"큰 인물은 늦게 이루어짐"},
+  {kor:"청출어람", han:"靑出於藍", mean:"제자가 스승보다 나아짐"},
+  {kor:"고진감래", han:"苦盡甘來", mean:"고생 끝에 낙이 온다"},
+  {kor:"사면초가", han:"四面楚歌", mean:"사방이 막혀 도움받을 곳이 없음"},
+  {kor:"자가당착", han:"自家撞着", mean:"앞뒤가 서로 맞지 않음"}
+];
+
+const HUN = {
+  "愚":"어리석을 우","公":"공평할 공","移":"옮길 이","山":"뫼 산",
+  "臥":"누울 와","薪":"섶 신","嘗":"맛볼 상","膽":"쓸개 담",
+  "刻":"새길 각","舟":"배 주","求":"구할 구","劍":"칼 검",
+  "塞":"변방 새","翁":"늙은이 옹","之":"갈 지","馬":"말 마",
+  "表":"겉 표","裏":"속 리","不":"아닐 부","同":"한가지 동",
+  "朝":"아침 조","三":"석 삼","暮":"저물 모","四":"넉 사",
+  "過":"지날 과","猶":"오히려 유","及":"미칠 급",
+  "大":"큰 대","器":"그릇 기","晩":"늦을 만","成":"이룰 성",
+  "靑":"푸를 청","出":"날 출","於":"어조사 어","藍":"쪽 람",
+  "苦":"쓸 고","盡":"다할 진","甘":"달 감","來":"올 래",
+  "面":"낯 면","楚":"초나라 초","歌":"노래 가",
+  "自":"스스로 자","家":"집 가","撞":"칠 당","着":"붙을 착"
+};
+
+let MODE = 'hanja';   // 'hanja' | 'hangul'
+const piecesOf = it => (MODE === 'hanja' ? it.han : it.kor).split('');
+const ALL_PIECES = () => [...new Set(ITEMS.flatMap(piecesOf))];
+
+/* ────────────────────────────────────────────
+   무대
+   ──────────────────────────────────────────── */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+let W = 0, H = 0, GROUND = 0;
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  W = stage.clientWidth; H = stage.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  GROUND = Math.round(H * 0.78);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ── 상태 ────────────────────────────────── */
+const P = { x:0, y:0, vy:0, duck:false, onGround:true };
+const PW = 30, PH = 54, PH_DUCK = 26;
+const GRAV = 2300, JUMP_V = -790;
+
+let ents = [], speed = 270, dist = 0, best = 0, lives = 3;
+let item = null, need = [], got = [], seals = 0;
+let hintT = 0, hintOn = false;
+let running = false, paused = false, spawnGap = 0;
+let missLog = [], flash = 0, lastTs = 0, rafId = null, runT = 0;
+
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p[1]);
+
+/* ── 라운드 ──────────────────────────────── */
+function newIdiom(){
+  const pool = ITEMS.filter(i => i !== item);
+  item = pool[Math.floor(Math.random()*pool.length)];
+  need = shuffle(piecesOf(item));
+  got = [];
+  ents = [];
+  spawnGap = 260;
+
+  hintT = 0; hintOn = false;
+  document.getElementById('gWord').textContent = item.mean;
+  document.getElementById('gMean').textContent = '';
+  drawSlots();
+
+  document.getElementById('iWord').textContent = '';
+  document.getElementById('iHan').textContent  = '';
+  document.getElementById('iMean').textContent = item.mean;
+  document.getElementById('iHint').textContent = '이 뜻에 맞는 성어의 네 글자를 주우세요';
+  show('intro');
+  paused = true;
+  setTimeout(() => { hide('intro'); paused = false; lastTs = performance.now(); }, 2200);
+}
+
+function drawSlots(){
+  const s = document.getElementById('slots').children;
+  for(let i=0;i<4;i++){ s[i].textContent = ''; s[i].className = ''; }
+  got.forEach((c,i) => { s[i].textContent = c; s[i].className = 'done'; });
+  if(hintOn && got.length < 4 && item){
+    const ch = piecesOf(item).find(c => !got.includes(c));
+    if(ch){ s[got.length].textContent = ch; s[got.length].className = 'hint'; }
+  }
+}
+
+/* ── 생성 ────────────────────────────────── */
+function spawn(){
+  const r = Math.random();
+  const others = ALL_PIECES().filter(c => !piecesOf(item).includes(c));
+
+  if(r < 0.34 && need.length){
+    // 목표 글자 (지면)
+    ents.push({ t:'char', ch:need.shift(), good:true, x:W+40, y:GROUND-46, w:44, h:46 });
+  } else if(r < 0.60){
+    // 오답 글자 (지면) — 점프로 넘김
+    ents.push({ t:'char', ch:others[Math.floor(Math.random()*others.length)], good:false,
+                x:W+40, y:GROUND-46, w:44, h:46 });
+  } else if(r < 0.78){
+    // 공중 — 숙여서 피함
+    ents.push({ t:'air', ch:others[Math.floor(Math.random()*others.length)], good:false,
+                x:W+40, y:GROUND-102, w:44, h:44 });
+  } else if(r < 0.90){
+    // 바위
+    ents.push({ t:'rock', x:W+40, y:GROUND-30, w:26, h:30 });
+  }
+  // 나머지 확률은 빈 구간
+}
+
+/* ── 진행 ────────────────────────────────── */
+function step(dt){
+  dist += speed * dt;
+  runT += dt * (6 + speed/90);
+
+  if(got.length < 4){
+    hintT += dt;
+    if(hintT > 9 && !hintOn){ hintOn = true; drawSlots(); }
+  }
+  document.getElementById('dist').textContent = Math.floor(dist/12);
+
+  // 물리
+  P.vy += GRAV * dt;
+  P.y += P.vy * dt;
+  if(P.y >= 0){ P.y = 0; P.vy = 0; P.onGround = true; }
+
+  // 생성
+  spawnGap -= speed * dt;
+  if(spawnGap <= 0){
+    spawn();
+    spawnGap = 200 + Math.random()*190 + speed*0.22;
+  }
+
+  // 이동 · 충돌
+  const ph = P.duck && P.onGround ? PH_DUCK : PH;
+  const px = P.x, py = GROUND + P.y - ph;
+
+  for(let i = ents.length-1; i >= 0; i--){
+    const e = ents[i];
+    e.x -= speed * dt;
+    if(e.x + e.w < -20){
+      if(e.t === 'char' && e.good) need.push(e.ch);   // 놓친 목표는 다시 줄에 세움
+      ents.splice(i,1);
+      continue;
+    }
+    if(e.hit) continue;
+    if(px < e.x+e.w && px+PW > e.x && py < e.y+e.h && py+ph > e.y){
+      e.hit = true;
+      if(e.t === 'char' && e.good){
+        got.push(e.ch);
+        ents.splice(i,1);
+        hintT = 0; hintOn = false;
+        drawSlots();
+        if(got.length === 4) completeIdiom();
+      } else {
+        ents.splice(i,1);
+        damage(e.ch);
+      }
+    }
+  }
+}
+
+function completeIdiom(){
+  seals++;
+  const box = document.getElementById('seals');
+  const sp = document.createElement('span');
+  sp.textContent = '成';
+  box.appendChild(sp);
+  if(box.children.length > 8) box.removeChild(box.firstChild);
+
+  speed = Math.min(560, speed + 22);
+  paused = true;
+  document.getElementById('iWord').textContent = item.kor;
+  document.getElementById('iHan').textContent  = MODE === 'hanja' ? item.han : '';
+  document.getElementById('iMean').textContent = item.mean;
+  document.getElementById('iHint').textContent = '완성';
+  show('intro');
+  setTimeout(newIdiom, 1500);
+}
+
+function damage(ch){
+  lives--;
+  flash = 0.35;
+  if(ch) missLog.push({ ch, idiom: item.kor });
+  [...document.getElementById('lives').children].forEach((el,i) => {
+    el.classList.toggle('spent', i >= lives);
+  });
+  if(lives <= 0) die();
+}
+
+function die(){
+  running = false;
+  cancelAnimationFrame(rafId);
+  const m = Math.floor(dist/12);
+  if(m > best){ best = m; document.getElementById('best').textContent = '최고 ' + best; }
+
+  document.getElementById('dDist').textContent = m + ' 걸음';
+  const uniq = [];
+  missLog.slice(-4).forEach(x => { if(!uniq.some(u=>u.ch===x.ch)) uniq.push(x); });
+  const ans = item
+    ? '찾던 성어 · <b>' + item.kor + '</b>' + (MODE === 'hanja' ? ' ' + item.han : '') + '<br>'
+    : '';
+  document.getElementById('dMiss').innerHTML = ans + (uniq.length
+    ? '잘못 주운 글자 · ' + uniq.map(u =>
+        '<b>' + u.ch + '</b>' + (HUN[u.ch] ? ' ' + HUN[u.ch] : '')).join('   ')
+    : '한 글자도 잘못 줍지 않았습니다');
+  show('dead');
+}
+
+/* ── 그리기 ──────────────────────────────── */
+/* 갓 쓴 선비 */
+const C_GAT  = '#22242c';   // 갓
+const C_ROBE = '#5b7f9e';   // 도포
+const C_ROBE_D = '#46647d';
+const C_SKIN = '#e9dcc2';
+const C_SASH = '#c9a227';   // 띠
+
+function drawGat(x, y, scale){
+  ctx.fillStyle = C_GAT;
+  ctx.beginPath();
+  ctx.ellipse(x, y, 15*scale, 3.6*scale, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillRect(x - 5*scale, y - 8*scale, 10*scale, 8*scale);
+  ctx.fillStyle = 'rgba(201,162,39,.5)';
+  ctx.fillRect(x - 5*scale, y - 2.4*scale, 10*scale, 1.2*scale);
+}
+
+function drawSeonbi(){
+  const ducking = P.duck && P.onGround;
+  const h = ducking ? PH_DUCK : PH;
+  const x = P.x, y = GROUND + P.y - h;
+  const sw = Math.sin(runT);          // 팔다리 위상
+  const air = !P.onGround;
+
+  ctx.save();
+  ctx.lineCap = 'round';
+
+  if(ducking){
+    // 엎드려 달리는 자세
+    ctx.strokeStyle = C_SKIN; ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.moveTo(x+16, y+20); ctx.lineTo(x+22+sw*4, y+26);
+    ctx.moveTo(x+16, y+20); ctx.lineTo(x+26-sw*4, y+26);
+    ctx.stroke();
+
+    ctx.fillStyle = C_ROBE;
+    ctx.beginPath();
+    ctx.moveTo(x+4, y+9); ctx.lineTo(x+26, y+11);
+    ctx.lineTo(x+27, y+21); ctx.lineTo(x+3, y+20);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = C_ROBE_D;
+    ctx.beginPath();                       // 뒤로 날리는 자락
+    ctx.moveTo(x+26, y+12); ctx.lineTo(x+38, y+8); ctx.lineTo(x+27, y+20);
+    ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = C_SKIN;
+    ctx.beginPath(); ctx.arc(x+6, y+12, 4.6, 0, Math.PI*2); ctx.fill();
+    drawGat(x+5, y+7, .82);
+
+  } else {
+    // 뒤로 날리는 도포 자락
+    ctx.fillStyle = C_ROBE_D;
+    ctx.beginPath();
+    ctx.moveTo(x+9, y+26);
+    ctx.lineTo(x-7 - (air?5:0), y+30 + sw*2);
+    ctx.lineTo(x-4, y+42);
+    ctx.lineTo(x+11, y+40);
+    ctx.closePath(); ctx.fill();
+
+    // 다리
+    ctx.strokeStyle = '#31414f'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    if(air){
+      ctx.moveTo(x+13, y+41); ctx.lineTo(x+8,  y+52);
+      ctx.moveTo(x+17, y+41); ctx.lineTo(x+24, y+49);
+    } else {
+      ctx.moveTo(x+15, y+41); ctx.lineTo(x+15 + sw*8,  y+53);
+      ctx.moveTo(x+15, y+41); ctx.lineTo(x+15 - sw*8,  y+53);
+    }
+    ctx.stroke();
+
+    // 도포 몸통
+    ctx.fillStyle = C_ROBE;
+    ctx.beginPath();
+    ctx.moveTo(x+9, y+21); ctx.lineTo(x+22, y+21);
+    ctx.lineTo(x+25, y+43); ctx.lineTo(x+7, y+43);
+    ctx.closePath(); ctx.fill();
+
+    // 띠
+    ctx.fillStyle = C_SASH;
+    ctx.fillRect(x+8, y+29, 16, 2.6);
+
+    // 앞으로 젓는 팔
+    ctx.strokeStyle = C_ROBE; ctx.lineWidth = 4.5;
+    ctx.beginPath();
+    ctx.moveTo(x+20, y+24);
+    ctx.lineTo(x+26 + (air ? 2 : -sw*5), y+31 - (air ? 6 : sw*3));
+    ctx.stroke();
+    ctx.strokeStyle = C_SKIN; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x+26 + (air ? 2 : -sw*5), y+31 - (air ? 6 : sw*3));
+    ctx.lineTo(x+29 + (air ? 3 : -sw*6), y+34 - (air ? 8 : sw*4));
+    ctx.stroke();
+
+    // 얼굴
+    ctx.fillStyle = C_SKIN;
+    ctx.beginPath(); ctx.arc(x+16, y+15, 5.2, 0, Math.PI*2); ctx.fill();
+
+    // 갓
+    drawGat(x+16, y+9, 1);
+  }
+  ctx.restore();
+}
+
+function drawTile(e){
+  ctx.fillStyle = '#f2e8d5';
+  ctx.fillRect(e.x, e.y, e.w, e.h);
+  ctx.fillStyle = '#20242e';
+  ctx.font = '600 ' + (MODE==='hanja' ? 26 : 24) + 'px "Noto Serif KR", serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(e.ch, e.x + e.w/2, e.y + e.h/2 + 1);
+}
+
+function render(){
+  ctx.clearRect(0,0,W,H);
+
+  // 먹줄
+  ctx.strokeStyle = 'rgba(201,162,39,.45)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, GROUND+.5); ctx.lineTo(W, GROUND+.5); ctx.stroke();
+
+  // 흐르는 먹점
+  ctx.fillStyle = 'rgba(242,232,213,.14)';
+  const off = dist % 90;
+  for(let x = -off; x < W; x += 90){
+    ctx.fillRect(x, GROUND+9, 22, 1.5);
+    ctx.fillRect(x+46, GROUND+17, 11, 1.5);
+  }
+
+  ents.forEach(e => {
+    if(e.t === 'rock'){
+      ctx.fillStyle = '#2b3040';
+      ctx.beginPath();
+      ctx.moveTo(e.x, e.y+e.h);
+      ctx.lineTo(e.x+e.w*0.3, e.y);
+      ctx.lineTo(e.x+e.w*0.75, e.y+e.h*0.25);
+      ctx.lineTo(e.x+e.w, e.y+e.h);
+      ctx.closePath(); ctx.fill();
+    } else {
+      drawTile(e);
+    }
+  });
+
+  drawSeonbi();
+
+  if(flash > 0){
+    ctx.fillStyle = 'rgba(168,50,45,' + (flash*0.5) + ')';
+    ctx.fillRect(0,0,W,H);
+  }
+}
+
+/* ── 루프 ────────────────────────────────── */
+function loop(ts){
+  if(!running) return;
+  const dt = Math.min((ts - lastTs)/1000, .05);
+  lastTs = ts;
+  if(!paused){
+    step(dt);
+    if(flash > 0) flash -= dt;
+  }
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+
+/* ── 입력 ────────────────────────────────── */
+function jump(){
+  if(!running || paused) return;
+  if(P.onGround){ P.vy = JUMP_V; P.onGround = false; P.duck = false; }
+}
+function setDuck(on){
+  if(!running || paused) return;
+  P.duck = on;
+  if(on && !P.onGround) P.vy += 900;   // 공중에서 숙이면 빨리 내려옴
+}
+
+window.addEventListener('keydown', e => {
+  if(e.code === 'Space' || e.key === 'ArrowUp' || e.key === 'w'){
+    e.preventDefault();
+    if(!document.getElementById('dead').classList.contains('hidden')) return restart();
+    if(!document.getElementById('start').classList.contains('hidden')) return startGame();
+    jump();
+  }
+  if(e.key === 'ArrowDown' || e.key === 's'){ e.preventDefault(); setDuck(true); }
+});
+window.addEventListener('keyup', e => {
+  if(e.key === 'ArrowDown' || e.key === 's') setDuck(false);
+});
+
+stage.addEventListener('pointerdown', e => {
+  if(!document.getElementById('dead').classList.contains('hidden')) return restart();
+  if(!document.getElementById('start').classList.contains('hidden')) return;
+  const r = stage.getBoundingClientRect();
+  if(e.clientY - r.top > r.height*0.62) setDuck(true); else jump();
+});
+window.addEventListener('pointerup', () => setDuck(false));
+
+/* ── 시작 ────────────────────────────────── */
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+
+document.getElementById('mHanja').addEventListener('click', () => {
+  MODE = 'hanja';
+  document.getElementById('mHanja').classList.add('sel');
+  document.getElementById('mHangul').classList.remove('sel');
+});
+document.getElementById('mHangul').addEventListener('click', () => {
+  MODE = 'hangul';
+  document.getElementById('mHangul').classList.add('sel');
+  document.getElementById('mHanja').classList.remove('sel');
+});
+
+function startGame(){
+  hide('start'); hide('dead');
+  resize();
+  P.x = Math.max(46, W*0.13); P.y = 0; P.vy = 0; P.duck = false; P.onGround = true;
+  speed = 270; dist = 0; lives = 3; seals = 0; missLog = []; item = null;
+  document.getElementById('seals').innerHTML = '';
+  [...document.getElementById('lives').children].forEach(el => el.classList.remove('spent'));
+  running = true; lastTs = performance.now();
+  newIdiom();
+  cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(loop);
+}
+function restart(){ hide('dead'); startGame(); }
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('best').textContent = '최고 0';
+render();
+</script>
+</body>
+</html>
