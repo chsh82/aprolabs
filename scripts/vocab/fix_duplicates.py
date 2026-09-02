@@ -227,7 +227,7 @@ def run(dry_run: bool) -> list[dict]:
                     )
 
             if p["action"] == "delete_orphan":
-                missing_entries.append(build_missing_entry(p))
+                missing_entries.append((p["clean_headword"], build_missing_entry(p)))
 
             conn.execute("DELETE FROM inclusion_evidence WHERE idiom_id = ?", (p["idiom_id"],))
             conn.execute("DELETE FROM idiom WHERE idiom_id = ?", (p["idiom_id"],))
@@ -241,8 +241,16 @@ def run(dry_run: bool) -> list[dict]:
                 "fix_duplicates.py 등 정리 스크립트가 삭제하면서 발견한, 데이터가 없어져 "
                 "수작업 복구가 필요한 항목을 여기에 기록한다.\n"
             )
-            with open(MISSING_MD_PATH, "w", encoding="utf-8") as f:
-                f.write(existing.rstrip() + "\n\n" + "\n".join(missing_entries))
+            # 같은 헤드워드 섹션(## {headword})이 이미 있으면 다시 안 붙인다 - DB를
+            # 처음부터 재구성할 때마다(rebuild_db.py) 같은 고아 행이 매번 다시
+            # 발견되므로, 이 파일 쪽은 최초 1회만 기록되게 막아야 한다.
+            new_entries = [
+                text for headword, text in missing_entries
+                if f"## {headword}" not in existing
+            ]
+            if new_entries:
+                with open(MISSING_MD_PATH, "w", encoding="utf-8") as f:
+                    f.write(existing.rstrip() + "\n\n" + "\n".join(new_entries))
 
         return plans
     finally:
