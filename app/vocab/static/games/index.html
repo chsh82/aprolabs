@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>어휘 게임 테스트 게시판</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#f2e8d5; --paper-dim:#9c8d7c; --geum:#c9a227; --ok:#5fae7a; --no:#a8322d; --ink:#0e0c0a; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 700px at 50% -15%, #241d17 0%, transparent 62%), var(--ink);
+    color:var(--paper);font-family:"Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;
+    padding:32px 20px 60px;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  h1{font-family:"Noto Serif KR",serif;font-weight:900;font-size:28px;letter-spacing:.04em}
+  .sub{color:var(--paper-dim);font-size:13.5px;margin-top:8px;line-height:1.7}
+  .sub code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px}
+
+  .levelbar{
+    margin:22px 0 30px;padding:14px 18px;border:1px solid rgba(201,162,39,.3);
+    background:rgba(255,255,255,.03);display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  }
+  .levelbar label{font-size:13px;color:var(--paper-dim)}
+  .levelbar select{
+    font-family:inherit;font-size:14px;background:var(--ink);color:var(--paper);
+    border:1px solid rgba(201,162,39,.4);padding:6px 10px;
+  }
+  .levelbar span{font-size:12px;color:var(--paper-dim)}
+
+  h2{font-family:"Noto Serif KR",serif;font-size:17px;color:var(--geum);margin:34px 0 12px;letter-spacing:.06em}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-weight:500;color:var(--paper-dim);font-size:11.5px;letter-spacing:.06em;
+     padding:8px 10px;border-bottom:1px solid rgba(201,162,39,.25)}
+  td{padding:10px;border-bottom:1px solid rgba(242,232,213,.08);vertical-align:middle}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .name{font-family:"Noto Serif KR",serif;font-weight:600;font-size:15px}
+  .file{color:var(--paper-dim);font-size:11.5px}
+  .badge{
+    display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;
+    border:1px solid rgba(201,162,39,.4);color:var(--geum);white-space:nowrap;
+  }
+  .status{font-size:12px;font-weight:500}
+  .status.ok{color:var(--ok)}
+  .status.no{color:var(--no)}
+  .go{
+    font-family:inherit;font-size:12.5px;padding:6px 14px;background:transparent;
+    color:var(--geum);border:1px solid var(--geum);cursor:pointer;text-decoration:none;
+    display:inline-block;white-space:nowrap;
+  }
+  .go:hover{background:var(--geum);color:var(--ink)}
+  .note{font-size:11.5px;color:var(--paper-dim);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>어휘 게임 테스트 게시판</h1>
+  <p class="sub">
+    <code>/vocab/quiz</code> API 연동 현황을 한 화면에서 확인하고 바로 열어 볼 수 있게 만든 내부 테스트 페이지다.<br>
+    관리자 로그인이 있어야 접근된다(학생용 화이트리스트는 아직 안 열림 - docs/vocab/EXTERNAL_WIRING.md 참고).
+  </p>
+
+  <div class="levelbar">
+    <label for="levelSel">학년(level)</label>
+    <select id="levelSel"></select>
+    <span>선택하면 아래 모든 "열기" 링크에 <code>?level=</code>이 반영된다. 기본값은 게임 자체 기본값(7, 중1).</span>
+  </div>
+
+  <h2>VOYAGE — 80일간의 어휘 일주</h2>
+  <table>
+    <thead><tr><th>게임</th><th>형식</th><th>연동</th><th></th></tr></thead>
+    <tbody id="voyageBody"></tbody>
+  </table>
+
+  <h2>IDIOM — 사자성어</h2>
+  <table>
+    <thead><tr><th>게임</th><th>형식</th><th>연동</th><th></th></tr></thead>
+    <tbody id="idiomBody"></tbody>
+  </table>
+</div>
+
+<script>
+const GAMES = {
+  voyage: [
+    { file:'suez.html',     name:'수에즈 운하',       format:'gate3',      ok:true,  note:'' },
+    { file:'elephant.html', name:'정글 횡단 · 코끼리', format:'gate3',      ok:true,  note:'' },
+    { file:'furnace.html',  name:'대서양 화로실',      format:'gate3',      ok:true,  note:'review 모드만 연동 · bonus(전속 항해)는 API 없이 자체 동작' },
+    { file:'hongkong.html', name:'홍콩 부두',          format:'assemble',   ok:true,  note:'' },
+    { file:'pacific.html',  name:'태평양 폭풍우',      format:'mc4',        ok:false, note:'example 데이터 없음 - docs/vocab/MISSING.md' },
+    { file:'train.html',    name:'대륙 횡단 열차',     format:'mc4',        ok:false, note:'example 데이터 없음' },
+    { file:'map.html',      name:'80일간의 어휘 일주 (지도)', format:'—',   ok:false, note:'여정 연결 부모 화면 - 구간 이어달리기 미구현(HANDOFF 4절)' },
+  ],
+  idiom: [
+    { file:'snake.html',    name:'성어 붓길',          format:'hanja',      ok:true,  note:'' },
+    { file:'runner.html',   name:'먹줄 달리기',        format:'hanja',      ok:true,  note:'' },
+    { file:'nautilus.html', name:'노틸러스 성어 탐사', format:'hanja',      ok:true,  note:'' },
+    { file:'archery.html',  name:'성어 활쏘기',        format:'situation4', ok:false, note:'상황문 데이터 없음' },
+    { file:'judge.html',    name:'성어 감별소',        format:'usage',      ok:false, note:'오용문 데이터 없음(HANDOFF: 검수 없이 내보내면 안 됨)' },
+  ],
+};
+
+const levelSel = document.getElementById('levelSel');
+for (let g = 1; g <= 12; g++) {
+  const opt = document.createElement('option');
+  opt.value = g;
+  opt.textContent = g + '학년' + (g === 7 ? ' (기본값)' : '');
+  if (g === 7) opt.selected = true;
+  levelSel.appendChild(opt);
+}
+
+function linkFor(dir, file) {
+  return `${dir}/${file}?level=${levelSel.value}`;
+}
+
+function render() {
+  for (const [dir, body] of [['voyage', 'voyageBody'], ['idiom', 'idiomBody']]) {
+    const tbody = document.getElementById(body);
+    tbody.innerHTML = '';
+    GAMES[dir].forEach(g => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div class="name">${g.name}</div>
+          <div class="file">${dir}/${g.file}</div>
+          ${g.note ? `<div class="note">${g.note}</div>` : ''}
+        </td>
+        <td><span class="badge">${g.format}</span></td>
+        <td><span class="status ${g.ok ? 'ok' : 'no'}">${g.ok ? '연동됨' : '미연동'}</span></td>
+        <td><a class="go" href="${linkFor(dir, g.file)}" target="_blank" rel="noopener">열기 ↗</a></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+}
+
+levelSel.addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
