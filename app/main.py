@@ -9,6 +9,7 @@ from app.routers import questions, upload, suneung, dashboard, answer_keys, craw
 from app.routers import auth as auth_router
 from app.routers import literacy_admin, literacy_api
 from app.vocab.routers import quiz_api as vocab_quiz_api
+from app.vocab.routers import attempt_api as vocab_attempt_api
 from app import isbn
 from app.auth import get_current_user_id
 
@@ -38,6 +39,7 @@ app.include_router(zoom_summaries.router)
 app.include_router(literacy_admin.router)
 app.include_router(literacy_api.router)
 app.include_router(vocab_quiz_api.router)
+app.include_router(vocab_attempt_api.router)
 
 
 @app.middleware("http")

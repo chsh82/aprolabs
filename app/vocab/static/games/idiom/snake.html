@@ -226,6 +226,27 @@ async function loadItems(){
 }
 
 /* ────────────────────────────────────────────
+   학습 기록 — 한 성어(4글자)의 성패가 갈리는 시점(showReveal)마다
+   쌓아 두었다가 게임이 끝날 때 한 번에 전송
+   ──────────────────────────────────────────── */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
+/* ────────────────────────────────────────────
    보드
    ──────────────────────────────────────────── */
 const COLS = 15, ROWS = 11;
@@ -281,6 +302,7 @@ function startRound(){
   step = 0;
 
   const item = order[round];
+  questionShownAt = performance.now();
   document.getElementById('tWord').textContent = item.kor;
   document.getElementById('tMean').textContent = item.mean;
   document.getElementById('progress').textContent = (round+1)+' / '+order.length;
@@ -387,6 +409,10 @@ function showToast(text, bad){
 }
 
 function showReveal(item, good){
+  attempts.push({
+    idiom_id: item.id, game: 'snake', format: 'hanja',
+    is_correct: good, ms: Math.round(performance.now() - questionShownAt)
+  });
   if(!good && !missed.includes(item)) missed.push(item);
   document.getElementById('rWord').textContent = item.kor;
   document.getElementById('rHan').textContent  = item.han;
@@ -496,7 +522,7 @@ async function startGame(){
   document.getElementById('loading').classList.add('hidden');
 
   order = shuffle(ITEMS.slice());
-  round = 0; score = 0; lives = 3; missed = [];
+  round = 0; score = 0; lives = 3; missed = []; attempts = [];
   document.getElementById('score').textContent = '0';
   [...document.getElementById('lives').children].forEach(el => el.classList.remove('spent'));
   playing = true; acc = 0; last = performance.now();
@@ -509,6 +535,7 @@ async function startGame(){
 function endGame(){
   playing = false;
   cancelAnimationFrame(rafId);
+  sendAttempts();
   tiles = []; snake = []; draw();
   document.getElementById('tWord').textContent = '';
   document.getElementById('tMean').textContent = '';

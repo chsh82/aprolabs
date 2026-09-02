@@ -149,6 +149,26 @@ async function loadItems(){
 }
 
 /* ════════════════════════════════════════════
+   학습 기록 — 문항 판정마다 쌓아 두었다가 게임이 끝날 때 한 번에 전송
+   ════════════════════════════════════════════ */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
+/* ════════════════════════════════════════════
    원근
    ════════════════════════════════════════════ */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
@@ -237,6 +257,7 @@ function updateHud(){
 }
 
 function setQuestion(item){
+  if(item) questionShownAt = performance.now();
   curItem = item;
   const p = document.getElementById('qText');
   if(item){
@@ -251,6 +272,7 @@ function setQuestion(item){
 function end(win){
   playing = false;
   cancelAnimationFrame(rafId);
+  sendAttempts();
   document.getElementById('endBig').textContent = win ? '앨러하바드 도착' : '코끼리가 주저앉았습니다';
   document.getElementById('endSub').innerHTML = win
     ? '정글을 가로질러 <b>새벽 열차</b>에 닿았습니다.<br>' + ITEMS.length + '개 문 가운데 ' + score + '개를 바르게 지났습니다.'
@@ -335,6 +357,10 @@ function resolve(o){
   if(o.type === 'gate'){
     gateIdx++;
     const chosen = o.opts[myLane + 1];
+    attempts.push({
+      idiom_id: o.item.id, game: 'elephant', format: 'gate3',
+      is_correct: !!(chosen && chosen.ok), ms: Math.round(performance.now() - questionShownAt)
+    });
     if(chosen && chosen.ok){
       score++;
       toastMsg('바른 문입니다', false);
@@ -668,7 +694,7 @@ async function startGame(){
   resize();
   buildCourse();
   objs = []; si = 0; traveled = 0; speed = 350;
-  stamina = 3; score = 0; gateIdx = 0; missed = [];
+  stamina = 3; score = 0; gateIdx = 0; missed = []; attempts = [];
   lane = 0; laneF = 0; jumpY = 0; jumpV = 0; ducking = false; duckT = 0;
   toast = null; shake = 0;
   const firstGate = schedule.find(s => s.type === 'gate');

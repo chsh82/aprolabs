@@ -154,6 +154,28 @@ async function loadItems(){
 }
 
 /* ════════════════════════════════════════════
+   학습 기록 — 조각 4개를 다 맞춰 판정할 때마다(맞든 틀리든) 쌓아 두었다가
+   게임이 끝날 때 한 번에 전송. ms는 그 문항이 화면에 뜬 시점부터 잰다
+   (같은 문항을 여러 번 다시 맞출 때도 최초 등장 시점 기준을 유지한다)
+   ════════════════════════════════════════════ */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
+/* ════════════════════════════════════════════
    무대
    ════════════════════════════════════════════ */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
@@ -191,6 +213,7 @@ function nextQ(){
   locked = false;
   slots = [null,null,null,null];
   const item = order[qi];
+  questionShownAt = performance.now();
   document.getElementById('qText').innerHTML =
     '<small>이 뜻에 맞는 네 글자를 맞추세요</small>' + item.mean;
 
@@ -287,6 +310,10 @@ function floatText(x, y, text, color){ fx.push({ x, y, vy:-50, a:1, c:color, tex
 function checkWord(){
   const made = slots.map(s => s ? s.ch : '').join('');
   const item = order[qi];
+  attempts.push({
+    idiom_id: item.id, game: 'hongkong', format: 'assemble',
+    is_correct: made === item.word, ms: Math.round(performance.now() - questionShownAt)
+  });
   if(made === item.word){
     locked = true; score++;
     burst(W/2, SLOTY + TILE/2, '201,162,39', 26);
@@ -309,6 +336,10 @@ function missBoat(){
   if(locked) return;
   locked = true;
   const item = order[qi];
+  attempts.push({
+    idiom_id: item.id, game: 'hongkong', format: 'assemble',
+    is_correct: false, ms: Math.round(performance.now() - questionShownAt)
+  });
   if(!missed.includes(item)) missed.push(item);
   stam--;
   shake = .5;
@@ -329,6 +360,7 @@ function finishBad(){
   done('부두에 남다', '배편이 모두 끊겼습니다.<br>홍콩에서 <b>발이 묶였습니다.</b><br>걸린 시간 ' + fmt(elapsed) + '');
 }
 function done(big, sub){
+  sendAttempts();
   document.getElementById('endBig').textContent = big;
   document.getElementById('endSub').innerHTML = sub;
   const box = document.getElementById('reviewBox');
@@ -822,7 +854,7 @@ async function startGame(){
   resize();
   buildScene();
   order = shuffle(ITEMS.slice());
-  qi = 0; stam = 3; score = 0; missed = [];
+  qi = 0; stam = 3; score = 0; missed = []; attempts = [];
   drag = null; fx = []; toast = null; shake = 0; t = 0; elapsed = 0;
   document.getElementById('clockN').textContent = '0:00';
   updateHud();

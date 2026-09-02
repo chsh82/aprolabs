@@ -157,6 +157,28 @@ async function loadItems(){
 }
 
 /* ════════════════════════════════════════════
+   학습 기록 — review 모드에서 문항 판정마다 쌓아 두었다가 게임이 끝날 때
+   한 번에 전송한다(bonus 모드는 문항 자체가 없어 attempts에 안 쌓임 -
+   sendAttempts는 비어 있으면 아무것도 안 보낸다)
+   ════════════════════════════════════════════ */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
+/* ════════════════════════════════════════════
    무대
    ════════════════════════════════════════════ */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
@@ -221,6 +243,7 @@ function nextQ(){
   locked = false;
   planks = [];
   const item = order[qi];
+  questionShownAt = performance.now();
   document.getElementById('qText').innerHTML =
     '<small>이 뜻에 맞는 판자만 태우세요</small>' + item.mean;
   queue = shuffle([{text:item.a, ok:true}, ...item.w.map(x=>({text:x, ok:false}))]);
@@ -297,6 +320,10 @@ function push(){
   }
 
   const item = order[qi];
+  attempts.push({
+    idiom_id: item.id, game: 'furnace', format: 'gate3',
+    is_correct: !!p.ok, ms: Math.round(performance.now() - questionShownAt)
+  });
 
   if(p.ok){
     locked = true; score++;
@@ -322,6 +349,10 @@ function missQ(){
   if(locked) return;
   locked = true;
   const item = order[qi];
+  attempts.push({
+    idiom_id: item.id, game: 'furnace', format: 'gate3',
+    is_correct: false, ms: Math.round(performance.now() - questionShownAt)
+  });
   if(!missed.includes(item)) missed.push(item);
   fire = Math.max(0, fire - 10);
   toastMsg('판자를 흘려보냈습니다 · ' + item.a, true);
@@ -353,6 +384,7 @@ function stall(){
   finish('불이 꺼졌습니다', '화로가 식어 배가 멈췄습니다.<br>런던까지 <b>닿지 못했습니다.</b>');
 }
 function finish(big, sub){
+  sendAttempts();
   document.getElementById('endBig').textContent = big;
   document.getElementById('endSub').innerHTML = sub;
   const box = document.getElementById('reviewBox');
@@ -771,7 +803,7 @@ async function startGame(mode){
   MODE = targetMode;
   resize();
   order = shuffle(ITEMS.slice());
-  qi = 0; fire = 60; score = 0; missed = [];
+  qi = 0; fire = 60; score = 0; missed = []; attempts = [];
   planks = []; queue = []; embers = []; fx = []; toast = null;
   shovel = 0; coolT = 0; shake = 0; t = 0;
   voyage = 0; combo = 0; bestCombo = 0; over = 0; runT = 0; spawnT = 0.5;

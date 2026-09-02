@@ -182,6 +182,27 @@ async function loadItems(){
   HUN = data.hun || {};
 }
 
+/* ────────────────────────────────────────────
+   학습 기록 — 한 성어의 성패가 갈리는 시점(완성 또는 그 성어를 채우다
+   목숨이 다함)마다 쌓아 두었다가 게임이 끝날 때(die) 한 번에 전송
+   ──────────────────────────────────────────── */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
 let MODE = 'hanja';   // 'hanja' | 'hangul'
 const piecesOf = it => (MODE === 'hanja' ? it.han : it.kor).split('');
 const ALL_PIECES = () => [...new Set(ITEMS.flatMap(piecesOf))];
@@ -220,6 +241,7 @@ const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p
 function newIdiom(){
   const pool = ITEMS.filter(i => i !== item);
   item = pool[Math.floor(Math.random()*pool.length)];
+  questionShownAt = performance.now();
   need = shuffle(piecesOf(item));
   got = [];
   ents = [];
@@ -325,6 +347,10 @@ function step(dt){
 }
 
 function completeIdiom(){
+  attempts.push({
+    idiom_id: item.id, game: 'runner', format: 'hanja',
+    is_correct: true, ms: Math.round(performance.now() - questionShownAt)
+  });
   seals++;
   const box = document.getElementById('seals');
   const sp = document.createElement('span');
@@ -355,6 +381,13 @@ function damage(ch){
 function die(){
   running = false;
   cancelAnimationFrame(rafId);
+  if(item){
+    attempts.push({
+      idiom_id: item.id, game: 'runner', format: 'hanja',
+      is_correct: false, ms: Math.round(performance.now() - questionShownAt)
+    });
+  }
+  sendAttempts();
   const m = Math.floor(dist/12);
   if(m > best){ best = m; document.getElementById('best').textContent = '최고 ' + best; }
 
@@ -599,7 +632,7 @@ async function startGame(){
 
   resize();
   P.x = Math.max(46, W*0.13); P.y = 0; P.vy = 0; P.duck = false; P.onGround = true;
-  speed = 270; dist = 0; lives = 3; seals = 0; missLog = []; item = null;
+  speed = 270; dist = 0; lives = 3; seals = 0; missLog = []; item = null; attempts = [];
   document.getElementById('seals').innerHTML = '';
   [...document.getElementById('lives').children].forEach(el => el.classList.remove('spent'));
   running = true; lastTs = performance.now();

@@ -151,6 +151,26 @@ async function loadItems(){
 }
 
 /* ════════════════════════════════════════════
+   학습 기록 — 문항 판정마다 쌓아 두었다가 게임이 끝날 때 한 번에 전송
+   ════════════════════════════════════════════ */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
+/* ════════════════════════════════════════════
    무대 — 가로 구도. 배는 왼쪽, 물길은 오른쪽에서 흘러온다
    ════════════════════════════════════════════ */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
@@ -305,6 +325,7 @@ function hurt(msg){
 }
 
 function setQuestion(item){
+  if(item) questionShownAt = performance.now();
   document.getElementById('qText').innerHTML = item
     ? '<small>이 뜻에 맞는 표지의 수로로</small>' + item.mean
     : '<small>앞을 살피세요</small>운하를 빠져나갑니다';
@@ -313,6 +334,7 @@ function setQuestion(item){
 function end(win){
   playing = false;
   cancelAnimationFrame(rafId);
+  sendAttempts();
   document.getElementById('endBig').textContent = win ? '수에즈 도착' : '좌초';
   document.getElementById('endSub').innerHTML = win
     ? '운하를 빠져나와 홍해로 들어섭니다.<br>갈림목 ' + ITEMS.length + '곳 가운데 <b>' + score + '곳</b>을 바르게 지났고,<br>조난자 <b>' + saved + '명</b>을 건져 올렸습니다.'
@@ -422,6 +444,10 @@ function step(dt){
         floatText(o.d - o.span*0.5 - 34, centerline(o.d) + laneOff,
                   okPick ? '정답' : o.opts.find(x=>x.ok).text,
                   okPick ? '120,210,160' : '232,140,132');
+        attempts.push({
+          idiom_id: o.item.id, game: 'suez', format: 'gate3',
+          is_correct: !!okPick, ms: Math.round(performance.now() - questionShownAt)
+        });
         if(chosen && chosen.ok){ score++; toastMsg('바른 수로입니다', false); }
         else {
           if(!missed.includes(o.item)) missed.push(o.item);
@@ -842,7 +868,7 @@ async function startGame(){
   buildCourse();
   dist = 0; speed = 195; off = centerline(0); head = 0;
   stam = 3; score = 0; saved = 0; qi = 0; missed = []; wake = []; toast = null;
-  shake = 0; groundT = 0; t = 0; fx = [];
+  shake = 0; groundT = 0; t = 0; fx = []; attempts = [];
   const first = course.find(c => c.type === 'fork');
   setQuestion(first ? first.item : null);
   updateHud();

@@ -187,6 +187,27 @@ async function loadItems(){
   HUN = data.hun || {};
 }
 
+/* ────────────────────────────────────────────
+   학습 기록 — 한 성어의 성패가 갈리는 시점(complete 또는 그 성어를 인양하다
+   산소가 다함)마다 쌓아 두었다가 게임이 끝날 때(die) 한 번에 전송
+   ──────────────────────────────────────────── */
+const STUDENT_ID = new URLSearchParams(location.search).get('student_id') || 'test_01';
+let attempts = [];
+let questionShownAt = 0;
+async function sendAttempts(){
+  if(!attempts.length) return;
+  const batch = attempts.splice(0, attempts.length);
+  try {
+    await fetch(`/vocab/attempt?student_id=${encodeURIComponent(STUDENT_ID)}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(batch)
+    });
+  } catch(err){
+    console.warn('학습 기록 전송 실패', err);
+  }
+}
+
 let LEVEL = 'elem';
 const isMid = () => LEVEL === 'mid';
 const piecesOf = it => (isMid() ? it.han : it.kor).split('');
@@ -228,6 +249,7 @@ const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(p=>p
 function newIdiom(){
   const pool = ITEMS.filter(i => i !== item);
   item = pool[Math.floor(Math.random()*pool.length)];
+  questionShownAt = performance.now();
   order4 = piecesOf(item);
   got = [];
 
@@ -393,6 +415,10 @@ function eat(L){
 }
 
 function complete(){
+  attempts.push({
+    idiom_id: item.id, game: 'nautilus', format: 'hanja',
+    is_correct: true, ms: Math.round(performance.now() - questionShownAt)
+  });
   caught++;
   document.getElementById('caught').textContent = caught;
   air = Math.min(100, air + 22);
@@ -411,6 +437,13 @@ function die(){
   if(!running) return;
   running = false;
   cancelAnimationFrame(rafId);
+  if(item){
+    attempts.push({
+      idiom_id: item.id, game: 'nautilus', format: 'hanja',
+      is_correct: false, ms: Math.round(performance.now() - questionShownAt)
+    });
+  }
+  sendAttempts();
   document.getElementById('dScore').textContent = caught + '줄 복원';
   document.getElementById('dInfo').innerHTML =
     (item ? '인양하지 못한 항목 · <b>' + item.kor + '</b>' + (isMid() ? ' ' + item.han : '') : '') +
@@ -660,7 +693,7 @@ async function startGame(){
 
   resize();
   P.x = W*0.2; P.y = H*0.45; P.vx = 0; P.vy = 0; P.face = 1;
-  air = 100; caught = 0; item = null; bubbles = []; flash = 0; msg = null;
+  air = 100; caught = 0; item = null; attempts = []; bubbles = []; flash = 0; msg = null;
   snow = [];
   for(let i=0;i<70;i++) snow.push({ x:rnd(0,W), y:rnd(0,H), r:rnd(1,2.2), v:rnd(8,26), a:rnd(.06,.2), ph:rnd(0,6) });
   document.getElementById('caught').textContent = '0';
