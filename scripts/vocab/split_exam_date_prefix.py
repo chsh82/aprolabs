@@ -4,10 +4,20 @@
 fix_duplicates.py로 유유상종을 정리하다가 발견한 것과 같은 패턴이다 -
 scripts/literacy/sajaseongeo_parser.py의 날짜 토큰 제거 정규식은
 "YYYY학년도 예비 시행"과 "YYYY.수능/YYYY.N" 두 형식만 다루는데, 1994학년도
-수능은 그해에만 두 번(1차/2차) 시행돼서 "YYYY학년도 N차 수능"이라는
-세 번째 형식이 됐다 - 이 형식은 정규식이 못 잡아서 definition 앞에
-그대로 남았다. 전수 조사 결과 전부 1994학년도 사례였다(9건, 유유상종
-포함 10건 중 유유상종은 fix_duplicates.py에서 이미 처리함).
+수능은 그해에만 두 번(1차/2차) 시행돼서 이 정규식이 못 잡는 형식들이
+definition 앞에 그대로 남았다.
+
+지금까지 확인된 형식 2가지(docs/vocab/MISSING.md에도 기록):
+    A. "YYYY학년도 N차 수능 <정의>" - 10건(유유상종 포함, fix_duplicates.py에서
+       처리한 1건 제외 9건은 이 스크립트가 처리)
+    B. "YYYY N차 수능 <정의>" (학년도 표기 없음) - 1건(적반하장). 처음엔
+       놓쳤다가 published_150.csv 검토 중 발견 - "학년도"가 선택 그룹이라
+       A/B 둘 다 이 정규식 하나로 잡는다.
+
+idiom 221건 전체를 연도 숫자 시작/괄호 시작/시험명 포함 등 넓은 기준으로
+재검사했고(2026-09-03), 이 둘 외의 형식은 없음을 확인했다. 새 표제어를
+literacy DB에서 추가로 이관할 때는 그 넓은 기준으로 다시 스캔해서 세
+번째 형식이 없는지 확인할 것.
 
 실행:
     python scripts/vocab/split_exam_date_prefix.py --dry-run   # 저장 없이 대상만 출력
@@ -31,7 +41,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from app.vocab.db import get_db_path as get_vocab_db_path  # noqa: E402
 
-_EXAM_DATE_PREFIX_RE = re.compile(r"^(\d{4}학년도\s+\d차\s+수능)\s+(?=\S)")
+_EXAM_DATE_PREFIX_RE = re.compile(r"^(\d{4}(?:학년도)?\s+\d차\s+수능)\s+(?=\S)")
 
 
 def strip_exam_date_prefix(meaning: str | None) -> tuple[str | None, str | None]:
