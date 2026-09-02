@@ -125,35 +125,36 @@
       <div class="review" id="reviewBox"></div>
       <button class="go" id="againBtn">다시 때다</button>
     </div>
+
+    <div class="overlay hidden" id="loading">
+      <div class="sub">문항을 불러오는 중…</div>
+    </div>
+
+    <div class="overlay hidden" id="loadError">
+      <div class="big">불러오지 못했습니다</div>
+      <div class="sub" id="loadErrorMsg"></div>
+      <button class="go" id="retryBtn">다시 시도</button>
+    </div>
   </div>
 </div>
 
 <script>
 /* ════════════════════════════════════════════
-   문항 — 연동 시 앞 구간에서 틀린 문항으로 채운다
+   문항 — GET /vocab/quiz?format=gate3&count=10&level=<학년> 연동
+   학년은 URL 쿼리스트링(?level=)에서 받고, 없으면 7(중1)
+   'bonus'(전속 항해) 모드는 CARGO만 쓰고 ITEMS를 안 써서 로딩 대상이 아니다
    ════════════════════════════════════════════ */
-const ITEMS = [
-  { mean:"두 육지 사이에 낀 좁은 바닷길", a:"해협", w:["반도","삼각주"],
-    why:"도버 해협, 대한 해협처럼 씁니다." },
-  { mean:"배가 다니도록 사람이 판 물길", a:"운하", w:["해류","항로"],
-    why:"수에즈 운하는 지중해와 홍해를 이어 뱃길을 줄였습니다." },
-  { mean:"가까이 있는 것을 도리어 알지 못함", a:"등잔 밑이 어둡다", w:["우물 안 개구리","티끌 모아 태산"],
-    why:"등잔 바로 아래가 가장 어둡다는 데서 왔습니다." },
-  { mean:"작은 것이 쌓여 크게 이루어짐", a:"티끌 모아 태산", w:["소 잃고 외양간","말이 씨가 된다"],
-    why:"티끌이 모여 태산이 됩니다." },
-  { mean:"아는 사실을 바탕으로 모르는 것을 미루어 생각함", a:"추론", w:["암기","인용"],
-    why:"근거에서 결론으로 나아가는 생각입니다." },
-  { mean:"일정한 기준에 따라 여럿을 나누어 묶음", a:"분류", w:["비교","분석"],
-    why:"분류에는 반드시 기준이 있어야 합니다." },
-  { mean:"고생이 다하면 즐거움이 옴", a:"고진감래", w:["과유불급","사면초가"],
-    why:"쓸 고, 다할 진, 달 감, 올 래입니다." },
-  { mean:"지나친 것은 모자란 것과 다를 바 없음", a:"과유불급", w:["고진감래","대기만성"],
-    why:"넘치는 것도 모자란 것과 마찬가지입니다." },
-  { mean:"“하루를 벌었다”에서 '벌다'의 뜻", a:"여유를 얻다", w:["돈을 모으다","힘껏 일하다"],
-    why:"시간이나 여유를 얻는다는 뜻으로도 씁니다." },
-  { mean:"“일정을 단축하다”와 뜻이 가까운 말", a:"줄이다", w:["미루다","늘이다"],
-    why:"단축은 짧게 줄인다는 뜻입니다. 반대말은 연장." }
-];
+let ITEMS = [];
+async function loadItems(){
+  const level = new URLSearchParams(location.search).get('level') || 7;
+  const r = await fetch(`/vocab/quiz?format=gate3&count=10&level=${level}`);
+  if(!r.ok) throw new Error('서버 응답 오류(' + r.status + ')');
+  const data = await r.json();
+  if(!data.items || data.items.length === 0){
+    throw new Error(data.note || '지금은 문항을 받을 수 없습니다');
+  }
+  ITEMS = data.items;
+}
 
 /* ════════════════════════════════════════════
    무대
@@ -747,11 +748,27 @@ stage.addEventListener('pointerdown', e => {
 });
 
 /* ── 시작 ────────────────────────────────── */
-function startGame(mode){
-  resetClock();
-  MODE = mode === 'bonus' ? 'bonus' : 'review';
+async function startGame(mode){
+  const targetMode = mode === 'bonus' ? 'bonus' : 'review';
   document.getElementById('start').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
+  document.getElementById('loadError').classList.add('hidden');
+
+  if(targetMode === 'review'){
+    document.getElementById('loading').classList.remove('hidden');
+    try {
+      await loadItems();
+    } catch(err){
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('loadErrorMsg').textContent = (err && err.message) || '문항을 가져오지 못했습니다';
+      document.getElementById('loadError').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('loading').classList.add('hidden');
+  }
+
+  resetClock();
+  MODE = targetMode;
   resize();
   order = shuffle(ITEMS.slice());
   qi = 0; fire = 60; score = 0; missed = [];
@@ -769,6 +786,7 @@ function startGame(mode){
 document.getElementById('startBtn').addEventListener('click', () => startGame('review'));
 document.getElementById('bonusBtn').addEventListener('click', () => startGame('bonus'));
 document.getElementById('againBtn').addEventListener('click', () => startGame(MODE));
+document.getElementById('retryBtn').addEventListener('click', () => startGame('review'));
 render();
 </script>
 </body>

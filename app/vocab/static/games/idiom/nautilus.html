@@ -155,42 +155,37 @@
       </div>
       <button class="go" id="startBtn">잠항 개시</button>
     </div>
+
+    <div class="overlay hidden" id="loading">
+      <div class="ov-hint">문항을 불러오는 중…</div>
+    </div>
+
+    <div class="overlay hidden" id="loadError">
+      <div class="ov-word" style="font-size:26px">불러오지 못했습니다</div>
+      <div class="ov-hint" id="loadErrorMsg"></div>
+      <button class="go" id="retryBtn" style="margin-top:10px">다시 시도</button>
+    </div>
   </div>
 </div>
 
 <script>
 /* ────────────────────────────────────────────
-   데이터 — 연동 시 GET /quiz?type=dive 로 대체
+   데이터 — GET /vocab/quiz?format=hanja&count=12&level=<학년> 연동
+   학년은 URL 쿼리스트링(?level=)에서 받고, 없으면 7(중1)
    ──────────────────────────────────────────── */
-const ITEMS = [
-  {kor:"우공이산", han:"愚公移山", mean:"우직하게 밀고 나가면 결국 이룬다"},
-  {kor:"와신상담", han:"臥薪嘗膽", mean:"고통을 견디며 오래 준비함"},
-  {kor:"각주구검", han:"刻舟求劍", mean:"낡은 방법만 고집하는 어리석음"},
-  {kor:"새옹지마", han:"塞翁之馬", mean:"화와 복은 미리 알 수 없다"},
-  {kor:"표리부동", han:"表裏不同", mean:"겉과 속이 다름"},
-  {kor:"조삼모사", han:"朝三暮四", mean:"눈앞의 차이만 보고 속음"},
-  {kor:"과유불급", han:"過猶不及", mean:"지나침은 모자람과 같다"},
-  {kor:"대기만성", han:"大器晩成", mean:"큰 인물은 늦게 이루어짐"},
-  {kor:"청출어람", han:"靑出於藍", mean:"제자가 스승보다 나아짐"},
-  {kor:"고진감래", han:"苦盡甘來", mean:"고생 끝에 낙이 온다"},
-  {kor:"사면초가", han:"四面楚歌", mean:"사방이 막혀 도움받을 곳이 없음"},
-  {kor:"자가당착", han:"自家撞着", mean:"앞뒤가 서로 맞지 않음"}
-];
-
-const HUN = {
-  "愚":"어리석을 우","公":"공평할 공","移":"옮길 이","山":"뫼 산",
-  "臥":"누울 와","薪":"섶 신","嘗":"맛볼 상","膽":"쓸개 담",
-  "刻":"새길 각","舟":"배 주","求":"구할 구","劍":"칼 검",
-  "塞":"변방 새","翁":"늙은이 옹","之":"갈 지","馬":"말 마",
-  "表":"겉 표","裏":"속 리","不":"아닐 부","同":"한가지 동",
-  "朝":"아침 조","三":"석 삼","暮":"저물 모","四":"넉 사",
-  "過":"지날 과","猶":"오히려 유","及":"미칠 급",
-  "大":"큰 대","器":"그릇 기","晩":"늦을 만","成":"이룰 성",
-  "靑":"푸를 청","出":"날 출","於":"어조사 어","藍":"쪽 람",
-  "苦":"쓸 고","盡":"다할 진","甘":"달 감","來":"올 래",
-  "面":"낯 면","楚":"초나라 초","歌":"노래 가",
-  "自":"스스로 자","家":"집 가","撞":"칠 당","着":"붙을 착"
-};
+let ITEMS = [];
+let HUN = {};
+async function loadItems(){
+  const level = new URLSearchParams(location.search).get('level') || 7;
+  const r = await fetch(`/vocab/quiz?format=hanja&count=12&level=${level}`);
+  if(!r.ok) throw new Error('서버 응답 오류(' + r.status + ')');
+  const data = await r.json();
+  if(!data.items || data.items.length === 0){
+    throw new Error(data.note || '지금은 문항을 받을 수 없습니다');
+  }
+  ITEMS = data.items;
+  HUN = data.hun || {};
+}
 
 let LEVEL = 'elem';
 const isMid = () => LEVEL === 'mid';
@@ -649,8 +644,20 @@ document.getElementById('mMid').addEventListener('click', () => {
   document.getElementById('mElem').classList.remove('sel');
 });
 
-function startGame(){
+async function startGame(){
   hide('start'); hide('dead');
+  hide('loadError');
+  show('loading');
+  try {
+    await loadItems();
+  } catch(err){
+    hide('loading');
+    document.getElementById('loadErrorMsg').textContent = (err && err.message) || '문항을 가져오지 못했습니다';
+    show('loadError');
+    return;
+  }
+  hide('loading');
+
   resize();
   P.x = W*0.2; P.y = H*0.45; P.vx = 0; P.vy = 0; P.face = 1;
   air = 100; caught = 0; item = null; bubbles = []; flash = 0; msg = null;
@@ -665,6 +672,7 @@ function startGame(){
 function restart(){ hide('dead'); startGame(); }
 
 document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('retryBtn').addEventListener('click', startGame);
 render();
 </script>
 </body>

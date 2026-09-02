@@ -118,31 +118,35 @@
       <div class="review" id="reviewBox"></div>
       <button class="go" id="againBtn">다시 건너기</button>
     </div>
+
+    <div class="overlay hidden" id="loading">
+      <div class="sub">문항을 불러오는 중…</div>
+    </div>
+
+    <div class="overlay hidden" id="loadError">
+      <div class="big">불러오지 못했습니다</div>
+      <div class="sub" id="loadErrorMsg"></div>
+      <button class="go" id="retryBtn">다시 시도</button>
+    </div>
   </div>
 </div>
 
 <script>
 /* ════════════════════════════════════════════
-   문항 — 연동 시 GET /quiz?type=proverb&opts=3 로 대체
+   문항 — GET /vocab/quiz?format=gate3&count=8&level=<학년> 연동
+   학년은 URL 쿼리스트링(?level=)에서 받고, 없으면 7(중1)
    ════════════════════════════════════════════ */
-const ITEMS = [
-  { mean:"작은 것이 쌓여 크게 이루어짐", a:"티끌 모아 태산",
-    w:["우물 안 개구리","등잔 밑이 어둡다"], why:"티끌이 모여 태산이 된다는 말입니다." },
-  { mean:"가까이 있는 것을 도리어 알지 못함", a:"등잔 밑이 어둡다",
-    w:["우물 안 개구리","말이 씨가 된다"], why:"등잔 바로 아래가 가장 어둡다는 데서 왔습니다." },
-  { mean:"넓은 세상을 모르고 제자리만 앎", a:"우물 안 개구리",
-    w:["티끌 모아 태산","등잔 밑이 어둡다"], why:"우물 속 개구리는 하늘이 우물만 한 줄 압니다." },
-  { mean:"무심코 한 말이 정말 그렇게 됨", a:"말이 씨가 된다",
-    w:["티끌 모아 태산","우물 안 개구리"], why:"뱉은 말이 씨앗처럼 자라 사실이 된다는 뜻입니다." },
-  { mean:"고생이 다하면 즐거움이 옴", a:"고진감래",
-    w:["과유불급","사면초가"], why:"쓸 고, 다할 진, 달 감, 올 래입니다." },
-  { mean:"지나친 것은 모자란 것과 다를 바 없음", a:"과유불급",
-    w:["고진감래","대기만성"], why:"넘치는 것도 모자란 것과 마찬가지입니다." },
-  { mean:"우직하게 밀고 나가 마침내 큰일을 이룸", a:"우공이산",
-    w:["각주구검","표리부동"], why:"우공이 산을 옮긴다는 이야기에서 왔습니다." },
-  { mean:"화와 복은 미리 알 수 없음", a:"새옹지마",
-    w:["사면초가","우공이산"], why:"변방 노인의 말이 화가 되었다 복이 되었다 한 이야기입니다." }
-];
+let ITEMS = [];
+async function loadItems(){
+  const level = new URLSearchParams(location.search).get('level') || 7;
+  const r = await fetch(`/vocab/quiz?format=gate3&count=8&level=${level}`);
+  if(!r.ok) throw new Error('서버 응답 오류(' + r.status + ')');
+  const data = await r.json();
+  if(!data.items || data.items.length === 0){
+    throw new Error(data.note || '지금은 문항을 받을 수 없습니다');
+  }
+  ITEMS = data.items;
+}
 
 /* ════════════════════════════════════════════
    원근
@@ -645,10 +649,22 @@ stage.addEventListener('pointerup', e => {
 });
 
 /* ── 시작 ────────────────────────────────── */
-function startGame(){
-  resetClock();
+async function startGame(){
   document.getElementById('start').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
+  document.getElementById('loadError').classList.add('hidden');
+  document.getElementById('loading').classList.remove('hidden');
+  try {
+    await loadItems();
+  } catch(err){
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('loadErrorMsg').textContent = (err && err.message) || '문항을 가져오지 못했습니다';
+    document.getElementById('loadError').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('loading').classList.add('hidden');
+
+  resetClock();
   resize();
   buildCourse();
   objs = []; si = 0; traveled = 0; speed = 350;
@@ -665,6 +681,7 @@ function startGame(){
 
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('againBtn').addEventListener('click', startGame);
+document.getElementById('retryBtn').addEventListener('click', startGame);
 drawRoad();
 </script>
 </body>
