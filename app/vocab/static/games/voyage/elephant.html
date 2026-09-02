@@ -169,6 +169,19 @@ async function sendAttempts(){
 }
 
 /* ════════════════════════════════════════════
+   여정 부모(map.html)에 결과 보고 — HANDOFF.md 4절.
+   독립 실행(테스트 게시판 등)일 때는 부모가 없으니 아무것도 안 보낸다.
+   ════════════════════════════════════════════ */
+function notifyParent(payload){
+  if(window.parent === window) return;
+  try {
+    window.parent.postMessage(Object.assign({ type:'stage_done', stage:'elephant' }, payload), '*');
+  } catch(err){
+    console.warn('여정 부모에게 결과 전송 실패', err);
+  }
+}
+
+/* ════════════════════════════════════════════
    원근
    ════════════════════════════════════════════ */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
@@ -272,6 +285,15 @@ function setQuestion(item){
 function end(win){
   playing = false;
   cancelAnimationFrame(rafId);
+  {
+    const wrongList = attempts.filter(a => !a.is_correct);
+    notifyParent({
+      correct: attempts.filter(a => a.is_correct).length,
+      wrong: wrongList.length,
+      missedIds: wrongList.map(a => a.idiom_id),
+      elapsed, cleared: win
+    });
+  }
   sendAttempts();
   document.getElementById('endBig').textContent = win ? '앨러하바드 도착' : '코끼리가 주저앉았습니다';
   document.getElementById('endSub').innerHTML = win

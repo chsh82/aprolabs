@@ -179,6 +179,19 @@ async function sendAttempts(){
 }
 
 /* ════════════════════════════════════════════
+   여정 부모(map.html)에 결과 보고 — HANDOFF.md 4절.
+   독립 실행(테스트 게시판 등)일 때는 부모가 없으니 아무것도 안 보낸다.
+   ════════════════════════════════════════════ */
+function notifyParent(payload){
+  if(window.parent === window) return;
+  try {
+    window.parent.postMessage(Object.assign({ type:'stage_done', stage:'furnace' }, payload), '*');
+  } catch(err){
+    console.warn('여정 부모에게 결과 전송 실패', err);
+  }
+}
+
+/* ════════════════════════════════════════════
    무대
    ════════════════════════════════════════════ */
 const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
@@ -373,17 +386,26 @@ function arrive(){
     finish('런던 도착', '태울 것이 넉넉했습니다. 불은 한 번도 죽지 않았습니다.<br>' +
       '건너는 데 <b>' + secs + '초</b>, 최고 <b>' + bestCombo + '연속</b>' +
       (isBest ? '<br><span style="color:#f2b03c">최고 기록입니다</span>'
-              : '<br>최고 기록 ' + bestTime.toFixed(1) + '초'));
+              : '<br>최고 기록 ' + bestTime.toFixed(1) + '초'), true);
     return;
   }
-  finish('리버풀 앞바다', '불을 꺼뜨리지 않고 대서양을 건넜습니다.<br>판자 ' + order.length + '장 가운데 <b>' + score + '장</b>을 바르게 태웠습니다.');
+  finish('리버풀 앞바다', '불을 꺼뜨리지 않고 대서양을 건넜습니다.<br>판자 ' + order.length + '장 가운데 <b>' + score + '장</b>을 바르게 태웠습니다.', true);
 }
 function stall(){
   playing = false;
   cancelAnimationFrame(rafId);
-  finish('불이 꺼졌습니다', '화로가 식어 배가 멈췄습니다.<br>런던까지 <b>닿지 못했습니다.</b>');
+  finish('불이 꺼졌습니다', '화로가 식어 배가 멈췄습니다.<br>런던까지 <b>닿지 못했습니다.</b>', false);
 }
-function finish(big, sub){
+function finish(big, sub, cleared){
+  {
+    const wrongList = attempts.filter(a => !a.is_correct);
+    notifyParent({
+      correct: attempts.filter(a => a.is_correct).length,
+      wrong: wrongList.length,
+      missedIds: wrongList.map(a => a.idiom_id),
+      elapsed, cleared
+    });
+  }
   sendAttempts();
   document.getElementById('endBig').textContent = big;
   document.getElementById('endSub').innerHTML = sub;
@@ -820,6 +842,14 @@ document.getElementById('bonusBtn').addEventListener('click', () => startGame('b
 document.getElementById('againBtn').addEventListener('click', () => startGame(MODE));
 document.getElementById('retryBtn').addEventListener('click', () => startGame('review'));
 render();
+
+/* 여정에서 missedIds가 비어 있으면 부모(map.html)가 ?mode=bonus 로
+   이 화면을 띄운다 - 그때는 시작 화면(리뷰/전속 선택)을 건너뛰고
+   곧바로 전속 항해로 들어간다(HANDOFF.md 4절). */
+if(new URLSearchParams(location.search).get('mode') === 'bonus'){
+  document.getElementById('start').classList.add('hidden');
+  startGame('bonus');
+}
 </script>
 </body>
 </html>
