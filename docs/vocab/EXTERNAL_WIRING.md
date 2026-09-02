@@ -48,6 +48,22 @@ public_paths = {"/login", "/logout"}
 인증과 통합해야 함 - `app/routers/literacy_api.py`가 남겨둔 것과 같은
 갈림길).
 
+## 3-1. 사이드바 링크 (완료, 2026-09-03)
+
+```html
+<!-- app/templates/base.html, "프로젝트" 섹션 -->
+<a href="/vocab/games/index.html" class="...">🎮 어휘 게임 테스트</a>
+```
+
+정적 파일(`/vocab/games/index.html`)은 마운트만 해두면 URL로는 열리지만,
+사이트 내 어디서도 링크가 없으면 사람이 못 찾는다("사이트 내에 게시판이
+없는데?" - 사용자가 직접 겪은 문제). `app/templates/base.html`은
+aprolabs 전체가 공유하는 템플릿이라 `app/vocab/` 밖이다 - 원칙 1과
+무관(다른 방향, main.py와 같은 경우).
+
+**이관 시**: 이 `<a>` 태그 한 줄만 지우면 된다. momoai.kr에는 이
+페이지가 아예 필요 없을 수도 있다(관리자 전용 테스트 게시판이므로).
+
 ## 4. DB 파일 자체는 배선이 아니다
 
 `data/vocab/idiom.db`는 `app/vocab/db.py`가 자체적으로 경로를 계산해서
