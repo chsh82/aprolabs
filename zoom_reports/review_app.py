@@ -34,11 +34,11 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from map_sessions import to_kst
+from map_sessions import MATCH_TOLERANCE_MINUTES, _minute_of_day, to_kst
 
 DB_PATH = Path(__file__).resolve().parent / "momo_zoom.db"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
@@ -54,6 +54,26 @@ def get_conn() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
+
+
+def _cluster_by_minute(entries: list[dict], tolerance: int) -> list[list[dict]]:
+    """entries(각 'minute' 키 보유)를 시각 순 정렬 후, 인접 항목끼리
+    tolerance분 이내면 이어붙이는 방식으로 묶는다(연쇄形 - A~B, B~C가
+    각각 tolerance 이내면 A~C도 한 그룹). 같은 주간 수업이 매번 몇 분씩
+    밀려서(14:49, 14:54, 14:58...) 서로 다른 시각으로 기록된 걸 사람이
+    한 번에 확인할 수 있도록 묶기 위함 - map_sessions.py가 실제 매칭 때
+    쓰는 ±MATCH_TOLERANCE_MINUTES와 같은 허용오차를 그대로 재사용한다."""
+    entries = sorted(entries, key=lambda e: e["minute"])
+    clusters: list[list[dict]] = []
+    current: list[dict] = []
+    for e in entries:
+        if current and e["minute"] - current[-1]["minute"] > tolerance:
+            clusters.append(current)
+            current = []
+        current.append(e)
+    if current:
+        clusters.append(current)
+    return clusters
 
 
 def load_pending_keys(conn: sqlite3.Connection) -> list[dict]:
@@ -80,19 +100,37 @@ def load_pending_keys(conn: sqlite3.Connection) -> list[dict]:
         key = (row["instructor_id"], kst.weekday(), f"{kst.hour:02d}:{kst.minute:02d}")
         counter[key] += 1
 
-    result = []
+    # (instructor_id, weekday)별로 묶은 뒤, 그 안에서 시각이 가까운 것끼리
+    # 다시 클러스터링한다.
+    by_instr_weekday: dict[tuple[int, int], list[dict]] = defaultdict(list)
     for row in rows:
         key = (row["instructor_id"], row["weekday"], row["start_time"])
-        first_seen_kst = _sqlite_utc_to_kst(row["first_seen_at"])
-        result.append({
+        by_instr_weekday[(row["instructor_id"], row["weekday"])].append({
             "id": row["id"],
-            "instructor_name": row["instructor_name"],
-            "weekday_kr": WEEKDAY_KR[row["weekday"]],
             "start_time": row["start_time"],
-            "repeat_count": counter.get(key, 0),
+            "minute": _minute_of_day(row["start_time"]),
             "sample_topic": row["sample_topic"],
-            "first_seen_at_kst": first_seen_kst,
+            "first_seen_kst": _sqlite_utc_to_kst(row["first_seen_at"]),
+            "repeat_count": counter.get(key, 0),
         })
+
+    result = []
+    for (instructor_id, weekday), entries in by_instr_weekday.items():
+        instructor_name = next(r["instructor_name"] for r in rows if r["instructor_id"] == instructor_id)
+        for cluster in _cluster_by_minute(entries, MATCH_TOLERANCE_MINUTES):
+            times = [e["start_time"] for e in cluster]
+            first_seens = [e["first_seen_kst"] for e in cluster if e["first_seen_kst"]]
+            result.append({
+                "ids": [e["id"] for e in cluster],
+                "ids_csv": ",".join(str(e["id"]) for e in cluster),
+                "instructor_name": instructor_name,
+                "weekday_kr": WEEKDAY_KR[weekday],
+                "time_range": times[0] if len(times) == 1 else f"{times[0]}~{times[-1]}",
+                "n_slots": len(cluster),
+                "repeat_count": sum(e["repeat_count"] for e in cluster),
+                "sample_topic": cluster[0]["sample_topic"],
+                "first_seen_at_kst": min(first_seens) if first_seens else None,
+            })
 
     result.sort(key=lambda r: -r["repeat_count"])
     return result
@@ -205,12 +243,23 @@ def index(request: Request, tab: str = "pending"):
         conn.close()
 
 
-@app.post("/pending/{pending_id}/resolve")
-def resolve_pending(pending_id: int):
-    """읽기 전용 원칙의 유일한 예외 - resolved 플래그만 세운다. 삭제/수정 없음."""
+@app.post("/pending/resolve")
+def resolve_pending(ids: str = Form(...)):
+    """읽기 전용 원칙의 유일한 예외 - resolved 플래그만 세운다. 삭제/수정 없음.
+
+    ids는 화면에서 묶어 보여준 클러스터 하나의 pending_class_key id들을
+    콤마로 이어붙인 문자열(예: "12,13,14") - 같은 주간 수업이 몇 분씩
+    밀려 여러 행으로 쌓인 걸 한 번에 확인 처리하기 위함."""
+    id_list = [int(x) for x in ids.split(",") if x.strip()]
+    if not id_list:
+        return RedirectResponse(url="/?tab=pending", status_code=303)
     conn = get_conn()
     try:
-        conn.execute("UPDATE pending_class_key SET resolved = 1 WHERE id = ?", (pending_id,))
+        placeholders = ",".join("?" * len(id_list))
+        conn.execute(
+            f"UPDATE pending_class_key SET resolved = 1 WHERE id IN ({placeholders})",
+            id_list,
+        )
         conn.commit()
     finally:
         conn.close()

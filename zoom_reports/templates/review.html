@@ -41,7 +41,7 @@
     <table>
       <thead>
         <tr>
-          <th>강사</th><th>요일</th><th>시각</th><th>반복 횟수</th>
+          <th>강사</th><th>요일</th><th>시각(묶임)</th><th>슬롯 수</th><th>반복 횟수</th>
           <th>표본 회의명</th><th>최초 발견(KST)</th><th></th>
         </tr>
       </thead>
@@ -50,13 +50,15 @@
         <tr>
           <td>{{ k.instructor_name }}</td>
           <td>{{ k.weekday_kr }}</td>
-          <td>{{ k.start_time }}</td>
+          <td>{{ k.time_range }}</td>
+          <td>{{ k.n_slots }}</td>
           <td>{{ k.repeat_count }}</td>
           <td class="muted">{{ k.sample_topic or '-' }}</td>
           <td>{{ k.first_seen_at_kst.strftime('%Y-%m-%d %H:%M') if k.first_seen_at_kst else '-' }}</td>
           <td>
-            <form class="inline" method="post" action="/pending/{{ k.id }}/resolve">
-              <button class="confirm" type="submit">확인함</button>
+            <form class="inline" method="post" action="/pending/resolve">
+              <input type="hidden" name="ids" value="{{ k.ids_csv }}">
+              <button class="confirm" type="submit">확인함{{ ' (' ~ k.n_slots ~ '건)' if k.n_slots > 1 else '' }}</button>
             </form>
           </td>
         </tr>
