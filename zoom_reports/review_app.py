@@ -8,7 +8,7 @@ FastAPI 앱(app/main.py, 포트 8000)과 무관하다. 인증 없음(내부용, 
 
 탭 4개:
   1. 미확인 키 (pending_class_key, resolved=0) - 반복 횟수 내림차순
-  2. 미매핑 세션 (session.status='unmapped') - KST 시각 내림차순
+  2. 미매핑 세션 (session.status='unmapped') - KST 시각 내림차순, 50건씩 페이지네이션
   3. 매핑됨 (session.status='mapped') - 반별 그룹, 반 안에서는 날짜순
   4. 검색 - 전체 session을 강사명/반명(이름 또는 class_code)으로 검색,
      KST 시각 내림차순(최근 수집분이 위로)
@@ -268,7 +268,16 @@ def load_search_results(conn: sqlite3.Connection, instructor_q: str, class_q: st
     return result
 
 
-SEARCH_PAGE_SIZE = 50
+PAGE_SIZE = 50
+
+
+def _paginate(items: list[dict], page: int) -> tuple[list[dict], int, int]:
+    """이미 정렬된 리스트를 PAGE_SIZE 단위로 자른다. (해당 페이지 항목, 총 건수, 총 페이지 수)"""
+    total = len(items)
+    total_pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
+    page = min(max(1, page), total_pages)
+    start = (page - 1) * PAGE_SIZE
+    return items[start:start + PAGE_SIZE], total, total_pages
 
 
 @app.get("/")
@@ -279,25 +288,27 @@ def index(request: Request, tab: str = "pending", instructor_q: str = "", class_
 
     conn = get_conn()
     try:
-        context = {"request": request, "tab": tab, "instructor_q": instructor_q, "class_q": class_q}
+        context = {
+            "request": request, "tab": tab, "instructor_q": instructor_q, "class_q": class_q,
+            "page_size": PAGE_SIZE,
+        }
         if tab == "pending":
             context["pending_keys"] = load_pending_keys(conn)
         elif tab == "unmapped":
-            context["unmapped_sessions"] = load_unmapped_sessions(conn)
+            # 최신(KST) 순으로 이미 정렬된 전체 결과를 50건씩 잘라 게시판처럼 페이지 구분.
+            page_items, total, total_pages = _paginate(load_unmapped_sessions(conn), page)
+            context["unmapped_sessions"] = page_items
+            context["unmapped_total"] = total
+            context["page"] = min(page, total_pages)
+            context["total_pages"] = total_pages
         elif tab == "mapped":
             context["mapped_groups"] = load_mapped_sessions(conn)
         else:
-            # 최신(KST) 순으로 이미 정렬된 전체 결과를 50건씩 잘라 게시판처럼 페이지 구분.
-            all_results = load_search_results(conn, instructor_q, class_q)
-            total = len(all_results)
-            total_pages = max(1, (total + SEARCH_PAGE_SIZE - 1) // SEARCH_PAGE_SIZE)
-            page = min(page, total_pages)
-            start = (page - 1) * SEARCH_PAGE_SIZE
-            context["search_results"] = all_results[start:start + SEARCH_PAGE_SIZE]
+            page_items, total, total_pages = _paginate(load_search_results(conn, instructor_q, class_q), page)
+            context["search_results"] = page_items
             context["search_total"] = total
-            context["page"] = page
+            context["page"] = min(page, total_pages)
             context["total_pages"] = total_pages
-            context["page_size"] = SEARCH_PAGE_SIZE
         return templates.TemplateResponse("review.html", context)
     finally:
         conn.close()
