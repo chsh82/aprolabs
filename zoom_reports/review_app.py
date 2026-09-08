@@ -268,10 +268,14 @@ def load_search_results(conn: sqlite3.Connection, instructor_q: str, class_q: st
     return result
 
 
+SEARCH_PAGE_SIZE = 50
+
+
 @app.get("/")
-def index(request: Request, tab: str = "pending", instructor_q: str = "", class_q: str = ""):
+def index(request: Request, tab: str = "pending", instructor_q: str = "", class_q: str = "", page: int = 1):
     if tab not in ("pending", "unmapped", "mapped", "search"):
         tab = "pending"
+    page = max(1, page)
 
     conn = get_conn()
     try:
@@ -283,7 +287,17 @@ def index(request: Request, tab: str = "pending", instructor_q: str = "", class_
         elif tab == "mapped":
             context["mapped_groups"] = load_mapped_sessions(conn)
         else:
-            context["search_results"] = load_search_results(conn, instructor_q, class_q)
+            # 최신(KST) 순으로 이미 정렬된 전체 결과를 50건씩 잘라 게시판처럼 페이지 구분.
+            all_results = load_search_results(conn, instructor_q, class_q)
+            total = len(all_results)
+            total_pages = max(1, (total + SEARCH_PAGE_SIZE - 1) // SEARCH_PAGE_SIZE)
+            page = min(page, total_pages)
+            start = (page - 1) * SEARCH_PAGE_SIZE
+            context["search_results"] = all_results[start:start + SEARCH_PAGE_SIZE]
+            context["search_total"] = total
+            context["page"] = page
+            context["total_pages"] = total_pages
+            context["page_size"] = SEARCH_PAGE_SIZE
         return templates.TemplateResponse("review.html", context)
     finally:
         conn.close()

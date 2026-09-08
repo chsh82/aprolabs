@@ -33,6 +33,10 @@
   .badge-unmapped { background: #fdecea; color: #b02a37; }
   .badge-mismatch { background: #fff4e5; color: #b45309; }
   .badge-out_of_scope { background: #eee; color: #666; }
+  .pager { display: flex; gap: 0.3rem; justify-content: center; margin-top: 1.2rem; }
+  .pager a { padding: 0.35rem 0.7rem; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #444; font-size: 0.85rem; }
+  .pager a:hover { background: #f5f5f5; }
+  .pager a.active { background: #1a56db; border-color: #1a56db; color: white; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -130,6 +134,9 @@
     {% endif %}
 
   {% else %}
+    {% macro page_url(p) -%}
+      /?tab=search&instructor_q={{ instructor_q | urlencode }}&class_q={{ class_q | urlencode }}&page={{ p }}
+    {%- endmacro %}
     <form class="search" method="get" action="/">
       <input type="hidden" name="tab" value="search">
       <input type="text" name="instructor_q" placeholder="강사명" value="{{ instructor_q }}">
@@ -141,7 +148,10 @@
     </form>
 
     {% if search_results %}
-    <p class="subtitle" style="margin-top: -0.6rem;">{{ search_results|length }}건 (최근 수집분이 위)</p>
+    <p class="subtitle" style="margin-top: -0.6rem;">
+      전체 {{ search_total }}건 중 {{ (page - 1) * page_size + 1 }}–{{ (page - 1) * page_size + search_results|length }}건
+      (최근 수집분이 위, {{ page }}/{{ total_pages }} 페이지)
+    </p>
     <table>
       <thead>
         <tr><th>날짜</th><th>강사</th><th>반</th><th>상태</th><th>회의명</th></tr>
@@ -162,6 +172,22 @@
         {% endfor %}
       </tbody>
     </table>
+
+    {% if total_pages > 1 %}
+    <nav class="pager">
+      {% if page > 1 %}
+      <a href="{{ page_url(page - 1) }}">« 이전</a>
+      {% endif %}
+      {% set window_start = [1, page - 4]|max %}
+      {% set window_end = [total_pages, window_start + 9]|min %}
+      {% for p in range(window_start, window_end + 1) %}
+      <a href="{{ page_url(p) }}" class="{{ 'active' if p == page else '' }}">{{ p }}</a>
+      {% endfor %}
+      {% if page < total_pages %}
+      <a href="{{ page_url(page + 1) }}">다음 »</a>
+      {% endif %}
+    </nav>
+    {% endif %}
     {% else %}
     <p class="empty">검색 결과가 없습니다.</p>
     {% endif %}
