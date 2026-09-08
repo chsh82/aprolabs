@@ -6,10 +6,12 @@ FastAPI 앱(app/main.py, 포트 8000)과 무관하다. 인증 없음(내부용, 
 지시). 읽기 전용 + "확인함" 버튼(pending_class_key.resolved=1 처리)만 있고
 그 외 수정·삭제 기능은 없다.
 
-탭 3개:
+탭 4개:
   1. 미확인 키 (pending_class_key, resolved=0) - 반복 횟수 내림차순
   2. 미매핑 세션 (session.status='unmapped') - KST 시각 내림차순
   3. 매핑됨 (session.status='mapped') - 반별 그룹, 반 안에서는 날짜순
+  4. 검색 - 전체 session을 강사명/반명(이름 또는 class_code)으로 검색,
+     KST 시각 내림차순(최근 수집분이 위로)
 
 시각은 전부 KST로 표시한다(map_sessions.to_kst() 재사용).
 
@@ -224,20 +226,64 @@ def load_mapped_sessions(conn: sqlite3.Connection) -> list[dict]:
     return result
 
 
+def load_search_results(conn: sqlite3.Connection, instructor_q: str, class_q: str) -> list[dict]:
+    """강사명/반명(이름 또는 class_code)으로 전체 session을 검색한다.
+    두 조건 다 비어 있으면 최근 것부터 전체를 보여준다(요약 본문은 노출 안
+    함 - meeting_topic만, 탭 2와 같은 원칙)."""
+    sql = """
+        SELECT s.started_at, s.status, s.topic_raw, s.session_type,
+               i.name AS instructor_name, c.class_code, c.name AS class_name,
+               cm.meeting_date
+        FROM session s
+        LEFT JOIN instructor i ON s.instructor_id = i.id
+        LEFT JOIN class c ON s.class_id = c.id
+        LEFT JOIN class_meeting cm ON s.class_meeting_id = cm.id
+        WHERE 1 = 1
+    """
+    params: list[str] = []
+    if instructor_q.strip():
+        sql += " AND i.name LIKE ?"
+        params.append(f"%{instructor_q.strip()}%")
+    if class_q.strip():
+        sql += " AND (c.name LIKE ? OR c.class_code LIKE ?)"
+        params.extend([f"%{class_q.strip()}%", f"%{class_q.strip()}%"])
+
+    rows = conn.execute(sql, params).fetchall()
+
+    result = []
+    for row in rows:
+        kst = to_kst(row["started_at"]) if row["started_at"] else None
+        meeting_date = row["meeting_date"] or (kst.date().isoformat() if kst else None)
+        result.append({
+            "kst_time": kst,
+            "meeting_date": meeting_date,
+            "instructor_name": row["instructor_name"] or "(미등록)",
+            "class_name": row["class_name"],
+            "class_code": row["class_code"],
+            "status": row["status"],
+            "topic": row["topic_raw"],
+        })
+
+    result.sort(key=lambda r: r["kst_time"] or datetime.min, reverse=True)
+    return result
+
+
 @app.get("/")
-def index(request: Request, tab: str = "pending"):
-    if tab not in ("pending", "unmapped", "mapped"):
+def index(request: Request, tab: str = "pending", instructor_q: str = "", class_q: str = ""):
+    if tab not in ("pending", "unmapped", "mapped", "search"):
         tab = "pending"
 
     conn = get_conn()
     try:
-        context = {"request": request, "tab": tab}
+        context = {"request": request, "tab": tab, "instructor_q": instructor_q, "class_q": class_q}
         if tab == "pending":
             context["pending_keys"] = load_pending_keys(conn)
         elif tab == "unmapped":
             context["unmapped_sessions"] = load_unmapped_sessions(conn)
-        else:
+        elif tab == "mapped":
             context["mapped_groups"] = load_mapped_sessions(conn)
+        else:
+            context["search_results"] = load_search_results(conn, instructor_q, class_q)
         return templates.TemplateResponse("review.html", context)
     finally:
         conn.close()

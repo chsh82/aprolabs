@@ -24,6 +24,15 @@
   form.inline { display: inline; }
   button.confirm { background: #1a56db; color: white; border: none; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
   button.confirm:hover { background: #1543a8; }
+  form.search { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; flex-wrap: wrap; align-items: center; }
+  form.search input[type="text"] { padding: 0.4rem 0.6rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+  form.search button { background: #1a56db; color: white; border: none; padding: 0.45rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+  form.search button:hover { background: #1543a8; }
+  .badge-status { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+  .badge-mapped { background: #e6f4ea; color: #1e7e34; }
+  .badge-unmapped { background: #fdecea; color: #b02a37; }
+  .badge-mismatch { background: #fff4e5; color: #b45309; }
+  .badge-out_of_scope { background: #eee; color: #666; }
 </style>
 </head>
 <body>
@@ -34,6 +43,7 @@
     <a href="/?tab=pending" class="{{ 'active' if tab == 'pending' else '' }}">미확인 키</a>
     <a href="/?tab=unmapped" class="{{ 'active' if tab == 'unmapped' else '' }}">미매핑 세션</a>
     <a href="/?tab=mapped" class="{{ 'active' if tab == 'mapped' else '' }}">매핑됨</a>
+    <a href="/?tab=search" class="{{ 'active' if tab == 'search' else '' }}">검색</a>
   </nav>
 
   {% if tab == 'pending' %}
@@ -91,7 +101,7 @@
     <p class="empty">미매핑 세션이 없습니다.</p>
     {% endif %}
 
-  {% else %}
+  {% elif tab == 'mapped' %}
     {% if mapped_groups %}
     {% for g in mapped_groups %}
     <div class="class-group">
@@ -117,6 +127,43 @@
     {% endfor %}
     {% else %}
     <p class="empty">매핑된 세션이 없습니다.</p>
+    {% endif %}
+
+  {% else %}
+    <form class="search" method="get" action="/">
+      <input type="hidden" name="tab" value="search">
+      <input type="text" name="instructor_q" placeholder="강사명" value="{{ instructor_q }}">
+      <input type="text" name="class_q" placeholder="반명 또는 반코드" value="{{ class_q }}">
+      <button type="submit">검색</button>
+      {% if instructor_q or class_q %}
+      <a href="/?tab=search" style="font-size: 0.8rem; color: #999;">초기화</a>
+      {% endif %}
+    </form>
+
+    {% if search_results %}
+    <p class="subtitle" style="margin-top: -0.6rem;">{{ search_results|length }}건 (최근 수집분이 위)</p>
+    <table>
+      <thead>
+        <tr><th>날짜</th><th>강사</th><th>반</th><th>상태</th><th>회의명</th></tr>
+      </thead>
+      <tbody>
+        {% for s in search_results %}
+        <tr>
+          <td>{{ s.meeting_date or '-' }}</td>
+          <td>{{ s.instructor_name }}</td>
+          <td>{% if s.class_name %}{{ s.class_code }} <span class="muted">— {{ s.class_name }}</span>{% else %}<span class="muted">미배정</span>{% endif %}</td>
+          <td>
+            <span class="badge-status badge-{{ s.status }}">
+              {{ {'mapped': '매핑됨', 'unmapped': '미매핑', 'mismatch': '충돌', 'out_of_scope': '범위 밖'}.get(s.status, s.status) }}
+            </span>
+          </td>
+          <td class="muted">{{ s.topic or '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty">검색 결과가 없습니다.</p>
     {% endif %}
   {% endif %}
 </body>
