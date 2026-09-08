@@ -88,20 +88,27 @@ def _overview_len(conn: sqlite3.Connection, meeting_uuid: str) -> int:
     return len(payload.get("summary_overview") or "")
 
 
+PAGE_SIZE = 50
+
+
 @router.get("", response_class=HTMLResponse)
 def zoom_summaries_list(
     request: Request,
     class_code: str = "",
     date_from: str = "",
     date_to: str = "",
+    instructor_q: str = "",
+    class_q: str = "",
+    page: int = 1,
     conn: sqlite3.Connection = Depends(get_zoom_db),
 ):
     query = """
         SELECT cm.id AS class_meeting_id, c.class_code, c.name AS class_name,
-               cm.meeting_date, s.meeting_uuid
+               i.name AS instructor_name, cm.meeting_date, s.meeting_uuid
         FROM class_meeting cm
         JOIN class c ON cm.class_id = c.id
         JOIN session s ON s.class_meeting_id = cm.id AND s.status = 'mapped'
+        LEFT JOIN instructor i ON c.instructor_id = i.id
         WHERE 1=1
     """
     params: list[str] = []
@@ -114,6 +121,12 @@ def zoom_summaries_list(
     if date_to:
         query += " AND cm.meeting_date <= ?"
         params.append(date_to)
+    if instructor_q.strip():
+        query += " AND i.name LIKE ?"
+        params.append(f"%{instructor_q.strip()}%")
+    if class_q.strip():
+        query += " AND (c.name LIKE ? OR c.class_code LIKE ?)"
+        params.extend([f"%{class_q.strip()}%", f"%{class_q.strip()}%"])
     rows = conn.execute(query, params).fetchall()
 
     meetings: dict[int, dict] = {}
@@ -123,22 +136,36 @@ def zoom_summaries_list(
             "class_meeting_id": cmid,
             "class_code": row["class_code"],
             "class_name": row["class_name"],
+            "instructor_name": row["instructor_name"] or "-",
             "meeting_date": row["meeting_date"],
             "char_count": 0,
         })
         meeting["char_count"] += _overview_len(conn, row["meeting_uuid"])
 
-    meeting_list = sorted(meetings.values(), key=lambda m: (m["class_code"], m["meeting_date"]))
+    # 최신 수집분이 위로 오도록 날짜 내림차순(동일 날짜는 반 코드로 안정 정렬).
+    meeting_list = sorted(meetings.values(), key=lambda m: (m["meeting_date"], m["class_code"]), reverse=True)
+
+    total = len(meeting_list)
+    total_pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
+    page = min(max(1, page), total_pages)
+    start = (page - 1) * PAGE_SIZE
+    page_meetings = meeting_list[start:start + PAGE_SIZE]
 
     classes = conn.execute("SELECT class_code, name FROM class ORDER BY class_code").fetchall()
 
     return templates.TemplateResponse("zoom_summaries/index.html", {
         "request": request,
-        "meetings": meeting_list,
+        "meetings": page_meetings,
+        "meetings_total": total,
+        "page": page,
+        "total_pages": total_pages,
+        "page_size": PAGE_SIZE,
         "classes": classes,
         "filter_class_code": class_code,
         "filter_date_from": date_from,
         "filter_date_to": date_to,
+        "filter_instructor_q": instructor_q,
+        "filter_class_q": class_q,
     })
 
 

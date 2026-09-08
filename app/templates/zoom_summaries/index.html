@@ -5,13 +5,25 @@
 <div class="mb-6 flex items-center justify-between">
   <div>
     <h2 class="text-2xl font-bold text-gray-800">🎥 Zoom 수업 요약</h2>
-    <p class="text-sm text-gray-400 mt-1">{{ meetings|length }}개 회차 · 읽기 전용</p>
+    <p class="text-sm text-gray-400 mt-1">
+      전체 {{ meetings_total }}개 회차 중 {{ meetings|length }}개 표시 · 최신순 · {{ page }}/{{ total_pages }} 페이지 · 읽기 전용
+    </p>
   </div>
 </div>
 
 <form method="GET" class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 flex flex-wrap gap-3 items-end">
   <div>
-    <label class="block text-xs font-medium text-gray-500 mb-1">반</label>
+    <label class="block text-xs font-medium text-gray-500 mb-1">강사명</label>
+    <input type="text" name="instructor_q" value="{{ filter_instructor_q }}" placeholder="예: 윤영기"
+           class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">반명</label>
+    <input type="text" name="class_q" value="{{ filter_class_q }}" placeholder="반 이름 또는 반 코드"
+           class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+  </div>
+  <div>
+    <label class="block text-xs font-medium text-gray-500 mb-1">반(목록에서 선택)</label>
     <select name="class_code" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
       <option value="">전체</option>
       {% for c in classes %}
@@ -42,6 +54,7 @@
       <tr>
         <th class="px-4 py-3 text-left">반 코드</th>
         <th class="px-4 py-3 text-left">반 이름</th>
+        <th class="px-4 py-3 text-left">강사</th>
         <th class="px-4 py-3 text-left">회차 날짜</th>
         <th class="px-4 py-3 text-left">요약 글자 수</th>
       </tr>
@@ -51,6 +64,7 @@
       <tr class="hover:bg-gray-50 cursor-pointer" onclick="location.href='/zoom-summaries/{{ m.class_meeting_id }}'">
         <td class="px-4 py-3 font-medium text-gray-700">{{ m.class_code }}</td>
         <td class="px-4 py-3 text-gray-500">{{ m.class_name }}</td>
+        <td class="px-4 py-3 text-gray-500">{{ m.instructor_name }}</td>
         <td class="px-4 py-3 text-gray-500">{{ m.meeting_date }}</td>
         <td class="px-4 py-3 text-gray-500">{{ m.char_count }}자</td>
       </tr>
@@ -58,6 +72,26 @@
     </tbody>
   </table>
 </div>
+
+{% if total_pages > 1 %}
+{% macro page_url(p) -%}
+  /zoom-summaries?instructor_q={{ filter_instructor_q | urlencode }}&class_q={{ filter_class_q | urlencode }}&class_code={{ filter_class_code | urlencode }}&date_from={{ filter_date_from }}&date_to={{ filter_date_to }}&page={{ p }}
+{%- endmacro %}
+<nav class="flex gap-1 justify-center mt-5">
+  {% if page > 1 %}
+  <a href="{{ page_url(page - 1) }}" class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">« 이전</a>
+  {% endif %}
+  {% set window_start = [1, page - 4]|max %}
+  {% set window_end = [total_pages, window_start + 9]|min %}
+  {% for p in range(window_start, window_end + 1) %}
+  <a href="{{ page_url(p) }}"
+     class="px-3 py-1.5 border rounded-lg text-sm {% if p == page %}bg-blue-600 border-blue-600 text-white font-semibold{% else %}border-gray-200 text-gray-600 hover:bg-gray-50{% endif %}">{{ p }}</a>
+  {% endfor %}
+  {% if page < total_pages %}
+  <a href="{{ page_url(page + 1) }}" class="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50">다음 »</a>
+  {% endif %}
+</nav>
+{% endif %}
 {% else %}
 <div class="text-center text-gray-400 py-16">조건에 맞는 회차가 없습니다.</div>
 {% endif %}
