@@ -126,8 +126,12 @@
       <div class="pt-3 border-t border-gray-100 mt-2">
         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">프로젝트</p>
         <a href="/zoom-summaries" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/zoom-summaries') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+                {% if request.url.path.startswith('/zoom-summaries') and not request.url.path.startswith('/zoom-summaries/stats') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
           🎥 Zoom 수업 요약
+        </a>
+        <a href="/zoom-summaries/stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                {% if request.url.path.startswith('/zoom-summaries/stats') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+          📊 Zoom 통계
         </a>
         <a href="/literacy/review" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
                 {% if request.url.path.startswith('/literacy/review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">

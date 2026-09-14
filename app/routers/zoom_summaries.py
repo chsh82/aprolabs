@@ -169,6 +169,126 @@ def zoom_summaries_list(
     })
 
 
+@router.get("/stats", response_class=HTMLResponse)
+def zoom_summaries_stats(
+    request: Request,
+    weeks: int = 8,
+    conn: sqlite3.Connection = Depends(get_zoom_db),
+):
+    """강사별 누적 통계 + 최근 N주 주간 추이.
+
+    /{class_meeting_id} 라우트보다 반드시 먼저 등록돼야 한다 - FastAPI는
+    경로 문자열의 {class_meeting_id}를 라우팅 시점에는 타입 체크 없이
+    매칭하므로(파이썬 타입힌트는 매칭 후 파싱 단계에서만 적용), 이 라우트가
+    뒤에 있으면 "/zoom-summaries/stats" 요청이 먼저 등록된
+    "/{class_meeting_id}" 라우트에 잡혀 int 파싱 실패(422)가 난다.
+    """
+    # 1) 강사별 세션 매핑 현황
+    session_rows = conn.execute("""
+        SELECT i.id AS instructor_id, i.name,
+               SUM(CASE WHEN s.status = 'mapped' THEN 1 ELSE 0 END) AS mapped,
+               SUM(CASE WHEN s.status = 'unmapped' THEN 1 ELSE 0 END) AS unmapped
+        FROM instructor i
+        LEFT JOIN session s ON s.instructor_id = i.id
+        GROUP BY i.id
+    """).fetchall()
+
+    # 2) 강사별 반 수
+    class_rows = conn.execute("""
+        SELECT i.id AS instructor_id, COUNT(DISTINCT cl.id) AS classes
+        FROM instructor i
+        LEFT JOIN class cl ON cl.instructor_id = i.id
+        GROUP BY i.id
+    """).fetchall()
+
+    # 3) 강사별 학생 시딩 수
+    student_rows = conn.execute("""
+        SELECT cl.instructor_id, COUNT(*) AS students
+        FROM student st
+        JOIN class cl ON cl.id = st.class_id
+        GROUP BY cl.instructor_id
+    """).fetchall()
+
+    # 4) 강사별 리포트 현황 (report는 class_meeting -> class로만 강사와 연결됨)
+    report_rows = conn.execute("""
+        SELECT cl.instructor_id,
+               COUNT(*) AS reports,
+               SUM(CASE WHEN r.status = 'draft' THEN 1 ELSE 0 END) AS draft,
+               SUM(CASE WHEN r.status = 'review' THEN 1 ELSE 0 END) AS review,
+               SUM(CASE WHEN r.status = 'published' THEN 1 ELSE 0 END) AS published
+        FROM report r
+        JOIN class_meeting cm ON cm.id = r.class_meeting_id
+        JOIN class cl ON cl.id = cm.class_id
+        GROUP BY cl.instructor_id
+    """).fetchall()
+    reports_by_instructor = {row["instructor_id"]: row for row in report_rows}
+    classes_by_instructor = {row["instructor_id"]: row["classes"] for row in class_rows}
+    students_by_instructor = {row["instructor_id"]: row["students"] for row in student_rows}
+
+    instructor_stats = []
+    for row in sorted(session_rows, key=lambda r: (r["mapped"] or 0), reverse=True):
+        iid = row["instructor_id"]
+        rpt = reports_by_instructor.get(iid)
+        instructor_stats.append({
+            "name": row["name"],
+            "mapped": row["mapped"] or 0,
+            "unmapped": row["unmapped"] or 0,
+            "classes": classes_by_instructor.get(iid, 0),
+            "students": students_by_instructor.get(iid, 0),
+            "reports": rpt["reports"] if rpt else 0,
+            "draft": rpt["draft"] if rpt else 0,
+            "review": rpt["review"] if rpt else 0,
+            "published": rpt["published"] if rpt else 0,
+        })
+
+    totals = {
+        "mapped": sum(r["mapped"] for r in instructor_stats),
+        "unmapped": sum(r["unmapped"] for r in instructor_stats),
+        "reports": sum(r["reports"] for r in instructor_stats),
+        "review": sum(r["review"] for r in instructor_stats),
+        "published": sum(r["published"] for r in instructor_stats),
+    }
+    pending_unresolved = conn.execute(
+        "SELECT COUNT(*) FROM pending_class_key WHERE resolved = 0"
+    ).fetchone()[0]
+
+    # 5) 최근 N주 주간 추이 - class_meeting.meeting_date(실제 수업 날짜) 기준.
+    #    report에는 자체 생성일시 컬럼이 없어(스키마상 corrected_at/approved_at뿐),
+    #    "그 수업이 있었던 주"를 기준으로 잡는 게 report 집계와도 일관된다.
+    meetings_by_week = conn.execute("""
+        SELECT strftime('%Y-%W', meeting_date) AS yw,
+               MIN(meeting_date) AS week_start, MAX(meeting_date) AS week_end,
+               COUNT(*) AS meetings
+        FROM class_meeting
+        GROUP BY yw
+        ORDER BY yw DESC
+        LIMIT ?
+    """, (weeks,)).fetchall()
+    reports_by_week = {
+        row["yw"]: row["reports"] for row in conn.execute("""
+            SELECT strftime('%Y-%W', cm.meeting_date) AS yw, COUNT(r.id) AS reports
+            FROM report r
+            JOIN class_meeting cm ON cm.id = r.class_meeting_id
+            GROUP BY yw
+        """).fetchall()
+    }
+    weekly_stats = [{
+        "week_start": row["week_start"],
+        "week_end": row["week_end"],
+        "meetings": row["meetings"],
+        "reports": reports_by_week.get(row["yw"], 0),
+    } for row in meetings_by_week]
+
+    return templates.TemplateResponse("zoom_summaries/stats.html", {
+        "request": request,
+        "instructor_stats": instructor_stats,
+        "totals": totals,
+        "pending_unresolved": pending_unresolved,
+        "weekly_stats": weekly_stats,
+        "weeks": weeks,
+    })
+
+
 @router.get("/{class_meeting_id}", response_class=HTMLResponse)
 def zoom_summary_detail(
     request: Request,

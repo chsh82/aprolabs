@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Zoom 통계 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-800">📊 Zoom 요약 파이프라인 통계</h2>
+    <p class="text-sm text-gray-400 mt-1">강사별 누적 현황 · 최근 {{ weeks }}주 추이 · 읽기 전용</p>
+  </div>
+  <a href="/zoom-summaries" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm rounded-lg transition">← 목록으로</a>
+</div>
+
+<!-- 전체 요약 카드 -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+  <div class="bg-white rounded-xl border border-gray-100 p-4">
+    <p class="text-xs text-gray-400 mb-1">매핑된 세션</p>
+    <p class="text-2xl font-bold text-gray-800">{{ totals.mapped }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 p-4">
+    <p class="text-xs text-gray-400 mb-1">미매핑 세션</p>
+    <p class="text-2xl font-bold text-amber-600">{{ totals.unmapped }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 p-4">
+    <p class="text-xs text-gray-400 mb-1">미확인 반코드</p>
+    <p class="text-2xl font-bold text-amber-600">{{ pending_unresolved }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 p-4">
+    <p class="text-xs text-gray-400 mb-1">리포트 초안</p>
+    <p class="text-2xl font-bold text-gray-800">{{ totals.reports }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-100 p-4">
+    <p class="text-xs text-gray-400 mb-1">검토완료 / 발행</p>
+    <p class="text-2xl font-bold text-green-600">{{ totals.review }} / {{ totals.published }}</p>
+  </div>
+</div>
+
+<!-- 강사별 통계 -->
+<div class="bg-white rounded-xl border border-gray-100 overflow-hidden mb-8">
+  <div class="px-4 py-3 border-b border-gray-100">
+    <h3 class="text-sm font-semibold text-gray-700">강사별 현황</h3>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+      <tr>
+        <th class="px-4 py-3 text-left">강사</th>
+        <th class="px-4 py-3 text-right">매핑</th>
+        <th class="px-4 py-3 text-right">미매핑</th>
+        <th class="px-4 py-3 text-right">반 수</th>
+        <th class="px-4 py-3 text-right">학생 시딩</th>
+        <th class="px-4 py-3 text-right">리포트</th>
+        <th class="px-4 py-3 text-right">검토완료</th>
+        <th class="px-4 py-3 text-right">발행</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for row in instructor_stats %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 font-medium text-gray-800">{{ row.name }}</td>
+        <td class="px-4 py-3 text-right">{{ row.mapped }}</td>
+        <td class="px-4 py-3 text-right {% if row.unmapped > 0 %}text-amber-600{% endif %}">{{ row.unmapped }}</td>
+        <td class="px-4 py-3 text-right">{{ row.classes }}</td>
+        <td class="px-4 py-3 text-right {% if row.students == 0 %}text-red-500{% endif %}">
+          {{ row.students }}
+          {% if row.students == 0 and row.classes > 0 %}<span class="text-xs">(미시딩)</span>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-right {% if row.reports == 0 and row.classes > 0 %}text-gray-300{% endif %}">{{ row.reports }}</td>
+        <td class="px-4 py-3 text-right">{{ row.review }}</td>
+        <td class="px-4 py-3 text-right">{{ row.published }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- 주간 추이 -->
+<div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+  <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+    <h3 class="text-sm font-semibold text-gray-700">최근 {{ weeks }}주 추이 (실제 수업 날짜 기준)</h3>
+    <form method="GET" class="flex items-center gap-2">
+      <label class="text-xs text-gray-400">기간</label>
+      <select name="weeks" onchange="this.form.submit()" class="text-xs border border-gray-200 rounded px-2 py-1">
+        {% for n in [4, 8, 12, 26] %}
+        <option value="{{ n }}" {% if weeks == n %}selected{% endif %}>{{ n }}주</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+      <tr>
+        <th class="px-4 py-3 text-left">기간</th>
+        <th class="px-4 py-3 text-right">수업 회차 수</th>
+        <th class="px-4 py-3 text-right">리포트 수</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for w in weekly_stats %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 text-gray-700">{{ w.week_start }} ~ {{ w.week_end }}</td>
+        <td class="px-4 py-3 text-right">{{ w.meetings }}</td>
+        <td class="px-4 py-3 text-right">{{ w.reports }}</td>
+      </tr>
+      {% endfor %}
+      {% if not weekly_stats %}
+      <tr><td colspan="3" class="px-4 py-8 text-center text-gray-400">데이터 없음</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
