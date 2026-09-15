@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from app.database import get_db, init_db
-from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, journal, zoom_summaries
+from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, journal, zoom_summaries, external_api
 from app.routers import auth as auth_router
 from app.routers import literacy_admin, literacy_api
 from app.vocab.routers import quiz_api as vocab_quiz_api
@@ -41,13 +41,19 @@ app.include_router(literacy_api.router)
 app.include_router(vocab_quiz_api.router)
 app.include_router(vocab_attempt_api.router)
 
+# 외부 서비스(momoai_web) 연동용 - 세션 쿠키가 아니라 X-API-Key로 자체 인증하므로
+# 아래 auth_middleware의 로그인 리디렉션 대상에서 빼야 한다(안 빼면 미로그인
+# 요청이 API 응답 대신 /login 302로 가로채인다).
+app.include_router(external_api.router)
+
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     """로그인하지 않은 경우 /login 으로 리디렉션"""
     public_paths = {"/login", "/logout"}
     if request.url.path in public_paths or request.url.path.startswith("/static") \
-            or request.url.path.startswith("/uploads"):
+            or request.url.path.startswith("/uploads") \
+            or request.url.path.startswith("/api/external"):
         return await call_next(request)
 
     user_id = get_current_user_id(request)
