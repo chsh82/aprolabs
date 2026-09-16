@@ -211,6 +211,12 @@
     {% if excerpt_image %}
     <form id="delete-excerpt-{{ d.id }}" method="POST" action="/momo-review/{{ doc.doc_id }}/image/{{ excerpt_image.id }}/delete?back={{ back|urlencode }}"></form>
     {% endif %}
+    <form method="POST" action="/momo-review/{{ doc.doc_id }}/discussion_qa/{{ d.id }}/generate-excerpt-image?back={{ back|urlencode }}" class="mt-1">
+      <button type="submit" class="px-3 py-1 bg-violet-100 hover:bg-violet-200 text-violet-800 text-xs font-medium rounded transition">
+        ✨ AI 삽화 생성{{ '(다시 생성)' if excerpt_image else '' }}
+      </button>
+      <span class="text-xs text-gray-400 ml-1">Gemini로 문항 내용에 맞는 삽화를 만들어 발췌문 이미지 자리에 넣습니다(몇 초 걸림)</span>
+    </form>
     <details class="mt-2">
       <summary class="text-xs text-gray-400 cursor-pointer">원문 보기</summary>
       <pre class="text-xs text-gray-500 whitespace-pre-wrap bg-gray-50 rounded p-2 mt-1">{{ d.raw_text }}</pre>

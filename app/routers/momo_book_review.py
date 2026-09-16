@@ -355,6 +355,58 @@ async def momo_review_upload_excerpt_image(doc_id: str, item_id: int, file: Uplo
     return await _upload_slot_image(doc_id, "discussion_qa", item_id, "excerpt_image_path", "excerpt", file, back)
 
 
+def _generate_slot_image(doc_id, item_id, back):
+    """Gemini로 발췌문 삽화를 생성해 excerpt_image_path에 꽂는다(discussion_qa 전용).
+    _upload_slot_image와 같은 저장 규칙(extracted_images/{doc_id}/, document_image 기록)을
+    쓰되, 파일을 업로드받는 대신 생성한다."""
+    import sys
+    generate_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+                                 "momo_book_db", "generate")
+    if generate_dir not in sys.path:
+        sys.path.insert(0, generate_dir)
+    from image_gen import generate_illustration
+    from extract_worksheet_json import season_class
+
+    conn = _db()
+    item = conn.execute(
+        "SELECT id, question_text, excerpt_text, source_page FROM discussion_qa "
+        "WHERE id = ? AND doc_id = ?", (item_id, doc_id)
+    ).fetchone()
+    doc = conn.execute("SELECT quarter FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
+    if not item or not doc:
+        conn.close()
+        raise HTTPException(status_code=404, detail="항목을 찾을 수 없습니다.")
+
+    doc_dir = os.path.join(_IMAGES_DIR, doc_id)
+    fname = f"ai_{item_id}_{uuid.uuid4().hex[:8]}.png"
+    out_path = os.path.join(doc_dir, fname)
+
+    ok = generate_illustration(item["question_text"], item["excerpt_text"],
+                                season_class(doc["quarter"]), out_path)
+    if not ok:
+        conn.close()
+        raise HTTPException(status_code=502, detail="이미지 생성에 실패했습니다(Gemini 응답에 이미지가 없음). 다시 시도해 주세요.")
+
+    file_path = f"{doc_id}/{fname}"
+    conn.execute(
+        "INSERT INTO document_image (doc_id, image_type, source_page, file_path, extraction_confidence) "
+        "VALUES (?, 'excerpt', ?, ?, 1.0)",
+        (doc_id, item["source_page"], file_path),
+    )
+    conn.execute(
+        "UPDATE discussion_qa SET excerpt_image_path = ? WHERE id = ? AND doc_id = ?",
+        (file_path, item_id, doc_id),
+    )
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
+
+
+@router.post("/{doc_id}/discussion_qa/{item_id}/generate-excerpt-image")
+def momo_review_generate_excerpt_image(doc_id: str, item_id: int, back: str = ""):
+    return _generate_slot_image(doc_id, item_id, back)
+
+
 @router.post("/{doc_id}/essay_prompt/{item_id}/upload-image")
 async def momo_review_upload_essay_image(doc_id: str, item_id: int, file: UploadFile = File(...), back: str = ""):
     return await _upload_slot_image(doc_id, "essay_prompt", item_id, "image_path", "essay", file, back)
