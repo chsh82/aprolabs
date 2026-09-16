@@ -1,0 +1,791 @@
+/* =====================================================================
+   모모의 책장 학습지 — 정적 스타일시트
+   원본: 신화의숲 1차시 학습지 v2.dc.html (겨울·고전분기 · LV5 · 초5-6 톤)
+   구조: 고정색 → 분기 테마(main/sub/point) → 학년 톤(본문/행간/괘선/도장)
+        → 페이지 문법(@page, .page) → 블록 컴포넌트
+   가이드-샘플 불일치/설계 판단은 docs/PORTING_NOTES.md 참고.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   0. 로컬 폰트 (Google Fonts CDN 대체)
+   커버리지: 한글 완성형 11,172자 전체 + 한글 자모 + 기본 라틴/숫자/문장부호 +
+   Noto Serif/Sans KR 기본 한자 세트(원본 문항DB 전수 스캔으로 확인한 177/181자
+   커버 확인 - 나머지 4자는 알려진 폰트 손상 문서의 깨진 바이트라 제외함).
+   자세한 내용은 docs/FONT_COVERAGE.md 참고, 검증은 scripts/check-font-coverage.js.
+   934개의 유니코드-레인지 분할 파일(assets/fonts/fonts.css에 목록)로 구성되며,
+   브라우저는 실제 페이지에 쓰인 글자가 속한 레인지의 파일만 내려받는다(로컬
+   서빙이라도 이 지연 로딩은 그대로 동작함) - 파일 총량(약 21MB)은 커도 실제
+   로드량은 한 문서에서 쓰는 글자 수만큼만 든다. */
+@import url('assets/fonts/fonts.css');
+
+/* ---------------------------------------------------------------------
+   1. 기본 리셋 + 페이지 문법 (doc-page.js/support.js 대체)
+   --------------------------------------------------------------------- */
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #e8e8e8; } /* 화면에서 페이지 사이 배경 - 인쇄에는 안 나감(아래 @media print 참고) */
+a { color: #1C2A39; }
+a:hover { color: #5A3E36; }
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+.page {
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  break-after: page;
+  background: #fff;
+  padding: 15mm;
+  display: flex;
+  box-sizing: border-box;
+}
+.page:last-child { break-after: auto; }
+
+/* 화면(스크롤)에서만 페이지 경계가 보이도록 그림자·간격을 줌 - 인쇄에는 안 나감 */
+@media screen {
+  body { padding: 12mm 0; display: flex; flex-direction: column; align-items: center; gap: 8mm; }
+  .page { box-shadow: 0 2px 14px rgba(0, 0, 0, 0.28); margin: 0; }
+}
+@media print {
+  body { padding: 0; margin: 0; }
+}
+
+/* ---------------------------------------------------------------------
+   2. 디자인 토큰 - 고정색(분기 무관) + 분기 테마 + 학년 톤
+   --------------------------------------------------------------------- */
+.worksheet {
+  /* 1.1 고정 색 */
+  --ink: #16150F;
+  --paper: #FFFDF7;
+  --rule: #C9C0AB;
+  --ash: #837E70;
+
+  /* 답란 배경(괘선) - SVG 타일 이미지 한 장을 --ruleH 높이로 반복시킴.
+     최초 구현은 repeating-linear-gradient(원본과 동일한 값)였는데, Chromium의
+     PDF 인쇄 경로가 <div> 배경에 반복 그라디언트를 쓰면 표 셀 안에서 셀마다
+     제각각 다르게(멋대로 안 보이거나 위치가 틀어져서) 페인트하는 버그가 실측
+     확인됨(<textarea>로 바꾸면 버그가 사라지는 것까지 확인함 - PORTING_NOTES.md
+     "답란 배경 렌더링" 절 참고). textarea는 되돌리지 않고(이번 작업 지침),
+     그 대신 SVG 타일 배경으로 바꿔서 같은 버그를 회피함 - 색은 --rule과 동일한
+     값을 SVG 안에 그대로 옮겨 적었을 뿐 새 색을 추가한 게 아님. */
+  --ans: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='30' viewBox='0 0 4 30'%3E%3Crect x='0' y='28' width='4' height='2' fill='%23C9C0AB'/%3E%3C/svg%3E");
+
+  font-family: 'Noto Sans KR', sans-serif;
+  /* 본문 크기(가이드 1.4 "본문" 값)는 여기 루트 font-size 하나로 통제함 - 본문 안의
+     모든 텍스트가 rem 단위라서, 이 값이 바뀌면 표·캡션·라벨까지 전부 비례해서
+     같이 바뀐다("모든 블록에 실제로 영향" 요건, PORTING_NOTES.md 2절 참고).
+     16px는 원본이 명시적으로 지정한 적 없는 브라우저 기본값을 그대로 명문화한
+     것이고, --tone-scale은 톤마다 이 16px을 몇 % 키우고 줄일지의 배율이다
+     (elem56은 배율 1 = 지금 렌더링 그대로, 다른 톤은 elem56 대비 비율로 계산함
+     - 가이드 1.4 표의 절대 px가 아니라 "elem56 대비 몇 배"라는 비율만 가져다 씀). */
+  font-size: calc(16px * var(--tone-scale, 1));
+  color: var(--ink);
+}
+
+/* --- 분기 테마 (가이드 1.2) ---
+   main-2/gold는 가이드가 겨울에만 값을 주고 나머지 3개 분기는 값이 없음(가이드 공백).
+   샘플이 있는 q-winter는 샘플 값을 그대로 옮겼고, 나머지는 "PORTING_NOTES.md의
+   main-2/gold 계산식" 절 참고 - 디자인 확정 전까지 임시값이라는 뜻으로 주석을 남김. */
+.q-winter {
+  --main: #1C2A39;
+  --sub: #F5F2E7;
+  --point: #5A3E36;
+  --main-2: #31465C; /* 가이드에 명시된 값(샘플로 검증됨) */
+  --gold: #C8A96A;   /* 가이드에 명시된 값(샘플로 검증됨) */
+}
+.q-spring {
+  --main: #3F7A46;
+  --sub: #FFF8E7;
+  --point: #E2703A;
+  --main-2: #5C9B63; /* 미검증: main을 밝게 한 계산값 - PORTING_NOTES 참고 */
+  --gold: #C8A96A;   /* 미검증: 겨울 gold 재사용 - PORTING_NOTES 참고 */
+}
+.q-summer {
+  --main: #0A6E92;
+  --sub: #E8F8FF;
+  --point: #B8830F;
+  --main-2: #3A8FAE; /* 미검증: main을 밝게 한 계산값 - PORTING_NOTES 참고 */
+  --gold: #C8A96A;   /* 미검증: 겨울 gold 재사용 - PORTING_NOTES 참고 */
+}
+.q-autumn {
+  --main: #836B5D;
+  --sub: #E8DCC3;
+  --point: #A8761F;
+  --main-2: #9C877A; /* 미검증: main을 밝게 한 계산값 - PORTING_NOTES 참고 */
+  --gold: #C8A96A;   /* 미검증: 겨울 gold 재사용 - PORTING_NOTES 참고 */
+}
+
+/* --- 학년 톤 (가이드 1.4) — 이제 4개 값 전부 실제로 렌더링에 영향을 준다 ---
+   가이드 1.4 표의 절대값(15.5/15/14.5px, 1.85/1.8/1.75)을 그대로 쓰지 않고
+   "elem56 대비 비율"로 환산해서 --tone-scale/--tone-lh-scale에 넣었다.
+   이유: 실제 샘플(v2, elem56 톤)은 본문 요소들이 이미 고정 rem/줄간격을 갖고
+   렌더링되고 있고, 그 값이 가이드의 elem56 절대값(15px/1.8)과 정확히 일치하는
+   것도 아니다. "elem56=배율 1"로 못박아 두면 elem56은 절대 안 바뀌면서
+   (요청하신 "포팅 직후와 픽셀 동일" 조건을 만족), 다른 두 톤은 가이드가 의도한
+   "elem56보다 몇 % 크다/작다"라는 상대 관계만 그대로 가져오게 된다.
+     elem34 scale = 15.5/15 = 1.0333..., lh-scale = 1.85/1.8 = 1.0278...
+     mid   scale = 14.5/15 = 0.9667...,  lh-scale = 1.75/1.8 = 0.9722...
+   도장(stamp) 크기/회전: 가이드 표는 elem56 기준을 2.05em/-2deg로 쓰는데
+   실측 샘플은 1.9em/0deg다(1.4절/PORTING_NOTES.md 참고). 여기서도 가이드
+   literal 값 대신, elem56=샘플 실측값(1.9em, 0deg)에 가이드가 의도한 "elem56 대비
+   변화량"만 그대로 적용했다.
+     크기: elem34 = 1.9em * (2.15/2.05) ≈ 1.99em, mid = 1.9em * (1.95/2.05) ≈ 1.81em
+     회전: 가이드는 elem56=-2deg를 기준으로 elem34=-3deg(−1deg 차이),
+           mid=0deg(+2deg 차이)이므로, elem56=0deg(샘플 실측)에 그 차이만 더함
+           → elem34 = -1deg, mid = +2deg */
+.tone-elem34 {
+  --tone-scale: 1.03333;
+  --tone-lh-scale: 1.02778;
+  --ruleH: 8mm;
+  --stamp-size: 1.99em;
+  --stamp-rotate: -1deg;
+}
+.tone-elem56 {
+  --tone-scale: 1;
+  --tone-lh-scale: 1;
+  --ruleH: 7.5mm;
+  --stamp-size: 1.9em;
+  --stamp-rotate: 0deg;
+}
+.tone-mid {
+  --tone-scale: 0.96667;
+  --tone-lh-scale: 0.97222;
+  --ruleH: 7mm;
+  --stamp-size: 1.81em;
+  --stamp-rotate: 2deg;
+}
+
+/* ---------------------------------------------------------------------
+   3. 표지 (.cover)
+   --------------------------------------------------------------------- */
+.cover {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--main);
+  color: var(--sub);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 16mm 12mm;
+}
+.cover__stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 12% 9%, rgba(245,242,231,.5) 1.4px, transparent 1.6px),
+    radial-gradient(circle at 26% 17%, rgba(200,169,106,.6) 1.7px, transparent 1.9px),
+    radial-gradient(circle at 38% 6%, rgba(245,242,231,.35) 1.1px, transparent 1.3px),
+    radial-gradient(circle at 8% 32%, rgba(245,242,231,.3) 1.1px, transparent 1.3px),
+    radial-gradient(circle at 88% 12%, rgba(245,242,231,.45) 1.5px, transparent 1.7px),
+    radial-gradient(circle at 76% 24%, rgba(200,169,106,.5) 1.6px, transparent 1.8px),
+    radial-gradient(circle at 93% 38%, rgba(245,242,231,.3) 1.2px, transparent 1.4px),
+    radial-gradient(circle at 6% 62%, rgba(245,242,231,.35) 1.3px, transparent 1.5px),
+    radial-gradient(circle at 17% 78%, rgba(200,169,106,.45) 1.5px, transparent 1.7px),
+    radial-gradient(circle at 91% 71%, rgba(245,242,231,.4) 1.4px, transparent 1.6px),
+    radial-gradient(circle at 82% 88%, rgba(245,242,231,.3) 1.2px, transparent 1.4px),
+    radial-gradient(circle at 50% 95%, rgba(200,169,106,.4) 1.4px, transparent 1.6px);
+}
+.cover__brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6mm;
+  width: 100%;
+}
+.cover__logo { height: 13mm; width: auto; display: block; opacity: .92; }
+.cover__level-row {
+  width: 100%;
+  max-width: 30rem;
+  border-top: 1px solid var(--gold);
+  border-bottom: 1px solid rgba(245,242,231,.28);
+  padding: 3.5mm 0;
+}
+.cover__level-row p {
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+  font-size: .92rem;
+  letter-spacing: .3em;
+  color: var(--gold);
+}
+.cover__title-block { position: relative; }
+.cover__title {
+  font-family: 'Gowun Batang', serif;
+  font-weight: 700;
+  letter-spacing: .02em;
+  font-size: 3.4rem;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--sub);
+}
+.cover__byline {
+  margin: .7em 0 0;
+  font-family: 'Gowun Batang', serif;
+  color: rgba(245,242,231,.72);
+  font-size: 1.05rem;
+  letter-spacing: .1em;
+}
+.cover__divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .8rem;
+  margin: 6mm 0 0;
+}
+.cover__divider span:nth-child(1) { width: 5rem; height: 1px; background: linear-gradient(to right, transparent, var(--gold)); }
+.cover__divider span:nth-child(2) { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; }
+.cover__divider span:nth-child(3) { width: 5rem; height: 1px; background: linear-gradient(to left, transparent, var(--gold)); }
+.cover__image {
+  position: relative;
+  display: block;
+  width: 76mm;
+  height: auto;
+  border: 1px solid var(--gold);
+  outline: 1px solid rgba(245,242,231,.22);
+  outline-offset: 4mm;
+}
+.cover__quote {
+  position: relative;
+  font-family: 'Gowun Batang', serif;
+  color: var(--sub);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 1.45rem;
+  line-height: 2;
+  max-width: 26rem;
+  font-weight: 400;
+}
+
+/* ---------------------------------------------------------------------
+   4. 내지 공통 골격 (.sheet, .sheet-head, .half, .footer)
+   --------------------------------------------------------------------- */
+.sheet {
+  flex: 1;
+  border: 12mm solid var(--main);
+  background: var(--sub);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 5mm 6mm 4mm;
+  min-height: 0;
+}
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  border-bottom: 1px solid var(--main);
+  padding-bottom: 2mm;
+}
+.sheet-head__logo { height: 10mm; width: auto; display: block; }
+.sheet-head__meta { flex: 1; text-align: right; }
+.sheet-head__step {
+  margin: 0;
+  font-size: .64rem;
+  letter-spacing: .24em;
+  color: var(--ash);
+}
+.sheet-head__title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: .15rem 0 0;
+  color: var(--main);
+}
+.sheet-hr {
+  border-top: 2px solid var(--main);
+  margin: 1.2mm 0 5mm;
+}
+
+.half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+/* 반면 사이 간격 - 인접 형제 선택자에 암묵적으로 기대지 않고 필요한 half에
+   명시적으로 붙임(원본 값 그대로: 대부분 6mm, 09페이지 하나만 5mm). */
+.half--gap { margin-top: 6mm; }
+.half--gap-sm { margin-top: 5mm; }
+/* 발췌문이 그림 없이 혼자 반면을 차지하게 되는 경우(생성기가 "발췌문+질문+답"이 한
+   반면에 안 들어간다고 판정해서 발췌문만 따로 뺀 반면 - scripts/paginate.js 참고)에
+   씀. .excerpt는 flex:1이 아니라서 그냥 두면 가이드 규칙 5("빈 여백을 장식으로 채우지
+   않는다")를 깨고 아래가 휑하게 비므로, 세로 가운데 정렬로 여백을 자연스럽게 만든다. */
+.half--center { justify-content: center; }
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--main-2);
+  padding-top: 2mm;
+  margin-top: 4mm;
+  font-size: .6rem;
+  letter-spacing: .1em;
+  color: var(--ash);
+}
+.footer__brand { flex: 1; }
+.footer__page { flex: 0 0 auto; color: var(--main); font-weight: 700; }
+.footer__book { flex: 1; text-align: right; color: var(--main); font-weight: 700; }
+
+/* ---------------------------------------------------------------------
+   5. 1단계 - 어휘 표(.vocab-table) / OX(.ox-list)
+   --------------------------------------------------------------------- */
+.step-intro {
+  color: var(--main);
+  font-weight: 600;
+  font-size: .92rem;
+  margin: 0 0 2.5mm;
+}
+.step-intro--tight { margin: 0 0 1mm; } /* OX 안내문: 표 아래 붙어서 기본 2.5mm보다 좁음(원본 그대로) */
+.vocab-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.vocab-table th {
+  border: 1px solid var(--main);
+  background: var(--main);
+  color: var(--sub);
+  padding: .4em .7em;
+  font-size: .8rem;
+  font-weight: 700;
+  text-align: left;
+  letter-spacing: .06em;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.vocab-table th:first-child { width: 38%; }
+.vocab-table td {
+  border: 1px solid var(--main-2);
+  background: var(--paper);
+  vertical-align: top;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.vocab-table td.vocab-word-cell { padding: .55em .7em; }
+.vocab-table td.vocab-answer-cell { padding: .3em .5em; }
+.vocab-word {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--main);
+}
+.vocab-word__page {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: .66em;
+  color: var(--ash);
+  margin-left: .5em;
+  font-weight: 400;
+}
+.vocab-def {
+  color: #4A473E;
+  margin: .2em 0 0;
+  font-size: .82rem;
+  line-height: calc(1.6 * var(--tone-lh-scale, 1));
+}
+
+.ox-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 2px solid var(--main);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.ox-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .3rem 0;
+  border-bottom: 1px solid var(--main-2);
+}
+.ox-item__text {
+  flex: 1;
+  margin: 0;
+  font-size: .9rem;
+  line-height: calc(1.65 * var(--tone-lh-scale, 1));
+}
+.ox-item__page { color: var(--ash); font-size: .78em; margin-left: .5em; }
+.ox-item__marks { display: flex; gap: .4rem; flex: 0 0 auto; }
+.ox-item__mark {
+  display: inline-flex;
+  width: 8mm;
+  height: 8mm;
+  border: 1px solid var(--main);
+  background: var(--paper);
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  color: var(--main);
+  font-weight: 700;
+  font-size: .85rem;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ---------------------------------------------------------------------
+   6. 2단계 - 독해유형 라벨(.rt-label) / 발췌문(.excerpt) / 문항(.q) / 도장(.stamp)
+      / 그림(.figure-block) / 참고자료(.reference) / 답란(.answer-lines)
+   --------------------------------------------------------------------- */
+.rt-label {
+  display: flex;
+  align-items: center;
+  gap: .7em;
+  margin: 0 0 3mm;
+}
+.rt-label__text {
+  font-size: .7rem;
+  letter-spacing: .16em;
+  color: var(--sub);
+  background: var(--main);
+  font-weight: 700;
+  padding: .36em 1em;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.rt-label__rule { flex: 1; height: 1px; background: var(--main-2); }
+
+.excerpt {
+  font-family: 'Noto Serif KR', serif;
+  margin: 0 0 4mm;
+  padding: .8em 1em .65em;
+  border: 1px solid var(--main-2);
+  border-left: 3px solid var(--main);
+  background: var(--paper);
+  font-size: .9rem;
+  line-height: calc(1.7 * var(--tone-lh-scale, 1));
+  color: #34302A;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.excerpt--tight { margin-bottom: 3mm; } /* 09페이지: 그림이 바로 이어져서 기본 4mm보다 좁음(원본 그대로) */
+.excerpt__cite {
+  display: block;
+  text-align: right;
+  font-style: normal;
+  font-size: .76em;
+  color: var(--point);
+  margin-top: .5em;
+  letter-spacing: .06em;
+}
+
+.q {
+  display: flex;
+  gap: .7rem;
+  align-items: baseline;
+  margin-bottom: 2.5mm;
+}
+.stamp {
+  font-family: 'Noto Serif KR', serif;
+  flex: 0 0 auto;
+  background: var(--main);
+  color: var(--sub);
+  font-weight: 700;
+  min-width: var(--stamp-size);
+  height: var(--stamp-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(var(--stamp-rotate));
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.stamp--sub { font-size: .9em; padding: 0 .35em; } /* "8-1", "8-2"처럼 두 글자 이상일 때 */
+.q--tight { margin-bottom: 1.5mm; } /* 8-2 문항: 아래 예시문이 곧바로 붙어서 기본 2.5mm보다 좁음(원본 그대로) */
+.q--tight2 { margin-bottom: 2mm; } /* 9번 문항: 아래 참고자료 박스가 곧바로 붙어서 기본 2.5mm보다 좁음(원본 그대로) */
+.q__text {
+  font-weight: 700;
+  font-size: .94rem;
+  line-height: calc(1.7 * var(--tone-lh-scale, 1));
+  margin: 0;
+  color: var(--main);
+}
+.q__example {
+  font-size: .8rem;
+  color: var(--point);
+  margin: .2rem 0 0;
+}
+
+.figure-block {
+  margin: 0;
+  border: 1px solid var(--main-2);
+  background: var(--paper);
+  padding: 2mm;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.figure-block img { display: block; flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+.figure-block figcaption {
+  margin: 2mm 0 0;
+  font-size: .7rem;
+  letter-spacing: .04em;
+  color: var(--point);
+  text-align: center;
+}
+
+.reference {
+  border: 1px solid var(--main-2);
+  border-top: 2px solid var(--point);
+  background: var(--paper);
+  padding: .7em .9em;
+  margin: 0 0 3mm;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.reference__label {
+  margin: 0 0 .4em;
+  font-size: .62rem;
+  letter-spacing: .18em;
+  color: var(--point);
+  font-weight: 700;
+}
+.reference__body { margin: 0; font-size: .78rem; line-height: calc(1.7 * var(--tone-lh-scale, 1)); color: #4A473E; }
+.reference__source { margin: .4em 0 0; text-align: right; font-size: .7rem; color: var(--ash); }
+
+/* 답란 - 원본 textarea를 div로 교체(인쇄용). flex:1로 남는 높이를 흡수해서
+   페이지가 항상 꽉 차는 동작은 그대로 유지. 최소 높이는 괘선 2줄(15mm) 보장. */
+.answer-lines {
+  flex: 1;
+  min-height: 15mm; /* 괘선 2줄(7.5mm 톤 기준) 이상 보장 */
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  line-height: var(--ruleH);
+  color: var(--ink);
+  padding: 0 .5rem;
+  background-image: var(--ans);
+  background-repeat: repeat;
+  background-size: 4px var(--ruleH); /* 가로로도 작은 타일을 반복(100% 통가로늘림이면 확대율이 커져 선이 옅어짐) */
+  background-color: transparent;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.answer-lines--table { padding: 0 .3rem; min-height: 15mm; flex: none; height: 15mm; }
+.answer-lines--tall { height: 22.5mm; flex: none; } /* 8-1 표처럼 표 안 답칸이 고정 높이일 때 */
+
+/* ---------------------------------------------------------------------
+   7. 표 형태 문항(.grid-table) - 8-1 "상표" 문항 등
+   --------------------------------------------------------------------- */
+.grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+  table-layout: fixed;
+  flex: 1;
+}
+.grid-table th {
+  border: 1px solid var(--main);
+  background: var(--main);
+  color: var(--sub);
+  padding: .4em .6em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+/* 8-1 "상표" 표의 열 너비(원본 값 그대로) - 다른 문항의 grid-table은 3열 균등 분배 */
+.grid-table--brand th:nth-child(1) { width: 20%; }
+.grid-table--brand th:nth-child(2) { width: 38%; }
+.grid-table td {
+  border: 1px solid var(--main-2);
+  background: var(--paper);
+  vertical-align: middle;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.grid-table td.grid-table__label { padding: .5em .6em; text-align: center; }
+.grid-table td.grid-table__label b { color: var(--main); }
+.grid-table td.grid-table__desc { padding: .5em .7em; line-height: calc(1.6 * var(--tone-lh-scale, 1)); color: #4A473E; }
+.grid-table td.grid-table__answer { padding: .3em .4em; vertical-align: top; }
+
+/* ---------------------------------------------------------------------
+   8. 3단계 - 글감 밴드(.topic-band) / 배경 인용(.bg-quote) / Step 안내(.step-head)
+   --------------------------------------------------------------------- */
+.topic-band {
+  background: var(--main);
+  color: var(--sub);
+  text-align: center;
+  padding: 3.5mm 1rem;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.topic-band__label {
+  margin: 0;
+  font-size: .62rem;
+  letter-spacing: .24em;
+  color: rgba(245,242,231,.6);
+}
+.topic-band__title {
+  font-family: 'Gowun Batang', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 1.5mm 0 0;
+}
+
+.bg-quote {
+  position: relative;
+  overflow: hidden;
+  margin-top: 5mm;
+  border: 1px solid var(--main-2);
+  min-height: 46mm;
+  display: flex;
+  align-items: center;
+}
+.bg-quote__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .6;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.bg-quote__tint {
+  position: absolute;
+  inset: 0;
+  background: rgba(245,242,231,.28);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.bg-quote__text {
+  position: relative;
+  font-family: 'Noto Serif KR', serif;
+  margin: 0;
+  padding: 5mm 6mm;
+  border: 0;
+  font-size: .9rem;
+  line-height: calc(1.85 * var(--tone-lh-scale, 1));
+  color: #2A2620;
+  text-align: center;
+}
+
+.step-head {
+  font-family: 'Noto Serif KR', serif;
+  display: flex;
+  align-items: baseline;
+  gap: .7em;
+  color: var(--main);
+  font-size: .98rem;
+  margin: 0 0 2.5mm;
+  border-bottom: 1px solid var(--main-2);
+  padding-bottom: 2mm;
+}
+.step-head small {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  color: var(--ash);
+  font-size: .76rem;
+}
+.memo-q { font-size: .9rem; line-height: calc(1.7 * var(--tone-lh-scale, 1)); margin: 0; }
+.memo-q b { color: var(--main); }
+.memo-q--spaced { margin: 4mm 0 2mm; } /* Step1의 두 번째 질문: 위 답란과 떨어져서 여백이 더 큼(원본 그대로) */
+.memo-example {
+  font-size: .78rem;
+  color: var(--point);
+  margin: .5mm 0 2mm;
+  padding-left: 1.1rem;
+}
+.memo-example--flush { padding-left: 0; margin: 0 0 2mm; } /* Step2 안내문: 들여쓰기 없이 바로 시작(원본 그대로) */
+.step-head--spaced { margin: 6mm 0 2mm; } /* Step2 제목: 위 답란과 떨어져서 여백이 더 큼(원본 그대로) */
+
+/* 3단계 본문 컨테이너(신규, 생성기 전용) - topic-band/bg-quote 아래 남는 공간을 전부 쓴다.
+   원본(v2.dc.html)은 이 부분이 인라인 style이었는데, 생성기는 outline_questions 개수가
+   문서마다 달라서(2~4개) 고정 마크업이 아니라 반복 렌더링이 필요해 클래스로 분리함.
+   자식으로 오는 여러 개의 .answer-lines(flex:1)가 남는 높이를 똑같이 나눠 가진다 -
+   원본에서 두 개의 Step1 답란이 같은 방식으로 공간을 나눠 가졌던 것과 동일한 동작. */
+.step3-body { flex: 1; display: flex; flex-direction: column; min-height: 0; margin-top: 6mm; }
+
+/* =====================================================================
+   9. 신규 블록 3종 (문항DB 유형 대응) - 기존 블록과 같은 톤/재료로 구성
+   ===================================================================== */
+
+/* 9-1. .blk-choice - 선택지(체크박스+라벨) + 이유 답란 */
+.blk-choice { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.blk-choice__options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5mm;
+  margin: 0 0 2.5mm;
+}
+.blk-choice__option {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  font-size: .9rem;
+  line-height: calc(1.6 * var(--tone-lh-scale, 1));
+  color: var(--ink);
+}
+.blk-choice__box {
+  flex: 0 0 auto;
+  width: 4.2mm;
+  height: 4.2mm;
+  margin-top: .2em;
+  border: 1.4px solid var(--main);
+  background: var(--paper);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.blk-choice__reason-label {
+  font-size: .78rem;
+  color: var(--ash);
+  margin: 1mm 0 1.5mm;
+}
+
+/* 9-2. .blk-blanks - 라벨 붙은 짧은 답란 2~4개, 세로 배열 */
+.blk-blanks { flex: 1; display: flex; flex-direction: column; min-height: 0; gap: 2mm; }
+.blk-blanks__row { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.blk-blanks__label {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--main);
+  margin: 0 0 1mm;
+}
+.blk-blanks__row .answer-lines { flex: 1; min-height: 11mm; }
+
+/* 9-3. .blk-fallback - 질문 + 괘선 답란만 있는 최소 형태(유형 불명 문항의 기본값). */
+.blk-fallback { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.blk-fallback__text {
+  font-size: .94rem; /* .q__text와 동일 - 루트 font-size가 톤에 따라 바뀌므로 이 rem도 같이 바뀜 */
+  line-height: calc(1.7 * var(--tone-lh-scale, 1));
+  font-weight: 700;
+  color: var(--main);
+  margin: 0 0 2.5mm;
+}
+
+/* =====================================================================
+   10. 화면 미리보기 전용 챙식(라벨) - 인쇄에는 안 나감
+   ===================================================================== */
+@media screen {
+  .page { position: relative; }
+  .page[data-screen-label]::before {
+    content: attr(data-screen-label);
+    position: absolute;
+    top: -6mm;
+    left: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10px;
+    color: #666;
+    letter-spacing: .05em;
+  }
+}
+@media print {
+  .page[data-screen-label]::before { content: none; }
+}

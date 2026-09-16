@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반면 오버플로 프로브 - 모모의 책장 학습지 생성기</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!--
+  scripts/paginate.js가 이 페이지를 열어서 window.renderHtml(html, tone)을 호출하고,
+  #probe .half의 scrollHeight > clientHeight로 실제 콘텐츠(생성기가 만든 진짜 HTML
+  조각)가 반면에 들어가는지 판정한다. build/measure.html과 같은 원리이지만, 그쪽은
+  대표 분량으로 채운 합성(fillerText) 콘텐츠를 재는 용도이고 이 파일은 생성기가
+  실제로 만든 HTML 조각을 그대로 재는 용도라 별도 파일로 둠(측정 목적이 다름).
+-->
+<div class="worksheet q-winter" id="root">
+<section class="page" data-screen-label="오버플로 프로브">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">오버플로 프로브</p>
+        <h2 class="sheet-head__title">probe.html</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half" id="probe"></div>
+    <!-- measure.html과 같은 이유로 빈 반면을 하나 더 둔다(.half가 항상 sheet 절반
+         높이만 받도록 - 이게 없으면 probe가 전체 높이를 받아 실제보다 여유롭게 측정됨). -->
+    <div class="half half--gap" id="probe-sibling"></div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 오버플로 프로브</span>
+      <span class="footer__page">-</span>
+      <span class="footer__book">probe.html</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+function renderHtml(html, tone) {
+  const root = document.getElementById('root');
+  root.className = 'worksheet q-winter ' + (tone || 'tone-elem56');
+  const probe = document.getElementById('probe');
+  probe.innerHTML = html;
+}
+window.renderHtml = renderHtml;
+</script>
+</body>
+</html>

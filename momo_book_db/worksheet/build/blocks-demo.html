@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문항 블록 카탈로그 - 모모의 책장 학습지</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* 데모 전용 라벨(실제 학습지에는 없음 - 카탈로그 식별용) */
+  .demo-label {
+    position: absolute;
+    top: -5mm;
+    left: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 9px;
+    letter-spacing: .04em;
+    color: #999;
+  }
+  .half { position: relative; }
+</style>
+</head>
+<body>
+<div class="worksheet q-winter tone-elem56">
+
+<!-- 1/6: excerpt, short -->
+<section class="page" data-screen-label="블록 1/11-2/11">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">블록 카탈로그</p>
+        <h2 class="sheet-head__title">1. excerpt &nbsp;/&nbsp; 2. short</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half">
+      <span class="demo-label">.excerpt — 발췌문 박스 + 출처</span>
+      <p class="rt-label"><span class="rt-label__text">비판적 독해</span><span class="rt-label__rule"></span></p>
+      <blockquote class="excerpt">발췌문 박스는 본문에서 인용한 문단을 담는다. 왼쪽 굵은 선(--main)과 얇은 테두리(--main-2)로 감싸고, 배경은 --paper를 쓴다. 아래 우측에 출처 쪽수를 --point 색으로 작게 적는다.
+        <cite class="excerpt__cite">p.00</cite>
+      </blockquote>
+    </div>
+
+    <div class="half half--gap">
+      <span class="demo-label">2. short — 도장 번호 + 질문 + 괘선 답란(.q + .answer-lines)</span>
+      <div class="q">
+        <span class="stamp">1</span>
+        <p class="q__text">가장 기본적인 문항 형태입니다. 도장(번호) 옆에 질문 텍스트가 오고, 그 아래 괘선 답란이 남는 공간을 전부 채웁니다.</p>
+      </div>
+      <div class="answer-lines" role="textbox" aria-label="데모 답란"></div>
+    </div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 블록 카탈로그</span>
+      <span class="footer__page">1</span>
+      <span class="footer__book">데모 · LV 5</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2/6: figure, vocab-table -->
+<section class="page" data-screen-label="블록 3/11-4/11">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">블록 카탈로그</p>
+        <h2 class="sheet-head__title">3. figure &nbsp;/&nbsp; 4. vocab-table</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half">
+      <span class="demo-label">.figure-block — 그림 + 캡션(paper 바탕, main-2 테두리)</span>
+      <figure class="figure-block">
+        <img src="assets/images/fig1-narcissus.png" alt="데모 그림">
+        <figcaption>그림 0 &nbsp;그림 블록 캡션 예시</figcaption>
+      </figure>
+    </div>
+
+    <div class="half half--gap">
+      <span class="demo-label">.vocab-table — 2열 표(단어·뜻 / 문장 만들기)</span>
+      <table class="vocab-table">
+        <thead>
+          <tr><th>단어</th><th>각 단어를 이용해 문장 만들기</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="vocab-word-cell">
+              <p class="vocab-word">보기말<span class="vocab-word__page">0쪽</span></p>
+              <p class="vocab-def">예시로 드는 낱말이라는 뜻.</p>
+            </td>
+            <td class="vocab-answer-cell"><div class="answer-lines answer-lines--table" role="textbox"></div></td>
+          </tr>
+          <tr>
+            <td class="vocab-word-cell">
+              <p class="vocab-word">보기말<span class="vocab-word__page">0쪽</span></p>
+              <p class="vocab-def">예시로 드는 낱말이라는 뜻.</p>
+            </td>
+            <td class="vocab-answer-cell"><div class="answer-lines answer-lines--table" role="textbox"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 블록 카탈로그</span>
+      <span class="footer__page">2</span>
+      <span class="footer__book">데모 · LV 5</span>
+    </div>
+  </div>
+</section>
+
+<!-- 3/6: ox-list, grid-table -->
+<section class="page" data-screen-label="블록 5/11-6/11">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">블록 카탈로그</p>
+        <h2 class="sheet-head__title">5. ox-list &nbsp;/&nbsp; 6. grid-table</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half">
+      <span class="demo-label">.ox-list — O·X 문항, 원형 8mm</span>
+      <ol class="ox-list">
+        <li class="ox-item">
+          <p class="ox-item__text">보기 문장입니다. 맞는지 틀린지 골라 보세요.<span class="ox-item__page">0쪽</span></p>
+          <div class="ox-item__marks"><span class="ox-item__mark">O</span><span class="ox-item__mark">X</span></div>
+        </li>
+        <li class="ox-item">
+          <p class="ox-item__text">두 번째 보기 문장입니다.<span class="ox-item__page">0쪽</span></p>
+          <div class="ox-item__marks"><span class="ox-item__mark">O</span><span class="ox-item__mark">X</span></div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="half half--gap">
+      <span class="demo-label">.grid-table — 3열 표 + 괘선 답칸</span>
+      <table class="grid-table grid-table--brand">
+        <thead>
+          <tr><th>구분</th><th>설명</th><th>답</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="grid-table__label"><b>예시 A</b></td>
+            <td class="grid-table__desc">표 형태 문항의 설명 칸입니다.</td>
+            <td class="grid-table__answer"><div class="answer-lines answer-lines--tall" role="textbox"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 블록 카탈로그</span>
+      <span class="footer__page">3</span>
+      <span class="footer__book">데모 · LV 5</span>
+    </div>
+  </div>
+</section>
+
+<!-- 4/6: reference, bg-quote -->
+<section class="page" data-screen-label="블록 7/11-8/11">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">블록 카탈로그</p>
+        <h2 class="sheet-head__title">7. reference &nbsp;/&nbsp; 8. bg-quote</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half">
+      <span class="demo-label">.reference — 참고자료 박스(point 상단선), 질문에 딸림</span>
+      <div class="q q--tight2">
+        <span class="stamp">1</span>
+        <p class="q__text">참고자료가 딸린 문항의 예시입니다.</p>
+      </div>
+      <div class="reference">
+        <p class="reference__label">참고 자료</p>
+        <p class="reference__body">여기에 참고 자료 본문이 들어갑니다. 질문을 이해하는 데 필요한 배경 설명이나 인용문을 담습니다.</p>
+        <p class="reference__source">출처 표기</p>
+      </div>
+      <div class="answer-lines" role="textbox"></div>
+    </div>
+
+    <div class="half half--gap">
+      <span class="demo-label">.bg-quote — 그림을 배경(불투명도 60%)으로 깔고 글 올림</span>
+      <div class="bg-quote" style="margin-top:0">
+        <img class="bg-quote__image" src="assets/images/fig4-constellation.png" alt="데모 배경 그림">
+        <div class="bg-quote__tint"></div>
+        <blockquote class="bg-quote__text">배경 그림 위에 올라가는 인용문 예시입니다. 그림은 불투명도 60%로 흐리게 깔고, 그 위에 옅은 색 틴트를 한 번 더 얹어 글자가 잘 읽히게 합니다.</blockquote>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 블록 카탈로그</span>
+      <span class="footer__page">4</span>
+      <span class="footer__book">데모 · LV 5</span>
+    </div>
+  </div>
+</section>
+
+<!-- 5/6: 신규 blk-choice, blk-blanks -->
+<section class="page" data-screen-label="블록 9/11-10/11 (신규)">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">블록 카탈로그 (신규)</p>
+        <h2 class="sheet-head__title">9. blk-choice &nbsp;/&nbsp; 10. blk-blanks</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half">
+      <span class="demo-label">.blk-choice — 선택지 2개 이상 + 이유 답란(신규)</span>
+      <div class="q q--tight2">
+        <span class="stamp">1</span>
+        <p class="q__text">다음 중 이야기 속 인물의 행동에 대해 어떻게 생각하나요?</p>
+      </div>
+      <div class="blk-choice">
+        <div class="blk-choice__options">
+          <label class="blk-choice__option"><span class="blk-choice__box"></span>이해할 수 있다고 생각해요.</label>
+          <label class="blk-choice__option"><span class="blk-choice__box"></span>이해하기 어렵다고 생각해요.</label>
+          <label class="blk-choice__option"><span class="blk-choice__box"></span>둘 다 조금씩 맞다고 생각해요.</label>
+        </div>
+        <p class="blk-choice__reason-label">그렇게 생각한 이유를 적어 보세요.</p>
+        <div class="answer-lines" role="textbox"></div>
+      </div>
+    </div>
+
+    <div class="half half--gap">
+      <span class="demo-label">.blk-blanks — 라벨 붙은 짧은 답란 2~4개(신규)</span>
+      <div class="q q--tight2">
+        <span class="stamp">2</span>
+        <p class="q__text">산업혁명 전후를 비교해서 각각 짧게 적어 보세요.</p>
+      </div>
+      <div class="blk-blanks">
+        <div class="blk-blanks__row">
+          <p class="blk-blanks__label">산업혁명 이후 영국 사람들의 삶</p>
+          <div class="answer-lines" role="textbox"></div>
+        </div>
+        <div class="blk-blanks__row">
+          <p class="blk-blanks__label">사회복지가 필요해!!</p>
+          <div class="answer-lines" role="textbox"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 블록 카탈로그</span>
+      <span class="footer__page">5</span>
+      <span class="footer__book">데모 · LV 5</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6/6: 신규 blk-fallback -->
+<section class="page" data-screen-label="블록 11/11 (신규)">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">블록 카탈로그 (신규)</p>
+        <h2 class="sheet-head__title">11. blk-fallback</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half">
+      <span class="demo-label">.blk-fallback — 질문 + 괘선 답란만(유형 불명 문항의 기본값, 신규)</span>
+      <div class="blk-fallback">
+        <p class="blk-fallback__text">유형을 알 수 없는 문항은 이 블록으로 대체됩니다 — 독해유형 라벨이나 발췌문 없이, 질문과 답란만 있는 가장 단순한 형태입니다.</p>
+        <div class="answer-lines" role="textbox"></div>
+      </div>
+    </div>
+
+    <div class="half half--gap">
+      <span class="demo-label">.blk-fallback — 톤별 본문 크기 차이 확인용(elem34 톤 강제 적용)</span>
+      <div class="blk-fallback tone-elem34">
+        <p class="blk-fallback__text">같은 블록에 tone-elem34 클래스를 얹으면 본문 크기·행간이 달라집니다(이 블록만 학년 톤의 본문/행간 변수를 실제로 상속해서 씀 - styles.css 8절 주석 참고).</p>
+        <div class="answer-lines" role="textbox"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 블록 카탈로그</span>
+      <span class="footer__page">6</span>
+      <span class="footer__book">데모 · LV 5</span>
+    </div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

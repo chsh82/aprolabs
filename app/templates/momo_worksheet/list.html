@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}학습지 자동 생성 미리보기 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+  <h2 class="text-2xl font-bold text-gray-800">📝 학습지 자동 생성 미리보기</h2>
+  <p class="text-sm text-gray-400 mt-1">승인된 문서 {{ docs|length }}건 · 검수 대기 문서는 목록에 안 보임(검수화면에서 먼저 승인)</p>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-4 py-3">doc_id</th>
+        <th class="text-left px-4 py-3">레벨/분기/주차</th>
+        <th class="text-left px-4 py-3">도서명</th>
+        <th class="text-center px-4 py-3">최근 생성</th>
+        <th class="text-center px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for d in docs %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-2 font-mono text-xs">{{ d.doc_id }}</td>
+        <td class="px-4 py-2 whitespace-nowrap">{{ d.level }} · {{ d.quarter }} · {{ d.week }}주차</td>
+        <td class="px-4 py-2">{{ d.book_title }} <span class="text-gray-400">({{ d.book_author or '-' }})</span></td>
+        <td class="px-4 py-2 text-center">
+          {% if d.built_at %}
+          <span class="text-xs text-gray-500">{{ d.built_at }}</span>
+          {% else %}
+          <span class="text-xs text-gray-300">미생성</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-2 text-center">
+          <a href="/momo-worksheet/{{ d.doc_id }}" class="text-blue-600 hover:underline text-xs">
+            {{ '미리보기 →' if d.built_at else '생성해보기 →' }}
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

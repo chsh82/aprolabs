@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.book_title }} 학습지 미리보기 - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-4 flex items-center justify-between flex-wrap gap-2">
+  <div>
+    <a href="/momo-worksheet" class="text-xs text-gray-400 hover:text-gray-600">← 목록으로</a>
+    <h2 class="text-2xl font-bold text-gray-800 mt-1">{{ doc.book_title }}</h2>
+    <p class="text-sm text-gray-400 mt-1">
+      {{ doc.doc_id }} · {{ doc.level }} · {{ doc.quarter }} · {{ doc.week }}주차
+      {% if built_at %}· 최근 생성 {{ built_at }}{% endif %}
+    </p>
+  </div>
+  <div class="flex items-center gap-2">
+    {% if exists %}
+    <a href="{{ preview_url }}" target="_blank" class="px-3 py-1.5 border border-gray-200 text-gray-600 text-sm rounded hover:bg-gray-50 transition">새 탭에서 열기</a>
+    {% endif %}
+    <form method="POST" action="/momo-worksheet/{{ doc.doc_id }}/build">
+      <button type="submit" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition">
+        {{ '다시 생성' if exists else '생성해보기' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if log %}
+<details class="mb-4 bg-white rounded-xl border border-gray-100 shadow-sm" {{ 'open' if 'failed' in log.lower() or '실패' in log else '' }}>
+  <summary class="px-4 py-2 text-sm text-gray-600 cursor-pointer select-none">빌드 로그</summary>
+  <pre class="px-4 pb-4 text-xs text-gray-500 whitespace-pre-wrap">{{ log }}</pre>
+</details>
+{% endif %}
+
+{% if exists %}
+<div class="bg-gray-200 rounded-xl border border-gray-100 shadow-sm overflow-hidden" style="height: 80vh;">
+  <iframe src="{{ preview_url }}" class="w-full h-full border-0"></iframe>
+</div>
+{% else %}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-10 text-center text-gray-400 text-sm">
+  아직 생성된 미리보기가 없습니다. 위 "생성해보기" 버튼을 누르면 DB 데이터를 학습지 HTML로 만듭니다
+  (Playwright로 실제 페이지를 렌더해 분량을 재는 방식이라 몇 초 걸립니다).
+</div>
+{% endif %}
+{% endblock %}

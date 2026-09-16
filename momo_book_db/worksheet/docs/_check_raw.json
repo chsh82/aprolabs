@@ -1,0 +1,358 @@
+{
+  "pages": [
+    {
+      "label": "01 표지",
+      "overflow": false,
+      "pointCount": 0,
+      "shortAnswerCount": 0,
+      "upscaledImages": [
+        {
+          "src": "assets/images/cover-sinhwa.jpg",
+          "naturalWidth": 400,
+          "requiredNaturalWidth": 448,
+          "renderedWidthMm": 76
+        }
+      ],
+      "issues": [
+        "그림 확대 1건: assets/images/cover-sinhwa.jpg(원본400px < 필요448px)"
+      ]
+    },
+    {
+      "label": "02 1단계",
+      "overflow": false,
+      "pointCount": 0,
+      "shortAnswerCount": 0,
+      "upscaledImages": [],
+      "issues": []
+    },
+    {
+      "label": "03 2단계 1",
+      "overflow": false,
+      "pointCount": 3,
+      "shortAnswerCount": 0,
+      "upscaledImages": [
+        {
+          "src": "assets/images/fig1-narcissus.png",
+          "naturalWidth": 493,
+          "requiredNaturalWidth": 824,
+          "renderedWidthMm": 140
+        }
+      ],
+      "issues": [
+        "그림 확대 1건: assets/images/fig1-narcissus.png(원본493px < 필요824px)"
+      ]
+    },
+    {
+      "label": "04 2단계 2",
+      "overflow": false,
+      "pointCount": 0,
+      "shortAnswerCount": 0,
+      "upscaledImages": [],
+      "issues": []
+    },
+    {
+      "label": "05 2단계 3",
+      "overflow": false,
+      "pointCount": 2,
+      "shortAnswerCount": 0,
+      "upscaledImages": [
+        {
+          "src": "assets/images/fig2-psyche.png",
+          "naturalWidth": 493,
+          "requiredNaturalWidth": 824,
+          "renderedWidthMm": 140
+        }
+      ],
+      "issues": [
+        "그림 확대 1건: assets/images/fig2-psyche.png(원본493px < 필요824px)"
+      ]
+    },
+    {
+      "label": "06 2단계 4",
+      "overflow": false,
+      "pointCount": 1,
+      "shortAnswerCount": 0,
+      "upscaledImages": [],
+      "issues": []
+    },
+    {
+      "label": "07 2단계 5",
+      "overflow": false,
+      "pointCount": 3,
+      "shortAnswerCount": 0,
+      "upscaledImages": [
+        {
+          "src": "assets/images/fig5-brands.png",
+          "naturalWidth": 490,
+          "requiredNaturalWidth": 824,
+          "renderedWidthMm": 140
+        }
+      ],
+      "issues": [
+        "그림 확대 1건: assets/images/fig5-brands.png(원본490px < 필요824px)"
+      ]
+    },
+    {
+      "label": "08 2단계 6",
+      "overflow": false,
+      "pointCount": 1,
+      "shortAnswerCount": 0,
+      "upscaledImages": [],
+      "issues": []
+    },
+    {
+      "label": "09 2단계 7",
+      "overflow": false,
+      "pointCount": 3,
+      "shortAnswerCount": 0,
+      "upscaledImages": [
+        {
+          "src": "assets/images/fig3-cheonjiwang.png",
+          "naturalWidth": 470,
+          "requiredNaturalWidth": 824,
+          "renderedWidthMm": 140
+        }
+      ],
+      "issues": [
+        "그림 확대 1건: assets/images/fig3-cheonjiwang.png(원본470px < 필요824px)"
+      ]
+    },
+    {
+      "label": "10 2단계 8",
+      "overflow": false,
+      "pointCount": 1,
+      "shortAnswerCount": 0,
+      "upscaledImages": [],
+      "issues": []
+    },
+    {
+      "label": "11 3단계",
+      "overflow": false,
+      "pointCount": 0,
+      "shortAnswerCount": 0,
+      "upscaledImages": [
+        {
+          "src": "assets/images/fig4-constellation.png",
+          "naturalWidth": 668,
+          "requiredNaturalWidth": 848,
+          "renderedWidthMm": 144
+        }
+      ],
+      "issues": [
+        "그림 확대 1건: assets/images/fig4-constellation.png(원본668px < 필요848px)"
+      ]
+    }
+  ],
+  "printRuleResults": [
+    {
+      "pageIndex": 1,
+      "index": 0,
+      "tableNested": true,
+      "x0": 255.046875,
+      "y0": 197.54296875,
+      "x1": 495.24609375,
+      "y1": 240.05859375,
+      "rowStd": 12.014
+    },
+    {
+      "pageIndex": 1,
+      "index": 1,
+      "tableNested": true,
+      "x0": 255.046875,
+      "y0": 262.1953125,
+      "x1": 495.24609375,
+      "y1": 304.7109375,
+      "rowStd": 12.987
+    },
+    {
+      "pageIndex": 1,
+      "index": 2,
+      "tableNested": true,
+      "x0": 255.046875,
+      "y0": 312.65625,
+      "x1": 495.24609375,
+      "y1": 355.171875,
+      "rowStd": 11.957
+    },
+    {
+      "pageIndex": 1,
+      "index": 3,
+      "tableNested": true,
+      "x0": 255.046875,
+      "y0": 363.1171875,
+      "x1": 495.24609375,
+      "y1": 405.6328125,
+      "rowStd": 11.277
+    },
+    {
+      "pageIndex": 2,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 323.33203125,
+      "x1": 501.99609375,
+      "y1": 428.3671875,
+      "rowStd": 9.042
+    },
+    {
+      "pageIndex": 3,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 195.1640625,
+      "x1": 501.99609375,
+      "y1": 428.3671875,
+      "rowStd": 9.435
+    },
+    {
+      "pageIndex": 3,
+      "index": 1,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 492.83203125,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.586
+    },
+    {
+      "pageIndex": 4,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 512.015625,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.759
+    },
+    {
+      "pageIndex": 5,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 324.10546875,
+      "x1": 501.99609375,
+      "y1": 428.3671875,
+      "rowStd": 8.86
+    },
+    {
+      "pageIndex": 5,
+      "index": 1,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 492.83203125,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.586
+    },
+    {
+      "pageIndex": 6,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 360.83203125,
+      "x1": 501.99609375,
+      "y1": 428.3671875,
+      "rowStd": 9.342
+    },
+    {
+      "pageIndex": 7,
+      "index": 0,
+      "tableNested": true,
+      "x0": 334.7109375,
+      "y0": 203.015625,
+      "x1": 497.16796875,
+      "y1": 266.7890625,
+      "rowStd": 12.34
+    },
+    {
+      "pageIndex": 7,
+      "index": 1,
+      "tableNested": true,
+      "x0": 334.7109375,
+      "y0": 277.20703125,
+      "x1": 497.16796875,
+      "y1": 340.98046875,
+      "rowStd": 12.34
+    },
+    {
+      "pageIndex": 7,
+      "index": 2,
+      "tableNested": true,
+      "x0": 334.7109375,
+      "y0": 357.22265625,
+      "x1": 497.16796875,
+      "y1": 420.99609375,
+      "rowStd": 11.767
+    },
+    {
+      "pageIndex": 7,
+      "index": 3,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 486.31640625,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.59
+    },
+    {
+      "pageIndex": 8,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 610.74609375,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.606
+    },
+    {
+      "pageIndex": 9,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 342.515625,
+      "x1": 501.99609375,
+      "y1": 428.3671875,
+      "rowStd": 9.709
+    },
+    {
+      "pageIndex": 9,
+      "index": 1,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 494.7421875,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.241
+    },
+    {
+      "pageIndex": 10,
+      "index": 0,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 459.609375,
+      "x1": 501.99609375,
+      "y1": 515.05078125,
+      "rowStd": 9.141
+    },
+    {
+      "pageIndex": 10,
+      "index": 1,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 550.40625,
+      "x1": 501.99609375,
+      "y1": 605.859375,
+      "rowStd": 9.486
+    },
+    {
+      "pageIndex": 10,
+      "index": 2,
+      "tableNested": false,
+      "x0": 93.26953125,
+      "y0": 670.59375,
+      "x1": 501.99609375,
+      "y1": 726.046875,
+      "rowStd": 9.46
+    }
+  ]
+}

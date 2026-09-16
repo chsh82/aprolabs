@@ -1,0 +1,13 @@
+{
+  "name": "momo-worksheet-porting",
+  "private": true,
+  "version": "1.0.0",
+  "description": "모모의 책장 학습지 정적 포팅 + 용량 실측 하네스",
+  "scripts": {
+    "measure": "node scripts/measure.js",
+    "check": "node scripts/check.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

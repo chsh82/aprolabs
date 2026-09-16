@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>용량 실측 하네스 - 모모의 책장 학습지</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!--
+  scripts/measure.js가 이 페이지를 열어서 renderCase()를 호출하고,
+  #probe .half의 scrollHeight > clientHeight 로 넘침 여부를 판정한다.
+  사람이 브라우저로 열어서 직접 조합을 눌러볼 수도 있게 최소 UI도 둠.
+-->
+<div class="worksheet q-winter" id="root">
+<section class="page" data-screen-label="용량 실측">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">용량 실측</p>
+        <h2 class="sheet-head__title">measure.html</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+
+    <div class="half" id="probe"></div>
+    <!-- 실제 학습지는 반면이 늘 2개(상/하)라서, 측정 대상도 똑같이 절반 높이만 받도록
+         빈 반면을 하나 더 둠(이게 없으면 probe가 전체 sheet 높이를 다 받아서 실제보다
+         여유가 두 배로 측정됨). -->
+    <div class="half half--gap" id="probe-sibling"></div>
+
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 용량 실측</span>
+      <span class="footer__page">-</span>
+      <span class="footer__book">measure.html</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+/**
+ * renderCase(spec) - #probe(.half) 안에 지정한 블록/글자수/톤으로 콘텐츠를 채우고
+ * 넘침 여부를 판정할 수 있는 상태로 만든다. scripts/measure.js가 각 조합마다 이 함수를
+ * 호출한 뒤 #probe.scrollHeight vs #probe.clientHeight를 비교한다.
+ *
+ * spec = {
+ *   tone: 'tone-elem34'|'tone-elem56'|'tone-mid',
+ *   block: 'short-excerpt'|'vocab-table'|'ox-list'|'grid-table'|'figure'|
+ *          'blk-choice'|'blk-blanks'|'blk-fallback',
+ *   excerptLen: number,   // block === 'short-excerpt'일 때만 사용
+ *   questionLen: number,  // block === 'short-excerpt'일 때만 사용
+ * }
+ */
+function fillerText(len) {
+  // 폰트 서브셋에 이미 포함된 글자만 순환시켜 정확히 len자를 만든다(새 글자 추가 없음).
+  const base = '신화는 거울처럼 우리를 비춰줄 거예요 왜 테이레시아스는 나르키소스에게 자신을 알지 못할 때 오래 살 것이라고 했나요 여러분도 그 생각에 동의하나요 ';
+  let s = '';
+  while (s.length < len) s += base;
+  return s.slice(0, len);
+}
+
+function renderCase(spec) {
+  const root = document.getElementById('root');
+  root.className = 'worksheet q-winter ' + spec.tone;
+  const probe = document.getElementById('probe');
+  probe.className = 'half';
+  probe.innerHTML = '';
+
+  if (spec.block === 'short-excerpt') {
+    let html = '';
+    if (spec.excerptLen > 0) {
+      html += '<p class="rt-label"><span class="rt-label__text">추론적 독해</span><span class="rt-label__rule"></span></p>';
+      html += '<blockquote class="excerpt">' + fillerText(spec.excerptLen) + '<cite class="excerpt__cite">p.00</cite></blockquote>';
+    }
+    html += '<div class="q"><span class="stamp">1</span><p class="q__text">' + fillerText(spec.questionLen) + '</p></div>';
+    html += '<div class="answer-lines" role="textbox"></div>';
+    probe.innerHTML = html;
+  } else if (spec.block === 'vocab-table') {
+    probe.innerHTML = '<table class="vocab-table"><thead><tr><th>단어</th><th>문장 만들기</th></tr></thead><tbody>' +
+      Array.from({length: 4}, () => '<tr><td class="vocab-word-cell"><p class="vocab-word">단어<span class="vocab-word__page">0쪽</span></p><p class="vocab-def">뜻풀이 문장입니다.</p></td><td class="vocab-answer-cell"><div class="answer-lines answer-lines--table" role="textbox"></div></td></tr>').join('') +
+      '</tbody></table>';
+  } else if (spec.block === 'ox-list') {
+    probe.innerHTML = '<ol class="ox-list">' +
+      Array.from({length: 5}, () => '<li class="ox-item"><p class="ox-item__text">보기 문장입니다.<span class="ox-item__page">0쪽</span></p><div class="ox-item__marks"><span class="ox-item__mark">O</span><span class="ox-item__mark">X</span></div></li>').join('') +
+      '</ol>';
+  } else if (spec.block === 'grid-table') {
+    probe.innerHTML = '<table class="grid-table"><thead><tr><th>상표</th><th>신화</th><th>의미</th></tr></thead><tbody>' +
+      Array.from({length: 3}, () => '<tr><td class="grid-table__label"><b>브랜드</b></td><td class="grid-table__desc">설명 텍스트입니다.</td><td class="grid-table__answer"><div class="answer-lines answer-lines--tall" role="textbox"></div></td></tr>').join('') +
+      '</tbody></table>';
+  } else if (spec.block === 'figure') {
+    probe.innerHTML = '<figure class="figure-block"><img src="assets/images/fig1-narcissus.png" alt=""><figcaption>그림 설명</figcaption></figure>';
+  } else if (spec.block === 'blk-choice') {
+    probe.innerHTML = '<div class="q"><span class="stamp">1</span><p class="q__text">' + fillerText(spec.questionLen || 80) + '</p></div>' +
+      '<div class="blk-choice"><div class="blk-choice__options">' +
+      '<label class="blk-choice__option"><span class="blk-choice__box"></span>선택지 1</label>' +
+      '<label class="blk-choice__option"><span class="blk-choice__box"></span>선택지 2</label>' +
+      '</div><p class="blk-choice__reason-label">이유를 적어 보세요.</p><div class="answer-lines" role="textbox"></div></div>';
+  } else if (spec.block === 'blk-blanks') {
+    probe.innerHTML = '<div class="q"><span class="stamp">1</span><p class="q__text">' + fillerText(spec.questionLen || 80) + '</p></div>' +
+      '<div class="blk-blanks">' +
+      '<div class="blk-blanks__row"><p class="blk-blanks__label">항목 1</p><div class="answer-lines" role="textbox"></div></div>' +
+      '<div class="blk-blanks__row"><p class="blk-blanks__label">항목 2</p><div class="answer-lines" role="textbox"></div></div>' +
+      '</div>';
+  } else if (spec.block === 'blk-fallback') {
+    probe.innerHTML = '<div class="blk-fallback"><p class="blk-fallback__text">' + fillerText(spec.questionLen || 80) + '</p><div class="answer-lines" role="textbox"></div></div>';
+  }
+}
+window.renderCase = renderCase;
+</script>
+</body>
+</html>

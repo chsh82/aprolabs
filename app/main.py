@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from app.database import get_db, init_db
-from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, journal, zoom_summaries, external_api
+from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, momo_book_worksheet, journal, zoom_summaries, external_api
 from app.routers import auth as auth_router
 from app.routers import literacy_admin, literacy_api
 from app.vocab.routers import quiz_api as vocab_quiz_api
@@ -18,6 +18,15 @@ app = FastAPI(title="Aprolabs")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 app.mount("/momo-images", StaticFiles(directory="momo_book_db/extracted_images"), name="momo_images")
+# 학습지 자동 생성 미리보기(momo_book_worksheet.py)용 - 생성된 index.html이
+# "../../worksheet/build/..."/"../../extracted_images/..." 같은 상대경로로 CSS·이미지를
+# 참조하므로(momo_book_db/generated/<doc_id>/index.html 기준), 그 상대경로가 그대로
+# 맞아떨어지도록 momo_book_db 하위 구조를 프리픽스만 바꿔 그대로 미러링해서 마운트한다.
+# (momo_book_db 전체를 통째로 마운트하지 않는 이유: momo_book.db·node_modules 등을
+# 불필요하게 HTTP로 노출하지 않기 위해 실제로 필요한 3개 하위 폴더만 연다.)
+app.mount("/momo-worksheet-assets/generated", StaticFiles(directory="momo_book_db/generated"), name="momo_worksheet_generated")
+app.mount("/momo-worksheet-assets/worksheet/build", StaticFiles(directory="momo_book_db/worksheet/build"), name="momo_worksheet_build")
+app.mount("/momo-worksheet-assets/extracted_images", StaticFiles(directory="momo_book_db/extracted_images"), name="momo_worksheet_images")
 app.mount("/vocab/games", StaticFiles(directory="app/vocab/static/games"), name="vocab_games")
 
 # 인증 라우터 (로그인/로그아웃 — 보호 불필요)
@@ -34,6 +43,7 @@ app.include_router(reading_essay.router)
 app.include_router(isbn.router)
 app.include_router(momo_bookshelf.router)
 app.include_router(momo_book_review.router)
+app.include_router(momo_book_worksheet.router)
 app.include_router(journal.router)
 app.include_router(zoom_summaries.router)
 app.include_router(literacy_admin.router)

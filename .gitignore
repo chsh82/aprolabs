@@ -13,6 +13,12 @@ aprolabs_deploy*
 # 모모의책장 교재DB에서 추출한 이미지(용량이 커서 git에 안 올림 - db처럼 서버에 수동 동기화)
 momo_book_db/extracted_images/
 
+# 학습지 자동 생성기(momo_book_db/generate, worksheet/scripts) - node_modules는 npm install로
+# 서버에서 직접 설치(배포 스크립트가 pip install만 해주고 npm install은 안 해줌 - 수동 1회 설치
+# 필요), generated/는 웹 화면에서 버튼으로 만드는 산출물이라 재생성 가능 - 둘 다 git에 안 올림.
+momo_book_db/worksheet/node_modules/
+momo_book_db/generated/
+
 # Temp files
 nul
 *.tmp
