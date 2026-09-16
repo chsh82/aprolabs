@@ -61,90 +61,148 @@
       </div>
       {% endfor %}
 
-      <div class="pt-3 border-t border-gray-100 mt-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">관리</p>
-        <a href="/journal" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/journal') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📝 작업일지
-        </a>
-        <a href="/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
-          ➕ 문항 추가
-        </a>
-        <a href="/suneung/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
-          📄 수능 PDF 업로드
-        </a>
-        <a href="/reading-essay" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path == '/reading-essay' or (request.url.path.startswith('/reading-essay/') and request.url.path.split('/')|length == 3 and request.url.path.split('/')[2] not in ['scan','quality','search']) %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📚 독서논술 DB
-        </a>
-        <a href="/reading-essay/search" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/reading-essay/search') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          🔎 독서논술 검색
-        </a>
-        <a href="/momo-bookshelf" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path == '/momo-bookshelf' or request.url.path == '/momo-bookshelf/upload' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📖 모모의 책장
-        </a>
-        <a href="/momo-bookshelf/required" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/momo-bookshelf/required') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📕 모모의 책장 필독서
-        </a>
-        <a href="/momo-review" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/momo-review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          ✅ 모모의책장 교재DB 검수
-        </a>
-        <a href="/momo-worksheet" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/momo-worksheet') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📝 학습지 자동 생성 미리보기
-        </a>
-        <a href="/reading-essay/scan" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/reading-essay/scan') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          🔍 독서논술 PDF 스캔
-        </a>
-        <a href="/reading-essay/quality" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/reading-essay/quality') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📊 독서논술 품질 검수
-        </a>
-        <a href="/suneung/db" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/suneung/db') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          🗄️ 수능국어DB
-        </a>
-        <a href="/suneung/jobs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
-          ⚙️ 파이프라인 작업
-        </a>
-        <a href="/suneung/answers" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
-          📝 정답/해설 관리
-        </a>
-        <a href="/crawl" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
-          🕷️ 크롤링
-        </a>
-        <a href="/isbn" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/isbn') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          🔎 ISBN 검색
-        </a>
-        <a href="/dashboard" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
-          📊 API 사용량
-        </a>
-      </div>
+      {% set p = request.url.path %}
+      {% set g_suneung = p == '/upload' or p.startswith('/suneung') or p.startswith('/crawl') %}
+      {% set g_essay = p.startswith('/reading-essay') %}
+      {% set g_momo = p.startswith('/momo-bookshelf') or p.startswith('/momo-review') or p.startswith('/momo-worksheet') %}
+      {% set g_literacy = p.startswith('/literacy') or p.startswith('/vocab') %}
+      {% set g_zoom = p.startswith('/zoom-summaries') %}
+      {% set g_common = p.startswith('/journal') or p.startswith('/isbn') or p.startswith('/dashboard') %}
 
-      <div class="pt-3 border-t border-gray-100 mt-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-1">프로젝트</p>
-        <a href="/zoom-summaries" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/zoom-summaries') and not request.url.path.startswith('/zoom-summaries/stats') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          🎥 Zoom 수업 요약
-        </a>
-        <a href="/zoom-summaries/stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/zoom-summaries/stats') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📊 Zoom 통계
-        </a>
-        <a href="/literacy/review" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/literacy/review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          📘 문해력 DB 검수
-        </a>
-        <a href="/vocab/games/index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
-                {% if request.url.path.startswith('/vocab/games') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
-          🎮 어휘 게임 테스트
-        </a>
+      <div class="pt-3 border-t border-gray-100 mt-2 space-y-1">
+
+        <details class="group" {% if g_suneung %}open{% endif %}>
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>📝 수능 국어</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              ➕ 문항 추가
+            </a>
+            <a href="/suneung/upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              📄 수능 PDF 업로드
+            </a>
+            <a href="/suneung/db" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/suneung/db') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🗄️ 수능국어DB
+            </a>
+            <a href="/suneung/jobs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              ⚙️ 파이프라인 작업
+            </a>
+            <a href="/suneung/answers" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              📝 정답/해설 관리
+            </a>
+            <a href="/crawl" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              🕷️ 크롤링
+            </a>
+          </div>
+        </details>
+
+        <details class="group" {% if g_essay %}open{% endif %}>
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>📚 독서논술</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="/reading-essay" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path == '/reading-essay' or (request.url.path.startswith('/reading-essay/') and request.url.path.split('/')|length == 3 and request.url.path.split('/')[2] not in ['scan','quality','search']) %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📚 독서논술 DB
+            </a>
+            <a href="/reading-essay/search" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/reading-essay/search') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🔎 독서논술 검색
+            </a>
+            <a href="/reading-essay/scan" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/reading-essay/scan') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🔍 독서논술 PDF 스캔
+            </a>
+            <a href="/reading-essay/quality" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/reading-essay/quality') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📊 독서논술 품질 검수
+            </a>
+          </div>
+        </details>
+
+        <details class="group" {% if g_momo %}open{% endif %}>
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>📖 모모의 책장</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="/momo-bookshelf" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path == '/momo-bookshelf' or request.url.path == '/momo-bookshelf/upload' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📖 모모의 책장
+            </a>
+            <a href="/momo-bookshelf/required" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/momo-bookshelf/required') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📕 모모의 책장 필독서
+            </a>
+            <a href="/momo-review" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/momo-review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              ✅ 모모의책장 교재DB 검수
+            </a>
+            <a href="/momo-worksheet" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/momo-worksheet') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📝 학습지 자동 생성 미리보기
+            </a>
+          </div>
+        </details>
+
+        <details class="group" {% if g_literacy %}open{% endif %}>
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>📘 문해력 · 어휘</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="/literacy/review" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/literacy/review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📘 문해력 DB 검수
+            </a>
+            <a href="/vocab/games/index.html" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/vocab/games') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🎮 어휘 게임 테스트
+            </a>
+          </div>
+        </details>
+
+        <details class="group" {% if g_zoom %}open{% endif %}>
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>🎥 Zoom 수업</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="/zoom-summaries" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/zoom-summaries') and not request.url.path.startswith('/zoom-summaries/stats') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🎥 Zoom 수업 요약
+            </a>
+            <a href="/zoom-summaries/stats" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/zoom-summaries/stats') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📊 Zoom 통계
+            </a>
+          </div>
+        </details>
+
+        <details class="group" {% if g_common %}open{% endif %}>
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>🛠️ 공용 도구</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="/journal" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/journal') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📝 작업일지
+            </a>
+            <a href="/isbn" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/isbn') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🔎 ISBN 검색
+            </a>
+            <a href="/dashboard" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              📊 API 사용량
+            </a>
+          </div>
+        </details>
+
       </div>
 
     </nav>
