@@ -1,3 +1,4 @@
+import os
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -24,6 +25,11 @@ app.mount("/momo-images", StaticFiles(directory="momo_book_db/extracted_images")
 # 맞아떨어지도록 momo_book_db 하위 구조를 프리픽스만 바꿔 그대로 미러링해서 마운트한다.
 # (momo_book_db 전체를 통째로 마운트하지 않는 이유: momo_book.db·node_modules 등을
 # 불필요하게 HTTP로 노출하지 않기 위해 실제로 필요한 3개 하위 폴더만 연다.)
+# generated/는 git에 안 올리는 산출물 폴더라(.gitignore) 새로 체크아웃한 서버엔 아예
+# 없을 수 있음 - StaticFiles는 마운트 시점에 디렉터리가 없으면 즉시 RuntimeError로 앱
+# 전체가 기동 실패하므로(2026-09-17 배포 직후 실제로 이 오류로 서비스가 죽었었음),
+# 마운트 전에 없으면 만들어 둔다.
+os.makedirs("momo_book_db/generated", exist_ok=True)
 app.mount("/momo-worksheet-assets/generated", StaticFiles(directory="momo_book_db/generated"), name="momo_worksheet_generated")
 app.mount("/momo-worksheet-assets/worksheet/build", StaticFiles(directory="momo_book_db/worksheet/build"), name="momo_worksheet_build")
 app.mount("/momo-worksheet-assets/extracted_images", StaticFiles(directory="momo_book_db/extracted_images"), name="momo_worksheet_images")
