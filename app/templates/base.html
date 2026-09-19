@@ -9,19 +9,38 @@
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
 <!-- 상단 헤더 -->
-<header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
-  <a href="/" class="text-xl font-bold text-blue-600 tracking-tight flex items-center gap-2">
-    🧪 Aprolabs
-  </a>
-  <a href="/upload" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition font-medium">
+<header class="bg-white border-b border-gray-200 h-14 px-3 sm:px-6 flex items-center justify-between gap-2 flex-shrink-0">
+  <div class="flex items-center gap-1 min-w-0">
+    <button id="sidebar-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sidebar"
+            class="lg:hidden -ml-1 mr-0.5 p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition flex-shrink-0">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a href="/" class="text-lg sm:text-xl font-bold text-blue-600 tracking-tight flex items-center gap-1.5 sm:gap-2 min-w-0 truncate">
+      <span class="flex-shrink-0">🧪</span><span class="truncate">Aprolabs</span>
+    </a>
+  </div>
+  <a href="/upload" class="text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition font-medium whitespace-nowrap flex-shrink-0">
     + 문항 추가
   </a>
 </header>
 
-<div class="flex flex-1 overflow-hidden">
+<div class="flex flex-1 overflow-hidden relative">
 
-  <!-- 사이드바 -->
-  <aside class="w-56 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto">
+  <!-- 모바일 사이드바 배경 오버레이 (접힌 사이드바를 열었을 때만 표시) -->
+  <div id="sidebar-overlay"
+       class="fixed top-14 bottom-0 left-0 right-0 z-30 bg-black/50 hidden lg:hidden"></div>
+
+  <!-- 사이드바: 모바일에서는 접혀있다가 버튼으로 펼치는 오프캔버스, lg 이상은 항상 고정 표시 -->
+  <aside id="sidebar"
+         class="fixed top-14 bottom-0 left-0 z-40 w-72 max-w-[85vw] bg-white border-r border-gray-200 overflow-y-auto
+                transform -translate-x-full transition-transform duration-200 ease-in-out
+                lg:static lg:top-auto lg:bottom-auto lg:z-auto lg:w-56 lg:flex-shrink-0 lg:translate-x-0 lg:transition-none">
+    <div class="flex items-center justify-between px-3 py-3 border-b border-gray-100 lg:hidden">
+      <span class="text-sm font-semibold text-gray-500">메뉴</span>
+      <button id="sidebar-close" type="button" aria-label="메뉴 닫기" class="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
     <nav class="p-3 space-y-1">
 
       <!-- 전체 -->
@@ -209,14 +228,51 @@
   </aside>
 
   <!-- 메인 콘텐츠 -->
-  <main class="flex-1 overflow-y-auto">
+  <main class="flex-1 overflow-y-auto min-w-0">
     {% block content_wrapper %}
-    <div class="max-w-4xl mx-auto px-6 py-8">
+    <div class="max-w-4xl mx-auto px-4 py-5 sm:px-6 sm:py-8">
       {% block content %}{% endblock %}
     </div>
     {% endblock %}
   </main>
 
 </div>
+
+<script>
+(function () {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var openBtn = document.getElementById('sidebar-toggle');
+  var closeBtn = document.getElementById('sidebar-close');
+  if (!sidebar || !overlay || !openBtn) return;
+
+  function openSidebar() {
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.remove('hidden');
+    openBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeSidebar() {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+    openBtn.setAttribute('aria-expanded', 'false');
+  }
+  function toggleSidebar() {
+    if (sidebar.classList.contains('-translate-x-full')) {
+      openSidebar();
+    } else {
+      closeSidebar();
+    }
+  }
+
+  openBtn.addEventListener('click', toggleSidebar);
+  if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  // lg 브레이크포인트(1024px) 이상으로 커지면 모바일 오프캔버스 상태를 정리한다.
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= 1024) closeSidebar();
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,316 @@
+{
+  "note": "운영 DB(momo_book.db)는 이 패치로 전혀 수정하지 않았다. extract_worksheet_json.py가 만든 data.json에 대해서만, 테스트용 doc_id(RESTORED-<원본doc_id>)로 별도 렌더링·QA 시험을 했다. '적용' 여부는 doc별 patches 배열에 있는 항목만 실제로 data.json에 반영했다(applied:true인 것만).",
+  "patches": [
+    {
+      "id": 835, "doc_id": "L3-Q4-W01", "order_label": "7", "table": "discussion_qa", "field": "ui_config",
+      "applied": true, "confidence": "높음",
+      "before": {}, "after": {"columns": ["중국의 나라 이름", "고구려와 어떤 일이 있었나요?"], "rows": 2},
+      "evidence": "raw_text에 '중국의 나라 이름   고구려와 어떤 일이 있었나요?' 헤더와 수나라/당나라 2개 행이 그대로 남아 있음(RESTORATION_CANDIDATES.md 참고)",
+      "certain": "열 제목 2개, 행 개수 2개 - 원문에 명시적으로 나열된 두 나라(수나라/당나라) 그대로",
+      "uncertain": "없음 - 원문이 표 구조를 온전히 담고 있어 추가 확인 불필요"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "ui_type",
+      "applied": false, "confidence": "철회(2026-09-19)",
+      "before": "unknown", "after": "text_long",
+      "withdrawal_note": "**2026-09-19 원본 PDF 실물 대조 결과 철회.** 사용자가 제공한 원본 PDF(D:\\25년도 4분기 교재\\초1\\[4분기 1주차]한글, 우리말을 담는 그릇 (베이직-학생용) (3).pdf, 3쪽)를 직접 열어 보니, question_text로 저장된 문장은 실제로는 빈칸 3개짜리 문장완성 활동('우리말은 ___과 달라서...', '한자는 ______을 수 없었어요.', '...가지고 있는 ___라...')이고, PDF 추출 텍스트에는 원래 화면에 안 보이는 정답이 이미 채워진 채로 들어가 있었다(예: '우리말은 중국말과 달라서'). 즉 unknown이었던 원래 이유가 '서술형인데 유형 미지정'이 아니라 '빈칸 채우기(text_short_multi)인데 채워진 정답 텍스트만 추출되어 구조가 안 보였던 것'이었다 - text_long 후보 자체가 틀린 진단이었으므로 철회하고, 아래 새 패치(text_short_multi)로 대체한다.",
+      "evidence": "(철회됨 - 아래 새 patches 참고) 개방형 서술 질문으로 보고 raw_text 키워드 재검색만으로 판단했던 이전 근거",
+      "certain": "선택지·표·그리기 등 다른 활동이 유실되는 게 아니라는 것(재검색으로 재확인) - 이 부분은 여전히 유효(실제로 선택지/표는 없었음, 빈칸이었음)",
+      "uncertain": "(해소됨) 원본 PDF 3쪽을 실제로 열어 확인 완료 - 더 이상 미확정 아님"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "ui_type",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": "unknown", "after": "text_short_multi",
+      "evidence": "원본 PDF(베이직-학생용 (3).pdf) 3쪽 육안 확인 - 빈칸 3개짜리 문장완성 활동. 위 철회된 text_long 패치를 대체.",
+      "certain": "빈칸 개수(3개)와 각 빈칸의 문장 내 위치 - 페이지 이미지로 직접 확인",
+      "uncertain": "없음(이번 항목은 실물 대조 완료)"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "question_text",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": "왜 한자는 우리나라에서 널리 쓰이지 못했나요? 우리말은 중국말과 달라서 한자로 옮겨 적기가 쉽지 않았고, 한자는 우리말을 소리 나는 대로 적을 수 없었어요. 게다가 한자는 하나하나 뜻을 가지고 있는 뜻글자라 새로운 뜻이 생길 때마다 새로운 글자를 만들어야 했기 때문에 농사짓기 바쁜 백성들은 그 많은 글자를 배우고 익힐 시간이 없었어요. 사랑을 뜻하는 한자 '사랑 애'",
+      "after": "왜 한자는 우리나라에서 널리 쓰이지 못했나요?",
+      "evidence": "원본 DB의 question_text는 빈칸 3개가 전부 채워진 정답 상태였다(학생 화면에는 안 보이는 정보) - 원본 PDF에서 실제로 학생에게 보이는 건 머리글 질문(1문장)뿐이고, 나머지 문장은 빈칸이 있는 채로 아래 ui_config.blanks로 옮겼다. '사랑을 뜻하는 한자 사랑 애'는 본문 문장이 아니라 愛 그림의 캡션이었음(아래 excerpt_image_caption 참고) - 본문에서 제거하고 그림 캡션으로 옮김(내용 자체는 안 버림, 위치만 바로잡음).",
+      "certain": "머리글 질문 문장 자체는 원본과 정확히 일치(1:1 대조)",
+      "uncertain": "없음"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "ui_config",
+      "applied": false, "confidence": "철회(2026-09-19 8차 안정화)",
+      "before": {}, "after": {"blanks": ["(구버전 - 아래 새 ui_config 패치로 대체)"]},
+      "withdrawal_note": "**8차 안정화에서 2가지 문제로 철회.** (1) 문장완성 3번째 빈칸의 뒷부분 \"...만들어야 했기 때문에 농사짓기 바쁜 백성들은 그 많은 글자를 배우고 익힐 시간이 없었어요\"가 통째로 빠져 있었다(7차 때 실수로 \"...만들어야 했어요.\"에서 잘라먹음 - 사용자가 재검토로 발견). (2) excerpt_image_caption으로 愛 그림을 '리드 그림 반면'에 단독 배치했더니, 발췌문용 큰-그림 규칙(width:100%)이 그대로 적용돼 愛 혼자 페이지 하나를 다 차지하고 질문·빈칸과 분리됐다(사용자 지시: '愛 그림이 단독으로 한 페이지를 차지하지 않도록', '질문·설명·빈칸·그림이 함께 읽히도록 배치'). 아래 새 patch로 대체: 빠진 문장 복원 + 愛를 reference_image2(참고자료 박스 안 작은 썸네일)로 옮겨 답란과 한 단위로 묶음.",
+      "evidence": "(철회됨 - 아래 새 patch 참고)",
+      "certain": "빈칸 3개, 각 빈칸 위치 자체는 여전히 유효",
+      "uncertain": "(해소됨)"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "ui_config",
+      "applied": false, "confidence": "철회(2026-09-19 10차 안정화 - 배치 개선)",
+      "before": {}, "after": {"blanks": ["(8차 버전 - 아래 새 ui_config 패치로 대체)"]},
+      "withdrawal_note": "**내용은 안 바뀌었고 배치만 개선 - 10차에서 철회.** 8차 버전은 blanks[]를 문자열 3개(행별로 라벨+전체너비 여러 줄 답란)로 렌더링해, 원본처럼 '문장 속에 빈칸이 뚫려 있는' 모습이 아니라 '문장 따로, 그 밑에 몇 줄짜리 넓은 답란 따로'였다(8차 patch의 uncertain에도 이미 이 차이를 인지·기록해 뒀었음). 사용자 지시('밑줄 문자 반복 대신 폭을 조절할 수 있는 인라인 빈칸으로', '아래에 붙은 별도 서술용 괘선 제거')에 따라 새로 추가한 blocks.js의 inline_blanks 경로로 교체 - 문장·빈칸 순서와 모든 원문 텍스트는 그대로, 렌더링 방식만 바뀐다.",
+      "evidence": "(철회됨 - 아래 새 patch 참고)",
+      "certain": "빈칸 3개, 각 빈칸 위치·전체 문장 원문 자체는 8차와 동일하게 유효(이번엔 표현 형식만 바뀜)",
+      "uncertain": "(해소됨)"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "ui_config",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조, 10차에서 인라인 빈칸으로 배치 개선)",
+      "before": {},
+      "after": {
+        "inline_blanks": [
+          {"parts": [
+            {"text": "우리말은 "}, {"blank": true, "width_mm": 28},
+            {"text": "과 달라서 한자로 옮겨 적기가 쉽지 않았고, 한자는 "},
+            {"blank": true, "width_mm": 60},
+            {"text": "을 수 없었어요."}
+          ]},
+          {"parts": [
+            {"text": "게다가 한자는 하나하나 뜻을 가지고 있는 "}, {"blank": true, "width_mm": 28},
+            {"text": "라 새로운 뜻이 생길 때마다 새로운 글자를 만들어야 했기 때문에 농사짓기 바쁜 백성들은 그 많은 글자를 배우고 익힐 시간이 없었어요."}
+          ]}
+        ],
+        "reference_image2_path": "L1-Q4-W01/restore_p3_ai_character.png",
+        "reference_image2_caption": "사랑을 뜻하는 한자 '사랑 애'"
+      },
+      "evidence": "문장·빈칸 위치·전체 문장 원문은 8차 patch와 동일(재대조 안 필요, 그대로 옮김). 이번에 두 가지만 바꿨다: (1) 8차 patch의 3번째 빈칸 뒤 접속 조사를 '(이)라'로 잘못 적었던 걸 원본 그대로 '라'로 정정(원본 PDF 3쪽 이미지 재확인 - '뜻글자'는 모음으로 끝나 '이' 없이 '라'만 붙는 게 맞음, 8차에서 만든 오탈자). (2) blanks(문자열, 행별 답란)를 inline_blanks(문장 속 빈칸)로 교체 - 문단을 원본과 같이 2개로 나눴다(원본도 '우리말은...없었어요.' 한 문단, '게다가...없었어요.' 다음 문단으로 나뉘어 있음). 빈칸 폭(28/60/28mm)은 예상 답 글자 수(중국말=3자, 우리말을 소리 나는 대로 적=11자, 뜻글자=3자)에 맞춰 정했다 - 답 자체는 넣지 않음.",
+      "certain": "문단 2개, 빈칸 3개, 전체 문장 원문, 접속 조사 '라' - 전부 페이지 이미지로 재확인",
+      "uncertain": "빈칸 폭(mm)은 '적당히 쓸 수 있을 만큼'이라는 판단으로 정한 값이라 실제 학생 손글씨 크기와 정확히 맞는지는 인쇄해 보기 전까지 확정 아님(이 환경엔 프린터 없음, PROGRESS.md 미실행 항목 참고)."
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "excerpt_image_path",
+      "applied": false, "confidence": "철회(2026-09-19 8차 안정화)",
+      "before": null, "after": "L1-Q4-W01/restore_p3_ai_character.png",
+      "withdrawal_note": "위 ui_config 패치 철회 사유와 동일(愛를 lead-half 그림으로 쓰면 단독 페이지가 됨) - reference_image2_path(위 ui_config 패치 안)로 대체.",
+      "evidence": "(철회됨)", "certain": "이 그림이 3쪽의 愛 캐릭터 이미지라는 것 자체는 여전히 유효", "uncertain": "(해소됨)"
+    },
+    {
+      "id": 1607, "doc_id": "L1-Q4-W01", "order_label": "1", "table": "discussion_qa", "field": "reference_image_path",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조, 기존 자산 재사용)",
+      "before": null, "after": "L1-Q4-W01/illustration_p4.jpeg",
+      "evidence": "PDF 3쪽의 한자 책 사진(옛 중국 서적 사진)을 PyMuPDF로 추출한 결과, sha256이 이미 추출돼 있던 illustration_p4.jpeg와 완전히 일치했다(같은 이미지가 학생용/베이직-학생용 두 PDF 변형에 공통으로 쓰임) - 새 파일을 또 만들지 않고 기존 파일을 그대로 참조만 했다(새 이미지 생성/중복 저장 없음).",
+      "certain": "이 사진이 3쪽의 한자책 사진이라는 것 - sha256 완전 일치로 확인",
+      "uncertain": "없음"
+    },
+    {
+      "id": 1611, "doc_id": "L1-Q4-W01", "order_label": "5", "table": "discussion_qa", "field": "ui_type",
+      "applied": false, "confidence": "철회(2026-09-19)",
+      "before": "unknown", "after": "text_long",
+      "withdrawal_note": "**2026-09-19 원본 PDF 실물 대조 결과 철회.** 원본 PDF(6쪽)를 직접 확인한 결과, 이 문항은 서술형 질문 하나가 아니라 2행짜리 활동이었다 - 각 행이 그림(몇몇 양반들 / 과거 우리나라를 지배했던 일본)과 그 대상별로 독립된 서술 답란을 갖는 구조. 이전에 '재검토'에서 이미 이 가능성(raw_text 끝의 두 구절이 선택지처럼 보임)을 제기하며 신뢰도를 낮췄었는데(아래 참고), 실물 대조로 그 의심이 사실로 확인됐다 - 다만 '선택지'가 아니라 '대상별 개별 서술 답란 2개'였다(사용자 지시: 선택지로 처리하거나 답란을 합치지 말 것). text_long 후보를 철회하고 아래 새 patches(text_short_multi, 대상별 그림+답란 2행)로 대체한다.",
+      "evidence": "(철회됨 - 아래 새 patches 참고)",
+      "certain": "선택지·표·그리기 활동 유실 아님 - 이 부분은 여전히 유효(실제로 choice형이 아니라 blanks형이었음)",
+      "uncertain": "(해소됨) 원본 PDF 6쪽을 실제로 열어 확인 완료"
+    },
+    {
+      "id": 1611, "doc_id": "L1-Q4-W01", "order_label": "5", "table": "discussion_qa", "field": "ui_type",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": "unknown", "after": "text_short_multi",
+      "evidence": "원본 PDF(베이직-학생용 (3).pdf) 6쪽 육안 확인 - 대상 2개(몇몇 양반들 / 과거 우리나라를 지배했던 일본) 각각 그림+개별 서술 답란을 갖는 2행 구조. question_text(머리글 질문 문장)는 원본과 이미 정확히 일치해 별도 patch 불필요.",
+      "certain": "행 2개, 각 행의 대상(양반/일본)과 그림 - 페이지 이미지로 직접 확인",
+      "uncertain": "없음"
+    },
+    {
+      "id": 1611, "doc_id": "L1-Q4-W01", "order_label": "5", "table": "discussion_qa", "field": "ui_config",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": {},
+      "after": {
+        "blanks": [
+          {"image_path": "L1-Q4-W01/restore_p6_row1_yangban.jpeg", "image_caption": "몇몇 양반들"},
+          {"image_path": "L1-Q4-W01/illustration_p7.jpeg", "image_caption": "과거 우리나라를 지배했던 일본"}
+        ],
+        "note": "[영상으로 보기] https://youtu.be/LwALe4Z7-p0",
+        "note_href": "https://youtu.be/LwALe4Z7-p0"
+      },
+      "evidence": "2행 각각의 그림·캡션은 PDF 6쪽 이미지로 직접 확인. row1 그림은 PyMuPDF로 새로 추출(xref81, 1029x844 - 양반과 아이 삽화). row2 그림(일본 순사/교실 삽화)은 sha256이 이미 추출돼 있던 illustration_p7.jpeg와 완전히 일치해 기존 파일을 그대로 재사용(새 파일 안 만듦). **표 아래 영상 링크 정정(8차)**: 페이지를 눈으로만 보면 URL 끝 글자가 대문자 O처럼 보이지만, PDF에 실제로 심어진 하이퍼링크 주석(PyMuPDF page.get_links())을 직접 읽어보니 실제 URI는 숫자 0으로 끝나는 'https://youtu.be/LwALe4Z7-p0'였다(7차 때 육안 판독만으로 'pO'로 잘못 기록했던 걸 정정 - DB raw_text도 원래 'p0'였는데 7차 때 옮겨적으며 틀림). note_href를 추가해 실제 클릭 가능한 링크로 만들고, 링크 대상이 표시 문자열과 별개로 정확한 URI를 가리키게 했다.",
+      "certain": "그림 2개(양반/일본)와 각 캡션 원문, 영상 링크 URL - 전부 페이지 이미지에서 직접 확인",
+      "uncertain": "없음. 대상별 답란은 각각 독립된 answer-lines를 갖도록 했고(선택지 체크박스로도, 공유 답란으로도 만들지 않음), 표 형태(2행×이미지+답란) 자체는 기존 blk-blanks 렌더러를 확장해 재사용했다 - 원본은 진짜 표(왼쪽 그림 칸/오른쪽 답 칸)지만 렌더러는 세로로 쌓은 행 목록이라 시각적 배치는 원본과 다르다(PROGRESS.md에 기록)."
+    },
+    {
+      "id": 1608, "doc_id": "L1-Q4-W01", "order_label": "2", "table": "discussion_qa", "field": "ui_type",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": "text_long", "after": "text_short_multi",
+      "evidence": "원본 PDF(베이직-학생용 (3).pdf) 4쪽 육안 확인 - 장쇠/간난이/꽃네 3명의 삽화 각각에 빈 말풍선이 딸린 3행 구조. 원래 DB에 text_long(질문 하나+답란 하나)으로 분류돼 있었으나, 실제로는 대상 3개 각자 독립된 말풍선(답란)이 있어 text_short_multi(1611과 동일 패턴)가 맞다.",
+      "certain": "대상 3명(장쇠/간난이/꽃네)과 각 삽화, 말풍선이 비어 있다는 것 - 페이지 이미지로 직접 확인",
+      "uncertain": "없음"
+    },
+    {
+      "id": 1608, "doc_id": "L1-Q4-W01", "order_label": "2", "table": "discussion_qa", "field": "question_text",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": "글자를 모르는 백성들은 어떤 불편을 겪었어야 했나요? 책에 있는 등장인물들의 상황을 바탕으로 말풍선을 채워보아요. <땅 주인에게 땅을 빼앗긴 장쇠> 글을 읽을 줄 몰라서 욕심 사나운 땅 주인이 땅을 파는 게 아니라 빌려주는 것으로 문서를 꾸민 줄 몰랐구나! <시어머니가 내던 빛깔대로 옷감 물을 못 들이는 간난이> 물들이는 방법을 글로 적어두질 않아서 무엇을 빠뜨렸는지 무엇을 잘못했는지 도무지 알 길이 없네! <바다 건너 뭍으로 시집을 간 꽃네> 부모님 걱정에 잠을 못 이루겠어. 글을 모르니 부모님께 편지를 쓸 수가 없구나.",
+      "after": "글자를 모르는 백성들은 어떤 불편을 겪었어야 했나요? 책에 있는 등장인물들의 상황을 바탕으로 말풍선을 채워보아요.",
+      "evidence": "원본 DB의 question_text 뒷부분(장쇠/간난이/꽃네별 1인칭 문장)은 원본 페이지의 '빈' 말풍선 안에는 전혀 인쇄돼 있지 않다 - 학생이 각 인물 입장에서 직접 채워 넣는 모범답안 성격의 텍스트가 추출 과정에서 질문 본문에 합쳐진 것으로 보인다(운영 DB에는 그대로 둠, 이 프로젝트에서만 분리). 머리글 질문 2문장만 학생용 출력에 남기고, 인물별 문장은 아래 ui_config.blanks 각 행의 image_caption(인물 소개 caption, 원문 그대로)으로 옮겼다 - 답 문장 자체(1인칭 서술)는 학생용 출력 어디에도 노출하지 않는다.",
+      "certain": "머리글 질문 2문장은 원본과 정확히 일치",
+      "uncertain": "인물별 1인칭 문장이 '모범답안'인지 '교사용 예시'인지 정확한 성격은 원본 PDF만으로는 확정 못 함(학생용 페이지엔 안 보인다는 사실만 확인) - 운영 DB 필드에는 원문 그대로 남겨 둠"
+    },
+    {
+      "id": 1608, "doc_id": "L1-Q4-W01", "order_label": "2", "table": "discussion_qa", "field": "ui_config",
+      "applied": false, "confidence": "철회(2026-09-19 10차 안정화 - 배치 개선)",
+      "before": {}, "after": {"blanks": ["(8차 버전 - 아래 새 ui_config 패치로 대체)"]},
+      "withdrawal_note": "**내용(인물 3명·삽화·캡션)은 안 바뀌었고 답란 모양만 개선 - 10차에서 철회.** 8차 버전은 각 행마다 그림 위에 괘선 답란(.answer-lines, 전체너비 여러 줄)을 붙였는데, 원본은 실제로 '빈 말풍선' 모양이고 그림과 좌우로 나란히 배치돼 있었다(사용자 지적: '작은 그림만 넓은 상자 가운데 떠 있는 배치를 개선'). blocks.js에 새로 추가한 bubble:true 옵션(.speech-bubble, 그림과 좌우 배치)으로 교체.",
+      "evidence": "(철회됨 - 아래 새 patch 참고)",
+      "certain": "인물 3명·삽화·캡션 자체는 8차와 동일하게 유효",
+      "uncertain": "(해소됨)"
+    },
+    {
+      "id": 1608, "doc_id": "L1-Q4-W01", "order_label": "2", "table": "discussion_qa", "field": "ui_config",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조, 10차에서 말풍선 배치로 개선)",
+      "before": {},
+      "after": {
+        "blanks": [
+          {"bubble": true, "image_path": "L1-Q4-W01/illustration_p5.jpeg", "image_caption": "<땅 주인에게 땅을 빼앗긴 장쇠>"},
+          {"bubble": true, "image_path": "L1-Q4-W01/restore_p4_gannani.jpeg", "image_caption": "<시어머니가 내던 빛깔대로 옷감 물을 못 들이는 간난이>"},
+          {"bubble": true, "image_path": "L1-Q4-W01/restore_p4_kkotne.jpeg", "image_caption": "<바다 건너 뭍으로 시집을 간 꽃네>"}
+        ]
+      },
+      "evidence": "3명의 삽화·캡션 자체는 8차 patch와 동일(재대조 불필요). 이번엔 각 행을 bubble:true로 바꿔 괘선 대신 말풍선 모양(.speech-bubble, 줄 없는 빈 공간)으로, 그림+말풍선을 좌우 배치(.speech-row)로 바꿨다 - 원본이 그림 옆에 실제 말풍선을 그려 놓고 그 안이 비어 있는 형태였음을 PDF 4쪽 이미지로 재확인.",
+      "certain": "인물 3명·삽화·캡션, 각자 독립된 빈 말풍선이라는 것 - 페이지 이미지로 재확인",
+      "uncertain": "없음. 말풍선 모양은 CSS로 흉내 낸 것(둥근 사각형)이라 원본의 손그림 말풍선 윤곽과 완전히 같지는 않다 - '실제 빈 말풍선으로'라는 지시의 핵심(괘선이 아니라 줄 없는 대화창 모양)은 충족했다고 판단."
+    },
+    {
+      "id": 1609, "doc_id": "L1-Q4-W01", "order_label": "3", "table": "discussion_qa", "field": "question_text",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": "1446년, 세종대왕은 새로운 글자를 세상에 내놓으셨어요. 이 글자의 이름은 무엇인가요? 어떤 뜻을 담고 있나요? 훈민정음",
+      "after": "1446년, 세종대왕은 새로운 글자를 세상에 내놓으셨어요. 이 글자의 이름은 무엇인가요? 어떤 뜻을 담고 있나요?",
+      "evidence": "원본 DB의 question_text 끝에 붙은 '훈민정음'은 아래 이름 칸(4칸)의 정답이 그대로 노출된 것 - 원본 페이지에는 질문 문장 뒤에 답이 안 붙어 있다. 정답 텍스트 자체는 버리지 않고, 그대로 원본 DB에 남아 있다(운영 DB 미수정) - 학생용 출력에서만 제거.",
+      "certain": "질문 문장 자체(끝의 '훈민정음' 제외)는 원본과 정확히 일치",
+      "uncertain": "없음"
+    },
+    {
+      "id": 1609, "doc_id": "L1-Q4-W01", "order_label": "3", "table": "discussion_qa", "field": "reference_image_path",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조, 기존 자산 재사용)",
+      "before": null, "after": "L1-Q4-W01/illustration_p6.jpeg",
+      "evidence": "PDF 5쪽의 훈민정음 원문 목판 사진을 PyMuPDF로 추출한 결과, sha256이 이미 추출돼 있던 illustration_p6.jpeg와 완전히 일치했다 - 새 파일을 만들지 않고 기존 파일을 그대로 재사용했다.",
+      "certain": "이 사진이 5쪽의 훈민정음 목판 사진이라는 것 - sha256 완전 일치로 확인",
+      "uncertain": "없음"
+    },
+    {
+      "id": 1609, "doc_id": "L1-Q4-W01", "order_label": "3", "table": "discussion_qa", "field": "ui_config",
+      "applied": false, "confidence": "철회(2026-09-19 10차 안정화 - 배치 개선)",
+      "before": {}, "after": {"blanks": ["(8차 버전 - 아래 새 ui_config 패치로 대체)"]},
+      "withdrawal_note": "**내용(4칸 2번, '라는 뜻이에요' 고정 문구)은 안 바뀌었고 배치만 개선 - 10차에서 철회.** 8차 버전은 blocks.js의 flex-direction 상속 버그 때문에 '이 글자의 이름은'/글자칸/'이에요.'가 세로로 뚝뚝 떨어져 렌더링되고 있었다(실측 PNG로 발견, blocks.js/styles.css 수정 - 아래 PROGRESS.md 참고). 또 2번째 행(글자칸+'은')과 3번째 행(뜻 쓰는 빈 줄+'라는 뜻이에요.')이 서로 다른 행으로 떨어져 있어 사용자 지시('붙어 읽히도록', '각각 멀리 떨어지지 않게')를 못 지켰다. 2·3번째 행을 하나로 합치고 CSS 버그를 고쳐 한 줄로 흐르게 했다.",
+      "evidence": "(철회됨 - 아래 새 patch 참고)",
+      "certain": "4칸 구조, '라는 뜻이에요.' 고정 문구 자체는 8차와 동일하게 유효",
+      "uncertain": "(해소됨)"
+    },
+    {
+      "id": 1609, "doc_id": "L1-Q4-W01", "order_label": "3", "table": "discussion_qa", "field": "ui_config",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조, 10차에서 한 줄로 붙여 배치)",
+      "before": {},
+      "after": {
+        "blanks": [
+          {"chargrid": 4, "prefix": "이 글자의 이름은", "suffix": "이에요."},
+          {"chargrid": 4, "mid_suffix": "은", "blank_width_mm": 70, "suffix": "라는 뜻이에요."}
+        ]
+      },
+      "evidence": "4칸 구조·고정 문구 자체는 8차 patch와 동일(재대조 불필요). 2번째 행에 글자칸(이름 반복 참조용)+'은'+인라인 빈칸(뜻 쓰는 공간, 70mm - 원본 2줄 분량 빈 줄을 대체하되 인라인으로 흐르게 함)+'라는 뜻이에요.'를 한 줄에 다 넣어 '[4칸]은 [빈칸]라는 뜻이에요.'가 하나로 붙어 읽히게 했다(사용자 지시 그대로). blk-blanks__row--chargrid의 flex-direction이 부모(.blk-blanks__row, column)를 그대로 물려받아 가로로 안 붙고 세로로 쌓이던 버그도 같이 고쳤다(styles.css에 flex-direction:row 명시 추가).",
+      "certain": "4칸 구조, '은'/'라는 뜻이에요.' 고정 문구, 한 줄로 붙어야 한다는 것 - 페이지 이미지와 CSS 버그 둘 다 확인",
+      "uncertain": "뜻 쓰는 빈칸 폭(70mm)은 '백성을 가르치는 바른 소리' 같은 짧은 구절이 무리 없이 들어갈 만큼으로 정한 값 - 실제 인쇄 후 손글씨 크기와 정확히 맞는지는 미실행(프린터 없음)."
+    },
+    {
+      "id": 1612, "doc_id": "L1-Q4-W01", "order_label": "6", "table": "discussion_qa", "field": "ui_config",
+      "applied": true, "confidence": "높음(원본 PDF 실물 대조)",
+      "before": {"starter": "찌아찌아족이 우리와 말이 달라도 한글을 쓸 수 있는 이유는, 한글은 말소리를 소리나는 대로 쓸 수 있게 해주는 편리한 문자               (이)기 때문이에요."},
+      "after": {
+        "starter": "찌아찌아족이 우리와 말이 달라도 한글을 쓸 수 있는 이유는,",
+        "starter_suffix": "(이)기 때문이에요."
+      },
+      "evidence": "원본 PDF 6쪽 육안 확인 - '찌아찌아족이 우리와 말이 달라도 한글을 쓸 수 있는 이유는,'(고정 인쇄 문구) + 빈 줄 2줄(학생이 직접 서술) + '(이)기 때문이에요.'(고정 인쇄 문구) 구조. 기존 DB의 starter는 가운데 '한글은 말소리를 소리나는 대로 쓸 수 있게 해주는 편리한 문자'까지 정답 문장으로 채운 채 답란 위에 전부 표시하고 있었다(정답 문장이 통째로 노출) - 원본 페이지에는 이 가운데 부분이 전혀 인쇄돼 있지 않다(학생이 처음부터 끝까지 직접 쓰는 빈 줄). 앞뒤 고정 문구만 남기고 가운데는 답란으로 비웠다.",
+      "certain": "앞 고정 문구('...이유는,')와 뒤 고정 문구('(이)기 때문이에요.') - 페이지 이미지로 직접 확인. 가운데가 완전히 빈 줄이라는 것도 확인.",
+      "uncertain": "없음"
+    },
+    {
+      "id": null, "doc_id": "L1-Q4-W01", "order_label": "1단계", "table": "meta", "field": "background_text",
+      "applied": true, "confidence": "높음(원본 PDF 6쪽 전체 대조)",
+      "before": "(운영 DB의 documents.background_text 그대로 - PROGRESS.md 참고)", "after": null,
+      "evidence": "사용자가 제공한 원본 PDF(베이직-학생용, 총 6쪽)를 표지부터 마지막 쪽까지 전부 확인했지만 '배경지식'/'1-2 사고'/'생각상자' 문구나 그 내용에 해당하는 페이지가 존재하지 않았다. documents.source_file(운영 DB)은 이 파일이 아니라 같은 주차의 다른 판본('학생용', 총 8쪽)을 가리키고 있다 - 배경지식은 그 8쪽 판본에는 있고 6쪽 판본에는 없는 내용으로 추정되지만, 8쪽 판본을 이번에 직접 열어 대조하지는 못했다(추정일 뿐 확정 아님). 사용자 지시('출처 확인이 안 된 추가 활동은 보존하되 학생용 출력에서 기본 제외')에 따라 이 복원 프로젝트의 학생용 출력에서만 제외 - 운영 DB의 documents.background_text 필드는 전혀 수정하지 않았다.",
+      "certain": "이 필드가 이번에 대조 기준으로 쓴 6쪽짜리 원본 PDF 어디에도 없다는 것",
+      "uncertain": "8쪽짜리 '학생용' 판본에 실제로 이 내용이 있는지는 이번에 직접 열어 확인하지 못함(파일은 존재 확인만 함, 페이지 대조는 안 함) - '1-2 사고'/'생각상자'/쪽번호가 제목·지시문·본문 중 어디서부터 어디까지인지 분리하는 작업도 이번에 하지 않음(근거 페이지를 못 봐서 임의로 자르지 않음)"
+    },
+    {
+      "id": null, "doc_id": "L1-Q4-W01", "order_label": "3단계", "table": "step3", "field": "step3",
+      "applied": true, "confidence": "높음(원본 PDF 6쪽 전체 대조)",
+      "before": "(운영 DB의 essay_prompt/essay_outline_question 그대로 - PROGRESS.md 참고)", "after": null,
+      "evidence": "essay_prompt.source_page=8인데(세종대왕님께 편지쓰기 글쓰기 활동) 원본 PDF(베이직-학생용)는 총 6쪽뿐이라 8쪽 자체가 존재하지 않는다 - 위 background_text와 같은 이유(다른 판본 소스로 추정)로 이번 학생용 출력에서 제외. 운영 DB는 미수정.",
+      "certain": "이 활동의 근거 페이지(8쪽)가 이번 6쪽짜리 원본에 물리적으로 없다는 것",
+      "uncertain": "8쪽짜리 '학생용' 판본에는 실제로 있을 가능성이 높지만(페이지 번호가 정확히 일치) 직접 열어 확인은 안 함"
+    },
+    {
+      "id": null, "doc_id": "L1-Q4-W01", "order_label": "1단계", "table": "step1", "field": "vocab_match_WITHDRAWN_NOTE",
+      "applied": false, "confidence": "정정(2026-09-19 9차)",
+      "before": null, "after": null,
+      "withdrawal_note": "**8차 안정화의 '어휘 표기가 원본과 이미 일치한다'는 판단은 오판이었다 - 9차에서 정정.** 8차에서는 `page_2.png`(스크래치패드에 여러 차례 다시 렌더한 파일 중 하나)를 다시 확인하지 않고 6차 때 만든 파일을 그대로 재사용해 판단했는데, 그 6차 판단 자체가 실제로는 원본이 아니라 **이 프로젝트가 만든 생성 결과물(단어+'문장 만들기' 표)과 혼동한 것**으로 보인다(정확한 혼동 경위는 재구성 못 함 - 이번에 원본 PDF를 sha256까지 재확인하며 doc[1]을 처음부터 다시 렌더링해 비교한 결과로 확인). 9차에서 PyMuPDF로 좌표까지 포함해 원본 2쪽을 다시 추출한 결과, 실제 1단계는 '단어+문장 만들기 표'가 아니라 **'낱말 뜻 선 연결하기 5개' + '<보기> 활용 빈칸 3문항'**이었다 - 아래 새 patches로 복원한다.",
+      "evidence": "(정정 기록용 - 실제 패치는 아래 vocab_match/vocab_fillblank 항목)",
+      "certain": "8차의 '원본과 일치' 판단이 틀렸다는 것", "uncertain": "없음(이번엔 좌표 기반 재추출 + 육안 확대 대조로 확정)"
+    },
+    {
+      "id": null, "doc_id": "L1-Q4-W01", "order_label": "1단계", "table": "step1", "field": "vocab_match",
+      "applied": true, "confidence": "높음(원본 PDF 2쪽 실물 대조, 좌표 기반 재추출)",
+      "before": null,
+      "after": {
+        "words": [
+          {"id": 493, "word": "천덕꾸러기"},
+          {"id": 494, "word": "까막눈"},
+          {"id": 495, "word": "한나절"},
+          {"id": 496, "word": "따끔하게"},
+          {"id": 497, "word": "까마득하다"}
+        ],
+        "definitions": [
+          "마음에 큰 자극을 받아 따갑다.",
+          "무식하여 글을 읽을 줄 모르는 눈",
+          "남에게 미움을 받는 사람이나 물건.",
+          "시간이 아주 오래되어 기억이 희미하다.",
+          "하루 낮의 반"
+        ]
+      },
+      "evidence": "PyMuPDF `get_text('dict')`로 페이지 2의 모든 텍스트 조각을 y/x 좌표와 함께 추출해 확인 - 왼쪽 열(단어, y좌표 264/306/347/388/428)과 오른쪽 열(뜻, y좌표 264/297-316/338-357/380-398/428-430)이 각각 세로로 나열돼 있고, 사이에 각 항목마다 '∙' 점 표시가 있는 '선으로 이어보세요' 형식의 연결 문제였다. **인쇄된 줄 순서(같은 y좌표)가 실제 정답 짝이 아님을 확인**했다 - 예를 들어 '천덕꾸러기'(1행)는 실제로는 '남에게 미움을 받는 사람이나 물건'(3행 정의)과 짝이고(단어 뜻 그대로), '따끔하게'(4행)는 '마음에 큰 자극을 받아 따갑다'(1행 정의)와 짝이다. 학생용 출력에는 **정답 짝을 표시하지 않고 원본 인쇄 순서 그대로** 두 열을 나열했다(실제 종이 위에서 학생이 직접 줄을 긋는 활동이라 렌더러가 답을 대신 알려주면 안 됨).",
+      "certain": "단어 5개, 정의 5개(원문 그대로), 매칭 활동이라는 것 - 좌표 기반 추출로 확인",
+      "uncertain": "없음. vocabulary.definition(운영 DB)은 이번에도 안 건드림(여전히 NULL) - 이 정의 텍스트는 patch의 after에만 있고 DB에는 안 씀."
+    },
+    {
+      "id": null, "doc_id": "L1-Q4-W01", "order_label": "1단계", "table": "step1", "field": "vocab_fillblank",
+      "applied": true, "confidence": "높음(원본 PDF 2쪽 실물 대조, 좌표 기반 재추출)",
+      "before": null,
+      "after": {
+        "bank": ["안타깝다", "어리석다", "자그마치"],
+        "sentences": [
+          {"before": "이 책 한 권을 읽는데 ", "after": " 일주일이 걸렸다."},
+          {"before": "이번 시합에서 아쉽게 1등을 하지 못해 ", "after": "."},
+          {"before": "뻔한 거짓말을 그대로 믿는 그 사람은 참 ", "after": "."}
+        ]
+      },
+      "evidence": "같은 좌표 추출에서 '각 문장에 들어갈 알맞은 낱말을 <보기>에서 골라 쓰세요.' + '<보기> 안타깝다 어리석다 자그마치' + 번호 매긴 문장 3개를 확인했다. **PDF 추출 텍스트에는 빈칸에 정답이 이미 채워져 있고('...읽는데 ( 자그마치 ) 일주일이...') 각 문장 밑에 '* 단어 : 뜻풀이' 줄도 있었지만, 실제 페이지를 300dpi로 확대 렌더링해 육안으로 다시 확인한 결과 그 어느 것도 화면에 보이지 않았다** - 빈 괄호 '(    )'만 인쇄돼 있었다(스크린샷 확대 crop으로 직접 확인, evidence_20260919 참고). 학생용 출력은 빈 괄호(빈칸)만 두고 정답·뜻풀이 줄은 넣지 않았다.",
+      "certain": "보기 3단어, 문장 3개(빈칸 앞뒤 원문) - 좌표 기반 추출 + 확대 렌더링 육안 대조 둘 다로 확인",
+      "uncertain": "없음"
+    },
+    {
+      "id": 435, "doc_id": "L5-Q4-W02", "order_label": "4", "table": "discussion_qa", "field": "ui_type",
+      "applied": true, "confidence": "중간",
+      "before": "unknown", "after": "text_long",
+      "evidence": "개방형 서술 질문(훈민정음 언해본 읽고 창제 이유 생각하기) - 구조적 흔적 없음(키워드 재검색 0건)",
+      "certain": "선택지·표·그리기 활동 유실 아님",
+      "uncertain": "raw_text 끝의 '언해본에 담긴/훈민정음의/창제의 이유' 구절을 starter로 쓸지는 원본 PDF 확인 필요 - 이번 패치에는 starter 없이 순수 text_long만 적용"
+    }
+  ],
+  "pending_insufficient_evidence": [
+    {
+      "id": 840, "doc_id": "L3-Q4-W02", "order_label": "4-1", "field": "ui_config.columns/rows",
+      "reason": "열 제목('예전의 한글'/'달라진 점')은 원문에 있으나 행 데이터가 '장우나' 한 단어만 남고 잘려 있어 행 수를 알 수 없음",
+      "필요한_원본_확인": "momo_book.db 원본 PDF 소스(source_file 컬럼 참고), L3-Q4-W02 문서의 source_page=4 페이지 표 부분 재확인 필요"
+    },
+    {
+      "id": 423, "doc_id": "L5-Q4-W01", "order_label": "1-1", "field": "ui_config.columns/rows",
+      "reason": "열 제목('밝은 면'/'어두운 면')은 명확하나 구체적 항목 나열이 없어 행 수 불명",
+      "필요한_원본_확인": "L5-Q4-W01 문서의 source_page=3 페이지 표 부분 재확인 필요"
+    },
+    {
+      "id": 843, "doc_id": "L3-Q4-W02", "order_label": "5", "field": "ui_type + excerpt_text 분리",
+      "reason": "편지 원문과 질문 문구가 안 나뉘어 raw_text에 섞여 있음 - 단순 재분류로 안 끝나고 excerpt_text/question_text 분리 작업이 선행되어야 함",
+      "필요한_원본_확인": "L3-Q4-W02 문서의 source_page=5 페이지에서 질문 문구와 편지 인용문의 경계 확인 필요"
+    },
+    {
+      "id": 114, "doc_id": "L5-Q4-W10", "order_label": "3", "field": "ui_config.options",
+      "reason": "raw_text 자체가 DB에 NULL - 이 저장소 자료만으로는 선택지 문구를 알 수 없음(지어내면 내용 임의 생성 금지 원칙 위반)",
+      "필요한_원본_확인": "L5-Q4-W10 문서의 source_page=4 페이지 원본 PDF 확인 필요(추출 단계에서 이 행만 원문이 누락된 이유도 같이 확인 권장)"
+    }
+  ]
+}

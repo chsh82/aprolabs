@@ -355,8 +355,8 @@ async def momo_review_upload_excerpt_image(doc_id: str, item_id: int, file: Uplo
     return await _upload_slot_image(doc_id, "discussion_qa", item_id, "excerpt_image_path", "excerpt", file, back)
 
 
-def _generate_slot_image(doc_id, item_id, back):
-    """Gemini로 발췌문 삽화를 생성해 excerpt_image_path에 꽂는다(discussion_qa 전용).
+def _generate_slot_image(doc_id, item_id, back, provider="gemini"):
+    """Gemini 또는 OpenAI로 발췌문 삽화를 생성해 excerpt_image_path에 꽂는다(discussion_qa 전용).
     _upload_slot_image와 같은 저장 규칙(extracted_images/{doc_id}/, document_image 기록)을
     쓰되, 파일을 업로드받는 대신 생성한다."""
     import sys
@@ -382,10 +382,11 @@ def _generate_slot_image(doc_id, item_id, back):
     out_path = os.path.join(doc_dir, fname)
 
     ok = generate_illustration(item["question_text"], item["excerpt_text"],
-                                season_class(doc["quarter"]), out_path)
+                                season_class(doc["quarter"]), out_path, provider=provider)
     if not ok:
         conn.close()
-        raise HTTPException(status_code=502, detail="이미지 생성에 실패했습니다(Gemini 응답에 이미지가 없음). 다시 시도해 주세요.")
+        provider_label = "OpenAI" if provider == "openai" else "Gemini"
+        raise HTTPException(status_code=502, detail=f"이미지 생성에 실패했습니다({provider_label} 응답에 이미지가 없음). 다시 시도해 주세요.")
 
     file_path = f"{doc_id}/{fname}"
     conn.execute(
@@ -403,8 +404,8 @@ def _generate_slot_image(doc_id, item_id, back):
 
 
 @router.post("/{doc_id}/discussion_qa/{item_id}/generate-excerpt-image")
-def momo_review_generate_excerpt_image(doc_id: str, item_id: int, back: str = ""):
-    return _generate_slot_image(doc_id, item_id, back)
+def momo_review_generate_excerpt_image(doc_id: str, item_id: int, back: str = "", provider: str = "gemini"):
+    return _generate_slot_image(doc_id, item_id, back, provider=provider)
 
 
 @router.post("/{doc_id}/essay_prompt/{item_id}/upload-image")

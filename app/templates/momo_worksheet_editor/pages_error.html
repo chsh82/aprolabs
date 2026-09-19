@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}페이지별 편집 - {{ project_id }} - Aprolabs{% endblock %}
+
+{% block content %}
+<a href="/momo-worksheet-editor/{{ project_id }}" class="text-xs text-gray-400 hover:text-gray-600">← 문항 편집 화면</a>
+<h2 class="text-2xl font-bold text-gray-800 mt-1 mb-4">🧷 페이지별 편집을 시작할 수 없습니다</h2>
+<div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">{{ error }}</div>
+{% endblock %}

@@ -9,6 +9,7 @@
 
 <!-- 계열별 집계표 -->
 <div class="bg-white rounded-xl border border-gray-100 overflow-hidden mb-6">
+  <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
       <tr>
@@ -49,6 +50,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 
 <!-- 문제 교재 필터 -->
@@ -72,6 +74,7 @@
 
 {% if flagged %}
 <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+  <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
       <tr>
@@ -94,6 +97,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 {% else %}
 <div class="bg-white rounded-xl border border-gray-100 py-16 text-center text-gray-400">

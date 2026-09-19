@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0}
+a{color:#1C2A39}
+a:hover{color:#5A3E36}
+@media print{
+  .keep{break-inside:avoid;page-break-inside:avoid}
+  .pagebreak{break-before:page;page-break-before:always}
+  h2,h3{break-after:avoid}
+  .cut{display:none!important}
+  textarea{overflow:visible!important;resize:none!important}
+}
+</style>
+<script src="./doc-page.js"></script>
+<script src="./image-slot.js"></script>
+</helmet>
+<div ref="{{ root }}" style="--ink:#16150F;--main:#1C2A39;--main-2:#31465C;--sub:#F5F2E7;--paper:#FFFDF7;--point:#5A3E36;--rule:#C9C0AB;--ash:#837E70;--gold:#C8A96A;--base:15px;--lh:1.8;--ruleH:7.5mm;--ans-fill:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ruleH) - 1px),var(--rule) calc(var(--ruleH) - 1px),var(--rule) var(--ruleH));font-family:'Noto Sans KR',sans-serif;color:var(--ink)">
+<doc-page size="a4" margin="15mm">
+
+<div slot="footer" style="display:flex;align-items:center;justify-content:space-between;border-top:2px solid var(--main);padding-top:2.5mm;font-size:.66rem;letter-spacing:.1em;color:var(--ash)">
+  <span style="flex:1">모모의 책장 · 독서논술</span>
+  <span style="flex:1;text-align:right;color:var(--main);font-weight:700">신화의 숲 · LV 5</span>
+</div>
+
+<section style="position:relative;overflow:hidden;background:var(--main);color:var(--sub);margin:0 -15mm 0;padding:14mm 15mm 14mm;text-align:center;height:260mm;box-sizing:border-box;display:flex">
+  <div aria-hidden="true" style="position:absolute;inset:0;background-image:radial-gradient(circle at 12% 9%,rgba(245,242,231,.5) 1.4px,transparent 1.6px),radial-gradient(circle at 26% 17%,rgba(200,169,106,.6) 1.7px,transparent 1.9px),radial-gradient(circle at 38% 6%,rgba(245,242,231,.35) 1.1px,transparent 1.3px),radial-gradient(circle at 8% 32%,rgba(245,242,231,.3) 1.1px,transparent 1.3px),radial-gradient(circle at 88% 12%,rgba(245,242,231,.45) 1.5px,transparent 1.7px),radial-gradient(circle at 76% 24%,rgba(200,169,106,.5) 1.6px,transparent 1.8px),radial-gradient(circle at 93% 38%,rgba(245,242,231,.3) 1.2px,transparent 1.4px),radial-gradient(circle at 6% 62%,rgba(245,242,231,.35) 1.3px,transparent 1.5px),radial-gradient(circle at 17% 78%,rgba(200,169,106,.45) 1.5px,transparent 1.7px),radial-gradient(circle at 91% 71%,rgba(245,242,231,.4) 1.4px,transparent 1.6px),radial-gradient(circle at 82% 88%,rgba(245,242,231,.3) 1.2px,transparent 1.4px),radial-gradient(circle at 50% 95%,rgba(200,169,106,.4) 1.4px,transparent 1.6px);pointer-events:none"></div>
+  <div aria-hidden="true" style="position:absolute;left:12%;top:9%;width:16%;height:1px;background:rgba(245,242,231,.16);transform:rotate(24deg);transform-origin:left center;pointer-events:none"></div>
+  <div aria-hidden="true" style="position:absolute;left:26%;top:17%;width:14%;height:1px;background:rgba(245,242,231,.13);transform:rotate(-38deg);transform-origin:left center;pointer-events:none"></div>
+  <div aria-hidden="true" style="position:absolute;left:76%;top:24%;width:15%;height:1px;background:rgba(245,242,231,.14);transform:rotate(-52deg);transform-origin:left center;pointer-events:none"></div>
+  <div aria-hidden="true" style="position:absolute;left:17%;top:78%;width:13%;height:1px;background:rgba(245,242,231,.12);transform:rotate(-28deg);transform-origin:left center;pointer-events:none"></div>
+
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:6mm">
+    <img src="assets/logo-momo-ivory.png" alt="모모의 책장" style="height:13mm;width:auto;display:block;opacity:.92">
+    <div style="width:100%;max-width:30rem;border-top:1px solid var(--gold);border-bottom:1px solid rgba(245,242,231,.28);padding:3.5mm 0;box-shadow:0 3px 0 -2px rgba(245,242,231,.28) inset,0 -3px 0 -2px var(--gold) inset">
+      <p style="margin:0;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.3em;color:var(--gold)">LV 5 &nbsp;·&nbsp; 고전분기</p>
+    </div>
+  </div>
+
+  <h1 style="font-family:'Gowun Batang',serif;font-weight:700;letter-spacing:.02em;font-size:3.6rem;line-height:1.3;margin:10mm 0 0;color:var(--sub)">신화의 숲</h1>
+  <p style="margin:.7em 0 0;font-family:'Gowun Batang',serif;color:rgba(245,242,231,.72);font-size:1.08rem;letter-spacing:.1em">김헌 지음 &nbsp;·&nbsp; 포레스트북스</p>
+
+  <div style="display:flex;justify-content:center;align-items:center;gap:.8rem;margin:7mm 0">
+    <span style="width:5rem;height:1px;background:linear-gradient(to right,transparent,var(--gold))"></span>
+    <span style="width:4px;height:4px;background:var(--gold);border-radius:50%"></span>
+    <span style="width:5rem;height:1px;background:linear-gradient(to left,transparent,var(--gold))"></span>
+  </div>
+
+  <img src="assets/cover-sinhwa.jpg" alt="신화의 숲 표지" style="display:block;width:100%;max-width:19rem;margin:0 auto;border:1px solid var(--gold);outline:1px solid rgba(245,242,231,.22);outline-offset:4mm">
+
+  <blockquote style="font-family:'Gowun Batang',serif;color:var(--sub);border:0;margin:7mm auto 0;padding:0;font-size:1.5rem;line-height:2.05;max-width:26rem;font-weight:400">“신화는 거울처럼<br>우리를 비춰줄 거예요.”</blockquote>
+
+  </div>
+</section>
+
+<p class="cut" style="display:flex;align-items:center;gap:.8em;margin:4mm 0 0;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;color:var(--ash);padding-bottom:16mm"><span style="flex:1;border-top:1px dashed var(--rule)"></span>인쇄 페이지 나눔<span style="flex:1;border-top:1px dashed var(--rule)"></span></p>
+
+<section class="pagebreak" style="border:12mm solid var(--main);background:var(--sub);margin:-15mm -15mm 0;padding:6mm 7mm 6mm;box-sizing:border-box;min-height:275mm;-webkit-box-decoration-break:clone;box-decoration-break:clone">
+  <div style="display:flex;align-items:center;gap:.8rem;border-bottom:1px solid var(--main);padding-bottom:2mm">
+    <img src="assets/logo-momo.png" alt="모모의 책장" style="height:11mm;width:auto;display:block">
+    <div style="flex:1;text-align:right">
+      <p style="margin:0;font-size:.66rem;letter-spacing:.24em;color:var(--ash)">STEP 01</p>
+      <h2 style="font-family:'Noto Serif KR',serif;font-size:1.15rem;font-weight:700;margin:.15rem 0 0;color:var(--main)">어휘력 향상 &amp; 내용 확인 O·X 퀴즈</h2>
+    </div>
+  </div>
+  <div style="border-top:2px solid var(--main);margin:1.2mm 0 5mm"></div>
+
+  <p style="color:var(--main);font-weight:600;font-size:var(--base);line-height:var(--lh);margin:0 0 .55rem">제시된 단어의 뜻을 확인하고, 이 단어들을 이용해 각각 하나씩 ‘문장’을 만들어 보세요.</p>
+
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr>
+        <th style="border:1px solid var(--main);background:var(--main);color:var(--sub);padding:.5em .8em;font-size:.84rem;font-weight:700;width:38%;text-align:left;letter-spacing:.06em">단어</th>
+        <th style="border:1px solid var(--main);background:var(--main);color:var(--sub);padding:.5em .8em;font-size:.84rem;font-weight:700;text-align:left;letter-spacing:.06em">각 단어를 이용해 문장 만들기</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="keep">
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.7em .8em;vertical-align:top">
+          <p style="font-family:'Noto Serif KR',serif;font-size:1.08em;font-weight:700;margin:0;color:var(--main)">중재하다<span style="font-family:'Noto Sans KR',sans-serif;font-size:.64em;color:var(--ash);margin-left:.5em;font-weight:400">59쪽</span></p>
+          <p style="color:#4A473E;margin:.25em 0 0;font-size:.9em;line-height:1.7">분쟁에 끼어들어 쌍방을 화해시키다.</p>
+        </td>
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.35em .5em;vertical-align:top">
+          <textarea rows="2" aria-label="중재하다 문장 만들기" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+        </td>
+      </tr>
+      <tr class="keep">
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.7em .8em;vertical-align:top">
+          <p style="font-family:'Noto Serif KR',serif;font-size:1.08em;font-weight:700;margin:0;color:var(--main)">빙자하다<span style="font-family:'Noto Sans KR',sans-serif;font-size:.64em;color:var(--ash);margin-left:.5em;font-weight:400">85쪽</span></p>
+          <p style="color:#4A473E;margin:.25em 0 0;font-size:.9em;line-height:1.7">남의 힘을 빌려서 의지하다.</p>
+        </td>
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.35em .5em;vertical-align:top">
+          <textarea rows="2" aria-label="빙자하다 문장 만들기" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+        </td>
+      </tr>
+      <tr class="keep">
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.7em .8em;vertical-align:top">
+          <p style="font-family:'Noto Serif KR',serif;font-size:1.08em;font-weight:700;margin:0;color:var(--main)">객기<span style="font-family:'Noto Sans KR',sans-serif;font-size:.64em;color:var(--ash);margin-left:.5em;font-weight:400">141쪽</span></p>
+          <p style="color:#4A473E;margin:.25em 0 0;font-size:.9em;line-height:1.7">공연히 부리는 호기.</p>
+        </td>
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.35em .5em;vertical-align:top">
+          <textarea rows="2" aria-label="객기 문장 만들기" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+        </td>
+      </tr>
+      <tr class="keep">
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.7em .8em;vertical-align:top">
+          <p style="font-family:'Noto Serif KR',serif;font-size:1.08em;font-weight:700;margin:0;color:var(--main)">아연실색<span style="font-family:'Noto Sans KR',sans-serif;font-size:.64em;color:var(--ash);margin-left:.5em;font-weight:400">150쪽</span></p>
+          <p style="color:#4A473E;margin:.25em 0 0;font-size:.9em;line-height:1.7">뜻밖의 일에 얼굴빛이 변할 정도로 놀람.</p>
+        </td>
+        <td style="border:1px solid var(--main-2);background:var(--paper);padding:.35em .5em;vertical-align:top">
+          <textarea rows="2" aria-label="아연실색 문장 만들기" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="color:var(--main);font-weight:600;font-size:var(--base);line-height:var(--lh);margin:1.6rem 0 .2rem">열심히 읽은 책 내용을 떠올리며 O·X 퀴즈를 풀어 보세요.</p>
+  <ol style="list-style:none;padding:0;margin:0;border-top:2px solid var(--main)">
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.42rem 0;border-bottom:1px solid var(--main-2)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">페네이오스는 아폴론이 마음에 들지 않아서 다프네를 나무로 변신시켰어요.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">38쪽</span></p>
+      <div style="display:flex;gap:.4rem;flex:0 0 auto">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">X</span>
+      </div>
+    </li>
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.42rem 0;border-bottom:1px solid var(--main-2)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">오르페우스는 노래를 부른 덕분에 스튁스강을 건널 수 있었어요.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">67쪽</span></p>
+      <div style="display:flex;gap:.4rem;flex:0 0 auto">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">X</span>
+      </div>
+    </li>
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.42rem 0;border-bottom:1px solid var(--main-2)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">뽕나무 열매는 원래부터 검붉은색이었다고 해요.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">104쪽</span></p>
+      <div style="display:flex;gap:.4rem;flex:0 0 auto">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">X</span>
+      </div>
+    </li>
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.42rem 0;border-bottom:1px solid var(--main-2)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">칼리스토와 아르카스를 향한 헤라의 저주 때문에 큰곰자리와 작은곰자리는 일 년 내내 밤하늘을 빛내게 되었어요.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">131쪽</span></p>
+      <div style="display:flex;gap:.4rem;flex:0 0 auto">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">X</span>
+      </div>
+    </li>
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.42rem 0;border-bottom:1px solid var(--main-2)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">탄탈로스는 신들의 음식인 넥타르와 암브로시아를 몰래 빼돌려 인간에게 주려고 했어요.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">158쪽</span></p>
+      <div style="display:flex;gap:.4rem;flex:0 0 auto">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--main);background:var(--paper);border-radius:50%;align-items:center;justify-content:center;color:var(--main);font-weight:700">X</span>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<p class="cut" style="display:flex;align-items:center;gap:.8em;margin:8mm 0 0;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;color:var(--ash);padding-bottom:16mm"><span style="flex:1;border-top:1px dashed var(--rule)"></span>인쇄 페이지 나눔<span style="flex:1;border-top:1px dashed var(--rule)"></span></p>
+
+<section class="pagebreak" style="border:12mm solid var(--main);background:var(--sub);margin:-15mm -15mm 0;padding:6mm 7mm 6mm;box-sizing:border-box;min-height:275mm;-webkit-box-decoration-break:clone;box-decoration-break:clone">
+  <div style="display:flex;align-items:center;gap:.8rem;border-bottom:1px solid var(--main);padding-bottom:2mm">
+    <img src="assets/logo-momo.png" alt="모모의 책장" style="height:11mm;width:auto;display:block">
+    <div style="flex:1;text-align:right">
+      <p style="margin:0;font-size:.66rem;letter-spacing:.24em;color:var(--ash)">STEP 02</p>
+      <h2 style="font-family:'Noto Serif KR',serif;font-size:1.15rem;font-weight:700;margin:.15rem 0 0;color:var(--main)">질문과 토론 — 함께 들여다보기</h2>
+    </div>
+  </div>
+  <div style="border-top:2px solid var(--main);margin:1.2mm 0 6mm"></div>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">비판적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">고대 그리스와 로마인들에게 가장 유명한 격언으로 “너 자신을 알라”라는 말이 있어요. 철학자 소크라테스와 같이 지혜로운 사람들이 가슴에 새기고 다녔다는데, 왜 현명한 예언자 테이레시아스는 이와 정반대되는 말을 했을까요?
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.26</cite>
+  </blockquote>
+  <article class="keep" style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">1</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">왜 테이레시아스는 나르키소스에게 자신을 알지 못할 때 오래 살 것이라고 했나요? 여러분도 그 생각에 동의하나요?</p>
+    </div>
+    <textarea rows="5" aria-label="1번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">비판적 · 추론적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">천생 사냥꾼인 나르키소스는 들판을 뛰어다니며 사냥하는 것에서 가장 큰 기쁨을 느꼈어요. 그의 멋진 외모와 탁월한 사냥 솜씨는 뭇 소녀들과 청년들, 심지어 요정들까지도 설레게 만들었습니다. 하지만 그는 사랑에 관심이 없었어요. 그에게 매료된 모든 이들의 구애를 매정하게 딱 잘라 거절했지요. 다른 사람들을 받아들일 마음의 자리가 전혀 없었던 거예요. 그에게 다가갔던 수많은 이들은 나르키소스의 태도에 깊은 상처를 입었어요.
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.27</cite>
+  </blockquote>
+  <figure class="keep" style="margin:0 0 1.2rem;border:1px solid var(--main-2);background:var(--paper);padding:3mm">
+    <img src="assets/fig1-narcissus.png" alt="물에 비친 얼굴을 바라보는 나르키소스" style="display:block;width:118mm;max-width:100%;height:auto;margin:0 auto">
+    <figcaption style="margin:2.5mm 0 0;font-size:.72rem;letter-spacing:.04em;color:var(--point);text-align:center">그림 1 &nbsp;물에 비친 얼굴 앞에 멈춰 선 나르키소스</figcaption>
+  </figure>
+  <article class="keep" style="margin-bottom:1.3rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">2</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">나르키소스는 왜 구애자들의 마음을 받아들이지 않았을까요? 마음을 받아 주지 못했을 때 어떤 태도를 취하면 좋았을까요?</p>
+    </div>
+    <textarea rows="5" aria-label="2번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+  <article class="keep" style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">3</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">상대를 그 자체로 인정하지 못하고 본인만의 기준으로 대하고 평가하는 것을 나르시시즘(Narcissism)이라고 할 수 있는 이유는 무엇일까요?</p>
+    </div>
+    <textarea rows="5" aria-label="3번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p class="cut" style="display:flex;align-items:center;gap:.8em;margin:2mm 0 7mm;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;color:var(--ash)"><span style="flex:1;border-top:1px dashed var(--rule)"></span>인쇄 페이지 나눔<span style="flex:1;border-top:1px dashed var(--rule)"></span></p>
+  <div class="pagebreak"></div>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">적용적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">하지만 만약 프쉬케가 용기를 내서 도전하지 않았다면 에로스가 도울 기회조차 없었을 테니, 프쉬케의 결단과 도전하는 용기가 가장 중요했던 것입니다. 프쉬케는 몸소 사랑의 힘, 그리고 상대를 믿고 상대를 만나겠다는 희망의 힘이 얼마나 대단한 것인지 보여 주었습니다.
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.89</cite>
+  </blockquote>
+  <figure class="keep" style="margin:0 0 1.2rem;border:1px solid var(--main-2);background:var(--paper);padding:3mm">
+    <img src="assets/fig2-psyche.png" alt="등불을 들고 에로스를 마주한 프쉬케" style="display:block;width:118mm;max-width:100%;height:auto;margin:0 auto">
+    <figcaption style="margin:2.5mm 0 0;font-size:.72rem;letter-spacing:.04em;color:var(--point);text-align:center">그림 2 &nbsp;등불을 들고 에로스를 마주한 프쉬케</figcaption>
+  </figure>
+  <article class="keep" style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">4</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">여러분도 프쉬케와 같이 용기를 내어 어떤 일에 도전한 적이 있었나요? 만약 용기를 내어 도전하지 않았다면 상황이 어떻게 바뀌었을까요? 도전하지 않아서 아쉬운 때를 떠올려도 좋습니다.</p>
+    </div>
+    <textarea rows="5" aria-label="4번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">적용적 · 추론적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">어떤 것이 생겨난 기원의 이유, 연유를 담아낸 이야기라는 뜻에서 연기 설화 또는 연기 신화라고 합니다. 아레투사의 이야기도 대표적인 연기 신화라고 할 수 있습니다. 세상을 신비롭게 바라보던 고대인들의 지혜와 상상력을 감상하면서 주변을 과학과는 다른 시각으로 바라볼 수 있다면 우리의 삶이 더욱 풍부해질 거예요.
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.51</cite>
+  </blockquote>
+  <article class="keep" style="margin-bottom:1.3rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">5</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">달의 모양이 변하는 이유를 상상력으로 접근해 볼까요?</p>
+    </div>
+    <textarea rows="4" aria-label="5번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+  <article class="keep" style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">6</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">우리는 이미 달의 모양이 왜 변하는지 알고 있습니다. 그럼에도 사람들은 상상을 입혀서 왜 이러한 이야기를 계속 만드는 걸까요?</p>
+    </div>
+    <textarea rows="4" aria-label="6번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p class="cut" style="display:flex;align-items:center;gap:.8em;margin:2mm 0 7mm;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;color:var(--ash)"><span style="flex:1;border-top:1px dashed var(--rule)"></span>인쇄 페이지 나눔<span style="flex:1;border-top:1px dashed var(--rule)"></span></p>
+  <div class="pagebreak"></div>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">분석적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">그리스어에서 프쉬케는 ‘영혼’이라는 뜻으로 통하지만 원래는 ‘목숨’이라는 뜻이었어요. 모든 생명체는 호흡을 합니다. 숨을 들이마시고 내쉬지요. 그 들숨과 날숨을 흉내낸 말이 ‘프쉬케’입니다. 사람이 죽는 순간 호흡이 끊어지면서 목숨인 프쉬케가 몸에서 빠져나가면 그것은 공중에서 흩어질까요? 고대 그리스인들은 그렇지 않다고 생각했습니다. 혼백으로 계속 남아 지하 세계로 내려간다고 믿었습니다. 그래서 프쉬케는 혼백, 영혼이라는 뜻이 되었지요. 인간의 심리를 다루는 학문, 심리학을 영어로는 ‘사이콜로지’라고 합니다. 이 단어를 잘 보면 앞에 붙은 말이 ‘Psycho’인데, 그 어원이 바로 ‘Psyche’입니다.
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.100</cite>
+  </blockquote>
+  <article class="keep" style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">7</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">프쉬케는 어떻게 ‘영혼’이라는 뜻을 갖게 되었을까요?</p>
+    </div>
+    <textarea rows="4" aria-label="7번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">적용적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">지금까지 이야기한 브랜드 외에도 여러 브랜드가 그리스 로마 신화 속 주인공과 이야기를 가져와 사용하고 있습니다. 어떤 것들이 있는지 주의 깊게 살펴보세요. 브랜드는 상품에 의미와 가치, 메시지를 입히는 신비로운 힘을 가지고 있습니다. (중략) 여러분 개인의 브랜드는 무엇이라고 생각하나요?
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.119</cite>
+  </blockquote>
+  <article style="margin-bottom:1.5rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.7rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center;font-size:.88em;padding:0 .35em">8-1</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">다음의 상표는 어떤 의미로 이름을 붙이거나 로고를 만든 것일까요?</p>
+    </div>
+    <figure class="keep" style="margin:0 0 .8rem;border:1px solid var(--main-2);background:var(--paper);padding:2mm">
+      <img src="assets/fig5-brands.png" alt="판도라·네이버·나이키 로고와 그리스 신화 인물" style="display:block;width:112mm;max-width:100%;height:auto;margin:0 auto">
+      <figcaption style="margin:2mm 0 0;font-size:.72rem;letter-spacing:.04em;color:var(--point);text-align:center">판도라 · 헤르메스(네이버) · 니케(나이키)</figcaption>
+    </figure>
+    <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+      <thead>
+        <tr>
+          <th style="border:1px solid var(--main);background:var(--main);color:var(--sub);padding:.45em .6em;font-weight:700;width:22%;letter-spacing:.06em">상표</th>
+          <th style="border:1px solid var(--main);background:var(--main);color:var(--sub);padding:.45em .6em;font-weight:700;width:36%;letter-spacing:.06em">그리스·로마 신화</th>
+          <th style="border:1px solid var(--main);background:var(--main);color:var(--sub);padding:.45em .6em;font-weight:700;letter-spacing:.06em">의미</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.55em .6em;text-align:center;vertical-align:middle">
+            <b style="color:var(--main)">주얼리 브랜드<br>판도라</b>
+          </td>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.55em .7em;line-height:1.65;color:#4A473E">판도라 : 제우스가 인간 세계에 내려보낸 최초의 여자로, 모든 선물(pan+dora)을 다 받은 자라는 뜻</td>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.3em .4em;vertical-align:top">
+            <textarea rows="2" aria-label="판도라 의미" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.55em .6em;text-align:center;vertical-align:middle">
+            <b style="color:var(--main)">검색엔진<br>네이버</b>
+          </td>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.55em .7em;line-height:1.65;color:#4A473E">헤르메스 : 신과 인간의 소통을 담당하고 제우스의 메시지를 전하는 전령의 신 (로고는 헤르메스의 모자 페타소스)</td>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.3em .4em;vertical-align:top">
+            <textarea rows="2" aria-label="네이버 의미" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.55em .6em;text-align:center;vertical-align:middle">
+            <b style="color:var(--main)">스포츠 브랜드<br>나이키</b>
+          </td>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.55em .7em;line-height:1.65;color:#4A473E">페르시아 전쟁에서 승리를 전하기 위해 42.195km를 달린 승리의 여신 ‘니케’의 날개</td>
+          <td style="border:1px solid var(--main-2);background:var(--paper);padding:.3em .4em;vertical-align:top">
+            <textarea rows="2" aria-label="나이키 의미" style="width:100%;box-sizing:border-box;display:block;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .3rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+  <article class="keep" style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.5rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center;font-size:.88em;padding:0 .35em">8-2</span>
+      <div>
+        <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">나의 의미와 가치, 메시지를 생각하며 나의 개인 브랜드를 구상해 보세요.</p>
+        <p style="font-size:.85rem;color:var(--point);margin:.2rem 0 0">예) 모모 — 모모처럼 친구들의 이야기를 들어준다</p>
+      </div>
+    </div>
+    <textarea rows="4" aria-label="8-2번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p class="cut" style="display:flex;align-items:center;gap:.8em;margin:2mm 0 7mm;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;color:var(--ash)"><span style="flex:1;border-top:1px dashed var(--rule)"></span>인쇄 페이지 나눔<span style="flex:1;border-top:1px dashed var(--rule)"></span></p>
+  <div class="pagebreak"></div>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">추론적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">그들이 선과 정의를 구현하는 윤리적으로 완벽한 존재가 아니라, 제 욕망과 격정에 따라 제멋대로 행동하기 때문에 인간이 사는 이 세상도 부조리하고 불합리하게 돌아가는 거라고 생각했던 겁니다. 우리가 사는 이 세상을 설명하기에는 선하고 완벽한 신보다는 제우스나 헤라 같은 결함이 있는 신이 더 어울릴 것 같았기 때문이 아닐까요?
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.133</cite>
+  </blockquote>
+  <article style="margin-bottom:1.8rem">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.7rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">9</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">그리스·로마 신화에서처럼 우리나라 신화에도 세상의 질서가 어지러운 이유를 설명하고 있네요. 사람들이 이러한 신화를 만들어낸 이유는 무엇일까요?</p>
+    </div>
+    <div style="border:1px solid var(--main-2);border-top:2px solid var(--point);background:var(--paper);padding:.85em 1em;margin:0 0 .8rem">
+      <p style="margin:0 0 .45em;font-size:.66rem;letter-spacing:.18em;color:var(--point);font-weight:700">참고 자료</p>
+      <p style="margin:0;font-size:.83rem;line-height:1.8;color:#4A473E">「천지왕본풀이」는 제주도 굿에서 해와 달을 정리하고 이승법과 저승법을 마련한 대별왕·소별왕 형제의 내력을 풀이할 때 구연하는 서사무가이다. 여러 개의 해와 달을 화살로 쏘아 떨어뜨려 하나씩만 남겨 일월을 정리한 이야기, 꽃을 바꿔치기하는 부정한 방법으로 내기에서 이긴 자가 이승을 차지하는 바람에 이승법이 저승과 달리 맑지 못하고 혼탁하게 되었다는 이야기를 통해 인간 세상의 질서가 어떻게 성립된 것인지를 보여 준다.</p>
+      <p style="margin:.5em 0 0;text-align:right;font-size:.74rem;color:var(--ash)">한국민족문화대백과사전 「천지왕본풀이」</p>
+    </div>
+    <figure class="keep" style="margin:0 0 1.2rem;border:1px solid var(--main-2);background:var(--paper);padding:3mm">
+      <img src="assets/fig3-cheonjiwang.png" alt="해와 달을 정리하는 대별왕과 소별왕" style="display:block;width:105mm;max-width:100%;height:auto;margin:0 auto">
+      <figcaption style="margin:2.5mm 0 0;font-size:.72rem;letter-spacing:.04em;color:var(--point);text-align:center">그림 3 &nbsp;해와 달을 정리하는 대별왕과 소별왕</figcaption>
+    </figure>
+    <textarea rows="4" aria-label="9번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+
+  <p style="display:flex;align-items:center;gap:.7em;margin:0 0 .7rem;break-after:avoid;page-break-after:avoid"><span style="font-size:.72rem;letter-spacing:.16em;color:var(--sub);background:var(--main);font-weight:700;padding:.36em 1em">추론적 독해</span><span style="flex:1;height:1px;background:var(--main-2)"></span></p>
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:.8em 1em .65em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.92rem;line-height:1.72;color:#34302A">감히 신들을 시험하려 들다니, 게다가 자기 아들을 죽여 그것을 신들에게 먹이려고 하다니! 신들은 경악했고 분노가 격하게 끓어올랐지만, 먼저 아버지의 사악한 마음 때문에 죽은 펠롭스를 구해야 한다는 생각이 먼저였습니다.
+    <cite style="display:block;text-align:right;font-style:normal;font-size:.76em;color:var(--point);margin-top:.6em;letter-spacing:.06em">p.160</cite>
+  </blockquote>
+  <article class="keep">
+    <div style="display:flex;gap:.7rem;align-items:baseline;margin-bottom:.6rem">
+      <span style="font-family:'Noto Serif KR',serif;flex:0 0 auto;background:var(--main);color:var(--sub);font-weight:700;min-width:1.95em;height:1.95em;display:inline-flex;align-items:center;justify-content:center">10</span>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0;color:var(--main)">앞서 그리스·로마의 신들은 결함을 가진 완벽하지 않은 존재로 여겼다고 했습니다. 탄탈로스의 오만 앞에서 보인 신들의 모습은 조금 달라 보이네요. 『신화의 숲』을 읽으며 여러분이 느낀 신들은 어떤 모습인가요?</p>
+    </div>
+    <textarea rows="5" aria-label="10번 답" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </article>
+</section>
+
+<p class="cut" style="display:flex;align-items:center;gap:.8em;margin:8mm 0 0;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;color:var(--ash);padding-bottom:16mm"><span style="flex:1;border-top:1px dashed var(--rule)"></span>인쇄 페이지 나눔<span style="flex:1;border-top:1px dashed var(--rule)"></span></p>
+
+<section class="pagebreak" style="border:12mm solid var(--main);background:var(--sub);margin:-15mm -15mm 0;padding:6mm 7mm 6mm;box-sizing:border-box;min-height:275mm;-webkit-box-decoration-break:clone;box-decoration-break:clone">
+  <div style="display:flex;align-items:center;gap:.8rem;border-bottom:1px solid var(--main);padding-bottom:2mm">
+    <img src="assets/logo-momo.png" alt="모모의 책장" style="height:11mm;width:auto;display:block">
+    <div style="flex:1;text-align:right">
+      <p style="margin:0;font-size:.66rem;letter-spacing:.24em;color:var(--ash)">STEP 03</p>
+      <h2 style="font-family:'Noto Serif KR',serif;font-size:1.15rem;font-weight:700;margin:.15rem 0 0;color:var(--main)">글쓰기 — 내 글로 엮기</h2>
+    </div>
+  </div>
+  <div style="border-top:2px solid var(--main);margin:1.2mm 0 6mm"></div>
+
+  <div style="background:var(--main);color:var(--sub);text-align:center;padding:.8rem 1rem;margin:0 0 .8rem">
+    <p style="margin:0;font-size:.66rem;letter-spacing:.24em;color:rgba(245,242,231,.6)">오늘의 글감</p>
+    <p style="font-family:'Noto Serif KR',serif;font-size:1.55em;font-weight:700;margin:.3rem 0 0">내가 만드는 별자리</p>
+  </div>
+
+  <figure class="keep" style="margin:0 0 1rem;border:1px solid var(--main-2);background:var(--paper);padding:2mm">
+    <img src="assets/fig4-constellation.png" alt="겨울 밤하늘의 큰곰자리와 작은곰자리" style="display:block;width:140mm;max-width:100%;height:auto;margin:0 auto">
+    <figcaption style="margin:2.5mm 0 0;font-size:.72rem;letter-spacing:.04em;color:var(--point);text-align:center">그림 4 &nbsp;겨울 밤하늘의 큰곰자리와 작은곰자리</figcaption>
+  </figure>
+
+  <blockquote style="font-family:'Noto Serif KR',serif;margin:0;padding:.9em 1.1em;border:1px solid var(--main-2);border-left:3px solid var(--main);background:var(--paper);font-size:.95rem;line-height:1.75;color:#34302A">수많은 점으로 밤하늘에 뿌려진 별들을 상상력의 연필로 선을 그어서 이어가며 사자, 말, 독수리, 양 그리고 활을 쏘는 사냥꾼, 헤라클레스와 페르세우스, 오리온과 같은 영웅들을 떠올려 보고, 거기에 흥미로운 이야기를 덧붙이면서 부모와 자식, 할머니 할아버지와 손녀 손자들의 대화가 이루어졌을 거예요.</blockquote>
+
+  <h3 style="font-family:'Noto Serif KR',serif;display:flex;align-items:baseline;gap:.7em;color:var(--main);font-size:1.02rem;margin:0 0 .9rem;border-bottom:1px solid var(--main-2);padding-bottom:.5rem">Step 1.<small style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.8rem">질문에 따라 생각을 모아 봅시다.</small></h3>
+  <div class="keep" style="margin-bottom:1.3rem">
+    <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .2rem"><b style="color:var(--main)">1</b> 여러분에게 있었던 신화 같은 이야기를 떠올려 봅시다. 사소한 이야기여도 되고, 상상이 들어가도 좋습니다.</p>
+    <p style="font-size:.85rem;color:var(--point);margin:0 0 .5rem;padding-left:1.1rem">예) 달리기 경주에서 역전한 이야기, 골을 넣은 이야기, 엄마와 다툰 이야기</p>
+    <textarea rows="2" aria-label="1번 메모" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </div>
+  <div class="keep" style="margin-bottom:1.3rem">
+    <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .5rem"><b style="color:var(--main)">2</b> 그 이야기의 주인공들은 어떤 별자리가 될까요? 별자리를 그려 보세요.</p>
+    <div style="height:15rem;border:1px solid var(--main-2);border-top:2px solid var(--main);background-color:var(--paper);background-image:radial-gradient(var(--rule) 1px,transparent 1px);background-size:7.5mm 7.5mm;background-position:3.75mm 3.75mm;height:6.5rem"></div>
+  </div>
+  <div class="keep" style="margin-bottom:1.3rem">
+    <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .5rem"><b style="color:var(--main)">3</b> 큰곰자리와 작은곰자리 이야기를 참고하여 여러분만의 신화를 지어 봅시다. 기억될 만한 멋진 신화, 설화를 지어 봅니다.</p>
+    <textarea rows="3" aria-label="3번 메모" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+  </div>
+
+  <h3 style="font-family:'Noto Serif KR',serif;display:flex;align-items:baseline;gap:.7em;color:var(--main);font-size:1.02rem;margin:1.8rem 0 .5rem;border-bottom:1px solid var(--main-2);padding-bottom:.5rem">Step 2.<small style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.8rem">앞선 질문들을 이어 붙여 글의 첫 대목을 잡아 봅시다.</small></h3>
+  <p style="margin:0 0 .6rem;font-size:.82rem;color:var(--point)">여기에 도입부만 적고, 완성한 글은 별도의 원고지에 이어서 씁니다.</p>
+  <textarea rows="3" aria-label="긴 글쓰기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:0;background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden;resize:vertical"></textarea>
+</section>
+
+</doc-page>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  root = React.createRef();
+
+  grow() {
+    const el = this.root.current;
+    if (!el) return;
+    el.querySelectorAll("textarea").forEach(t => {
+      t.style.height = "auto";
+      t.style.height = t.scrollHeight + "px";
+    });
+  }
+
+  componentDidMount() {
+    this.grow();
+    const el = this.root.current;
+    if (el) el.addEventListener("input", e => {
+      if (e.target.tagName === "TEXTAREA") {
+        e.target.style.height = "auto";
+        e.target.style.height = e.target.scrollHeight + "px";
+      }
+    });
+    this._before = () => this.grow();
+    window.addEventListener("beforeprint", this._before);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.grow());
+  }
+
+  componentDidUpdate() { this.grow(); }
+
+  componentWillUnmount() { window.removeEventListener("beforeprint", this._before); }
+
+  renderVals() { return { root: this.root }; }
+}
+</script>
+</body>
+</html>

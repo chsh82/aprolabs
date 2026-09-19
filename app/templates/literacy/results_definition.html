@@ -21,6 +21,7 @@
   <button class="bg-gray-200 rounded px-3 py-1">필터 적용</button>
 </form>
 
+<div class="overflow-x-auto">
 <table class="w-full text-sm bg-white border border-gray-200 rounded-xl overflow-hidden">
   <thead class="bg-gray-50 text-gray-500">
     <tr>
@@ -41,6 +42,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 
 <div class="flex justify-between mt-4 text-sm">
   <a href="?page={{ page-1 }}&level={{ level or '' }}&source={{ source or '' }}"

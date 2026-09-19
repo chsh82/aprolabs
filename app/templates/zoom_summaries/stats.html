@@ -39,6 +39,7 @@
   <div class="px-4 py-3 border-b border-gray-100">
     <h3 class="text-sm font-semibold text-gray-700">강사별 현황</h3>
   </div>
+  <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
       <tr>
@@ -70,6 +71,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 
 <!-- 주간 추이 -->
@@ -85,6 +87,7 @@
       </select>
     </form>
   </div>
+  <div class="overflow-x-auto">
   <table class="w-full text-sm">
     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
       <tr>
@@ -106,5 +109,6 @@
       {% endif %}
     </tbody>
   </table>
+  </div>
 </div>
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}페이지 이력 - {{ meta.source_doc_id }} - Aprolabs{% endblock %}
+
+{% block content %}
+<a href="/momo-worksheet-editor/{{ project_id }}/pages" class="text-xs text-gray-400 hover:text-gray-600">← 페이지별 편집으로</a>
+<h2 class="text-2xl font-bold text-gray-800 mt-1 mb-1">📜 페이지 구성표 이력</h2>
+<p class="text-xs text-gray-400 mb-4">현재 리비전: <span class="font-mono">{{ manifest.revision_id }}</span></p>
+
+{% if error %}
+<div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">{{ error }}</div>
+{% endif %}
+
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+  <div class="space-y-1">
+    {% for h in history|reverse %}
+    <div class="flex items-center justify-between text-xs px-3 py-2 rounded {{ 'bg-indigo-50' if h.revision_id == manifest.revision_id else 'hover:bg-gray-50' }}">
+      <div>
+        <span class="font-mono">{{ h.revision_id }}</span>
+        <span class="text-gray-400">{{ h.created_at }} · 페이지 {{ h.page_count }}개</span>
+        {% if h.revision_id == manifest.revision_id %}<span class="text-indigo-600 font-medium">(현재)</span>{% endif %}
+        {% if h.parent_revision %}<div class="text-gray-300 font-mono">← {{ h.parent_revision }}</div>{% endif %}
+      </div>
+      {% if h.revision_id != manifest.revision_id %}
+      <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/restore">
+        <input type="hidden" name="revision_id" value="{{ h.revision_id }}">
+        <input type="hidden" name="base_revision" value="{{ manifest.revision_id }}">
+        <button type="submit" class="text-indigo-600 hover:underline">이 구성으로 복원(새 리비전으로 기록)</button>
+      </form>
+      {% endif %}
+    </div>
+    {% else %}
+    <p class="text-xs text-gray-300">이력 없음</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

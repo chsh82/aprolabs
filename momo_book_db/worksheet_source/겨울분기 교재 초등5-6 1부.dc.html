@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0}
+a{color:#1C2A39}
+a:hover{color:#5A3E36}
+@media print{
+  .keep{break-inside:avoid;page-break-inside:avoid}
+  .pagebreak{break-before:page;page-break-before:always}
+  h2,h3{break-after:avoid}
+  textarea{overflow:visible!important;resize:none!important}
+}
+</style>
+<script src="./doc-page.js"></script>
+</helmet>
+<div ref="{{ root }}" style="--ink:#16150F;--main:#1C2A39;--sub:#F5F2E7;--point:#5A3E36;--rule:#DCD6C6;--ash:#8A8578;--tint-a:#E6E9ED;--tint-b:#EFE7E4;--seal-bg:#5A3E36;--seal-fg:#fff;--base:15px;--lh:1.8;--h1:1.95rem;--qgap:1.5rem;--ruleH:7.5mm;--seal-radius:3px;--seal-rot:-2deg;--seal-size:2.05em;--ans-fill:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ruleH) - 1px),var(--rule) calc(var(--ruleH) - 1px),var(--rule) var(--ruleH));--ans-border:1px solid transparent;--ans-radius:0px;font-family:'Noto Sans KR',sans-serif;color:var(--ink)">
+<doc-page size="a4" margin="15mm">
+
+<section style="text-align:center;padding:1rem 0 0">
+  <p style="margin:0;font-size:.74rem;letter-spacing:.24em;color:var(--main)">모모의 책장 · 독서논술</p>
+  <h1 style="font-family:'Noto Serif KR',serif;font-size:2.6rem;font-weight:700;letter-spacing:-.03em;line-height:1.25;margin:1.6rem 0 0;color:var(--main)">깊이 있는<br>사유의 계절</h1>
+  <p style="font-family:'Noto Serif KR',serif;font-size:1.05rem;color:var(--point);margin:1rem 0 0">겨울 · 고전분기 &nbsp;|&nbsp; 초등 5~6학년 &nbsp;|&nbsp; 12주 과정</p>
+  <div style="display:flex;justify-content:center;gap:.5rem;margin:1.4rem 0 0">
+    <span style="font-size:.78rem;letter-spacing:.16em;color:var(--main);border:1px solid var(--rule);padding:.3em 1em;border-radius:99px">깊이</span>
+    <span style="font-size:.78rem;letter-spacing:.16em;color:var(--main);border:1px solid var(--rule);padding:.3em 1em;border-radius:99px">정제</span>
+    <span style="font-size:.78rem;letter-spacing:.16em;color:var(--main);border:1px solid var(--rule);padding:.3em 1em;border-radius:99px">내면</span>
+  </div>
+  <div style="margin:2rem auto 0;max-width:26rem;aspect-ratio:4/3;background-image:repeating-linear-gradient(135deg,#EFEAE0,#EFEAE0 6px,#F7F4EE 6px,#F7F4EE 12px);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ash);letter-spacing:.05em">분기 표지 이미지 / quarter_cover</span>
+  </div>
+  <p style="font-family:'Noto Serif KR',serif;font-size:1.02rem;line-height:2;color:var(--ink);max-width:26rem;margin:1.8rem auto 0">겨울은 오래 읽은 이야기를 다시 읽는 계절입니다.<br>열두 권의 고전을 지나며, 남의 말이 아닌 나의 생각을 씁니다.</p>
+  <div style="display:flex;gap:.6rem;align-items:center;margin:2.4rem auto 0;max-width:26rem;font-size:.85rem;color:var(--ash)">
+    <span>이름</span>
+    <input type="text" aria-label="이름" style="flex:1;font-family:'Noto Sans KR',sans-serif;font-size:1rem;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+    <span>학원</span>
+    <input type="text" aria-label="학원" style="flex:1;font-family:'Noto Sans KR',sans-serif;font-size:1rem;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+  </div>
+</section>
+
+<section class="pagebreak">
+  <h2 style="font-family:'Noto Serif KR',serif;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:1rem 0 1.2rem;color:var(--main)">12주 차례</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:.88rem">
+    <thead>
+      <tr>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub);width:14%">주차</th>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub);width:42%">읽는 책</th>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub)">이 주의 생각 주제</th>
+      </tr>
+    </thead>
+    <tbody>
+      <sc-for list="{{ toc }}" as="t" hint-placeholder-count="12">
+        <tr>
+          <td style="border:1px solid var(--rule);padding:.45em .6em;color:var(--point);font-weight:600">{{ t.week }}</td>
+          <td style="border:1px solid var(--rule);padding:.45em .6em;font-family:'Noto Serif KR',serif;font-weight:600">{{ t.title }}<span style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.82em;margin-left:.5em">{{ t.author }}</span></td>
+          <td style="border:1px solid var(--rule);padding:.45em .6em">{{ t.theme }}</td>
+        </tr>
+      </sc-for>
+    </tbody>
+  </table>
+</section>
+
+<sc-for list="{{ units }}" as="u" hint-placeholder-count="2">
+<section class="pagebreak">
+  <header style="text-align:center;padding-bottom:1.6rem;border-bottom:1px solid var(--rule)">
+    <p style="margin:0;font-size:.72rem;letter-spacing:.22em;color:var(--main)">{{ u.eyebrow }}</p>
+    <h1 style="font-family:'Noto Serif KR',serif;font-weight:700;letter-spacing:-.02em;font-size:var(--h1);margin:.5rem 0 0;color:var(--main)">{{ u.title }}</h1>
+    <p style="margin:.3em 0 0;color:var(--ash);font-size:.9rem">{{ u.author }}</p>
+    <div style="margin:1.3rem auto 0;max-width:13rem;aspect-ratio:3/4.2;background-image:repeating-linear-gradient(135deg,#EFEAE0,#EFEAE0 6px,#F7F4EE 6px,#F7F4EE 12px);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ash)">표지 이미지 / cover_image</span>
+    </div>
+    <blockquote style="font-family:'Noto Serif KR',serif;color:var(--point);border:0;margin:1.3em auto 0;padding:0;font-size:1.02rem;line-height:2;max-width:26rem">{{ u.lead }}</blockquote>
+    <div style="display:flex;gap:.6rem;align-items:center;margin:1.5rem auto 0;max-width:26rem;font-size:.85rem;color:var(--ash)">
+      <span>이름</span>
+      <input type="text" aria-label="이름" style="flex:1;font-family:'Noto Sans KR',sans-serif;font-size:1rem;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+      <span>날짜</span>
+      <input type="text" aria-label="날짜" style="flex:1;font-family:'Noto Sans KR',sans-serif;font-size:1rem;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+    </div>
+  </header>
+
+  <h2 style="font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:.6em;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.4rem 0 1.1rem;color:var(--main)">
+    <span style="font-family:'Noto Sans KR',sans-serif;background:var(--main);color:#fff;font-size:.62em;padding:.3em .8em;border-radius:2px;letter-spacing:.12em;font-weight:700">1단계</span>낱말과 내용 확인
+  </h2>
+  <p style="color:var(--main);font-weight:600;font-size:var(--base);line-height:var(--lh);margin:0 0 .8rem">책에 나온 낱말의 뜻을 읽고, 이 낱말로 문장을 만들어 보세요.</p>
+  <div style="display:grid;gap:.7rem">
+    <sc-for list="{{ u.words }}" as="w" hint-placeholder-count="3">
+      <div class="keep" style="border:1px solid var(--rule);border-radius:6px;padding:.85rem 1rem">
+        <p style="font-family:'Noto Serif KR',serif;font-size:1.1em;font-weight:700;margin:0">{{ w.w }}<span style="font-family:'Noto Sans KR',sans-serif;font-size:.68em;color:var(--ash);margin-left:.6em;font-weight:400">{{ w.page }}</span></p>
+        <p style="color:#4A473E;margin:.2em 0 .65em;font-size:var(--base);line-height:var(--lh)">{{ w.def }}</p>
+        <textarea rows="2" aria-label="문장 만들기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+      </div>
+    </sc-for>
+  </div>
+  <p style="color:var(--main);font-weight:600;font-size:var(--base);line-height:var(--lh);margin:1.5rem 0 .2rem">책 내용을 떠올리며 맞으면 O, 틀리면 X를 고르세요.</p>
+  <ol style="list-style:none;padding:0;margin:0">
+    <sc-for list="{{ u.ox }}" as="o" hint-placeholder-count="3">
+      <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.65rem 0;border-bottom:1px solid var(--rule)">
+        <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">{{ o.t }}<span style="color:var(--ash);font-size:.78em;margin-left:.5em">{{ o.page }}</span></p>
+        <div style="display:flex;gap:.4rem">
+          <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--rule);border-radius:50%;align-items:center;justify-content:center;color:var(--ash);font-weight:700">O</span>
+          <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--rule);border-radius:50%;align-items:center;justify-content:center;color:var(--ash);font-weight:700">X</span>
+        </div>
+      </li>
+    </sc-for>
+  </ol>
+
+  <h2 style="font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:.6em;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.4rem 0 1.1rem;color:var(--main)">
+    <span style="font-family:'Noto Sans KR',sans-serif;background:var(--main);color:#fff;font-size:.62em;padding:.3em .8em;border-radius:2px;letter-spacing:.12em;font-weight:700">2단계</span>질문과 토론
+  </h2>
+  <sc-for list="{{ u.qs }}" as="q" hint-placeholder-count="5">
+    <article class="keep" style="border-top:1px solid var(--rule);padding-top:var(--qgap);margin-bottom:.4rem">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+        <span style="font-family:'Noto Serif KR',serif;background:var(--seal-bg);color:var(--seal-fg);font-weight:700;min-width:var(--seal-size);height:var(--seal-size);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--seal-radius);transform:rotate(var(--seal-rot));padding:0 .35em">{{ q.n }}</span>
+        <sc-for list="{{ q.tags }}" as="tag" hint-placeholder-count="2">
+          <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">{{ tag }}</span>
+        </sc-for>
+      </div>
+      <sc-if value="{{ q.hasEx }}" hint-placeholder-val="{{ true }}">
+        <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:1em 1.1em .8em;border:0;border-left:2px solid var(--point);background-color:var(--sub);background-image:repeating-linear-gradient(90deg,rgba(90,62,54,.2),rgba(90,62,54,.2) 1px,transparent 1px,transparent 26px);font-size:var(--base);line-height:1.85">{{ q.ex }}
+          <cite style="display:block;text-align:right;font-style:normal;font-size:.78em;color:var(--ash);margin-top:.5em">{{ q.cite }}</cite>
+        </blockquote>
+      </sc-if>
+      <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0 0 .6rem">{{ q.prompt }}</p>
+
+      <sc-if value="{{ q.isLong }}" hint-placeholder-val="{{ true }}">
+        <textarea rows="5" aria-label="답 입력" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+      </sc-if>
+
+      <sc-if value="{{ q.isF2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+          <sc-for list="{{ q.fields }}" as="f" hint-placeholder-count="2">
+            <div>
+              <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">{{ f }}</span>
+              <textarea rows="2" aria-label="답 입력" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ q.isF3 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem">
+          <sc-for list="{{ q.fields }}" as="f" hint-placeholder-count="3">
+            <div>
+              <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">{{ f }}</span>
+              <input type="text" aria-label="답 입력" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ q.isTable }}" hint-placeholder-val="{{ false }}">
+        <table style="width:100%;border-collapse:collapse;font-family:'Noto Serif KR',serif">
+          <thead>
+            <tr>
+              <th style="border:1px solid var(--rule);padding:.5em;font-size:.9em;font-weight:700;background:var(--tint-a)">{{ q.thA }}</th>
+              <th style="border:1px solid var(--rule);padding:.5em;font-size:.9em;font-weight:700;background:var(--tint-b)">{{ q.thB }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ q.left }}" as="row" hint-placeholder-count="3">
+              <tr>
+                <td style="border:1px solid var(--rule);padding:.5em .7em;text-align:center;font-weight:700;background:#FCFBF7">{{ row }}</td>
+                <td style="border:1px solid var(--rule);padding:0;height:var(--ruleH)"></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </sc-if>
+
+      <sc-if value="{{ q.isChoice }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+          <div style="padding:.9rem 1rem;border:1px solid var(--rule);border-radius:6px;text-align:center;font-weight:700;background:var(--tint-a);font-size:.95em">{{ q.cA }}</div>
+          <div style="padding:.9rem 1rem;border:1px solid var(--rule);border-radius:6px;text-align:center;font-weight:700;background:var(--tint-b);font-size:.95em">{{ q.cB }}</div>
+        </div>
+        <p style="color:var(--main);font-weight:600;margin:.9rem 0 .3rem;font-size:var(--base)">그렇게 생각한 까닭은?</p>
+        <textarea rows="3" aria-label="까닭 쓰기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+      </sc-if>
+
+      <sc-if value="{{ q.isRef }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--sub);border:1px solid var(--rule);padding:.9em 1em;margin-bottom:.8em;text-align:center">
+          <p style="margin:0 0 .5em;font-size:.75em;letter-spacing:.15em;color:var(--point)">보기</p>
+          <div style="height:7.5rem;background-image:repeating-linear-gradient(135deg,#EFEAE0,#EFEAE0 6px,#F7F4EE 6px,#F7F4EE 12px);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ash)">{{ q.refNote }}</span>
+          </div>
+        </div>
+        <textarea rows="4" aria-label="답 입력" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+      </sc-if>
+    </article>
+  </sc-for>
+
+  <h2 style="font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:.6em;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.4rem 0 1.1rem;color:var(--main)">
+    <span style="font-family:'Noto Sans KR',sans-serif;background:var(--main);color:#fff;font-size:.62em;padding:.3em .8em;border-radius:2px;letter-spacing:.12em;font-weight:700">3단계</span>글쓰기
+  </h2>
+  <p style="font-family:'Noto Serif KR',serif;font-size:1.45em;font-weight:700;color:var(--point);text-align:center;margin:1.1rem 0">{{ u.topic }}</p>
+  <h3 style="font-family:'Noto Serif KR',serif;display:flex;align-items:baseline;gap:.7em;color:var(--main);font-size:1.05rem;margin:1.8rem 0 .7rem">Step 1.<small style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.8rem">생각을 정리하는 질문에 짧게 메모해 보세요.</small></h3>
+  <sc-for list="{{ u.memos }}" as="m" hint-placeholder-count="3">
+    <div class="keep" style="margin-bottom:1rem">
+      <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .4rem"><b>{{ m.n }}</b> {{ m.t }}</p>
+      <textarea rows="2" aria-label="메모" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+    </div>
+  </sc-for>
+  <h3 style="font-family:'Noto Serif KR',serif;display:flex;align-items:baseline;gap:.7em;color:var(--main);font-size:1.05rem;margin:1.8rem 0 .7rem">Step 2.<small style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.8rem">메모한 생각을 이어 붙여 한 편의 글로 완성해 보세요.</small></h3>
+  <textarea rows="12" aria-label="긴 글쓰기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+</section>
+</sc-for>
+
+</doc-page>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const RAW = [
+  {
+    w: 1, title: "양반전", author: "박지원", theme: "이름과 신분 — 사고팔 수 있는 것은 무엇인가",
+    lead: "이름은 값을 매길 수 있는 것인가.\n사고팔 수 있다면, 그것은 무엇이었는가.",
+    topic: "이름을 산다는 것",
+    words: [
+      { w: "환곡", page: "14쪽", def: "조선 시대에 관아가 봄에 곡식을 빌려주고 가을에 이자와 함께 거두어들인 제도." },
+      { w: "자못", page: "21쪽", def: "생각보다 매우." },
+      { w: "체면", page: "27쪽", def: "남을 대할 때 떳떳한 도리나 얼굴. 남에게 어떻게 보이는지를 뜻하기도 한다." }
+    ],
+    ox: [
+      { t: "정선의 양반은 관아에서 빌린 곡식을 갚지 못해 곤경에 처한다.", page: "11쪽" },
+      { t: "부자는 양반 신분을 사기 위해 자기 재산을 내놓는다.", page: "19쪽" },
+      { t: "부자는 군수가 일러 준 양반의 도리를 듣고도 끝까지 양반으로 살기를 원한다.", page: "27쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "정선 고을에 글 읽기를 좋아하는 양반이 살았다. 살림이 넉넉하지 못하여 관아의 곡식을 해마다 빌려 먹다 보니 빚이 천 석에 이르렀다. 관찰사가 이를 알고 그를 잡아 가두라 명하자, 양반은 밤낮으로 울기만 하고 아무 방도를 찾지 못하였다.", cite: "앞부분 줄거리 요약 · 11~14쪽", prompt: "이 상황에서 양반과 부자가 각각 절실히 원한 것은 무엇인가요?", kind: "f2", fields: ["양반이 원한 것", "부자가 원한 것"] },
+      { tags: ["추론적"], prompt: "거래가 끝난 뒤, 세 인물이 얻은 것 또는 잃은 것을 한 낱말로 적어 보세요.", kind: "f3", fields: ["양반", "부자", "군수"] },
+      { tags: ["사실적"], prompt: "군수가 문서에 적어 준 양반의 조건을 오늘의 말로 바꾸어 적어 보세요.", kind: "table", thA: "문서에 적힌 조건", thB: "오늘의 말로", left: ["손에 돈을 만지지 말 것", "더워도 버선을 벗지 말 것", "아무리 배고파도 서둘러 먹지 말 것"] },
+      { tags: ["비판적"], prompt: "양반 신분을 돈으로 사고파는 일을 어떻게 보아야 할까요?", kind: "choice", cA: "신분을 산 부자에게 더 큰 잘못이 있다", cB: "신분을 팔게 만든 사회에 더 큰 잘못이 있다" },
+      { tags: ["적용적"], prompt: "오늘날에도 '이름값'이 거래되는 일이 있습니다. 「양반전」의 거래와 무엇이 같고 무엇이 다른가요?", kind: "ref", refNote: "자료 이미지 / 오늘의 사례 (비율 가변)" }
+    ],
+    memos: ["양반이 팔았던 것은 정확히 무엇이었나요?", "부자는 결국 왜 양반 문서를 되돌려주려 했나요?", "오늘 우리가 돈으로 사고 싶어 하는 '이름'은 무엇인지 생각해 보며 글을 마무리해 봅시다."]
+  },
+  {
+    w: 2, title: "홍길동전", author: "허균", theme: "차별과 정의 — 규칙이 틀렸을 때",
+    lead: "아버지를 아버지라 부르지 못한 아이가 있었다.\n그 아이는 왜 집을 떠나야 했는가.",
+    topic: "규칙이 틀렸다고 느낄 때",
+    words: [
+      { w: "서얼", page: "9쪽", def: "정식 부인이 아닌 사람에게서 태어난 자식. 조선 시대에는 관직에 나가는 데 큰 제한을 받았다." },
+      { w: "도술", page: "33쪽", def: "이야기 속 인물이 부리는 신기한 재주." },
+      { w: "의적", page: "48쪽", def: "빼앗은 재물을 가난한 사람에게 나누어 준다는 도둑." }
+    ],
+    ox: [
+      { t: "길동은 집안에서 아버지를 아버지라 부를 수 없는 처지였다.", page: "9쪽" },
+      { t: "길동은 활빈당을 만들어 관아의 재물을 빼앗아 백성에게 나눈다.", page: "48쪽" },
+      { t: "길동은 끝까지 조선에 남아 벼슬을 하며 살아간다.", page: "72쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "길동은 어려서부터 글과 무예에 뛰어났으나, 서얼로 태어났다는 이유로 벼슬길이 막혀 있었다. 아버지를 아버지라 부르지 못하고 형을 형이라 부르지 못하는 처지를 견디다가, 마침내 스스로 집을 떠나기로 마음먹는다.", cite: "앞부분 줄거리 요약 · 9~16쪽", prompt: "길동이 집을 떠난 까닭을 두 가지로 나누어 적어 보세요.", kind: "f2", fields: ["집안에서의 까닭", "사회에서의 까닭"] },
+      { tags: ["추론적"], prompt: "활빈당의 행동을 세 낱말로 정리해 보세요.", kind: "f3", fields: ["누구의 것을", "누구에게", "무엇을 위해"] },
+      { tags: ["비판적"], prompt: "길동이 재물을 빼앗은 일을 어떻게 보아야 할까요?", kind: "choice", cA: "잘못을 바로잡기 위한 일이었다", cB: "그래도 도둑질은 도둑질이다" },
+      { tags: ["적용적"], prompt: "우리 반이나 학교의 규칙 가운데, 지키기는 하지만 옳지 않다고 느끼는 규칙이 있나요? 어떻게 바꾸고 싶은지 써 보세요.", kind: "long" },
+      { tags: ["분석적"], prompt: "길동이 조선을 떠나 새 나라를 세운 결말에 대해, 작가가 그렇게 끝맺은 까닭을 짐작해 보세요.", kind: "long" }
+    ],
+    memos: ["길동을 가장 힘들게 한 것은 가난인가요, 신분인가요?", "길동이 규칙을 어긴 방법 가운데 오늘도 쓸 수 있는 방법은 무엇인가요?", "규칙이 틀렸다고 느낄 때 나는 어떻게 할 것인지 정리해 봅시다."]
+  },
+  {
+    w: 3, title: "심청전", author: "작자 미상", theme: "효의 의미 — 사랑은 희생이어야 하는가",
+    lead: "딸은 아버지를 위해 물에 뛰어들었다.\n그것은 사랑이었는가, 다른 무엇이었는가.",
+    topic: "사랑은 희생이어야 할까",
+    words: [
+      { w: "공양", page: "12쪽", def: "어른을 받들어 모시고 음식과 도움을 드리는 일." },
+      { w: "시주", page: "24쪽", def: "절이나 스님에게 재물을 바치는 일." },
+      { w: "환생", page: "78쪽", def: "죽었던 이가 다시 살아나 이 세상에 돌아옴." }
+    ],
+    ox: [
+      { t: "심청은 앞을 보지 못하는 아버지를 돌보며 살아간다.", page: "12쪽" },
+      { t: "심청은 아버지의 눈을 뜨게 하려고 쌀 삼백 석에 자기 몸을 팔기로 한다.", page: "31쪽" },
+      { t: "심 봉사는 딸이 떠난 뒤 곧 눈을 뜨게 된다.", page: "56쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "심청은 아버지가 눈을 뜰 수 있다는 말을 듣고 쌀 삼백 석을 마련하기 위해 자기 몸을 팔기로 한다. 떠나는 날 아침까지도 아버지에게는 사실을 말하지 않고, 밥을 지어 올린 뒤 집을 나선다.", cite: "중간부 줄거리 요약 · 31~40쪽", prompt: "심청이 아버지에게 사실을 말하지 않은 까닭은 무엇일까요?", kind: "long" },
+      { tags: ["추론적"], prompt: "떠나는 심청과 남는 아버지, 두 사람의 마음을 각각 적어 보세요.", kind: "f2", fields: ["심청의 마음", "아버지의 마음"] },
+      { tags: ["비판적"], prompt: "심청의 선택을 어떻게 보아야 할까요?", kind: "choice", cA: "가장 큰 효를 보여 준 선택이다", cB: "다른 방법을 더 찾아야 했다" },
+      { tags: ["분석적"], prompt: "이야기에서 '효'라는 말이 쓰인 자리를 떠올려, 그 뜻을 세 낱말로 나누어 적어 보세요.", kind: "f3", fields: ["돌보는 일", "참는 일", "그 밖에"] },
+      { tags: ["적용적"], prompt: "내가 가족을 위해 할 수 있는 일 가운데, 나를 희생하지 않고도 할 수 있는 일을 써 보세요.", kind: "long" }
+    ],
+    memos: ["심청의 선택에서 가장 마음에 남은 장면은 무엇인가요?", "사랑을 표현하는 방법에는 어떤 것들이 있나요?", "사랑은 반드시 희생이어야 하는지 나의 생각을 정리해 봅시다."]
+  },
+  {
+    w: 4, title: "흥부와 놀부", author: "작자 미상", theme: "나눔과 욕심 — 착함은 보상받는가",
+    lead: "한 사람은 제비의 다리를 고쳐 주었고,\n한 사람은 제비의 다리를 부러뜨렸다.",
+    topic: "착하게 살면 정말 잘 살게 될까",
+    words: [
+      { w: "품앗이", page: "8쪽", def: "이웃끼리 서로 힘든 일을 도와주며 품을 주고받는 일." },
+      { w: "인색하다", page: "15쪽", def: "재물을 아끼는 마음이 지나쳐 남에게 조금도 내주지 않는다." },
+      { w: "박", page: "44쪽", def: "덩굴에 열리는 큰 열매. 껍질을 말려 그릇으로도 썼다." }
+    ],
+    ox: [
+      { t: "흥부는 놀부에게 곡식을 얻으러 갔다가 매를 맞고 돌아온다.", page: "18쪽" },
+      { t: "흥부는 다리가 부러진 제비를 정성껏 고쳐 준다.", page: "36쪽" },
+      { t: "놀부의 박에서도 흥부와 같은 보물이 나온다.", page: "61쪽" }
+    ],
+    qs: [
+      { tags: ["사실적"], prompt: "두 형제가 제비를 대한 방식과 그 결과를 정리해 보세요.", kind: "table", thA: "인물", thB: "제비를 대한 방식과 결과", left: ["흥부", "놀부"] },
+      { tags: ["추론적"], prompt: "놀부가 제비의 다리를 부러뜨린 까닭은 무엇일까요?", kind: "long" },
+      { tags: ["비판적"], prompt: "이 이야기의 결말에 대해 어떻게 생각하나요?", kind: "choice", cA: "착한 사람이 상을 받아 마음이 놓인다", cB: "현실에서는 이렇게 되지 않는다" },
+      { tags: ["분석적"], prompt: "흥부의 가난과 놀부의 부유함은 각각 무엇에서 왔는지 한 낱말로 적어 보세요.", kind: "f3", fields: ["흥부의 가난", "놀부의 부유함", "이야기가 말하려는 것"] },
+      { tags: ["적용적"], prompt: "내가 가진 것을 나눈 경험, 또는 나누지 못해 마음에 남은 일을 써 보세요.", kind: "long" }
+    ],
+    memos: ["흥부가 끝까지 지킨 태도는 무엇인가요?", "착한 행동이 보답받지 못하는 경우도 있습니다. 그럴 때 그 행동은 헛된 것인가요?", "착하게 사는 일의 값에 대해 나의 생각을 정리해 봅시다."]
+  },
+  {
+    w: 5, title: "토끼전", author: "작자 미상", theme: "지혜와 거짓 — 살아남기 위한 말",
+    lead: "토끼는 거짓말로 살아 돌아왔다.\n그 말은 지혜였는가, 거짓이었는가.",
+    topic: "살아남기 위한 거짓말",
+    words: [
+      { w: "용궁", page: "6쪽", def: "이야기 속에서 바다의 임금이 산다는 궁궐." },
+      { w: "간", page: "10쪽", def: "배 속에 있는 큰 장기. 이야기에서는 병을 고치는 약으로 쓰인다." },
+      { w: "꾀", page: "38쪽", def: "일을 이루기 위해 머리를 써서 생각해 낸 방법." }
+    ],
+    ox: [
+      { t: "용왕은 병을 고치기 위해 토끼의 간이 필요하다는 말을 듣는다.", page: "8쪽" },
+      { t: "자라는 토끼에게 사실을 그대로 말하여 용궁으로 데려간다.", page: "22쪽" },
+      { t: "토끼는 간을 산에 두고 왔다고 말하여 용궁을 빠져나온다.", page: "42쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "자라는 토끼를 만나 용궁의 좋은 점만을 늘어놓으며 함께 가자고 권한다. 토끼는 마음이 흔들려 자라의 등에 오르고, 용궁에 이르러서야 자기가 무엇 때문에 불려 왔는지를 알게 된다.", cite: "중간부 줄거리 요약 · 22~34쪽", prompt: "자라의 말과 토끼의 말은 각각 무엇을 감추고 있었나요?", kind: "f2", fields: ["자라가 감춘 것", "토끼가 감춘 것" ] },
+      { tags: ["추론적"], prompt: "토끼가 용궁에서 살아 나올 수 있었던 까닭을 세 낱말로 적어 보세요.", kind: "f3", fields: ["침착함", "말솜씨", "그 밖에"] },
+      { tags: ["비판적"], prompt: "토끼의 거짓말을 어떻게 보아야 할까요?", kind: "choice", cA: "목숨을 지키기 위한 지혜였다", cB: "거짓말은 어떤 경우에도 옳지 않다" },
+      { tags: ["분석적"], prompt: "자라의 처지에서 이야기를 다시 본다면, 자라는 어떤 인물인가요?", kind: "long" },
+      { tags: ["적용적"], prompt: "말로 어려운 상황을 넘긴 경험을 떠올려 써 보세요.", kind: "long" }
+    ],
+    memos: ["토끼와 자라 가운데 누가 더 딱한 처지였나요?", "지혜와 거짓은 무엇으로 구별할 수 있나요?", "'살아남기 위한 거짓말'에 대한 나의 기준을 정리해 봅시다."]
+  },
+  {
+    w: 6, title: "박씨전", author: "작자 미상", theme: "겉모습과 능력 — 무엇으로 사람을 보는가",
+    lead: "사람들은 그의 얼굴을 보고 비웃었다.\n그러나 나라를 지킨 사람은 그였다.",
+    topic: "사람을 무엇으로 보아야 할까",
+    words: [
+      { w: "박대", page: "11쪽", def: "정답게 대하지 않고 쌀쌀맞게 대함." },
+      { w: "지략", page: "39쪽", def: "일을 이루기 위해 앞을 내다보고 세우는 뛰어난 계획." },
+      { w: "피란", page: "62쪽", def: "전쟁이나 난리를 피해 다른 곳으로 옮겨 감." }
+    ],
+    ox: [
+      { t: "박씨는 혼인한 뒤 겉모습 때문에 집안에서 박대를 받는다.", page: "11쪽" },
+      { t: "박씨는 남편이 벼슬에 오르도록 돕고, 전란에서 사람들을 구한다.", page: "58쪽" },
+      { t: "박씨의 능력을 집안 사람들은 처음부터 알아본다.", page: "20쪽" }
+    ],
+    qs: [
+      { tags: ["사실적"], prompt: "박씨가 집안에서 받은 대우와, 전란 뒤 받은 대우를 정리해 보세요.", kind: "table", thA: "시기", thB: "사람들이 박씨를 대한 방식", left: ["혼인한 직후", "전란이 일어난 뒤"] },
+      { tags: ["추론적"], prompt: "사람들의 태도가 달라진 까닭은 박씨가 변했기 때문인가요, 아니면 다른 무엇 때문인가요?", kind: "long" },
+      { tags: ["비판적"], prompt: "박씨의 겉모습이 아름답게 변하는 장면이 있습니다. 이 설정을 어떻게 보아야 할까요?", kind: "choice", cA: "능력을 알아보게 만드는 장치이다", cB: "결국 겉모습이 중요하다는 뜻이 된다" },
+      { tags: ["분석적"], prompt: "박씨를 세 낱말로 소개한다면 어떤 낱말을 쓰겠나요?", kind: "f3", fields: ["첫째", "둘째", "셋째"] },
+      { tags: ["적용적"], prompt: "겉모습만 보고 누군가를 잘못 판단한 경험, 또는 그런 판단을 받은 경험을 써 보세요.", kind: "long" }
+    ],
+    memos: ["박씨의 능력은 언제부터 있었나요?", "우리는 사람을 처음 볼 때 무엇을 먼저 보나요?", "사람을 판단하는 나의 기준을 정리해 봅시다."]
+  },
+  {
+    w: 7, title: "허생전", author: "박지원", theme: "부와 쓸모 — 큰 돈으로 무엇을 할 것인가",
+    lead: "그는 큰 돈을 벌었고, 그 돈을 바다에 버렸다.\n무엇을 말하려 한 것일까.",
+    topic: "돈으로 할 수 있는 일과 할 수 없는 일",
+    words: [
+      { w: "매점", page: "18쪽", def: "물건을 한꺼번에 사 모아 값을 올리는 일." },
+      { w: "실학", page: "5쪽", def: "생활에 실제로 도움이 되는 학문을 중요하게 여긴 조선 후기의 학풍." },
+      { w: "무인도", page: "40쪽", def: "사람이 살지 않는 섬." }
+    ],
+    ox: [
+      { t: "허생은 부자에게 만 냥을 빌려 장사를 시작한다.", page: "14쪽" },
+      { t: "허생은 과일과 말총을 한꺼번에 사 모아 큰 이익을 얻는다.", page: "18쪽" },
+      { t: "허생은 번 돈으로 벼슬을 사서 높은 자리에 오른다.", page: "50쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "허생은 만 냥으로 과일을 모두 사들였다. 잔치와 제사에 과일이 없자 값은 열 배로 뛰었고, 허생은 그 값에 되팔아 큰 돈을 벌었다. 그러고는 말했다. 만 냥으로 나라의 물건 값이 흔들린다면, 이 나라의 형편을 알 만하다고.", cite: "중간부 줄거리 요약 · 18~24쪽", prompt: "허생이 큰 돈을 번 방법과, 그 방법으로 알게 된 사실을 각각 적어 보세요.", kind: "f2", fields: ["돈을 번 방법", "그로써 알게 된 사실"] },
+      { tags: ["비판적"], prompt: "허생의 매점 방식을 어떻게 보아야 할까요?", kind: "choice", cA: "나라의 문제를 보여 주려는 뜻이 있었다", cB: "값을 올려 이익을 얻은 것은 잘못이다" },
+      { tags: ["추론적"], prompt: "허생이 돈을 바다에 버린 장면에서, 그가 버린 것은 무엇이었을까요?", kind: "long" },
+      { tags: ["분석적"], prompt: "허생이 무인도에서 하려던 일을 세 낱말로 정리해 보세요.", kind: "f3", fields: ["사람", "일", "규칙"] },
+      { tags: ["적용적"], prompt: "지금 큰 돈이 생긴다면 무엇에 쓰고 싶은지, 그 까닭과 함께 써 보세요.", kind: "ref", refNote: "자료 이미지 / 오늘의 물가 자료 (비율 가변)" }
+    ],
+    memos: ["허생이 돈보다 중요하게 여긴 것은 무엇인가요?", "돈으로 살 수 없는 것에는 어떤 것들이 있나요?", "돈의 쓸모에 대한 나의 생각을 정리해 봅시다."]
+  },
+  {
+    w: 8, title: "어린 왕자", author: "앙투안 드 생텍쥐페리", theme: "관계와 길들임 — 소중해지는 과정",
+    lead: "그는 한 송이 꽃 때문에 별로 돌아갔다.\n무엇이 그 꽃을 특별하게 만들었을까.",
+    topic: "소중해진다는 것",
+    words: [
+      { w: "길들이다", page: "76쪽", def: "함께 지내며 서로에게 익숙하고 특별한 사이가 되게 하다." },
+      { w: "허영", page: "48쪽", def: "실제보다 자기를 크게 보이려는 마음." },
+      { w: "사막", page: "9쪽", def: "비가 거의 오지 않아 모래와 돌만 있는 넓은 땅." }
+    ],
+    ox: [
+      { t: "어린 왕자는 자기 별에 남겨 둔 장미를 걱정한다.", page: "34쪽" },
+      { t: "여우는 어린 왕자에게 길들인다는 말의 뜻을 알려 준다.", page: "76쪽" },
+      { t: "어린 왕자는 여러 별에서 만난 어른들의 모습을 이해하기 쉬웠다고 말한다.", page: "52쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "여우는 말했다. 세상에는 수많은 장미가 있지만, 어린 왕자가 물을 주고 바람을 막아 준 장미는 오직 하나뿐이라고. 시간을 들인 만큼 그 꽃은 다른 어떤 꽃과도 같지 않게 된다고.", cite: "여우와의 대화 · 줄거리 요약 · 76~82쪽", prompt: "여우의 말에 따르면, 무엇이 그 장미를 특별하게 만들었나요?", kind: "long" },
+      { tags: ["추론적"], prompt: "어린 왕자가 만난 어른들을 세 낱말로 정리해 보세요.", kind: "f3", fields: ["임금", "장사꾼", "그 밖의 어른"] },
+      { tags: ["비판적"], prompt: "'길들인다'는 말에 대해 어떻게 생각하나요?", kind: "choice", cA: "서로를 특별하게 만드는 좋은 일이다", cB: "한쪽이 다른 쪽에 매이게 되는 일이다" },
+      { tags: ["분석적"], prompt: "어린 왕자가 별로 돌아간 까닭과, 돌아가지 않는 편이 나았을 까닭을 각각 적어 보세요.", kind: "f2", fields: ["돌아간 까닭", "돌아가지 않았다면"] },
+      { tags: ["적용적"], prompt: "내가 시간을 들여 소중해진 사람, 물건, 장소에 대해 써 보세요.", kind: "long" }
+    ],
+    memos: ["어린 왕자가 어른들에게서 이상하게 본 점은 무엇인가요?", "무엇인가에 시간을 들인다는 것은 어떤 뜻인가요?", "나에게 소중한 것이 소중해진 과정을 글로 정리해 봅시다."]
+  },
+  {
+    w: 9, title: "크리스마스 캐럴", author: "찰스 디킨스", theme: "변화와 이웃 — 사람은 달라질 수 있는가",
+    lead: "하룻밤에 사람이 달라질 수 있을까.\n무엇이 그를 달라지게 했을까.",
+    topic: "사람은 달라질 수 있을까",
+    words: [
+      { w: "구두쇠", page: "7쪽", def: "돈을 지나치게 아껴 남에게도 자기에게도 쓰지 않는 사람." },
+      { w: "유령", page: "22쪽", def: "죽은 이의 모습으로 나타난다고 하는 존재." },
+      { w: "자선", page: "12쪽", def: "어려운 사람을 돕기 위해 재물이나 힘을 내놓는 일." }
+    ],
+    ox: [
+      { t: "스크루지는 성탄절에도 직원에게 일을 시키려 한다.", page: "12쪽" },
+      { t: "스크루지는 과거, 현재, 미래를 보여 주는 세 유령을 만난다.", page: "30쪽" },
+      { t: "스크루지는 자기 미래를 보고도 아무 마음의 변화가 없다.", page: "96쪽" }
+    ],
+    qs: [
+      { tags: ["사실적"], prompt: "세 유령이 스크루지에게 보여 준 것을 정리해 보세요.", kind: "table", thA: "유령", thB: "보여 준 것과 스크루지의 반응", left: ["과거의 유령", "현재의 유령", "미래의 유령"] },
+      { tags: ["추론적"], prompt: "스크루지를 가장 크게 흔든 장면은 무엇이었을까요? 그 까닭도 함께 쓰세요.", kind: "long" },
+      { tags: ["비판적"], prompt: "하룻밤 만에 달라진 스크루지의 변화를 어떻게 보아야 할까요?", kind: "choice", cA: "누구나 달라질 수 있다는 뜻이다", cB: "이야기라서 가능한 일이다" },
+      { tags: ["분석적"], prompt: "스크루지가 달라지기 위해 필요했던 것을 세 낱말로 적어 보세요.", kind: "f3", fields: ["보게 된 것", "느낀 것", "한 일"] },
+      { tags: ["적용적"], prompt: "내가 바꾸고 싶은 나의 습관 하나와, 그것을 바꾸기 위해 오늘 할 수 있는 일을 써 보세요.", kind: "long" }
+    ],
+    memos: ["스크루지가 돈을 모으기만 한 까닭은 무엇이었나요?", "사람을 달라지게 하는 것은 무엇이라고 생각하나요?", "사람이 달라질 수 있는지에 대한 나의 생각을 정리해 봅시다."]
+  },
+  {
+    w: 10, title: "왕자와 거지", author: "마크 트웨인", theme: "처지 바꾸기 — 다른 자리에서 보면",
+    lead: "옷을 바꾸어 입은 두 아이는\n서로의 삶을 살게 되었다.",
+    topic: "다른 자리에 서 본다는 것",
+    words: [
+      { w: "누명", page: "58쪽", def: "잘못한 일이 없는데도 억울하게 얻은 나쁜 평판." },
+      { w: "궁정", page: "14쪽", def: "임금이 지내는 궁궐 안." },
+      { w: "구걸", page: "9쪽", def: "남에게 돈이나 먹을 것을 달라고 비는 일." }
+    ],
+    ox: [
+      { t: "왕자와 거지 소년은 서로 옷을 바꾸어 입어 보기로 한다.", page: "26쪽" },
+      { t: "왕자는 궁 밖에서 백성의 어려움을 직접 겪는다.", page: "44쪽" },
+      { t: "거지 소년은 궁정에서 아무 어려움 없이 지낸다.", page: "52쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "궁을 나온 왕자는 자기 이름을 말할 때마다 비웃음을 받았다. 배고픔과 매질을 겪으며 그는 자기가 내린 법이 백성에게 어떻게 닿는지를 처음으로 알게 되었다.", cite: "중간부 줄거리 요약 · 44~56쪽", prompt: "궁 밖에서 왕자가 알게 된 것과, 궁 안에서 거지 소년이 알게 된 것을 적어 보세요.", kind: "f2", fields: ["왕자가 알게 된 것", "소년이 알게 된 것"] },
+      { tags: ["추론적"], prompt: "두 아이가 서로의 자리로 돌아간 뒤, 무엇이 달라졌을까요?", kind: "long" },
+      { tags: ["비판적"], prompt: "좋은 지도자가 되기 위해 더 필요한 것은 무엇일까요?", kind: "choice", cA: "직접 겪어 보는 경험", cB: "널리 듣고 배우는 공부" },
+      { tags: ["분석적"], prompt: "이 이야기에서 옷이 하는 역할을 세 낱말로 적어 보세요.", kind: "f3", fields: ["옷이 감춘 것", "옷이 만든 것", "옷이 바꾼 것"] },
+      { tags: ["적용적"], prompt: "내가 다른 사람의 자리에 서 보았던 경험을 써 보세요.", kind: "long" }
+    ],
+    memos: ["왕자가 겪은 어려움 가운데 가장 견디기 힘들었을 일은 무엇인가요?", "사람의 처지를 정하는 것은 무엇인가요?", "다른 자리에 서 보는 일의 값에 대해 정리해 봅시다."]
+  },
+  {
+    w: 11, title: "이상한 나라의 앨리스", author: "루이스 캐럴", theme: "규칙과 상식 — 당연한 것을 의심하기",
+    lead: "그 나라에서는 모든 규칙이 이상했다.\n그런데 우리 규칙은 모두 옳은가.",
+    topic: "당연하다고 여긴 것을 다시 보기",
+    words: [
+      { w: "재판", page: "104쪽", def: "옳고 그름을 따져 판단을 내리는 일." },
+      { w: "터무니없다", page: "62쪽", def: "이치에 맞지 않아 믿기 어렵다." },
+      { w: "굴", page: "8쪽", def: "땅이나 바위 속으로 뚫린 깊은 구멍." }
+    ],
+    ox: [
+      { t: "앨리스는 토끼를 따라가다 굴에 빠져 이상한 나라에 이른다.", page: "8쪽" },
+      { t: "이상한 나라에서는 재판이 증거를 살펴 차분히 진행된다.", page: "104쪽" },
+      { t: "앨리스는 이상한 나라의 규칙에 대해 자기 생각을 말한다.", page: "112쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "여왕은 재판이 시작되기도 전에 판결을 내리라고 명했다. 앨리스가 그것은 순서가 뒤바뀐 일이라고 말하자, 여왕은 더욱 크게 화를 냈다.", cite: "재판 장면 줄거리 요약 · 104~112쪽", prompt: "이 재판에서 잘못된 점을 두 가지 적어 보세요.", kind: "f2", fields: ["첫째 잘못", "둘째 잘못"] },
+      { tags: ["분석적"], prompt: "이상한 나라의 규칙과 우리 세계의 규칙을 비교해 보세요.", kind: "table", thA: "이상한 나라에서는", thB: "우리 세계에서는" , left: ["판결을 먼저 내린다", "몸의 크기가 자꾸 바뀐다", "말이 뜻대로 통하지 않는다"] },
+      { tags: ["비판적"], prompt: "앨리스가 여왕에게 자기 생각을 말한 행동을 어떻게 보나요?", kind: "choice", cA: "옳지 않은 일에는 말해야 한다", cB: "위험한 자리에서는 참는 것도 방법이다" },
+      { tags: ["추론적"], prompt: "이상한 나라의 이야기를 통해 작가가 웃음거리로 삼은 것은 무엇일까요?", kind: "long" },
+      { tags: ["적용적"], prompt: "우리 주변에서 '당연하다'고 여겨지지만 다시 생각해 볼 만한 규칙을 하나 골라 써 보세요.", kind: "long" }
+    ],
+    memos: ["앨리스가 가장 답답해한 점은 무엇인가요?", "규칙이 이상한지 아닌지는 무엇으로 알 수 있나요?", "당연하게 여긴 것을 의심해 본 경험을 글로 정리해 봅시다."]
+  },
+  {
+    w: 12, title: "레미제라블", author: "빅토르 위고", theme: "법과 용서 — 사람을 다시 세우는 것",
+    lead: "빵 한 조각으로 십구 년을 갇힌 사람이 있었다.\n그를 다시 세운 것은 법이었는가.",
+    topic: "잘못한 사람을 어떻게 대해야 할까",
+    words: [
+      { w: "가석방", page: "11쪽", def: "형을 다 마치기 전에 조건을 붙여 풀어 주는 일." },
+      { w: "은촛대", page: "38쪽", def: "은으로 만든 촛대. 이야기에서 용서의 표시로 쓰인다." },
+      { w: "회개", page: "44쪽", def: "잘못을 깨닫고 마음을 바르게 고침." }
+    ],
+    ox: [
+      { t: "장 발장은 굶주린 조카를 위해 빵을 훔쳐 오랜 형을 받는다.", page: "9쪽" },
+      { t: "주교는 장 발장이 은촛대를 가져간 일을 감추어 준다.", page: "38쪽" },
+      { t: "장 발장은 풀려난 뒤 곧 사람들의 신뢰를 얻는다.", page: "24쪽" }
+    ],
+    qs: [
+      { tags: ["사실적", "추론적"], ex: "경관 앞에서 주교는 그 은촛대를 자기가 준 것이라고 말했다. 그리고 남은 촛대까지 장 발장의 손에 들려 보냈다. 감옥에서 십구 년을 보낸 그를 멈춰 세운 것은 형벌이 아니라 그 한마디였다.", cite: "주교 장면 줄거리 요약 · 36~44쪽", prompt: "장 발장을 달라지게 한 것은 무엇이었나요? 법과 비교하여 적어 보세요.", kind: "f2", fields: ["법이 한 일", "주교가 한 일"] },
+      { tags: ["분석적"], prompt: "장 발장과 자베르가 '법'을 어떻게 생각했는지 정리해 보세요.", kind: "table", thA: "인물", thB: "법에 대한 생각", left: ["장 발장", "자베르"] },
+      { tags: ["비판적"], prompt: "잘못한 사람을 대하는 방법으로 무엇이 더 필요할까요?", kind: "choice", cA: "잘못에 맞는 벌을 분명히 주어야 한다", cB: "다시 살아갈 기회를 주어야 한다" },
+      { tags: ["추론적"], prompt: "자베르가 끝까지 장 발장을 쫓은 까닭은 무엇이었을까요?", kind: "long" },
+      { tags: ["적용적"], prompt: "누군가를 용서한 경험, 또는 용서받은 경험을 떠올려 써 보세요.", kind: "ref", refNote: "자료 이미지 / 학교 규칙 자료 (비율 가변)" }
+    ],
+    memos: ["장 발장이 십구 년 동안 잃은 것은 무엇인가요?", "벌과 기회 가운데 사람을 바꾸는 것은 무엇이라고 생각하나요?", "잘못한 사람을 어떻게 대해야 하는지 나의 생각을 정리해 봅시다."]
+  }
+];
+
+const KIND = { long: "isLong", f2: "isF2", f3: "isF3", table: "isTable", choice: "isChoice", ref: "isRef" };
+
+class Component extends DCLogic {
+  root = React.createRef();
+
+  units() {
+    return RAW.map(u => ({
+      eyebrow: "모모의 책장 · 초등 5~6학년 · 겨울 고전분기 " + u.w + "주차",
+      title: u.title,
+      author: u.author + " 지음",
+      lead: u.lead,
+      topic: u.topic,
+      words: u.words,
+      ox: u.ox,
+      memos: u.memos.map((t, i) => ({ n: i + 1, t })),
+      qs: u.qs.map((q, i) => {
+        const o = {
+          n: i + 1, tags: q.tags, prompt: q.prompt,
+          hasEx: !!q.ex, ex: q.ex || "", cite: q.cite || "",
+          fields: q.fields || [], thA: q.thA || "", thB: q.thB || "",
+          left: q.left || [], cA: q.cA || "", cB: q.cB || "",
+          refNote: q.refNote || "자료 이미지 / reference_image",
+          isLong: false, isF2: false, isF3: false, isTable: false, isChoice: false, isRef: false
+        };
+        o[KIND[q.kind] || "isLong"] = true;
+        return o;
+      })
+    }));
+  }
+
+  grow() {
+    const el = this.root.current;
+    if (!el) return;
+    el.querySelectorAll("textarea").forEach(t => {
+      t.style.height = "auto";
+      t.style.height = t.scrollHeight + "px";
+    });
+  }
+
+  componentDidMount() {
+    this.grow();
+    const el = this.root.current;
+    if (el) el.addEventListener("input", e => {
+      if (e.target.tagName === "TEXTAREA") {
+        e.target.style.height = "auto";
+        e.target.style.height = e.target.scrollHeight + "px";
+      }
+    });
+    this._before = () => this.grow();
+    window.addEventListener("beforeprint", this._before);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.grow());
+  }
+
+  componentDidUpdate() { this.grow(); }
+
+  componentWillUnmount() { window.removeEventListener("beforeprint", this._before); }
+
+  renderVals() {
+    const units = this.units();
+    return {
+      root: this.root,
+      units,
+      toc: RAW.map(u => ({ week: u.w + "주차", title: u.title, author: u.author, theme: u.theme }))
+    };
+  }
+}
+</script>
+</body>
+</html>

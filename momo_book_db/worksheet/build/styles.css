@@ -225,6 +225,10 @@ a:hover { color: #5A3E36; }
   line-height: 1.3;
   margin: 0;
   color: var(--sub);
+  /* 2026-09-19 8차 안정화: 기본 CJK 줄바꿈은 아무 글자 사이에서나 끊어서, 제목이 길면
+     "그릇" 같은 한 단어가 "그 / 릇"처럼 갈라질 수 있었다(실측: L1-Q4-W01). 띄어쓰기
+     단위로만 줄을 바꾸게 해서 단어 중간이 안 갈라지게 한다. */
+  word-break: keep-all;
 }
 .cover__byline {
   margin: .7em 0 0;
@@ -311,6 +315,15 @@ a:hover { color: #5A3E36; }
   flex-direction: column;
   min-height: 0;
 }
+/* 2026-09-19 8차 안정화: 반면(.half) 둘로 안 나뉘고 .sheet 전체를 body 하나가 차지하는
+   페이지(1단계 배경지식 전용 페이지, 2단계 고밀도 문항의 fullpage)용 - 콘텐츠가 짧아도
+   footer가 항상 페이지 하단에 고정되도록 생성기(generate.js)가 body를 이 클래스로 감싼다. */
+.page-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
 /* 반면 사이 간격 - 인접 형제 선택자에 암묵적으로 기대지 않고 필요한 half에
    명시적으로 붙임(원본 값 그대로: 대부분 6mm, 09페이지 하나만 5mm). */
 .half--gap { margin-top: 6mm; }
@@ -392,6 +405,85 @@ a:hover { color: #5A3E36; }
   margin: .2em 0 0;
   font-size: .82rem;
   line-height: calc(1.6 * var(--tone-lh-scale, 1));
+}
+
+/* 2026-09-19 9차 안정화: 낱말 뜻 선 연결하기(.vocab-match) + <보기> 빈칸 채우기
+   (.vocab-fillblank) - L1-Q4-W01 원본 실물 대조로 vocab-table을 대체하는 활동임이
+   밝혀져 추가(RESTORATION_PATCHES.json 참고). 실제 손으로 줄을 긋는 활동이라 정답
+   답란은 없음 - 두 열을 나란히 보여주기만 한다(정답 짝은 학생용 출력에 안 드러남).
+   2026-09-19 10차 안정화: 중앙 간격을 25mm로 넓히고(연결선을 그을 공간 확보 - 사용자
+   지시 "25mm를 시작값으로") 양쪽에 작은 점(연결점)을 표시해 "선으로 이어보세요" 느낌을
+   살렸다. 뜻풀이는 글자를 줄이지 않고 자연스럽게 줄바꿈(기존처럼 폭 제한 없음). */
+.vocab-match__cols { display: flex; gap: 25mm; margin-top: 1.5mm; }
+.vocab-match__col {
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2mm;
+}
+.vocab-match__item {
+  position: relative;
+  border: 1px solid var(--main-2);
+  background: var(--paper);
+  padding: .5em .8em;
+  font-size: .84rem;
+  line-height: calc(1.5 * var(--tone-lh-scale, 1));
+}
+.vocab-match__col--defs .vocab-match__item { background: #FBF7EC; }
+/* 연결점: 왼쪽 열은 낱말 상자 오른쪽 가장자리 바로 바깥에, 오른쪽 열은 뜻풀이 상자
+   왼쪽 가장자리 바로 바깥에 찍는다(2026-09-19 11차: 이전엔 둘 다 -12.6mm로 25mm 간격의
+   중앙 부근에 겹치듯 찍혀 선을 그을 공간이 없었음 - 사용자 지시로 각 상자 가장자리
+   쪽으로 옮기고, 그 사이 21mm(=25mm-2mm-2mm)를 학생이 직접 선을 긋는 공간으로 비워둠).
+   top:50%(item 자신의 높이 기준) + translateY(-50%)로 각 점을 해당 항목 자신의 세로
+   중앙에 맞춘다 - 좌우 항목 개수·줄바꿈 폭이 달라도 각자 자기 항목 중앙을 따라간다. */
+.vocab-match__col:not(.vocab-match__col--defs) .vocab-match__item::after,
+.vocab-match__col--defs .vocab-match__item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 2.6mm;
+  height: 2.6mm;
+  border-radius: 50%;
+  background: var(--point);
+  transform: translateY(-50%);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.vocab-match__col:not(.vocab-match__col--defs) .vocab-match__item::after { right: -2mm; }
+.vocab-match__col--defs .vocab-match__item::before { left: -2mm; }
+
+/* 2026-09-19 10차 안정화: 어휘 매칭·빈칸 채우기·OX 사이 구분 여백(사용자 지시 "구분
+   여백 확보") - step-intro--tight(표 바로 아래용, 여백 거의 없음) 대신 이 클래스를 쓴다. */
+.step-intro--section-gap { margin: 5mm 0 2mm; }
+
+.vocab-fillblank { margin-top: 5mm; }
+.vocab-fillblank__bank {
+  border: 1px solid var(--main-2);
+  background: var(--paper);
+  padding: .5em 1em;
+  margin: 1.5mm 0 3mm;
+  text-align: center;
+  font-size: .88rem;
+}
+.vocab-fillblank__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3mm;
+}
+.vocab-fillblank__item { font-size: .9rem; line-height: calc(1.7 * var(--tone-lh-scale, 1)); }
+.inline-blank {
+  display: inline-block;
+  min-width: 6em;
+  border-bottom: 1px solid var(--ink);
+  height: 1em;
+  vertical-align: text-bottom;
+  margin: 0 .3em;
 }
 
 .ox-list {
@@ -517,6 +609,10 @@ a:hover { color: #5A3E36; }
   color: var(--point);
   margin: .2rem 0 0;
 }
+/* 2026-09-19 8차 안정화: starter_suffix(답란 뒤에 붙는 원본 고정 마무리 문장, 예:
+   id=1612 "(이)기 때문이에요.") - starter와 같은 위치 의미(원본에 인쇄된 고정 문구)라
+   같은 스타일을 쓰되, 답란 "다음"에 오므로 위쪽 여백만 살짝 준다. */
+.q__example--suffix { margin: .4rem 0 0; }
 
 .figure-block {
   margin: 0;
@@ -531,6 +627,20 @@ a:hover { color: #5A3E36; }
   -webkit-print-color-adjust: exact;
 }
 .figure-block img { display: block; flex: 1; min-height: 0; width: 100%; object-fit: contain; }
+/* 2026-09-19: 참고자료(.reference) 안의 그림은 발췌문 전용 큰 그림 반면(.figure-block
+   기본 규칙 - 반면 하나를 그림이 채우도록 width:100%로 강제 확대)과 성격이 다르다 -
+   작은 삽화용 썸네일인데 같은 클래스를 그대로 쓰면 "그림 반면" 규칙이 적용돼 원본보다
+   훨씬 크게 늘어난다(실측: L5-Q4-W02#7, 원본 162x251px가 497x770px로 확대되며 반면
+   전체가 넘침). 참고자료 문맥에서는 원본 비율 그대로, 작게만 표시한다. */
+.reference .figure-block { flex: none; }
+.reference .figure-block img { flex: none; width: auto; height: auto; max-width: 100%; max-height: 40mm; margin: 0 auto; }
+/* 2026-09-19 10차 안정화: 참고자료 그림 2개를 세로로 쌓지 않고 종횡비를 유지한 채
+   가로로 나란히 배치(.reference__images, 사용자 지시). 바깥 .reference가 이미 테두리·
+   배경을 갖고 있으므로, 그 안의 개별 .figure-block은 자기 테두리·배경·패딩을 없애서
+   "상자 안에 또 상자"로 보이던 여백을 정리한다(그림·캡션만 남김). */
+.reference__images { display: flex; flex-direction: row; justify-content: center; align-items: flex-end; gap: 4mm; margin-top: 1mm; }
+.reference__images .figure-block { border: none; background: transparent; padding: 0; }
+.reference__images .figure-block img { max-height: 34mm; }
 .figure-block figcaption {
   margin: 2mm 0 0;
   font-size: .7rem;
@@ -758,7 +868,77 @@ a:hover { color: #5A3E36; }
   color: var(--main);
   margin: 0 0 1mm;
 }
-.blk-blanks__row .answer-lines { flex: 1; min-height: 11mm; }
+.blk-blanks__row .answer-lines { flex: 1; min-height: 15mm; } /* 2026-09-18: 11mm -> 15mm(괘선 2줄 정책과 일치) */
+/* 2026-09-19 6차 안정화: 행마다 대상별 그림(예: 양반/일본)을 답란 위에 작게 보존할 때 -
+   .reference .figure-block과 같은 이유로 발췌문용 큰-그림 규칙(width:100% 강제 확대)을
+   막고 원본 비율 그대로 작게 표시한다. */
+.blk-blanks__row .figure-block { flex: none; margin: 0 0 1.5mm; }
+.blk-blanks__row .figure-block img { flex: none; width: auto; height: auto; max-width: 100%; max-height: 30mm; margin: 0 auto; }
+.blk-blanks__note { margin: 1mm 0 0; font-size: .68rem; color: var(--ash); }
+.blk-blanks__suffix { margin: 1mm 0 0; font-size: .9rem; color: var(--ink); }
+/* 2026-09-19 8차 안정화: "이름은[글자칸]이에요." 처럼 한 글자씩 채우는 칸(예: 훈민정음
+   4칸)이 필요한 행 - 답란(줄 긋기)이 아니라 정사각형 칸이라 별도 클래스로 둔다. flex:none
+   행(줄글과 한 줄로 붙어 읽혀야 해서 answer-lines처럼 늘어나면 안 됨).
+   2026-09-19 10차 버그 수정: flex-direction을 여기서 명시하지 않아서 .blk-blanks__row의
+   기본값(column)을 그대로 물려받아 "이 글자의 이름은" / [칸칸칸칸] / "이에요."가 세로로
+   쌓여버리고 있었다(실측 PNG로 발견 - "은"만 다음 줄에 뚝 떨어져 있었음). row로 고정해서
+   한 줄로 붙어 읽히게 한다("각 요소가 멀리 떨어지지 않게" 요구사항). */
+.blk-blanks__row--chargrid {
+  flex: none;
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4em;
+  font-size: .94rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.blk-blanks__prefix, .blk-blanks__suffix { white-space: nowrap; }
+.blk-blanks__row--chargrid .blk-blanks__suffix { margin: 0; }
+.char-grid { display: inline-flex; gap: 1mm; flex: none; }
+.char-box {
+  display: inline-block;
+  width: 9mm;
+  height: 9mm;
+  border: 1px solid var(--main-2);
+  background: var(--paper);
+  flex: none;
+}
+
+/* 2026-09-19 10차 안정화: 말풍선형 답란(.speech-bubble) - 원본이 실제 빈 말풍선인
+   문항(id=1608 장쇠/간난이/꽃네)에서 괘선 답란(.answer-lines) 대신 쓴다. 괘선이 없는
+   빈 공간이라 "줄 없는 필기 공간"이 된다. 그림이 있으면 좌우로 배치(.speech-row). */
+.speech-row { flex-direction: row; display: flex; align-items: stretch; gap: 3mm; flex: 1; min-height: 0; }
+.speech-row__figure {
+  flex: 0 0 30mm;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .8mm;
+}
+.speech-row__figure img { width: 100%; height: auto; object-fit: contain; border: 1px solid var(--main-2); background: var(--paper); }
+.speech-row__figure figcaption { font-size: .66rem; text-align: center; color: var(--point); line-height: 1.3; }
+.speech-bubble {
+  flex: 1;
+  min-height: 15mm;
+  border: 1.5px solid var(--main-2);
+  border-radius: 6mm 6mm 6mm 1mm;
+  background: var(--paper);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* 2026-09-19 10차 안정화: 인라인 빈칸(.inline-blank, 클래스는 9차의 <보기> 빈칸
+   채우기와 공유 - 위 451행 정의 그대로 재사용) - 문장 속에 뚫린 빈칸. 밑줄 문자
+   반복("______") 대신 실제 요소로 만들어 width_mm으로 폭을 개별 조절할 수 있게 한다
+   (예상 답 길이에 맞춰 넓힐 수 있음, blocks.js의 inlineBlankSpan() 참고). */
+/* justify-content:flex-start(2026-09-19 10차) - center로 두면 위(참고자료 그림)와
+   아래(빈 여백) 사이에 큰 틈이 생겨 "그림·질문·빈칸이 함께 읽힌다"는 인상이 약해진다
+   (실측 PNG로 확인) - 그림 바로 아래에 붙게 한다. */
+.inline-blanks { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 4mm; min-height: 0; margin-top: 2mm; }
+.inline-blanks__para { margin: 0; font-size: .94rem; line-height: calc(2 * var(--tone-lh-scale, 1)); color: var(--ink); }
 
 /* 9-3. .blk-fallback - 질문 + 괘선 답란만 있는 최소 형태(유형 불명 문항의 기본값). */
 .blk-fallback { flex: 1; display: flex; flex-direction: column; min-height: 0; }

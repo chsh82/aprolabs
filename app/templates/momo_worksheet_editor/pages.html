@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}페이지별 편집 - {{ meta.source_doc_id }} - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-4 flex items-center justify-between flex-wrap gap-2">
+  <div>
+    <a href="/momo-worksheet-editor/{{ project_id }}" class="text-xs text-gray-400 hover:text-gray-600">← 문항 편집 화면</a>
+    <h2 class="text-2xl font-bold text-gray-800 mt-1">🧷 {{ meta.source_doc_id }} 페이지별 편집</h2>
+    <p class="text-xs text-gray-400 mt-1 font-mono">{{ project_id }} · 페이지 구성표 revision={{ manifest.revision_id }}</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="/momo-worksheet-editor/{{ project_id }}/pages/history" class="px-3 py-1.5 border border-gray-200 text-gray-600 text-xs rounded hover:bg-gray-50 transition">📜 페이지 이력·복원</a>
+    {% if meta.current_version %}
+    <a href="/momo-worksheet-editor/{{ project_id }}/pdf/{{ meta.current_version }}"
+       class="px-3 py-1.5 bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium rounded transition">📄 PDF 다운로드(적용된 버전)</a>
+    {% endif %}
+  </div>
+</div>
+
+<p class="text-xs text-gray-400 mb-4 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+  이 화면에서 선택한 페이지만 수정됩니다. 다른 페이지의 내용·배치·순서·쪽수는 바뀌지 않습니다(페이지 구성표가
+  고정되어 있어, 저장할 때마다 전체 문서를 다시 배치하지 않습니다). 직접 수정 후 반드시
+  <b>후보 미리보기 → 적용</b>을 거쳐야 실제 저장 버전에 반영됩니다.
+</p>
+
+{% if error %}
+<div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 whitespace-pre-line">{{ error }}</div>
+{% endif %}
+
+<div class="grid grid-cols-12 gap-4">
+  <!-- 왼쪽: 페이지 썸네일 -->
+  <div class="col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-2 max-h-[80vh] overflow-y-auto">
+    <h4 class="text-xs font-semibold text-gray-500 mb-2 px-1">페이지 ({{ thumbs|length }})</h4>
+    <div class="space-y-1">
+      {% for t in thumbs %}
+      <a href="/momo-worksheet-editor/{{ project_id }}/pages/{{ t.page_id }}"
+         class="block px-2 py-2 rounded text-xs border {{ 'bg-indigo-50 border-indigo-200 text-indigo-700 font-semibold' if t.page_id == selected_id else 'border-transparent text-gray-600 hover:bg-gray-50' }}">
+        <div class="flex items-center justify-between">
+          <span>{{ t.index }}. {{ t.label }}</span>
+          {% if not t.editable %}<span class="text-gray-300" title="이번 범위에서는 읽기 전용">🔒</span>{% endif %}
+        </div>
+        {% if t.item_ids %}<div class="text-gray-400 mt-0.5">문항 {{ t.item_ids|join(', ') }}</div>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 가운데: 선택 페이지 미리보기(적용본 vs 후보) -->
+  <div class="col-span-6 space-y-3">
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <p class="text-xs font-semibold text-gray-500 mb-1">현재 적용된 버전 <span class="text-gray-300 font-normal">(전체 문서 - 스크롤해서 확인)</span></p>
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden" style="height:500px;">
+          {% if current_preview_url %}
+          <iframe src="{{ current_preview_url }}" class="w-full h-full border-0"></iframe>
+          {% else %}
+          <div class="h-full flex items-center justify-center text-xs text-gray-300">아직 적용된 버전이 없습니다</div>
+          {% endif %}
+        </div>
+      </div>
+      <div>
+        <p class="text-xs font-semibold mb-1 {{ 'text-amber-600' if active_proposal else 'text-gray-400' }}">
+          {% if active_proposal and active_proposal.status == 'ok' %}후보(적용 전 - 정상 PDF 다운로드에 포함되지 않음)
+          {% elif active_proposal and active_proposal.status == 'blocked' %}후보 생성 차단됨
+          {% else %}후보 없음{% endif %}
+        </p>
+        <div class="bg-white rounded-xl border {{ 'border-amber-300' if active_proposal else 'border-gray-100' }} shadow-sm overflow-hidden" style="height:520px;">
+          {% if candidate_preview_url %}
+          <iframe src="{{ candidate_preview_url }}" class="w-full h-full border-0"></iframe>
+          {% else %}
+          <div class="h-full flex items-center justify-center text-xs text-gray-300 px-4 text-center">
+            {% if active_proposal and active_proposal.status == 'blocked' %}
+            차단됨 - 오른쪽 패널의 이유를 확인하세요
+            {% else %}
+            오른쪽 패널에서 수정하면 여기에 후보가 표시됩니다
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if active_proposal %}
+    <div class="rounded-xl border p-3 {{ 'bg-amber-50 border-amber-200' if active_proposal.status != 'ok' else 'bg-indigo-50 border-indigo-200' }}">
+      <p class="text-xs font-semibold mb-1">{{ '문항 ' ~ active_proposal.item_id ~ ' · ' ~ active_proposal.field }}</p>
+      {% if active_proposal.status == 'blocked' %}
+      <p class="text-xs text-amber-700">⛔ {{ active_proposal.reason }}</p>
+      {% elif active_proposal.status == 'ok' %}
+      <p class="text-xs text-indigo-700 mb-2">✅ 이 페이지 안에서 정상적으로 배치되는 것을 실측으로 확인했습니다. 적용하면 새 저장 버전이 만들어지고 QA를 다시 거칩니다.</p>
+      <div class="flex gap-2">
+        <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/{{ selected_id }}/apply">
+          <input type="hidden" name="proposal_id" value="{{ active_proposal.proposal_id }}">
+          <input type="hidden" name="base_revision" value="{{ manifest.revision_id }}">
+          <button type="submit" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded transition">✔ 후보 적용·저장</button>
+        </form>
+        <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/{{ selected_id }}/cancel">
+          <input type="hidden" name="proposal_id" value="{{ active_proposal.proposal_id }}">
+          <button type="submit" class="px-4 py-1.5 border border-gray-300 text-gray-600 text-xs rounded hover:bg-gray-50 transition">후보 취소</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 오른쪽: 직접 수정 패널 -->
+  <div class="col-span-4 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    <div class="flex border-b border-gray-100 mb-3">
+      <span class="px-3 py-2 text-xs font-semibold text-gray-700 border-b-2 border-indigo-600">직접 수정</span>
+      <span class="px-3 py-2 text-xs text-gray-300 cursor-not-allowed" title="P3 범위 - 이번 구현에 포함되지 않음">AI 대화 (준비 중 · 미연결)</span>
+    </div>
+
+    {% if not page or page.layout_type not in ('halves', 'fullpage') %}
+    <p class="text-xs text-gray-400">이 페이지는 이번 범위(2단계 문항 페이지)에서 직접 편집을 지원하지 않습니다. 왼쪽에서 🔒 표시가 없는 페이지를 선택해주세요.</p>
+    {% elif not items %}
+    <p class="text-xs text-gray-400">이 페이지에 편집 가능한 문항이 없습니다.</p>
+    {% else %}
+    {% for item in items %}
+    <div class="mb-5 pb-5 {{ '' if loop.last else 'border-b border-gray-100' }}">
+      <p class="text-xs font-semibold text-gray-700 mb-2">문항 #{{ item.order_label }} <span class="text-gray-400 font-normal">(id={{ item.id }}, {{ item.ui_type }})</span></p>
+
+      <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/{{ selected_id }}/propose" class="mb-3">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <input type="hidden" name="operation" value="set_text">
+        <input type="hidden" name="base_revision" value="{{ manifest.revision_id }}">
+        <label class="block text-xs text-gray-500 mb-1">문장 수정</label>
+        <textarea name="question_text" rows="3" class="w-full border border-gray-300 rounded px-2 py-1.5 text-xs mb-1.5">{{ item.question_text }}</textarea>
+        <button type="submit" class="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white text-xs rounded transition">이 문장으로 후보 만들기</button>
+      </form>
+
+      <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/{{ selected_id }}/propose" class="mb-3">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <input type="hidden" name="operation" value="set_answer_area">
+        <input type="hidden" name="base_revision" value="{{ manifest.revision_id }}">
+        <label class="block text-xs text-gray-500 mb-1">답란 높이 조절(mm) - 최소 15mm</label>
+        <div class="flex items-center gap-2">
+          <input type="number" name="answer_height_mm" min="15" step="1" value="{{ item.answer_height_mm or '' }}"
+                 placeholder="예: 24" class="w-24 border border-gray-300 rounded px-2 py-1 text-xs">
+          <button type="submit" class="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white text-xs rounded transition">이 높이로 후보 만들기</button>
+        </div>
+      </form>
+
+      <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/{{ selected_id }}/propose" enctype="multipart/form-data">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <input type="hidden" name="operation" value="replace_image">
+        <input type="hidden" name="base_revision" value="{{ manifest.revision_id }}">
+        <label class="block text-xs text-gray-500 mb-1">그림 업로드·교체 (원본 파일은 보존, 새 자산으로 추가)</label>
+        <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+          <select name="image_field" class="border border-gray-300 rounded px-1.5 py-1 text-xs">
+            <option value="reference_image_path" {{ 'selected' if item.reference_image_path }}>참고자료 그림(reference_image_path)</option>
+            <option value="excerpt_image_path" {{ 'selected' if item.excerpt_image_path and not item.reference_image_path }}>발췌문 그림(excerpt_image_path)</option>
+          </select>
+          <input type="file" name="image_file" accept="image/png,image/jpeg,image/webp,image/gif" class="text-xs max-w-full">
+        </div>
+        <p class="text-[11px] text-gray-400 mb-1.5">현재: {{ item.reference_image_path or item.excerpt_image_path or '지정된 그림 없음' }}</p>
+        <button type="submit" class="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white text-xs rounded transition">이 그림으로 후보 만들기</button>
+      </form>
+
+      <p class="text-[11px] text-gray-300 mt-2">그림 크기·자르기·캡션 조절은 이번 범위에 아직 없습니다(미연결).</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

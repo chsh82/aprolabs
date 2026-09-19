@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+doc-page:not(:defined){visibility:hidden}
+body{margin:0}
+a{color:#1C2A39}
+a:hover{color:#5A3E36}
+@media print{
+  .keep{break-inside:avoid;page-break-inside:avoid}
+  .pagebreak{break-before:page;page-break-before:always}
+  h2,h3{break-after:avoid}
+  textarea{overflow:visible!important;resize:none!important}
+}
+</style>
+<script src="./doc-page.js"></script>
+</helmet>
+<div ref="{{ root }}" style="--ink:#16150F;--main:#1C2A39;--sub:#F5F2E7;--point:#5A3E36;--rule:#DCD6C6;--ash:#8A8578;--tint-a:#E6E9ED;--tint-b:#EFE7E4;--seal-bg:#5A3E36;--seal-fg:#fff;--base:14.5px;--lh:1.75;--h1:1.9rem;--qgap:1.4rem;--ruleH:7mm;--seal-radius:3px;--seal-rot:0deg;--seal-size:1.95em;--ans-fill:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ruleH) - 1px),var(--rule) calc(var(--ruleH) - 1px),var(--rule) var(--ruleH));--ans-border:1px solid transparent;--ans-radius:0px;--ex-bg:#F5F2E7;--ex-tint:rgba(90,62,54,.20);--ex-lines:repeating-linear-gradient(90deg,var(--ex-tint),var(--ex-tint) 1px,transparent 1px,transparent 26px);--ex-edge:2px solid var(--point);font-family:'Noto Sans KR',sans-serif;color:var(--ink)">
+<doc-page size="a4" margin="15mm">
+
+<header style="text-align:center;padding-bottom:2rem;border-bottom:1px solid var(--rule)">
+  <p style="margin:0;font-size:.72rem;letter-spacing:.22em;color:var(--main)">모모의 책장 · 중등 LV4 · 겨울 고전분기</p>
+  <h1 style="font-family:'Noto Serif KR',serif;font-weight:700;letter-spacing:-.02em;font-size:var(--h1);margin:.5rem 0 0;color:var(--main)">양반전</h1>
+  <p style="margin:.3em 0 0;color:var(--ash);font-size:.9rem">박지원 지음</p>
+  <div style="margin:1.5rem auto 0;max-width:14rem;aspect-ratio:3/4.2;background-image:repeating-linear-gradient(135deg,#EFEAE0,#EFEAE0 6px,#F7F4EE 6px,#F7F4EE 12px);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ash);letter-spacing:.05em">표지 이미지 / cover_image</span>
+  </div>
+  <blockquote style="font-family:'Noto Serif KR',serif;color:var(--point);border:0;margin:1.4em 0 0;padding:0;font-size:1.02rem;line-height:2">이름은 값을 매길 수 있는 것인가.<br>사고팔 수 있다면, 그것은 무엇이었는가.</blockquote>
+  <div style="display:flex;gap:.6rem;align-items:center;margin-top:1.7rem;font-size:.85rem;color:var(--ash)">
+    <span>이름</span>
+    <input type="text" aria-label="이름" style="flex:1;font-family:'Noto Sans KR',sans-serif;font-size:1rem;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+    <span>날짜</span>
+    <input type="text" aria-label="날짜" style="flex:1;font-family:'Noto Sans KR',sans-serif;font-size:1rem;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+  </div>
+</header>
+
+<section>
+  <h2 style="font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:.6em;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.6rem 0 1.1rem;color:var(--main)">
+    <span style="font-family:'Noto Sans KR',sans-serif;background:var(--main);color:#fff;font-size:.62em;padding:.3em .8em;border-radius:2px;letter-spacing:.12em;font-weight:700">1단계</span>낱말과 내용 확인
+  </h2>
+  <p style="color:var(--main);font-weight:600;font-size:var(--base);line-height:var(--lh);margin:0 0 .8rem">고전 작품에 나오는 낱말의 뜻을 읽고, 이 낱말로 문장을 만들어 보세요.</p>
+
+  <div style="display:grid;gap:.7rem">
+    <div class="keep" style="border:1px solid var(--rule);border-radius:6px;padding:.9rem 1rem">
+      <p style="font-family:'Noto Serif KR',serif;font-size:1.12em;font-weight:700;margin:0">환곡<span style="font-family:'Noto Sans KR',sans-serif;font-size:.68em;color:var(--ash);margin-left:.6em;font-weight:400">14쪽</span></p>
+      <p style="color:#4A473E;margin:.2em 0 .7em;font-size:var(--base);line-height:var(--lh)">조선 시대에 관아가 봄에 곡식을 빌려주고 가을에 이자와 함께 거두어들인 제도.</p>
+      <textarea class="wr" rows="2" aria-label="환곡 문장 만들기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+    </div>
+    <div class="keep" style="border:1px solid var(--rule);border-radius:6px;padding:.9rem 1rem">
+      <p style="font-family:'Noto Serif KR',serif;font-size:1.12em;font-weight:700;margin:0">자못<span style="font-family:'Noto Sans KR',sans-serif;font-size:.68em;color:var(--ash);margin-left:.6em;font-weight:400">21쪽</span></p>
+      <p style="color:#4A473E;margin:.2em 0 .7em;font-size:var(--base);line-height:var(--lh)">생각보다 매우. 뜻풀이가 두 줄 이상으로 길어지는 낱말도 카드 높이가 내용에 따라 늘어나고, 옆 카드와 높이가 달라져도 어색하지 않아야 합니다.</p>
+      <textarea class="wr" rows="2" aria-label="자못 문장 만들기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+    </div>
+  </div>
+
+  <p style="color:var(--main);font-weight:600;font-size:var(--base);line-height:var(--lh);margin:1.6rem 0 .2rem">작품 내용을 떠올리며 맞으면 O, 틀리면 X를 고르세요.</p>
+  <ol style="list-style:none;padding:0;margin:0">
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--rule)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">정선의 양반은 관아에서 빌린 곡식을 갚지 못해 곤경에 처한다.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">11쪽</span></p>
+      <div style="display:flex;gap:.4rem">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--rule);border-radius:50%;align-items:center;justify-content:center;color:var(--ash);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--rule);border-radius:50%;align-items:center;justify-content:center;color:var(--ash);font-weight:700">X</span>
+      </div>
+    </li>
+    <li class="keep" style="display:flex;align-items:center;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--rule)">
+      <p style="flex:1;margin:0;font-size:var(--base);line-height:var(--lh)">양반 신분을 사들인 부자는 군수가 일러 준 양반의 도리를 듣고도 끝까지 양반으로 살기를 원한다. 두세 줄에 걸친 긴 OX 문항도 O·X 표시가 오른쪽에 세로 가운데로 정렬되고, 선택 영역의 폭은 고정됩니다.<span style="color:var(--ash);font-size:.78em;margin-left:.5em">27쪽</span></p>
+      <div style="display:flex;gap:.4rem">
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--rule);border-radius:50%;align-items:center;justify-content:center;color:var(--ash);font-weight:700">O</span>
+        <span style="display:inline-flex;width:2.2rem;height:2.2rem;border:1px solid var(--rule);border-radius:50%;align-items:center;justify-content:center;color:var(--ash);font-weight:700">X</span>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="pagebreak">
+  <h2 style="font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:.6em;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.6rem 0 1.1rem;color:var(--main)">
+    <span style="font-family:'Noto Sans KR',sans-serif;background:var(--main);color:#fff;font-size:.62em;padding:.3em .8em;border-radius:2px;letter-spacing:.12em;font-weight:700">2단계</span>질문과 토론
+  </h2>
+
+  <article class="keep" style="border-top:1px solid var(--rule);padding-top:var(--qgap);margin-bottom:.4rem">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
+      <span style="font-family:'Noto Serif KR',serif;background:var(--seal-bg);color:var(--seal-fg);font-weight:700;min-width:var(--seal-size);height:var(--seal-size);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--seal-radius);transform:rotate(var(--seal-rot));padding:0 .35em">1</span>
+      <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">사실적</span>
+      <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">추론적</span>
+    </div>
+    <blockquote style="font-family:'Noto Serif KR',serif;margin:0 0 1em;padding:1em 1.1em .8em;border:0;border-left:var(--ex-edge);background-color:var(--ex-bg);background-image:var(--ex-lines);font-size:var(--base);line-height:calc(var(--lh) + .05)">정선 고을에 글 읽기를 좋아하는 양반이 살았다. 살림이 넉넉하지 못하여 관아의 곡식을 해마다 빌려 먹다 보니 빚이 천 석에 이르렀다. 관찰사가 이를 알고 그를 잡아 가두라 명하자, 양반은 밤낮으로 울기만 하고 아무 방도를 찾지 못하였다.
+      <cite style="display:block;text-align:right;font-style:normal;font-size:.78em;color:var(--ash);margin-top:.5em">앞부분 줄거리 요약 · 11~14쪽</cite>
+    </blockquote>
+    <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0 0 .6rem">이 상황에서 양반과 부자가 각각 절실히 원한 것은 무엇인가요?</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+      <div>
+        <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">양반이 원한 것</span>
+        <textarea class="wr" rows="2" aria-label="양반이 원한 것" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+      </div>
+      <div>
+        <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">부자가 원한 것</span>
+        <textarea class="wr" rows="2" aria-label="부자가 원한 것" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+      </div>
+    </div>
+  </article>
+
+  <article class="keep" style="border-top:1px solid var(--rule);padding-top:var(--qgap);margin-bottom:.4rem">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
+      <span style="font-family:'Noto Serif KR',serif;background:var(--seal-bg);color:var(--seal-fg);font-weight:700;min-width:var(--seal-size);height:var(--seal-size);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--seal-radius);transform:rotate(var(--seal-rot));padding:0 .35em">2</span>
+      <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">추론적</span>
+    </div>
+    <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0 0 .6rem">거래가 끝난 뒤, 세 인물이 얻은 것과 잃은 것을 한 낱말로 적어 보세요.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem">
+      <div>
+        <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">양반</span>
+        <input type="text" aria-label="양반" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+      </div>
+      <div>
+        <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">부자</span>
+        <input type="text" aria-label="부자" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+      </div>
+      <div>
+        <span style="display:block;font-size:.8em;color:var(--main);font-weight:600;margin-bottom:.25em">군수가 이 거래에서 본 것</span>
+        <input type="text" aria-label="군수가 이 거래에서 본 것" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:.45rem .6rem;background:#FEFDFB">
+      </div>
+    </div>
+  </article>
+
+  <article class="keep" style="border-top:1px solid var(--rule);padding-top:var(--qgap);margin-bottom:.4rem">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
+      <span style="font-family:'Noto Serif KR',serif;background:var(--seal-bg);color:var(--seal-fg);font-weight:700;min-width:var(--seal-size);height:var(--seal-size);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--seal-radius);transform:rotate(var(--seal-rot));padding:0 .35em">3</span>
+      <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">사실적</span>
+    </div>
+    <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0 0 .6rem">군수가 문서에 적어 준 양반의 조건을, 오늘의 말로 바꾸어 적어 보세요.</p>
+    <table style="width:100%;border-collapse:collapse;font-family:'Noto Serif KR',serif">
+      <thead>
+        <tr>
+          <th style="border:1px solid var(--rule);padding:.5em;font-size:.9em;font-weight:700;background:var(--tint-a)">문서에 적힌 조건</th>
+          <th style="border:1px solid var(--rule);padding:.5em;font-size:.9em;font-weight:700;background:var(--tint-b)">오늘의 말로</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border:1px solid var(--rule);padding:.55em .7em;text-align:center;font-weight:700;background:#FCFBF7">손에 돈을 만지지 말 것</td>
+          <td style="border:1px solid var(--rule);padding:0;height:var(--ruleH)"></td>
+        </tr>
+        <tr>
+          <td style="border:1px solid var(--rule);padding:.55em .7em;text-align:center;font-weight:700;background:#FCFBF7">더워도 버선을 벗지 말 것</td>
+          <td style="border:1px solid var(--rule);padding:0;height:var(--ruleH)"></td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+
+  <article class="keep" style="border-top:1px solid var(--rule);padding-top:var(--qgap);margin-bottom:.4rem">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
+      <span style="font-family:'Noto Serif KR',serif;background:var(--seal-bg);color:var(--seal-fg);font-weight:700;min-width:var(--seal-size);height:var(--seal-size);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--seal-radius);transform:rotate(var(--seal-rot));padding:0 .35em">4</span>
+      <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">비판적</span>
+      <sc-if value="{{ reviewFlag }}" hint-placeholder-val="{{ true }}"><span style="font-size:.7em;color:var(--point);border:1px dashed var(--point);padding:.12em .7em;border-radius:99px;margin-left:auto;white-space:nowrap">검수 중</span></sc-if>
+    </div>
+    <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0 0 .7rem">양반 신분을 돈으로 사고파는 일을 어떻게 보아야 할까요? 하나를 골라 보세요.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+      <div style="padding:1rem;border:1px solid var(--rule);border-radius:6px;text-align:center;font-weight:700;background:var(--tint-a)">신분을 산 부자에게 더 큰 잘못이 있다</div>
+      <div style="padding:1rem;border:1px solid var(--rule);border-radius:6px;text-align:center;font-weight:700;background:var(--tint-b)">신분을 팔게 만든 사회에 더 큰 잘못이 있다</div>
+    </div>
+    <p style="color:var(--main);font-weight:600;margin:.9rem 0 .3rem;font-size:var(--base)">그렇게 생각한 까닭은?</p>
+    <textarea class="wr" rows="3" aria-label="까닭 쓰기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+  </article>
+
+  <article class="keep" style="border-top:1px solid var(--rule);padding-top:var(--qgap)">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem">
+      <span style="font-family:'Noto Serif KR',serif;background:var(--seal-bg);color:var(--seal-fg);font-weight:700;min-width:var(--seal-size);height:var(--seal-size);display:inline-flex;align-items:center;justify-content:center;border-radius:var(--seal-radius);transform:rotate(var(--seal-rot));padding:0 .35em">5</span>
+      <span style="font-size:.72em;color:var(--ash);border:1px solid var(--rule);padding:.12em .7em;border-radius:99px">적용적</span>
+    </div>
+    <p style="font-weight:700;font-size:var(--base);line-height:var(--lh);margin:0 0 .7rem">아래 자료는 오늘날 '이름값'이 거래되는 사례입니다. 「양반전」의 거래와 무엇이 같고 무엇이 다른가요?</p>
+    <div style="background:var(--sub);border:1px solid var(--rule);padding:.9em 1em;margin-bottom:.8em;text-align:center">
+      <p style="margin:0 0 .5em;font-size:.75em;letter-spacing:.15em;color:var(--point)">보기</p>
+      <div style="height:8rem;background-image:repeating-linear-gradient(135deg,#EFEAE0,#EFEAE0 6px,#F7F4EE 6px,#F7F4EE 12px);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ash)">자료 이미지 / reference_image (가로 비율 가변)</span>
+      </div>
+    </div>
+    <textarea class="wr" rows="4" aria-label="비교하여 쓰기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+  </article>
+</section>
+
+<section class="pagebreak">
+  <h2 style="font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:.6em;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.6rem 0 1.1rem;color:var(--main)">
+    <span style="font-family:'Noto Sans KR',sans-serif;background:var(--main);color:#fff;font-size:.62em;padding:.3em .8em;border-radius:2px;letter-spacing:.12em;font-weight:700">3단계</span>글쓰기
+  </h2>
+  <p style="font-family:'Noto Serif KR',serif;font-size:1.5em;font-weight:700;color:var(--point);text-align:center;margin:1.2rem 0">이름을 산다는 것</p>
+  <h3 style="font-family:'Noto Serif KR',serif;display:flex;align-items:baseline;gap:.7em;color:var(--main);font-size:1.05rem;margin:2rem 0 .7rem">Step 1.<small style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.8rem">생각을 정리하는 질문에 짧게 메모해 보세요.</small></h3>
+  <div class="keep" style="margin-bottom:1.1rem">
+    <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .4rem"><b>1</b> 양반이 팔았던 것은 정확히 무엇이었나요?</p>
+    <textarea class="wr" rows="2" aria-label="1번 메모" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+  </div>
+  <div class="keep" style="margin-bottom:1.1rem">
+    <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .4rem"><b>2</b> 부자는 결국 왜 양반 문서를 되돌려주려 했나요? 두세 줄에 걸친 긴 질문도 번호와 본문의 정렬이 흐트러지지 않습니다.</p>
+    <textarea class="wr" rows="2" aria-label="2번 메모" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+  </div>
+  <div class="keep" style="margin-bottom:1.1rem">
+    <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 .4rem"><b>3</b> 오늘 우리가 돈으로 사고 싶어 하는 '이름'은 무엇인지 생각해 보며 글을 마무리해 봅시다.</p>
+    <textarea class="wr" rows="2" aria-label="3번 메모" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+  </div>
+  <h3 style="font-family:'Noto Serif KR',serif;display:flex;align-items:baseline;gap:.7em;color:var(--main);font-size:1.05rem;margin:2rem 0 .7rem">Step 2.<small style="font-family:'Noto Sans KR',sans-serif;font-weight:400;color:var(--ash);font-size:.8rem">메모한 생각을 이어 붙여 한 편의 글로 완성해 보세요.</small></h3>
+  <textarea class="wr" rows="12" aria-label="긴 글쓰기" style="width:100%;box-sizing:border-box;font-family:'Noto Sans KR',sans-serif;font-size:15px;line-height:var(--ruleH);color:var(--ink);padding:0 .5rem;border:var(--ans-border);border-radius:var(--ans-radius);background-image:var(--ans-fill);background-color:transparent;background-attachment:local;overflow:hidden"></textarea>
+</section>
+
+<section class="pagebreak">
+  <h2 style="font-family:'Noto Serif KR',serif;border-bottom:1.5px solid var(--main);padding-bottom:.4em;font-size:1.15rem;margin:2.6rem 0 1.1rem;color:var(--main)">디자인 결정 요약 <span style="font-size:.72rem;letter-spacing:.15em;color:var(--ash);font-family:'Noto Sans KR',sans-serif">렌더러 이식용</span></h2>
+  <p style="font-size:var(--base);line-height:var(--lh);margin:0 0 1.1rem;color:#4A473E">분기 컬러 가이드를 학습지 요소에 매핑한 규칙과, 브리프 5장 항목에 대한 답입니다.</p>
+
+  <h3 style="font-family:'Noto Serif KR',serif;color:var(--main);font-size:1rem;margin:0 0 .5rem">1. 분기 컬러 → 요소 매핑</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:1.4rem">
+    <thead>
+      <tr>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub);width:26%">가이드 역할</th>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub)">학습지에서 쓰는 자리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">메인</td><td style="border:1px solid var(--rule);padding:.45em .6em">단계 배지, 단계 제목과 밑줄, 지시문·라벨, 표지 분기 표기</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">서브</td><td style="border:1px solid var(--rule);padding:.45em .6em">발췌문·보기 상자 배경 (한지 자리)</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">포인트</td><td style="border:1px solid var(--rule);padding:.45em .6em">문항 번호 도장, 인찰선, 3단계 주제, 「검수 중」 표시 — 한 면에 4곳 이내</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">고정(비분기)</td><td style="border:1px solid var(--rule);padding:.45em .6em">본문 #16150F · 보조 #8A8578 · 괘선 #DCD6C6 — 분기가 바뀌어도 본문 색은 바꾸지 않는다</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-family:'Noto Serif KR',serif;color:var(--main);font-size:1rem;margin:0 0 .5rem">2. 브리프 5장 결정</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:.84rem">
+    <thead>
+      <tr>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub);width:26%">항목</th>
+        <th style="border:1px solid var(--rule);padding:.45em .6em;text-align:left;background:var(--sub)">결정</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">학년별 톤</td><td style="border:1px solid var(--rule);padding:.45em .6em">색은 <b>분기</b>가 정하고, 학년은 <b>본문 크기·줄 간격·괘선 높이·도장 크기</b>만 바꾼다 (초3~4 15.5px/8mm → 중등 14.5px/7mm). 두 축이 겹치지 않게 분리.</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">발췌문 구분</td><td style="border:1px solid var(--rule);padding:.45em .6em">서브 컬러 배경 + 좌측 포인트 2px + 세로 인찰선(포인트 20% 불투명도). 흑백 복사에서 글자를 침범하지 않는 상한값.</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">답란</td><td style="border:1px solid var(--rule);padding:.45em .6em"><b>괘선 통일.</b> 간격은 학년 토큰(7~8mm), 테두리 없음. 박스는 표·선택지처럼 <i>고를 대상</i>에만.</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">문항 번호</td><td style="border:1px solid var(--rule);padding:.45em .6em">도장 유지, 배경은 포인트 컬러. 초3~4는 -3°·2.15em, 중등은 0°·1.95em으로 무게를 낮춘다.</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">삽화 없는 문항</td><td style="border:1px solid var(--rule);padding:.45em .6em">여백을 채우지 않는다. 상단 구분선 + 도장으로 리듬을 만들고, 답란 높이를 유형별 고정값으로 둬 <i>쓸 자리</i>로 읽히게 한다.</td></tr>
+      <tr><td style="border:1px solid var(--rule);padding:.45em .6em;font-weight:600">「검수 중」</td><td style="border:1px solid var(--rule);padding:.45em .6em">학생 인쇄본은 <b>숨김</b>(기본값). 교사·검수 화면에서만 켠다.</td></tr>
+    </tbody>
+  </table>
+
+  <p style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ash);line-height:1.9;margin:1.2rem 0 0;padding:.9rem 1rem;border:1px solid var(--rule);background:#FCFBF7">겨울·고전 &nbsp;main #1C2A39 · sub #F5F2E7 · point #5A3E36<br>봄·탐구 &nbsp;&nbsp;&nbsp;&nbsp;main #A3D9A5 (text #3F7A46) · sub #FFF8E7 · point #FFA573<br>여름·문학 &nbsp;main #0099CC · sub #E8F8FF · point #FFD166<br>가을·인문 &nbsp;main #836B5D · sub #E8DCC3 · point #D9A441<br>base 15.5 / 15 / 14.5px · line-height 1.85 / 1.8 / 1.75 · rule-height 8 / 7.5 / 7mm<br>serif Noto Serif CJK KR · sans Noto Sans CJK KR (추가 폰트 없음)</p>
+</section>
+
+</doc-page>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;quarter&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;겨울 · 고전&quot;,&quot;봄 · 탐구&quot;,&quot;여름 · 문학&quot;,&quot;가을 · 인문철학&quot;],&quot;default&quot;:&quot;겨울 · 고전&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;분기 컬러&quot;},&quot;gradeTone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;초등 3~4학년&quot;,&quot;초등 5~6학년&quot;,&quot;중등&quot;],&quot;default&quot;:&quot;중등&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;학년 톤&quot;},&quot;answerStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;괘선&quot;,&quot;박스&quot;],&quot;default&quot;:&quot;괘선&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;답란&quot;},&quot;numberStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;낙관 도장&quot;,&quot;원형 번호&quot;,&quot;숫자만&quot;],&quot;default&quot;:&quot;낙관 도장&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;문항 번호&quot;},&quot;excerptStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;서브 배경 + 인찰선&quot;,&quot;서브 배경만&quot;,&quot;여백과 선만&quot;],&quot;default&quot;:&quot;서브 배경 + 인찰선&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;발췌문&quot;},&quot;showReviewFlag&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;검수&quot;}}">
+const QUARTER = {
+  "겨울 · 고전": { "--main": "#1C2A39", "--sub": "#F5F2E7", "--point": "#5A3E36", "--rule": "#DCD6C6", "--tint-a": "#E6E9ED", "--tint-b": "#EFE7E4", "--seal-bg": "#5A3E36", "--seal-fg": "#fff", "--ex-tint": "rgba(90,62,54,.20)" },
+  "봄 · 탐구": { "--main": "#3F7A46", "--sub": "#FFF8E7", "--point": "#E2703A", "--rule": "#E3DCC8", "--tint-a": "#E6F4E7", "--tint-b": "#FFEDE2", "--seal-bg": "#E2703A", "--seal-fg": "#fff", "--ex-tint": "rgba(226,112,58,.18)" },
+  "여름 · 문학": { "--main": "#0A6E92", "--sub": "#E8F8FF", "--point": "#B8830F", "--rule": "#D3E3EA", "--tint-a": "#E1F2F9", "--tint-b": "#FFF4DC", "--seal-bg": "#0099CC", "--seal-fg": "#fff", "--ex-tint": "rgba(10,110,146,.18)" },
+  "가을 · 인문철학": { "--main": "#836B5D", "--sub": "#E8DCC3", "--point": "#A8761F", "--rule": "#DCCDB3", "--tint-a": "#EDE7E2", "--tint-b": "#F7EDD9", "--seal-bg": "#A8761F", "--seal-fg": "#fff", "--ex-tint": "rgba(168,118,31,.20)" }
+};
+const TONE = {
+  "초등 3~4학년": { "--base": "15.5px", "--lh": "1.85", "--ruleH": "8mm", "--h1": "2.05rem", "--seal-size": "2.15em", "--seal-rot": "-3deg", "--qgap": "1.6rem" },
+  "초등 5~6학년": { "--base": "15px", "--lh": "1.8", "--ruleH": "7.5mm", "--h1": "1.95rem", "--seal-size": "2.05em", "--seal-rot": "-2deg", "--qgap": "1.5rem" },
+  "중등": { "--base": "14.5px", "--lh": "1.75", "--ruleH": "7mm", "--h1": "1.9rem", "--seal-size": "1.95em", "--seal-rot": "0deg", "--qgap": "1.4rem" }
+};
+const NUM = {
+  "낙관 도장": { "--seal-radius": "3px" },
+  "원형 번호": { "--seal-radius": "50%", "--seal-rot": "0deg" },
+  "숫자만": { "--seal-radius": "0px", "--seal-rot": "0deg", "--seal-bg": "transparent", "--seal-fg": "var(--point)" }
+};
+const EX = {
+  "서브 배경 + 인찰선": {},
+  "서브 배경만": { "--ex-lines": "none" },
+  "여백과 선만": { "--ex-bg": "transparent", "--ex-lines": "none", "--ex-edge": "3px solid var(--rule)" }
+};
+const ANS = {
+  "괘선": { "--ans-border": "1px solid transparent", "--ans-radius": "0px", "--ans-fill": "repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ruleH) - 1px),var(--rule) calc(var(--ruleH) - 1px),var(--rule) var(--ruleH))" },
+  "박스": { "--ans-border": "1px solid var(--rule)", "--ans-radius": "4px", "--ans-fill": "none" }
+};
+
+class Component extends DCLogic {
+  root = React.createRef();
+
+  apply() {
+    const el = this.root.current;
+    if (!el) return;
+    const p = this.props;
+    const q = QUARTER[p.quarter] || QUARTER["겨울 · 고전"];
+    el.style.setProperty("--ex-bg", "var(--sub)");
+    el.style.setProperty("--ex-lines", "repeating-linear-gradient(90deg,var(--ex-tint),var(--ex-tint) 1px,transparent 1px,transparent 26px)");
+    el.style.setProperty("--ex-edge", "2px solid var(--point)");
+    [q, TONE[p.gradeTone] || TONE["중등"], NUM[p.numberStyle] || NUM["낙관 도장"], EX[p.excerptStyle] || EX["서브 배경 + 인찰선"], ANS[p.answerStyle] || ANS["괘선"]]
+      .forEach(s => Object.keys(s).forEach(k => el.style.setProperty(k, s[k])));
+    this.grow();
+  }
+
+  grow() {
+    const el = this.root.current;
+    if (!el) return;
+    el.querySelectorAll("textarea").forEach(t => {
+      t.style.height = "auto";
+      t.style.height = t.scrollHeight + "px";
+    });
+  }
+
+  componentDidMount() {
+    this.apply();
+    const el = this.root.current;
+    if (el) el.addEventListener("input", e => {
+      if (e.target.tagName === "TEXTAREA") {
+        e.target.style.height = "auto";
+        e.target.style.height = e.target.scrollHeight + "px";
+      }
+    });
+    this._before = () => this.grow();
+    window.addEventListener("beforeprint", this._before);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.grow());
+  }
+
+  componentDidUpdate() { this.apply(); }
+
+  componentWillUnmount() { window.removeEventListener("beforeprint", this._before); }
+
+  renderVals() {
+    return { root: this.root, reviewFlag: this.props.showReviewFlag ?? false };
+  }
+}
+</script>
+</body>
+</html>

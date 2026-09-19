@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from app.database import get_db, init_db
-from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, momo_book_worksheet, journal, zoom_summaries, external_api
+from app.routers import questions, upload, suneung, dashboard, answer_keys, crawl, reading_essay, momo_bookshelf, momo_book_review, momo_book_worksheet, momo_worksheet_editor, momo_worksheet_page_editor, journal, zoom_summaries, external_api
 from app.routers import auth as auth_router
 from app.routers import literacy_admin, literacy_api
 from app.vocab.routers import quiz_api as vocab_quiz_api
@@ -33,6 +33,19 @@ os.makedirs("momo_book_db/generated", exist_ok=True)
 app.mount("/momo-worksheet-assets/generated", StaticFiles(directory="momo_book_db/generated"), name="momo_worksheet_generated")
 app.mount("/momo-worksheet-assets/worksheet/build", StaticFiles(directory="momo_book_db/worksheet/build"), name="momo_worksheet_build")
 app.mount("/momo-worksheet-assets/extracted_images", StaticFiles(directory="momo_book_db/extracted_images"), name="momo_worksheet_images")
+# 2026-09-19 12차(페이지 편집기) 안정화 - 기존에도 있던 버그를 여기서 발견해 같이 고침:
+# momo_worksheet_editor.py의 편집 프로젝트 미리보기 라우트
+# (/momo-worksheet-editor/{project_id}/preview/{version_id}/{filename})는 실제 파일
+# 깊이(momo_book_db 기준 5단계 아래)에 맞춰 "../../../../../worksheet/build/styles.css"
+# 같은 상대경로를 그대로 서빙하는데, 이 라우트의 URL 경로는 4단계 깊이뿐이라 브라우저가
+# "../"를 루트에서 그 이상 못 올라가고 클램프해 최종적으로 "/worksheet/build/styles.css"
+# (루트 바로 아래)를 요청한다 - 그런데 그 경로엔 지금까지 아무 마운트도 없어서 편집
+# 프로젝트 미리보기 화면은 CSS·이미지가 전부 404였다(PDF 다운로드는 파일 시스템 경로를
+# 직접 여는 별도 코드 경로라 안 걸렸음 - 실제 PDF는 늘 정상이었다). 페이지 편집기의
+# 후보 미리보기(page_proposals/.../preview/)도 같은 클램프 대상이라 이 마운트가 꼭
+# 필요하다. momo_book_db 전체를 열지 않고 실제 쓰는 2개 하위 폴더만 루트에 미러링한다.
+app.mount("/worksheet/build", StaticFiles(directory="momo_book_db/worksheet/build"), name="worksheet_build_root")
+app.mount("/extracted_images", StaticFiles(directory="momo_book_db/extracted_images"), name="extracted_images_root")
 app.mount("/vocab/games", StaticFiles(directory="app/vocab/static/games"), name="vocab_games")
 
 # 인증 라우터 (로그인/로그아웃 — 보호 불필요)
@@ -50,6 +63,8 @@ app.include_router(isbn.router)
 app.include_router(momo_bookshelf.router)
 app.include_router(momo_book_review.router)
 app.include_router(momo_book_worksheet.router)
+app.include_router(momo_worksheet_editor.router)
+app.include_router(momo_worksheet_page_editor.router)
 app.include_router(journal.router)
 app.include_router(zoom_summaries.router)
 app.include_router(literacy_admin.router)

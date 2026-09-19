@@ -15,6 +15,7 @@
     {% if exists %}
     <a href="{{ preview_url }}" target="_blank" class="px-3 py-1.5 border border-gray-200 text-gray-600 text-sm rounded hover:bg-gray-50 transition">새 탭에서 열기</a>
     {% endif %}
+    <a href="/momo-worksheet-editor" class="px-3 py-1.5 border border-violet-200 text-violet-600 text-sm rounded hover:bg-violet-50 transition">✏️ 편집 프로젝트</a>
     <form method="POST" action="/momo-worksheet/{{ doc.doc_id }}/build">
       <button type="submit" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition">
         {{ '다시 생성' if exists else '생성해보기' }}
@@ -23,9 +24,31 @@
   </div>
 </div>
 
+{% if request.query_params.get('build_busy') %}
+<div class="mb-4 bg-amber-50 border border-amber-200 text-amber-700 text-sm rounded-lg px-4 py-2">
+  이 문서는 이미 다른 요청이 생성 중입니다. 잠시 후 다시 시도해 주세요.
+</div>
+{% endif %}
+
+{% if latest_status and latest_status != 'PASS' %}
+<div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2">
+  <b>최근 빌드 {{ '차단(BLOCKED)' if latest_status == 'BLOCKED' else '실패' }}</b>
+  {% if showing_previous %}— 아래는 <b>이전 정상본</b>을 그대로 보여주고 있습니다.{% endif %}
+  아래 빌드 로그에서 원인을 확인하세요.
+</div>
+{% endif %}
+
 {% if log %}
-<details class="mb-4 bg-white rounded-xl border border-gray-100 shadow-sm" {{ 'open' if 'failed' in log.lower() or '실패' in log else '' }}>
-  <summary class="px-4 py-2 text-sm text-gray-600 cursor-pointer select-none">빌드 로그</summary>
+<details class="mb-4 bg-white rounded-xl border border-gray-100 shadow-sm" {{ 'open' if latest_status and latest_status != 'PASS' else '' }}>
+  <summary class="px-4 py-2 text-sm text-gray-600 cursor-pointer select-none">
+    빌드 로그
+    {% if latest_status %}
+    <span class="ml-2 text-xs font-mono px-2 py-0.5 rounded
+      {{ 'bg-green-100 text-green-700' if latest_status == 'PASS' else ('bg-amber-100 text-amber-700' if latest_status == 'BLOCKED' else 'bg-red-100 text-red-700') }}">
+      {{ latest_status }}
+    </span>
+    {% endif %}
+  </summary>
   <pre class="px-4 pb-4 text-xs text-gray-500 whitespace-pre-wrap">{{ log }}</pre>
 </details>
 {% endif %}

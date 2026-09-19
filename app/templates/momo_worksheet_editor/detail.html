@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}편집 - {{ meta.source_doc_id }} - Aprolabs{% endblock %}
+
+{% block content %}
+<div class="mb-4 flex items-center justify-between flex-wrap gap-2">
+  <div>
+    <a href="/momo-worksheet-editor" class="text-xs text-gray-400 hover:text-gray-600">← 프로젝트 목록</a>
+    <h2 class="text-2xl font-bold text-gray-800 mt-1">{{ meta.source_doc_id }} 편집</h2>
+    <p class="text-xs text-gray-400 mt-1 font-mono">{{ meta.project_id }}</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="/momo-worksheet-editor/{{ meta.project_id }}/pages"
+       class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded transition"
+       title="선택한 페이지만 고정해서 편집 - 다른 페이지는 그대로 유지됩니다">
+      🧷 페이지별 편집(신규)
+    </a>
+    <a href="/momo-worksheet-editor/{{ meta.project_id }}/export" class="px-3 py-1.5 border border-gray-200 text-gray-600 text-sm rounded hover:bg-gray-50 transition">내보내기(zip) ↓</a>
+  </div>
+</div>
+
+<!-- 데이터 출처 표시 - "복원 후보로 만든 프로젝트는 그 출처와 후보 상태를 계속 표시" -->
+{% if meta.data_origin == 'restoration_candidate' %}
+<div class="mb-4 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3">
+  <b>⚠ 이 프로젝트는 "복원 후보"가 적용된 데이터에서 시작했습니다.</b>
+  (적용된 패치: {{ meta.restoration_patch_ids|join(', ') }}) — <code>RESTORATION_PATCHES.json</code> 기준이며
+  운영 승인본이 아닙니다. QA를 통과해도 이 상태 표시는 그대로 남습니다(콘텐츠 승인 상태 자동 변경 없음).
+</div>
+{% endif %}
+
+<!-- QA 상태 -->
+<div class="mb-4 flex items-center gap-2">
+  <span class="text-xs text-gray-500">현재 버전 QA 상태:</span>
+  {% if qa_status == 'PASS' %}
+  <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded">PASS</span>
+  {% elif qa_status == 'FAIL' %}
+  <span class="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded">FAIL</span>
+  {% elif qa_status == 'BLOCKED' %}
+  <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded">BLOCKED</span>
+  {% elif qa_status == 'NOT_SAVED' or not qa_status %}
+  <span class="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs font-bold rounded">아직 저장 안 됨</span>
+  {% else %}
+  <span class="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs font-bold rounded">{{ qa_status }}</span>
+  {% endif %}
+  <span id="saving-indicator" class="hidden px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded">검사 중...</span>
+  <span class="text-xs text-gray-400">— QA를 통과해도 운영 승인본으로 자동 승격되지 않습니다(별도 편집 프로젝트).</span>
+</div>
+
+{% if showing_previous %}
+<div class="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2">
+  최근 저장한 편집이 QA를 통과하지 못했습니다 - 아래 미리보기는 <b>마지막으로 QA를 통과한 정상본</b>을
+  보여주고 있습니다(방금 편집한 내용으로 덮어써지지 않았습니다).
+</div>
+{% endif %}
+
+<div class="grid grid-cols-12 gap-4">
+  <!-- 문항 선택 -->
+  <div class="col-span-3 bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+    <h4 class="text-xs font-semibold text-gray-500 mb-2">문항 선택</h4>
+    <div class="space-y-1">
+      {% for it in items %}
+      <a href="/momo-worksheet-editor/{{ meta.project_id }}?item_id={{ it.id }}"
+         class="block px-2 py-1.5 rounded text-xs {{ 'bg-blue-50 text-blue-700 font-medium' if selected and it.id == selected.id else 'text-gray-600 hover:bg-gray-50' }}">
+        #{{ it.order_label }} {{ it.ui_type }}
+        {% if it.edited %}<span class="text-amber-600">●수정됨</span>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 편집 폼 -->
+  <div class="col-span-5 bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+    {% if selected %}
+    <h4 class="text-xs font-semibold text-gray-500 mb-3">문항 #{{ selected.order_label }} ({{ selected.ui_type }}) 편집</h4>
+    <form method="POST" action="/momo-worksheet-editor/{{ meta.project_id }}/save" enctype="multipart/form-data" id="edit-form">
+      <input type="hidden" name="item_id" value="{{ selected.id }}">
+
+      <label class="block text-xs text-gray-500 mb-1">문장 수정(question_text) - 콘텐츠 변경</label>
+      <textarea name="question_text" rows="4" class="w-full border border-gray-300 rounded px-3 py-2 text-sm mb-3">{{ selected.question_text }}</textarea>
+
+      <label class="block text-xs text-gray-500 mb-1">그림 업로드·교체 - 콘텐츠 변경(원본 그림은 덮어쓰지 않고 새 자산으로 보관)</label>
+      <div class="flex items-center gap-2 mb-1">
+        <select name="image_field" class="border border-gray-300 rounded px-2 py-1.5 text-xs">
+          <option value="excerpt_image_path">발췌문 그림(excerpt_image_path)</option>
+          <option value="reference_image_path">참고자료 그림(reference_image_path)</option>
+        </select>
+        <input type="file" name="image_file" accept="image/png,image/jpeg,image/webp,image/gif" class="text-xs">
+      </div>
+      {% if selected.excerpt_image_path or selected.reference_image_path %}
+      <p class="text-xs text-gray-400 mb-3">현재: {{ selected.excerpt_image_path or selected.reference_image_path }}</p>
+      {% else %}
+      <p class="text-xs text-gray-300 mb-3">현재 지정된 그림 없음</p>
+      {% endif %}
+
+      <label class="block text-xs text-gray-500 mb-1">답란 높이 조절(mm) - 디자인·배치 변경, 최소 15mm</label>
+      <input type="number" name="answer_height_mm" min="15" step="1"
+             value="{{ selected.answer_height_mm or '' }}" placeholder="비워두면 기본값"
+             class="w-32 border border-gray-300 rounded px-3 py-2 text-sm mb-4">
+
+      <button type="submit" id="save-btn" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition">
+        저장하고 다시 조판·검사
+      </button>
+    </form>
+    <script>
+      document.getElementById('edit-form').addEventListener('submit', function () {
+        document.getElementById('save-btn').disabled = true;
+        document.getElementById('save-btn').textContent = '저장 중 — 조판·검사 실행 중...';
+        document.getElementById('saving-indicator').classList.remove('hidden');
+      });
+    </script>
+    {% else %}
+    <p class="text-sm text-gray-400">편집할 문항이 없습니다(이 문서는 discussion_qa 문항이 없음).</p>
+    {% endif %}
+  </div>
+
+  <!-- 미리보기 + 버전 이력 -->
+  <div class="col-span-4 space-y-4">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden" style="height: 320px;">
+      {% if preview_url %}
+      <iframe src="{{ preview_url }}" class="w-full h-full border-0"></iframe>
+      {% else %}
+      <div class="h-full flex items-center justify-center text-xs text-gray-300">아직 미리보기 없음 - 저장하면 생성됩니다</div>
+      {% endif %}
+    </div>
+    {% if preview_version %}
+    <a href="/momo-worksheet-editor/{{ meta.project_id }}/pdf/{{ preview_version }}"
+       class="block text-center px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-xs font-medium rounded transition">
+      📄 PDF 다운로드 ({{ '마지막 정상본' if showing_previous else '현재 버전' }})
+    </a>
+    {% endif %}
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+      <h4 class="text-xs font-semibold text-gray-500 mb-2">저장 버전 이력 (이전 버전 복원)</h4>
+      <div class="space-y-1 max-h-64 overflow-y-auto">
+        {% for v in versions %}
+        <div class="flex items-center justify-between text-xs px-2 py-1.5 rounded {{ 'bg-blue-50' if v.version_id == meta.current_version else 'hover:bg-gray-50' }}">
+          <div>
+            <span class="font-mono">{{ v.version_id }}</span>
+            <span class="text-gray-400">{{ v.created_at }}</span>
+            {% if v.version_id == meta.current_version %}<span class="text-blue-600 font-medium">(현재)</span>{% endif %}
+          </div>
+          {% if v.version_id != meta.current_version %}
+          <form method="POST" action="/momo-worksheet-editor/{{ meta.project_id }}/restore/{{ v.version_id }}">
+            <button type="submit" class="text-blue-600 hover:underline">복원</button>
+          </form>
+          {% endif %}
+        </div>
+        {% else %}
+        <p class="text-xs text-gray-300">저장된 버전 없음</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-3">
+      <h4 class="text-xs font-semibold text-gray-500 mb-2">업로드된 그림 자산</h4>
+      {% for a in assets %}
+      <div class="text-xs text-gray-500 py-0.5">{{ a.original_filename }} <span class="text-gray-300 font-mono">{{ a.asset_id }}</span></div>
+      {% else %}
+      <p class="text-xs text-gray-300">없음</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

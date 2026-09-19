@@ -38,6 +38,28 @@
     </div>
   </div>
 </section>
+
+<!-- 1/3단계처럼 반면(half) 둘로 안 나뉘고 .sheet 전체를 한 콘텐츠가 차지하는 경우용
+     프로브(2026-09-18 추가). 헤더/푸터를 뺀 순수 콘텐츠 높이만 넣고 같은 .sheet 틀
+     안에서 재므로 실제 출력과 여백·헤더 높이 조건이 같다. -->
+<section class="page" data-screen-label="전체 반면 오버플로 프로브">
+  <div class="sheet">
+    <div class="sheet-head">
+      <img class="sheet-head__logo" src="assets/images/logo-momo.png" alt="모모의 책장">
+      <div class="sheet-head__meta">
+        <p class="sheet-head__step">전체 반면 프로브</p>
+        <h2 class="sheet-head__title">probe.html</h2>
+      </div>
+    </div>
+    <div class="sheet-hr"></div>
+    <div id="probe-full"></div>
+    <div class="footer">
+      <span class="footer__brand">모모의 책장 · 오버플로 프로브</span>
+      <span class="footer__page">-</span>
+      <span class="footer__book">probe.html</span>
+    </div>
+  </div>
+</section>
 </div>
 
 <script>
@@ -47,7 +69,14 @@ function renderHtml(html, tone) {
   const probe = document.getElementById('probe');
   probe.innerHTML = html;
 }
+function renderFullSheet(html, tone) {
+  const root = document.getElementById('root');
+  root.className = 'worksheet q-winter ' + (tone || 'tone-elem56');
+  const probe = document.getElementById('probe-full');
+  probe.innerHTML = html;
+}
 window.renderHtml = renderHtml;
+window.renderFullSheet = renderFullSheet;
 </script>
 </body>
 </html>

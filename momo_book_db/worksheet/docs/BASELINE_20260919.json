@@ -1,0 +1,216 @@
+{
+  "captured_at": "2026-09-19T00:31 (KST, local build timestamps)",
+  "docs": {
+    "L1-Q4-W01": {
+      "build_id": "2026-09-18T15-30-51-944Z",
+      "input_hash": "5a41a482791eae9c",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "FAIL",
+      "page_count": 7,
+      "page_level_issues": [],
+      "generation_issues": [
+        {
+          "doc_id": "L1-Q4-W01",
+          "order_label": "1",
+          "ui_type": "unknown",
+          "reason": "ui_type='unknown' - 원문은 보존하되 유형 확인 대상",
+          "stage": "layout"
+        },
+        {
+          "doc_id": "L1-Q4-W01",
+          "order_label": "5",
+          "ui_type": "unknown",
+          "reason": "ui_type='unknown' - 원문은 보존하되 유형 확인 대상",
+          "stage": "layout"
+        }
+      ]
+    },
+    "L3-Q4-W01": {
+      "build_id": "2026-09-18T15-30-56-797Z",
+      "input_hash": "c88498305a57afeb",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "FAIL",
+      "page_count": 9,
+      "page_level_issues": [
+        {
+          "page": "07 2단계 5",
+          "issue": "오버플로(반면 #0, half): scrollHeight=409 clientHeight=374 - 형제 반면과 겹쳐 그려질 수 있음"
+        }
+      ],
+      "generation_issues": [
+        {
+          "doc_id": "L3-Q4-W01",
+          "table": "discussion_qa",
+          "row_id": 835,
+          "field": "ui_config.columns",
+          "reason": "table_compare인데 columns가 없음",
+          "stage": "input"
+        },
+        {
+          "doc_id": "L3-Q4-W01",
+          "order_label": "7",
+          "ui_type": "table_compare",
+          "reason": "table_compare columns 없음 - 기본 답란으로 대체(검토용 미리보기에서만 허용, 최종 출력 승인 대상 아님)",
+          "stage": "layout"
+        },
+        {
+          "doc_id": "L3-Q4-W01",
+          "order_label": "7",
+          "ui_type": "table_compare",
+          "reason": "답 반면 단독으로도 넘침 - 최종 출력 확정 차단 대상",
+          "stage": "layout"
+        }
+      ]
+    },
+    "L3-Q4-W02": {
+      "build_id": "2026-09-18T15-31-02-140Z",
+      "input_hash": "970cca6581767cf0",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "FAIL",
+      "page_count": 9,
+      "page_level_issues": [
+        {
+          "page": "04 2단계 2",
+          "issue": "오버플로(반면 #1, half half--gap): scrollHeight=419 clientHeight=374 - 형제 반면과 겹쳐 그려질 수 있음"
+        },
+        {
+          "page": "05 2단계 3",
+          "issue": "오버플로(반면 #1, half half--gap): scrollHeight=421 clientHeight=374 - 형제 반면과 겹쳐 그려질 수 있음"
+        }
+      ],
+      "generation_issues": [
+        {
+          "doc_id": "L3-Q4-W02",
+          "table": "discussion_qa",
+          "row_id": 840,
+          "field": "ui_config.columns",
+          "reason": "table_compare인데 columns가 없음",
+          "stage": "input"
+        },
+        {
+          "doc_id": "L3-Q4-W02",
+          "order_label": "3",
+          "ui_type": "text_short_multi",
+          "reason": "답 반면 단독으로도 넘침 - 최종 출력 확정 차단 대상",
+          "stage": "layout"
+        },
+        {
+          "doc_id": "L3-Q4-W02",
+          "order_label": "4-1",
+          "ui_type": "table_compare",
+          "reason": "table_compare columns 없음 - 기본 답란으로 대체(검토용 미리보기에서만 허용, 최종 출력 승인 대상 아님)",
+          "stage": "layout"
+        },
+        {
+          "doc_id": "L3-Q4-W02",
+          "order_label": "4-2",
+          "ui_type": "text_short_multi",
+          "reason": "답 반면 단독으로도 넘침 - 최종 출력 확정 차단 대상",
+          "stage": "layout"
+        },
+        {
+          "doc_id": "L3-Q4-W02",
+          "order_label": "5",
+          "ui_type": "unknown",
+          "reason": "ui_type='unknown' - 원문은 보존하되 유형 확인 대상",
+          "stage": "layout"
+        }
+      ]
+    },
+    "L5-Q4-W01": {
+      "build_id": "2026-09-18T15-31-07-474Z",
+      "input_hash": "db7fbf15db336dff",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "FAIL",
+      "page_count": 10,
+      "page_level_issues": [],
+      "generation_issues": [
+        {
+          "doc_id": "L5-Q4-W01",
+          "table": "discussion_qa",
+          "row_id": 423,
+          "field": "ui_config.columns",
+          "reason": "table_compare인데 columns가 없음",
+          "stage": "input"
+        },
+        {
+          "doc_id": "L5-Q4-W01",
+          "order_label": "1-1",
+          "ui_type": "table_compare",
+          "reason": "table_compare columns 없음 - 기본 답란으로 대체(검토용 미리보기에서만 허용, 최종 출력 승인 대상 아님)",
+          "stage": "layout"
+        }
+      ]
+    },
+    "L5-Q4-W02": {
+      "build_id": "2026-09-18T15-31-12-849Z",
+      "input_hash": "78673ea7526dda99",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "FAIL",
+      "page_count": 10,
+      "page_level_issues": [
+        {
+          "page": "09 2단계 7",
+          "issue": "오버플로(반면 #0, half): scrollHeight=433 clientHeight=374 - 형제 반면과 겹쳐 그려질 수 있음"
+        }
+      ],
+      "generation_issues": [
+        {
+          "doc_id": "L5-Q4-W02",
+          "order_label": "4",
+          "ui_type": "unknown",
+          "reason": "ui_type='unknown' - 원문은 보존하되 유형 확인 대상",
+          "stage": "layout"
+        },
+        {
+          "doc_id": "L5-Q4-W02",
+          "order_label": "7",
+          "ui_type": "choice_ab",
+          "reason": "분리된 답 반면이 넘침 - 최종 출력 확정 차단 대상",
+          "stage": "layout"
+        }
+      ]
+    },
+    "L5-Q4-W10": {
+      "build_id": "2026-09-18T15-31-17-915Z",
+      "input_hash": "2db55955fc993bb2",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "FAIL",
+      "page_count": 8,
+      "page_level_issues": [],
+      "generation_issues": [
+        {
+          "doc_id": "L5-Q4-W10",
+          "table": "discussion_qa",
+          "row_id": 114,
+          "field": "ui_config.options",
+          "reason": "choice_multi인데 options가 0개(최소 2개 필요)",
+          "stage": "input"
+        },
+        {
+          "doc_id": "L5-Q4-W10",
+          "order_label": "3",
+          "ui_type": "choice_multi",
+          "reason": "choice_multi options 없음 - 기본 답란으로 대체(검토용 미리보기에서만 허용, 최종 출력 승인 대상 아님)",
+          "stage": "layout"
+        }
+      ]
+    },
+    "L5-Q4-W11": {
+      "build_id": "2026-09-18T15-31-23-241Z",
+      "input_hash": "99d4dcd61261f728",
+      "template_version": "2026-09-19.1",
+      "schema_version": 1,
+      "qa_status": "PASS",
+      "page_count": 8,
+      "page_level_issues": [],
+      "generation_issues": []
+    }
+  }
+}

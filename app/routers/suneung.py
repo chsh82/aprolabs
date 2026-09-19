@@ -713,6 +713,17 @@ _ANS_DB = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__)
 
 
 def _ans_db():
+    """answer_pipeline이 만드는 정답/해설 전용 테이블(answer_explanations/
+    passage_explanations/question_explanations)에 접근하는 커넥션. 이 테이블들은
+    지금까지 PDF 업로드→save_to_db() 경로에서만 생성됐는데, 목록/조회(GET) 경로는
+    스키마 존재를 보장하지 않아 한 번도 업로드가 없었던 aprolabs.db에서는
+    "no such table"로 500이 났다 - 조회 경로에서도 매번 스키마를 보장(idempotent
+    CREATE TABLE IF NOT EXISTS)해 빈 목록이 정상 표시되도록 한다."""
+    import sys, pathlib
+    sys.path.insert(0, str(pathlib.Path(__file__).parents[2]))
+    from answer_pipeline import ensure_schema
+    ensure_schema(_ANS_DB)
+
     conn = _sqlite3.connect(_ANS_DB)
     conn.row_factory = _sqlite3.Row
     return conn
