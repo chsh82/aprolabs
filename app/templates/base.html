@@ -182,6 +182,18 @@
                     {% if request.url.path.startswith('/vocab/games') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
               🎮 어휘 게임 테스트
             </a>
+            <a href="/vocabulary-quiz/review" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/vocabulary-quiz/review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📊 어휘 QA 검수
+            </a>
+            <a href="/vocabulary-quiz/play" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/vocabulary-quiz/play') or request.url.path.startswith('/vocabulary-quiz/session') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📝 어휘 퀴즈 (단일유형 MVP)
+            </a>
+            <a href="/vocabulary-quiz/multiformat/play" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/vocabulary-quiz/multiformat') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🧩 어휘 퀴즈 (다유형 파일럿)
+            </a>
           </div>
         </details>
 
