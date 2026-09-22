@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}어휘 문항 검수{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-3xl mx-auto px-6 py-6" style="height:100%; display:flex; flex-direction:column;">
+
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl font-bold">어휘 문항 검수</h1>
+    <div class="text-sm text-gray-500">검수완료 {{ done }} / {{ total }}</div>
+  </div>
+  <div class="w-full bg-gray-100 rounded-full h-2 mb-4">
+    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (done / total * 100) if total else 0 }}%"></div>
+  </div>
+
+  {% if not sample %}
+  <div class="text-gray-400 text-center py-20">검수 대상이 없습니다.</div>
+  {% else %}
+  <div id="card" class="bg-white border border-gray-200 rounded-xl p-6 flex-1 overflow-y-auto"
+       data-id="{{ sample.id }}" data-prev="{{ prev_id or '' }}" data-next="{{ next_id or '' }}">
+    <div class="text-sm text-gray-500 mb-1">
+      {{ content.lemma }} · {{ content.pos or '-' }} · {{ content.generation_status }}
+      {% if content.quality_batch_id %}· {{ content.quality_batch_id }}{% endif %}
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4 mt-3">
+      <div>
+        <div class="text-xs text-gray-400 mb-1">표준 정의</div>
+        <div class="text-sm">{{ content.canonical_definition }}</div>
+      </div>
+      <div>
+        <div class="text-xs text-gray-400 mb-1">학생용 정의</div>
+        <div class="text-sm">{{ content.student_definition }}</div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <div class="text-xs text-gray-400 mb-1">예문</div>
+      <div class="text-sm">{{ content.example_sentence }}</div>
+    </div>
+
+    <div class="text-lg font-medium mb-3">{{ item.stem }}</div>
+    <div class="space-y-2 mb-3">
+      {% for i in [1, 2, 3, 4] %}
+      {% set opt = item['option_' ~ i] %}
+      <div class="px-3 py-2 rounded-lg border {% if i == item.correct_option %}border-green-400 bg-green-50{% else %}border-gray-200{% endif %}">
+        {% if i == item.correct_option %}<span class="text-green-600 font-semibold">[정답]</span>{% endif %}
+        {{ opt }}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-xs text-gray-500 mb-4">해설: {{ item.explanation }}</div>
+
+    <div class="flex gap-2 mb-3">
+      <button onclick="judge('PASS')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">PASS (1)</button>
+      <button onclick="judge('REVISE')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium">REVISE (2)</button>
+      <button onclick="judge('EXCLUDE')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium">EXCLUDE (3)</button>
+    </div>
+
+    <textarea id="note" placeholder="검수 메모(선택)" class="w-full border rounded-lg px-3 py-2 text-sm" rows="2">{{ sample.review_note or '' }}</textarea>
+    <div id="save-error" class="text-red-600 text-sm mt-2 hidden"></div>
+    <div class="text-xs text-gray-400 mt-2">현재 검수 상태: {{ sample.review_status }}</div>
+  </div>
+
+  <div class="flex justify-between items-center mt-4 text-sm">
+    <a href="/vocabulary-quiz/review/card?id={{ prev_id or '' }}&version={{ version }}&status={{ status or '' }}"
+       class="{% if not prev_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">← 이전 (←)</a>
+    <div class="text-gray-400">단축키: 1=PASS 2=REVISE 3=EXCLUDE ←/→=이동</div>
+    <a href="/vocabulary-quiz/review/card?id={{ next_id or '' }}&version={{ version }}&status={{ status or '' }}"
+       class="{% if not next_id %}pointer-events-none opacity-30{% endif %} px-3 py-2 bg-gray-100 rounded-lg">다음 (→) →</a>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const NEXT_URL = "/vocabulary-quiz/review/card?id={{ next_id or '' }}&version={{ version }}&status={{ status or '' }}";
+const PREV_URL = "/vocabulary-quiz/review/card?id={{ prev_id or '' }}&version={{ version }}&status={{ status or '' }}";
+const HUB_URL = "/vocabulary-quiz/review?version={{ version }}";
+const HAS_NEXT = {{ 'true' if next_id else 'false' }};
+const HAS_PREV = {{ 'true' if prev_id else 'false' }};
+
+async function judge(status) {
+  const card = document.getElementById('card');
+  if (!card) return;
+  const id = card.dataset.id;
+  const note = document.getElementById('note').value;
+  try {
+    const res = await fetch('/vocabulary-quiz/review/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: Number(id), review_status: status, note}),
+    });
+    const data = await res.json();
+    if (!data.ok) { showSaveError(data.error || '저장 실패'); return; }
+    window.location = HAS_NEXT ? NEXT_URL : HUB_URL;
+  } catch (e) {
+    showSaveError('네트워크 오류: ' + e);
+  }
+}
+
+function showSaveError(msg) {
+  const el = document.getElementById('save-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+  if (e.key === '1') judge('PASS');
+  else if (e.key === '2') judge('REVISE');
+  else if (e.key === '3') judge('EXCLUDE');
+  else if (e.key === 'ArrowLeft') { if (HAS_PREV) window.location = PREV_URL; }
+  else if (e.key === 'ArrowRight') { if (HAS_NEXT) window.location = NEXT_URL; }
+});
+</script>
+{% endblock %}

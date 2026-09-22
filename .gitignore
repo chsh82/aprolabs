@@ -19,6 +19,16 @@ momo_book_db/extracted_images/
 momo_book_db/worksheet/node_modules/
 momo_book_db/generated/
 
+# 일반 어휘 퀴즈 적재(v2.1.29~) - 원본 ZIP, 압축 해제된 CSV, 표본 검수 CSV/manifest는
+# scripts/vocab/import_vocabulary_quiz.py · sample_vocabulary_quiz_qa.py로 재생성 가능하고
+# 용량도 커서 git에 안 올림. vocabulary_quiz_rnd.db 자체는 위 "Databases" 규칙(*.db)으로
+# 이미 제외됨. 반대로 마이그레이션/모델/import 스크립트/테스트/검수 UI 코드는 그대로 커밋한다.
+data/import/*.zip
+data/import/vocabulary_master_*/
+data/import/qa_sample_v*.csv
+data/import/qa_sample_manifest_v*.json
+data/import/import_failures_v*.json
+
 # 학습지 편집 프로젝트(momo_book_db/worksheet/edit_projects/) - 사용자가 화면에서 만드는
 # 편집 프로젝트 파일(문항 덮어쓰기, 업로드 이미지, 버전별 빌드/PDF)로 위 generated/와 같은
 # 이유(용량 크고 화면에서 재생성 가능, 실제 자산은 서버에 수동 동기화)로 git에 안 올림.

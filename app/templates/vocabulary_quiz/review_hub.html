@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}어휘 퀴즈 QA 검수{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-6 py-6">
+  <h1 class="text-xl font-bold mb-1">일반 어휘 퀴즈 QA 표본 검수</h1>
+  <div class="text-sm text-gray-500 mb-6">버전 {{ version }} · 표본 {{ total }}건 (로컬 R&D 전용, 학생 비공개)</div>
+
+  <form class="flex gap-2 mb-6 text-sm" method="get" action="/vocabulary-quiz/review">
+    <select name="version" class="border rounded px-2 py-1">
+      {% for v in versions %}
+      <option value="{{ v }}" {% if v == version %}selected{% endif %}>{{ v }}</option>
+      {% endfor %}
+    </select>
+    <button class="bg-gray-200 rounded px-3 py-1">버전 전환</button>
+  </form>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    {% for st in ['UNREVIEWED', 'PASS', 'REVISE', 'EXCLUDE'] %}
+    <a href="/vocabulary-quiz/review/card?version={{ version }}&status={{ st }}"
+       class="block border border-gray-200 rounded-xl p-4 hover:border-blue-400 transition">
+      <div class="text-2xl font-bold">{{ counts.get(st, 0) }}</div>
+      <div class="text-xs text-gray-500 mt-1">{{ st }}</div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <a href="/vocabulary-quiz/review/card?version={{ version }}"
+     class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg">
+    검수 시작 (미검수부터) →
+  </a>
+</div>
+{% endblock %}
