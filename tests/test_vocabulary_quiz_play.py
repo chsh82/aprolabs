@@ -136,8 +136,12 @@ def run() -> bool:
             "SELECT item_id, correct_option FROM vocabulary_quiz_attempts WHERE session_id=? AND order_index > 2 ORDER BY order_index",
             (session_id,),
         ).fetchall()
+        last_resp = None
         for iid, correct in remaining:
-            client.post(f"/vocabulary-quiz/session/{session_id}/answer", data={"item_id": iid, "selected_option": correct})
+            last_resp = client.post(f"/vocabulary-quiz/session/{session_id}/answer",
+                                     data={"item_id": iid, "selected_option": correct})
+        check(last_resp is not None and "결과 보기" in last_resp.text,
+              "마지막(20번째) 문항 제출 응답이 '결과 보기'를 표시함(is_last 오탐 회귀 방지)")
 
         # ---------- 10. 완료된 세션 재응답 차단 ----------
         r = client.post(f"/vocabulary-quiz/session/{session_id}/answer",

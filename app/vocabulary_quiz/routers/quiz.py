@@ -172,6 +172,12 @@ def session_answer(
     if is_correct:
         session.correct_count += 1
 
+    # SessionLocal이 autoflush=False라(app/vocabulary_quiz/db.py) 위에서 바꾼
+    # attempt.selected_option이 flush 전이면 아래 count 쿼리가 이 행을 여전히
+    # "미응답"으로 센다 - 마지막 문제에서 remaining이 1 남은 것처럼 잘못 계산돼
+    # is_last가 False가 되는 버그를 실제로 재현해서 여기서 고쳤다.
+    db.flush()
+
     remaining = (
         db.query(VocabularyQuizAttempt)
         .filter(VocabularyQuizAttempt.session_id == session_id, VocabularyQuizAttempt.selected_option.is_(None))
