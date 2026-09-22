@@ -18,9 +18,12 @@
       </label>
       {% endfor %}
     </div>
-    <label class="block text-sm font-semibold text-gray-700 mb-1">문항 수</label>
-    <input type="number" id="question-count" value="{{ default_question_count }}" min="1" max="50"
-           class="border rounded-lg px-3 py-2 w-full mb-4 text-sm">
+    <div id="question-count-field">
+      <label class="block text-sm font-semibold text-gray-700 mb-1">문항 수</label>
+      <input type="number" id="question-count" value="{{ default_question_count }}" min="1" max="50"
+             class="border rounded-lg px-3 py-2 w-full mb-4 text-sm">
+    </div>
+    <p id="crossword-notice" class="text-sm text-gray-500 mb-4 hidden">십자말은 항상 1세트가 출제됩니다.</p>
     <button id="start-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 rounded-xl text-base">
       퀴즈 시작
     </button>
@@ -70,6 +73,7 @@
   const API = "/api/vocabulary-quiz";
   let sessionId = null;
   let currentItem = null;
+  let crosswordCellInputs = {};  // "row,col" -> <input> - 방향키 이동/제출 수집/채점 표시에 재사용
 
   const setupScreen = document.getElementById("setup-screen");
   const questionScreen = document.getElementById("question-screen");
@@ -98,6 +102,33 @@
     }
     return data;
   }
+
+  // CROSSWORD는 단독 모드 전용(서버도 400으로 거부한다) - 체크하면 다른 유형은 자동
+  // 해제·비활성화하고 문항 수 선택기를 숨긴다. 다른 유형을 고르면 반대로 CROSSWORD를 끈다.
+  const typeCheckboxes = Array.from(document.querySelectorAll(".type-checkbox"));
+  const questionCountField = document.getElementById("question-count-field");
+  const crosswordNotice = document.getElementById("crossword-notice");
+  typeCheckboxes.forEach(cb => {
+    cb.addEventListener("change", () => {
+      if (cb.value === "CROSSWORD" && cb.checked) {
+        typeCheckboxes.forEach(other => {
+          if (other !== cb) { other.checked = false; other.disabled = true; }
+        });
+        questionCountField.classList.add("hidden");
+        crosswordNotice.classList.remove("hidden");
+      } else if (cb.value === "CROSSWORD" && !cb.checked) {
+        typeCheckboxes.forEach(other => { other.disabled = false; });
+        questionCountField.classList.remove("hidden");
+        crosswordNotice.classList.add("hidden");
+      } else if (cb.checked) {
+        const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
+        if (crosswordCb) { crosswordCb.checked = false; crosswordCb.disabled = false; }
+        typeCheckboxes.forEach(other => { other.disabled = false; });
+        questionCountField.classList.remove("hidden");
+        crosswordNotice.classList.add("hidden");
+      }
+    });
+  });
 
   document.getElementById("start-btn").addEventListener("click", async () => {
     hideError(setupError);
@@ -138,7 +169,7 @@
 
   const TYPE_LABELS = {
     MEANING_CHOICE: "낱말 → 뜻", WORD_FROM_DEFINITION: "뜻 → 낱말", CONTEXT_MEANING: "문맥 속 의미",
-    CONTEXT_CLOZE: "문맥 빈칸(직접 입력)", MATCH_WORD_MEANING: "네 쌍 연결",
+    CONTEXT_CLOZE: "문맥 빈칸(직접 입력)", MATCH_WORD_MEANING: "네 쌍 연결", CROSSWORD: "십자말풀이",
   };
 
   function renderQuestion(item) {
@@ -225,7 +256,96 @@
         row.appendChild(select);
         area.appendChild(row);
       });
+    } else if (item.item_type === "CROSSWORD") {
+      renderCrosswordGrid(item, area);
     }
+  }
+
+  function renderCrosswordGrid(item, area) {
+    crosswordCellInputs = {};
+    const activeCells = new Set(item.cells.map(c => `${c.row},${c.col}`));
+    const numberByCell = {};
+    item.cells.forEach(c => { if (c.number) numberByCell[`${c.row},${c.col}`] = c.number; });
+
+    const wrap = document.createElement("div");
+    wrap.className = "overflow-x-auto mb-4 pb-2";
+    const grid = document.createElement("div");
+    grid.style.display = "grid";
+    grid.style.gridTemplateRows = `repeat(${item.rows}, minmax(28px, 36px))`;
+    grid.style.gridTemplateColumns = `repeat(${item.cols}, minmax(28px, 36px))`;
+    grid.style.gap = "2px";
+    grid.style.width = "max-content";
+
+    for (let r = 0; r < item.rows; r++) {
+      for (let c = 0; c < item.cols; c++) {
+        const key = `${r},${c}`;
+        const cellWrap = document.createElement("div");
+        cellWrap.style.position = "relative";
+        if (activeCells.has(key)) {
+          const input = document.createElement("input");
+          input.type = "text";
+          input.maxLength = 1;
+          input.className = "crossword-cell w-full h-full text-center border border-gray-300 rounded-sm " +
+            "text-sm font-semibold focus:border-blue-500 focus:outline-none";
+          input.style.width = "100%";
+          input.style.height = "100%";
+          input.dataset.row = String(r);
+          input.dataset.col = String(c);
+          input.addEventListener("keydown", (ev) => handleCrosswordKeydown(ev, r, c));
+          input.addEventListener("input", () => {
+            input.value = input.value.slice(-1);
+          });
+          crosswordCellInputs[key] = input;
+          cellWrap.appendChild(input);
+
+          if (numberByCell[key]) {
+            const numLabel = document.createElement("span");
+            numLabel.textContent = numberByCell[key];
+            numLabel.style.position = "absolute";
+            numLabel.style.top = "0px";
+            numLabel.style.left = "2px";
+            numLabel.style.fontSize = "9px";
+            numLabel.style.color = "#2563eb";
+            numLabel.style.pointerEvents = "none";
+            cellWrap.appendChild(numLabel);
+          }
+        }
+        grid.appendChild(cellWrap);
+      }
+    }
+    wrap.appendChild(grid);
+    area.appendChild(wrap);
+
+    const clueWrap = document.createElement("div");
+    clueWrap.className = "grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm";
+    ["across", "down"].forEach(direction => {
+      const col = document.createElement("div");
+      const heading = document.createElement("p");
+      heading.className = "font-semibold text-gray-700 mb-1";
+      heading.textContent = direction === "across" ? "가로" : "세로";
+      col.appendChild(heading);
+      item.entries.filter(e => e.direction === direction).sort((a, b) => a.number - b.number).forEach(e => {
+        const line = document.createElement("p");
+        line.className = "text-gray-600 mb-1 cursor-pointer hover:text-blue-600";
+        line.textContent = `${e.number}. ${e.clue} (${e.length}자)`;
+        line.addEventListener("click", () => {
+          const target = crosswordCellInputs[`${e.row},${e.col}`];
+          if (target) target.focus();
+        });
+        col.appendChild(line);
+      });
+      clueWrap.appendChild(col);
+    });
+    area.appendChild(clueWrap);
+  }
+
+  function handleCrosswordKeydown(ev, row, col) {
+    const moves = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+    const move = moves[ev.key];
+    if (!move) return;
+    ev.preventDefault();
+    const target = crosswordCellInputs[`${row + move[0]},${col + move[1]}`];
+    if (target) target.focus();
   }
 
   function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
@@ -248,6 +368,13 @@
       const answers = {};
       selects.forEach(s => { answers[s.dataset.word] = s.value; });
       return { item_id: item.item_id, answers };
+    }
+    if (item.item_type === "CROSSWORD") {
+      const entries = Object.entries(crosswordCellInputs);
+      if (entries.some(([, input]) => !input.value.trim())) return null;  // 미입력 칸이 있으면 제출 방지
+      const cells = {};
+      entries.forEach(([key, input]) => { cells[key] = input.value.trim(); });
+      return { item_id: item.item_id, cells };
     }
     return null;
   }
@@ -293,11 +420,21 @@
       const hintBtn = document.getElementById("choseong-hint-btn");
       if (hintBtn) hintBtn.disabled = true;
     }
+    if (currentItem.item_type === "CROSSWORD") {
+      Object.entries(crosswordCellInputs).forEach(([key, input]) => {
+        input.disabled = true;
+        const ok = data.cell_results ? data.cell_results[key] : null;
+        input.style.background = ok === true ? "#dcfce7" : ok === false ? "#fee2e2" : "";
+        input.style.color = ok === true ? "#166534" : ok === false ? "#991b1b" : "";
+      });
+    }
+
     const box = document.getElementById("feedback-box");
     box.classList.remove("hidden");
     const resultEl = document.getElementById("feedback-result");
-    if (currentItem.item_type === "MATCH_WORD_MEANING") {
-      resultEl.textContent = `${data.correct_count} / ${data.total_count} 쌍 정답`;
+    if (currentItem.item_type === "MATCH_WORD_MEANING" || currentItem.item_type === "CROSSWORD") {
+      const unit = currentItem.item_type === "CROSSWORD" ? "칸" : "쌍";
+      resultEl.textContent = `${data.correct_count} / ${data.total_count} ${unit} 정답`;
       resultEl.className = data.is_correct ? "text-base font-bold mb-2 text-green-600" : "text-base font-bold mb-2 text-amber-600";
     } else {
       resultEl.textContent = data.is_correct ? "정답이에요!" : "틀렸어요";
@@ -310,6 +447,11 @@
       correctEl.textContent = "정답: " + Object.entries(ca.answers).map(([w, d]) => `${w}=${d}`).join(" / ");
     } else if (currentItem.item_type === "CONTEXT_CLOZE") {
       correctEl.textContent = "정답: " + ca.answer_text;
+    } else if (currentItem.item_type === "CROSSWORD") {
+      correctEl.textContent = "정답: " + ca.entries
+        .sort((a, b) => a.number - b.number)
+        .map(e => `${e.number}${e.direction === "across" ? "가로" : "세로"}=${e.answer}`)
+        .join(" / ");
     } else {
       correctEl.textContent = "정답: " + ca.correct_text;
     }

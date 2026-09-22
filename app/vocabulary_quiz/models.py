@@ -192,7 +192,7 @@ class VocabularyMultiformatItem(Base):
     __table_args__ = (
         CheckConstraint(
             "item_type IN ('MEANING_CHOICE','WORD_FROM_DEFINITION','CONTEXT_MEANING',"
-            "'CONTEXT_CLOZE','MATCH_WORD_MEANING')",
+            "'CONTEXT_CLOZE','MATCH_WORD_MEANING','CROSSWORD')",
             name="ck_mf_item_type",
         ),
         CheckConstraint("correct_option IS NULL OR correct_option BETWEEN 1 AND 4",
@@ -211,6 +211,7 @@ class VocabularyMultiformatItem(Base):
     prompt = Column(Text, nullable=False)
     options_json = Column(Text, nullable=True)
     correct_option = Column(Integer, nullable=True)
+    public_payload_json = Column(Text, nullable=True)
     answer_payload_json = Column(Text, nullable=False)
     explanation = Column(Text, nullable=True)
     cognitive_level = Column(Integer, nullable=True)

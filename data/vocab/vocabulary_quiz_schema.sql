@@ -217,16 +217,19 @@ CREATE TABLE vocabulary_multiformat_items (
     item_id                  TEXT NOT NULL UNIQUE,
     item_type                TEXT NOT NULL CHECK (item_type IN
                               ('MEANING_CHOICE','WORD_FROM_DEFINITION','CONTEXT_MEANING',
-                               'CONTEXT_CLOZE','MATCH_WORD_MEANING')),
-    source_content_id        TEXT REFERENCES vocabulary_contents(content_id),  -- MATCH_WORD_MEANING은 NULL(대신 아래 _ids_json)
-    source_content_ids_json  TEXT,   -- MATCH_WORD_MEANING 전용: content_id 4개 배열
+                               'CONTEXT_CLOZE','MATCH_WORD_MEANING','CROSSWORD')),
+    source_content_id        TEXT REFERENCES vocabulary_contents(content_id),  -- MATCH_WORD_MEANING/CROSSWORD는 NULL(대신 아래 _ids_json)
+    source_content_ids_json  TEXT,   -- MATCH_WORD_MEANING(4개)/CROSSWORD(10개) 전용: content_id 배열
     sense_id                 TEXT,
-    sense_ids_json           TEXT,   -- MATCH_WORD_MEANING 전용: sense_id 4개 배열
-    lemma                    TEXT,   -- MATCH_WORD_MEANING은 NULL(표제어 4개가 words에 있음)
+    sense_ids_json           TEXT,   -- MATCH_WORD_MEANING(4개)/CROSSWORD(10개) 전용: sense_id 배열
+    lemma                    TEXT,   -- MATCH_WORD_MEANING/CROSSWORD는 NULL(표제어가 여러 개라 개별 컬럼에 안 맞음)
     pos                      TEXT,
     prompt                   TEXT NOT NULL,
-    options_json             TEXT,   -- 선택형 3종만: 보기 4개 배열. CONTEXT_CLOZE/MATCH는 NULL
+    options_json             TEXT,   -- 선택형 3종만: 보기 4개 배열. CONTEXT_CLOZE/MATCH/CROSSWORD는 NULL
     correct_option           INTEGER CHECK (correct_option IS NULL OR correct_option BETWEEN 1 AND 4),
+    public_payload_json      TEXT,   -- 유형별 "공개해도 되는" 표시 정보 정규화(선택형 options / 빈칸 input_hint /
+                                     -- 연결형 words·definitions / 십자말 rows·cols·활성칸·entries(정답 제외)) -
+                                     -- API가 매 요청마다 answer_payload_json에서 다시 골라내는 대신 이 컬럼을 그대로 반환한다.
     answer_payload_json      TEXT NOT NULL,  -- 유형별 정답 정보 정규화(위 주석 참고) - 채점 전용, 클라이언트에 내려주지 않음
     explanation              TEXT,
     cognitive_level          INTEGER,
@@ -286,10 +289,11 @@ CREATE TABLE vocabulary_multiformat_responses (
     item_id                     TEXT NOT NULL REFERENCES vocabulary_multiformat_items(item_id),
     order_index                 INTEGER NOT NULL,
     item_type                   TEXT NOT NULL,
-    submitted_payload_json       TEXT,    -- 학생이 제출한 원본 응답(선택형 selected_option / 직접입력 answer_text / 연결형 answers)
-    is_correct                   INTEGER, -- NULL=미응답. 연결형은 correct_count==total_count일 때만 1
-    correct_count                 INTEGER, -- 연결형 전용: 4쌍 중 맞은 개수. 그 외 유형은 NULL
-    total_count                   INTEGER, -- 연결형 전용: 4. 그 외 유형은 NULL
+    submitted_payload_json       TEXT,    -- 학생이 제출한 원본 응답(선택형 selected_option / 직접입력 answer_text /
+                                          -- 연결형 answers / 십자말 cells)
+    is_correct                   INTEGER, -- NULL=미응답. 연결형/십자말은 correct_count==total_count일 때만 1
+    correct_count                 INTEGER, -- 연결형(4쌍 중 맞은 개수)/십자말(맞은 칸 수) 전용. 그 외 유형은 NULL
+    total_count                   INTEGER, -- 연결형(4)/십자말(활성 칸 수) 전용. 그 외 유형은 NULL
     attempt_count                 INTEGER NOT NULL DEFAULT 0,  -- 문맥빈칸 전용: 제출 시도 횟수(최대 2) - 그 외 유형은 0 또는 1
     hint_used                     INTEGER NOT NULL DEFAULT 0,  -- 문맥빈칸 전용: 초성 힌트를 본 적 있으면 1
     answered_at                   TEXT,

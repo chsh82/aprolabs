@@ -28,6 +28,21 @@ POST .../hint를 호출해 1차 시도 전에 미리 힌트를 볼 수도 있다
 
 연결형(MATCH_WORD_MEANING) 채점: 4개 낱말-뜻 매핑을 전부 비교해 correct_count
 (0~4)를 반환한다 - is_correct는 4/4일 때만 1.
+
+십자말(CROSSWORD)은 100세트 중 한 세트를 출제하는 전용 모드다 - 문항 수
+선택과 무관하게 항상 1세트, 다른 유형과 섞이지 않는다(item_types에
+CROSSWORD와 다른 유형을 함께 넣으면 400). 가능하면 같은 관리자가 직전에
+푼 세트를 바로 다시 출제하지 않는다. 채점은 좌표(row,col) 단위로 정규화한
+글자를 비교하고, 활성 칸이 전부 맞아야 세트 전체 정답 - 칸별 정오와 부분
+점수(correct_count/total_count)를 함께 반환한다. MATCH_WORD_MEANING처럼
+단일 시도로 즉시 확정한다(CONTEXT_CLOZE 같은 재시도는 없음).
+
+vocabulary_multiformat_items.public_payload_json에는 유형별로 클라이언트에
+그대로 내려줘도 되는 표시 정보가 import 시점에 미리 계산돼 있다(선택형
+options / 빈칸 input_hint / 연결형 words·definitions / 십자말 rows·cols·
+활성칸·entries(정답 제외)) - API는 매 요청마다 answer_payload_json에서
+다시 골라내는 대신 이 컬럼을 그대로 쓰고, 세션 상태에 따라 달라지는 부분
+(문맥빈칸 힌트, 연결형 뜻 순서 섞기)만 요청 시점에 덧붙인다.
 """
 from __future__ import annotations
 
@@ -58,7 +73,7 @@ SOURCE_VERSION = "2.1.29"
 DEFAULT_QUESTION_COUNT = 10
 ITEM_TYPES = (
     "MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING",
-    "CONTEXT_CLOZE", "MATCH_WORD_MEANING",
+    "CONTEXT_CLOZE", "MATCH_WORD_MEANING", "CROSSWORD",
 )
 CHOICE_TYPES = ("MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING")
 MAX_CLOZE_ATTEMPTS = 2
@@ -90,6 +105,7 @@ class AnswerBody(BaseModel):
     selected_option: int | None = None
     answer_text: str | None = None
     answers: dict[str, str] | None = None
+    cells: dict[str, str] | None = None
 
 
 class HintBody(BaseModel):
@@ -105,10 +121,38 @@ def _select_question_items(db: Session, n: int, item_types: list[str] | None) ->
     )
     if item_types:
         q = q.filter(VocabularyMultiformatItem.item_type.in_(item_types))
+    else:
+        # 기본 혼합 모드는 CROSSWORD를 포함하지 않는다 - 세트 하나가 10개 칸짜리라
+        # "문항 N개" 혼합 세션에 자연스럽게 섞이지 않는다. CROSSWORD는 단독 모드로만 출제한다.
+        q = q.filter(VocabularyMultiformatItem.item_type != "CROSSWORD")
     ids = [r[0] for r in q.all()]
     if len(ids) < n:
         raise HTTPException(status_code=400, detail=f"출제 가능한 문항이 부족합니다 ({len(ids)}/{n})")
     return random.sample(ids, n)
+
+
+def _last_crossword_item_id(db: Session, admin: str) -> str | None:
+    row = (
+        db.query(VocabularyMultiformatResponse.item_id)
+        .join(VocabularyMultiformatSession, VocabularyMultiformatSession.id == VocabularyMultiformatResponse.session_id)
+        .filter(VocabularyMultiformatSession.user_id == admin, VocabularyMultiformatResponse.item_type == "CROSSWORD")
+        .order_by(VocabularyMultiformatSession.started_at.desc())
+        .first()
+    )
+    return row[0] if row else None
+
+
+def _select_crossword_item(db: Session, admin: str) -> str:
+    ids = [r[0] for r in db.query(VocabularyMultiformatItem.item_id).filter(
+        VocabularyMultiformatItem.source_version == SOURCE_VERSION,
+        VocabularyMultiformatItem.is_active == 1,
+        VocabularyMultiformatItem.item_type == "CROSSWORD",
+    ).all()]
+    if not ids:
+        raise HTTPException(status_code=400, detail="출제 가능한 십자말 세트가 없습니다")
+    last_id = _last_crossword_item_id(db, admin)
+    pool = [i for i in ids if i != last_id] if last_id and len(ids) > 1 else ids
+    return random.choice(pool)
 
 
 def _get_owned_session(db: Session, session_id: str, admin: str) -> VocabularyMultiformatSession:
@@ -126,7 +170,7 @@ def _get_owned_session(db: Session, session_id: str, admin: str) -> VocabularyMu
 
 def _public_item_payload(item: VocabularyMultiformatItem,
                           response: VocabularyMultiformatResponse | None = None) -> dict:
-    payload = json.loads(item.answer_payload_json)
+    public = json.loads(item.public_payload_json) if item.public_payload_json else {}
     base = {
         "item_id": item.item_id,
         "item_type": item.item_type,
@@ -136,20 +180,29 @@ def _public_item_payload(item: VocabularyMultiformatItem,
         "cognitive_level": item.cognitive_level,
     }
     if item.item_type in CHOICE_TYPES:
-        base["options"] = json.loads(item.options_json)
+        base["options"] = public.get("options")
     elif item.item_type == "CONTEXT_CLOZE":
-        base["input_hint"] = payload.get("input_hint")
+        base["input_hint"] = public.get("input_hint")
         base["attempt_count"] = response.attempt_count if response else 0
         base["attempts_left"] = MAX_CLOZE_ATTEMPTS - (response.attempt_count if response else 0)
         # 이미 힌트를 본 문항이면(1차 시도를 틀렸거나 스스로 요청) 재접속/재조회 시에도
         # 다시 보여준다 - 한 번 열람 권한을 얻은 힌트를 새로고침으로 잃게 하지 않는다.
-        base["choseong_hint"] = _to_choseong(payload["answer_text"]) if response and response.hint_used else None
+        if response and response.hint_used:
+            answer_payload = json.loads(item.answer_payload_json)
+            base["choseong_hint"] = _to_choseong(answer_payload["answer_text"])
+        else:
+            base["choseong_hint"] = None
     elif item.item_type == "MATCH_WORD_MEANING":
-        words = list(payload.get("words") or [])
-        definitions = list(payload.get("definitions") or [])
+        words = list(public.get("words") or [])
+        definitions = list(public.get("definitions") or [])
         random.shuffle(definitions)  # 원래 순서로 노출하면 위치만으로 정답을 유추할 수 있어 매 조회마다 섞는다
         base["words"] = words
         base["definitions"] = definitions
+    elif item.item_type == "CROSSWORD":
+        base["rows"] = public.get("rows")
+        base["cols"] = public.get("cols")
+        base["cells"] = public.get("cells")
+        base["entries"] = public.get("entries")
     return base
 
 
@@ -184,6 +237,22 @@ def _grade(item: VocabularyMultiformatItem, body: AnswerBody) -> dict:
         return {"is_correct": is_correct, "correct_count": correct_count, "total_count": total_count,
                 "submitted": {"answers": submitted_answers}}
 
+    if t == "CROSSWORD":
+        submitted_cells = body.cells or {}
+        correct_cells: dict = payload.get("cells") or {}
+        cell_results = {}
+        correct_count = 0
+        for key, correct_char in correct_cells.items():
+            submitted_char = unicodedata.normalize("NFC", (submitted_cells.get(key) or "").strip())
+            ok = submitted_char == unicodedata.normalize("NFC", correct_char)
+            cell_results[key] = ok
+            if ok:
+                correct_count += 1
+        total_count = len(correct_cells)
+        is_correct = 1 if correct_count == total_count else 0
+        return {"is_correct": is_correct, "correct_count": correct_count, "total_count": total_count,
+                "submitted": {"cells": submitted_cells}, "cell_results": cell_results}
+
     raise HTTPException(status_code=500, detail=f"알 수 없는 item_type: {t}")
 
 
@@ -199,6 +268,8 @@ def _correct_answer_payload(item: VocabularyMultiformatItem) -> dict:
         return {"answer_text": payload.get("answer_text"), "accepted_answers": payload.get("accepted_answers")}
     if t == "MATCH_WORD_MEANING":
         return {"answers": payload.get("answers")}
+    if t == "CROSSWORD":
+        return {"cells": payload.get("cells"), "entries": payload.get("entries")}
     return {}
 
 
@@ -219,10 +290,16 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
         if unknown:
             raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
         item_types = body.item_types
-    if body.question_count < 1 or body.question_count > 50:
-        raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
 
-    item_ids = _select_question_items(db, body.question_count, item_types)
+    if item_types and "CROSSWORD" in item_types:
+        if item_types != ["CROSSWORD"]:
+            raise HTTPException(status_code=400,
+                                 detail="CROSSWORD는 단독 모드로만 선택할 수 있습니다(다른 유형과 섞을 수 없습니다)")
+        item_ids = [_select_crossword_item(db, admin)]
+    else:
+        if body.question_count < 1 or body.question_count > 50:
+            raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
+        item_ids = _select_question_items(db, body.question_count, item_types)
     items_by_id = {
         row.item_id: row for row in
         db.query(VocabularyMultiformatItem).filter(VocabularyMultiformatItem.item_id.in_(item_ids)).all()
@@ -403,6 +480,7 @@ def submit_answer(session_id: str, body: AnswerBody, response: Response,
         "retry_available": False,
         "correct_count": result["correct_count"],
         "total_count": result["total_count"],
+        "cell_results": result.get("cell_results"),  # CROSSWORD 전용: 칸별 정오. 그 외 유형은 None
         "correct_answer": _correct_answer_payload(item),
         "explanation": item.explanation,
         "is_last": is_last,

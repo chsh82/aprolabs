@@ -124,6 +124,69 @@ def _seed_contents(db_path: Path, content_ids, generation_status="PRIVATE_SERVER
     conn.close()
 
 
+def _seed_contents_with_lemma(db_path: Path, lemma_by_content_id: dict,
+                               generation_status="PRIVATE_SERVER_READY") -> None:
+    conn = sqlite3.connect(db_path)
+    for cid, lemma in lemma_by_content_id.items():
+        conn.execute(
+            """INSERT OR REPLACE INTO vocabulary_contents
+               (content_id, lemma, generation_status, student_exposure, public_ready, source_version)
+               VALUES (?, ?, ?, 0, 0, ?)""",
+            (cid, lemma, generation_status, SOURCE_VERSION),
+        )
+    conn.commit()
+    conn.close()
+
+
+def _build_crossword_entries() -> list[dict]:
+    """10개 낱말이 지그재그로 한 칸씩 교차하는 체인(트리 구조, 교차 9개, 연결됨) -
+    실제 파일럿 데이터 형태를 흉내 낸 최소 유효 픽스처."""
+    words = ["가나", "나다", "다라", "라마", "마바", "바사", "사아", "아자", "자차", "차카"]
+    entries = []
+    row = col = 0
+    for i, ans in enumerate(words):
+        direction = "across" if i % 2 == 0 else "down"
+        entries.append({
+            "number": i + 1, "direction": direction, "row": row, "col": col, "length": len(ans),
+            "content_id": f"CW_C{i}", "sense_id": f"CW_S{i}",
+            "clue": f"{ans[0]} 시작 뜻풀이 {i}", "answer": ans,
+        })
+        if direction == "across":
+            col += 1
+        else:
+            row += 1
+    return entries
+
+
+def _crossword_item(item_id="T_F_1", entries=None, **overrides) -> dict:
+    import scripts.vocab.import_multiformat_quiz as imp
+    entries = entries if entries is not None else _build_crossword_entries()
+    cell_map, _ = imp._expand_crossword_entries(entries)
+    cells = [{"row": r, "col": c, "number": None} for (r, c) in cell_map]
+    for e in entries:
+        for cell in cells:
+            if cell["row"] == e["row"] and cell["col"] == e["col"]:
+                cell["number"] = e["number"]
+    rows = max((r for r, _ in cell_map), default=0) + 1
+    cols = max((c for _, c in cell_map), default=0) + 1
+    row = {
+        "item_id": item_id, "item_type": "CROSSWORD",
+        "content_ids": [e["content_id"] for e in entries],
+        "sense_ids": [e["sense_id"] for e in entries],
+        "prompt": "낱말을 읽고 십자말풀이를 완성하세요.",
+        "grid": {"rows": rows, "cols": cols, "cells": cells},
+        "entries": entries,
+        "explanation": "설명", "cognitive_level": 3, "source_version": SOURCE_VERSION, "qa_flags": [],
+    }
+    row.update(overrides)
+    return row
+
+
+def _seed_crossword_contents(db_path: Path, item: dict) -> None:
+    lemma_by_cid = {e["content_id"]: e["answer"] for e in item["entries"]}
+    _seed_contents_with_lemma(db_path, lemma_by_cid)
+
+
 def run() -> bool:
     tmp_dir = Path(tempfile.mkdtemp(prefix="mfq_test_"))
     test_db = REPO_ROOT / "data" / "vocab" / "vocabulary_quiz_rnd_TESTONLY_mf.db"
@@ -259,6 +322,96 @@ def run() -> bool:
         # ---------- 13. 정상 데이터는 전부 통과 ----------
         hard, soft = imp.validate(_meta_for(items), items, True, "ok", content_status)
         check(hard == [], f"정상 데이터는 HARD 검사 전부 통과 (실패: {hard})")
+
+        # ---------- 13.5 CROSSWORD 전용 검증 ----------
+        import copy as _copy
+
+        cw = _crossword_item()
+        _seed_crossword_contents(test_db, cw)
+        conn = sqlite3.connect(test_db)
+        cw_content_status = imp.load_content_status(conn)
+        conn.close()
+
+        errs = imp.validate_crossword_item(cw, cw_content_status)
+        check(errs == [], f"유효한 십자말 픽스처는 항목 검사 전부 통과 (실패: {errs})")
+        errs = imp.validate_crossword_batch([cw] * 100)  # 세트 수 100개 흉내(내용은 동일해도 개수 체크만 확인)
+        check(any("동일한 어휘 조합 중복" in e for e in errs), "십자말 100세트 시뮬레이션 - 동일 조합 반복 시 중복 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"] = bad["entries"][:9]
+        check(any("entries가" in e and "10" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 entries 10개 아니면 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"][1]["answer"] = bad["entries"][0]["answer"]
+        check(any("정답 중복" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 세트 내 정답 중복 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"][0]["clue"] = f"{bad['entries'][0]['answer']}을(를) 설명"
+        check(any("단서에 정답" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 단서에 정답 노출 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"][0]["length"] = 99
+        check(any("length" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 length와 정답 글자수 불일치 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"][0]["row"] = 999
+        check(any("판 크기" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 시작 좌표가 판 크기 밖이면 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"][1]["answer"] = "XX"  # 교차 칸에서 entries[0]과 글자가 달라지도록
+        check(any("교차 칸" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 교차 칸 글자 불일치 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["grid"]["cells"].pop()
+        check(any("선언 안 된 칸" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 entries가 쓰는데 grid.cells에 선언 안 된 칸 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["grid"]["cells"].append({"row": 999, "col": 999, "number": None})
+        check(any("어떤 entry도 쓰지 않는 칸" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 grid.cells에만 있고 안 쓰이는 칸 탐지")
+
+        bad = _copy.deepcopy(cw)
+        # 마지막 entry를 원점(0,0)에서 시작하는 별도 낱말로 바꿔 나머지 9개와 단절시킨다
+        bad["entries"][9] = {
+            "number": 10, "direction": "across", "row": 20, "col": 20, "length": 2,
+            "content_id": "CW_C9", "sense_id": "CW_S9", "clue": "단절된 낱말", "answer": "타파",
+        }
+        bad["grid"]["cells"].extend([{"row": 20, "col": 20, "number": 10}, {"row": 20, "col": 21, "number": None}])
+        check(any("연결망으로 이어지지 않음" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 연결 안 된 낱말 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["content_ids"] = bad["content_ids"][:-1] + ["NOPE"]
+        bad["entries"][-1]["content_id"] = "NOPE"
+        check(any("원본 content_id" in e and "없음" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 존재하지 않는 content_id 참조 탐지")
+
+        bad = _copy.deepcopy(cw)
+        bad["entries"][0]["answer"] = "완전다름"
+        bad["entries"][0]["length"] = 4
+        check(any("lemma" in e for e in imp.validate_crossword_item(bad, cw_content_status)),
+              "십자말 정답이 원본 lemma와 다르면 탐지")
+
+        batch_errs = imp.validate_crossword_batch([cw])
+        check(any("100개가 아님" in e for e in batch_errs), "십자말 세트 수가 100개 아니면 탐지")
+        check(any("서로 다른 어휘 수" in e for e in batch_errs), "십자말 서로 다른 어휘 수(282개) 불일치 탐지")
+
+        many_cw = []
+        for i in range(7):
+            c = _copy.deepcopy(cw)
+            c["item_id"] = f"T_F_over_{i}"
+            c["entries"][0]["content_id"] = "CW_SHARED"  # 7개 세트가 같은 content_id를 재사용(6회 초과)
+            c["content_ids"] = [c["entries"][0]["content_id"]] + c["content_ids"][1:]
+            many_cw.append(c)
+        over_errs = imp.validate_crossword_batch(many_cw)
+        check(any("재사용" in e and "초과" in e for e in over_errs), "십자말 어휘 재사용 6회 초과 탐지")
 
         # ---------- 14. 환경(APP_ENV) 가드 ----------
         with mock.patch.dict(os.environ, {"APP_ENV": "production"}):

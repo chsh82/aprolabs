@@ -21,6 +21,7 @@ HARD 검증 실패 시 전체 롤백, 재실행 시 unchanged 처리(멱등).
 from __future__ import annotations
 
 import argparse
+import collections
 import hashlib
 import io
 import json
@@ -51,16 +52,25 @@ EXTRACT_ROOT = REPO_ROOT / "data" / "import"
 # 알려진 배치의 원본 무결성 고정값 - 파일명이 일치하면 검증하고, 모르는
 # 파일명(향후 배치)이면 건너뛴다(하드코딩된 해시 하나로 미래 버전을 막지 않기 위함).
 KNOWN_ARCHIVE_SHA256 = {
+    # 최종 패키지(v1, 1,289건 - 기존 1,189건 + CROSSWORD 100세트)로 교체됨.
+    # 같은 파일명을 재사용하는 이전 배치(1,189건짜리)는 더 이상 이 고정값과 맞지 않는다 -
+    # 그건 이미 서버/로컬에 적재 완료된 구버전이라 재검증 대상이 아니다.
     "vocabulary_quiz_multiformat_v1.zip":
-        "6108186db84ac3e2206562e17270a770bb74043ff6b104c67b395e9fd656ee8b",
+        "c645b4f0f264403182f44d8615cfc7860196cbd8e3c8c50339a8028fcc2143b6",
 }
 
 ITEM_TYPES = (
     "MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING",
-    "CONTEXT_CLOZE", "MATCH_WORD_MEANING",
+    "CONTEXT_CLOZE", "MATCH_WORD_MEANING", "CROSSWORD",
 )
 CHOICE_TYPES = ("MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING")
+MULTI_CONTENT_TYPES = ("MATCH_WORD_MEANING", "CROSSWORD")  # source_content_id 대신 *_ids_json을 쓰는 유형
 ELIGIBLE_CONTENT_STATUSES = ("PRIVATE_SERVER_READY", "PRIVATE_SERVER_READY_CANDIDATE")
+CROSSWORD_EXPECTED_SETS = 100
+CROSSWORD_ENTRIES_PER_SET = 10
+CROSSWORD_MIN_INTERSECTIONS = 9
+CROSSWORD_DISTINCT_VOCAB = 282
+CROSSWORD_MAX_REUSE = 6
 
 
 # ==================== 환경/경로 가드 (import_vocabulary_quiz.py와 동일 패턴) ====================
@@ -176,6 +186,35 @@ def check_upstream_validation(extract_dir: Path) -> tuple[bool, str]:
 
 # ==================== 검증 ====================
 
+def _expand_crossword_entries(entries: list[dict]) -> tuple[dict[tuple[int, int], str], list[str]]:
+    """entries를 좌표별 정답 글자로 펼친다. 교차 칸에서 서로 다른 글자가 겹치면
+    오류 메시지를 함께 반환한다(칸 값은 나중에 쓴 entry 것으로 남지만, 오류가
+    있으면 어차피 HARD 실패라 적재되지 않는다)."""
+    cell_map: dict[tuple[int, int], str] = {}
+    errors: list[str] = []
+    for entry in entries:
+        direction = entry.get("direction")
+        if direction == "across":
+            dr, dc = 0, 1
+        elif direction == "down":
+            dr, dc = 1, 0
+        else:
+            errors.append(f"entry {entry.get('number')}: 알 수 없는 방향 {direction!r}")
+            continue
+        answer = entry.get("answer") or ""
+        row, col = entry.get("row"), entry.get("col")
+        if row is None or col is None:
+            errors.append(f"entry {entry.get('number')}: row/col 없음")
+            continue
+        for idx, ch in enumerate(answer):
+            pos = (row + dr * idx, col + dc * idx)
+            if pos in cell_map and cell_map[pos] != ch:
+                errors.append(f"entry {entry.get('number')}: 교차 칸 {pos} 글자 불일치 "
+                               f"({cell_map[pos]!r} vs {ch!r})")
+            cell_map[pos] = ch
+    return cell_map, errors
+
+
 def _build_answer_payload(item: dict) -> dict:
     t = item["item_type"]
     if t in CHOICE_TYPES:
@@ -192,7 +231,180 @@ def _build_answer_payload(item: dict) -> dict:
             "definitions": item.get("definitions"),
             "answers": item.get("answers"),
         }
+    if t == "CROSSWORD":
+        cell_map, _ = _expand_crossword_entries(item.get("entries") or [])
+        return {
+            "cells": {f"{r},{c}": ch for (r, c), ch in cell_map.items()},
+            "entries": [
+                {"number": e.get("number"), "direction": e.get("direction"), "row": e.get("row"),
+                 "col": e.get("col"), "length": e.get("length"), "clue": e.get("clue"),
+                 "answer": e.get("answer")}
+                for e in item.get("entries") or []
+            ],
+        }
     return {}
+
+
+def _build_public_payload(item: dict) -> dict:
+    """정답이 빠진, 문제 조회 API가 그대로 내려줘도 되는 표시용 정보."""
+    t = item["item_type"]
+    if t in CHOICE_TYPES:
+        return {"options": item.get("options")}
+    if t == "CONTEXT_CLOZE":
+        return {"input_hint": item.get("input_hint")}
+    if t == "MATCH_WORD_MEANING":
+        return {"words": item.get("words"), "definitions": item.get("definitions")}
+    if t == "CROSSWORD":
+        grid = item.get("grid") or {}
+        cells = [{"row": c.get("row"), "col": c.get("col"), "number": c.get("number")}
+                 for c in grid.get("cells") or []]
+        entries_public = [
+            {"number": e.get("number"), "direction": e.get("direction"), "row": e.get("row"),
+             "col": e.get("col"), "length": e.get("length"), "clue": e.get("clue")}
+            for e in item.get("entries") or []
+        ]
+        return {"rows": grid.get("rows"), "cols": grid.get("cols"), "cells": cells, "entries": entries_public}
+    return {}
+
+
+def validate_crossword_item(item: dict, db_content_status: dict[str, tuple]) -> list[str]:
+    """tests/test_generation.py(원본 ZIP)의 test_crosswords_have_ten_connected_source_words와
+    같은 알고리즘(좌표 펼치기 -> 선언된 활성칸과 대조 -> 교차 그래프 연결성 BFS)을 그대로
+    적재 게이트에도 적용한다 - 원본 검증을 다시 믿지 않고 우리 쪽에서도 독립적으로 확인."""
+    iid = item.get("item_id")
+    errs: list[str] = []
+    entries = item.get("entries") or []
+    grid = item.get("grid") or {}
+
+    if len(entries) != CROSSWORD_ENTRIES_PER_SET:
+        errs.append(f"{iid}: entries가 {CROSSWORD_ENTRIES_PER_SET}개가 아님(실제 {len(entries)}개)")
+        return errs  # 개수부터 틀리면 이후 좌표 기반 검사는 의미가 없다
+
+    answers = [e.get("answer") for e in entries]
+    if len(set(answers)) != CROSSWORD_ENTRIES_PER_SET:
+        errs.append(f"{iid}: 세트 내 정답 중복")
+
+    rows, cols = grid.get("rows"), grid.get("cols")
+    for e in entries:
+        ans = e.get("answer") or ""
+        clue = e.get("clue") or ""
+        if ans and ans in clue:
+            errs.append(f"{iid} entry {e.get('number')}: 단서에 정답 표제어 직접 노출")
+        if e.get("length") != len(ans):
+            errs.append(f"{iid} entry {e.get('number')}: length({e.get('length')})가 정답 글자수({len(ans)})와 다름")
+        r, c = e.get("row"), e.get("col")
+        if r is None or c is None or rows is None or cols is None or not (0 <= r < rows) or not (0 <= c < cols):
+            errs.append(f"{iid} entry {e.get('number')}: 시작 좌표({r},{c})가 판 크기({rows}x{cols}) 밖")
+
+    declared = {(c["row"], c["col"]) for c in grid.get("cells") or []}
+    cell_map, cross_errors = _expand_crossword_entries(entries)
+    errs.extend(f"{iid}: {m}" for m in cross_errors)
+
+    used = set(cell_map.keys())
+    if used != declared:
+        missing, extra = used - declared, declared - used
+        if missing:
+            errs.append(f"{iid}: entries가 쓰지만 grid.cells에 선언 안 된 칸 {len(missing)}개")
+        if extra:
+            errs.append(f"{iid}: grid.cells에는 있지만 어떤 entry도 쓰지 않는 칸 {len(extra)}개")
+
+    # 같은 방향(가로끼리/세로끼리) 중첩 금지 - 교차는 가로 X 세로 사이에서만 허용
+    for direction in ("across", "down"):
+        dir_cells: dict[tuple[int, int], int] = {}
+        dr, dc = (0, 1) if direction == "across" else (1, 0)
+        for e in entries:
+            if e.get("direction") != direction:
+                continue
+            ans = e.get("answer") or ""
+            r, c = e.get("row"), e.get("col")
+            if r is None or c is None:
+                continue
+            for idx in range(len(ans)):
+                pos = (r + dr * idx, c + dc * idx)
+                if pos in dir_cells and dir_cells[pos] != e.get("number"):
+                    errs.append(f"{iid}: 같은 방향({direction}) 중첩 - entry {dir_cells[pos]}와 "
+                                f"{e.get('number')}가 둘 다 {pos} 사용")
+                dir_cells[pos] = e.get("number")
+
+    position_count: collections.Counter = collections.Counter()
+    cell_entries: dict[tuple[int, int], list[int]] = {}
+    for idx, e in enumerate(entries):
+        direction = e.get("direction")
+        dr, dc = (0, 1) if direction == "across" else (1, 0) if direction == "down" else (0, 0)
+        ans = e.get("answer") or ""
+        r, c = e.get("row"), e.get("col")
+        if r is None or c is None:
+            continue
+        for i in range(len(ans)):
+            pos = (r + dr * i, c + dc * i)
+            position_count[pos] += 1
+            cell_entries.setdefault(pos, []).append(idx)
+    intersections = sum(1 for v in position_count.values() if v > 1)
+    if intersections < CROSSWORD_MIN_INTERSECTIONS:
+        errs.append(f"{iid}: 교차 지점 {intersections}개 ({CROSSWORD_MIN_INTERSECTIONS}개 이상 필요)")
+
+    graph = {i: set() for i in range(len(entries))}
+    for idxs in cell_entries.values():
+        for a in idxs:
+            graph[a].update(x for x in idxs if x != a)
+    visited: set[int] = set()
+    pending = [0]
+    while pending:
+        cur = pending.pop()
+        if cur in visited:
+            continue
+        visited.add(cur)
+        pending.extend(graph[cur] - visited)
+    if len(visited) != len(entries):
+        errs.append(f"{iid}: 10개 낱말이 하나의 연결망으로 이어지지 않음(연결된 낱말 {len(visited)}개)")
+
+    for entry in entries:
+        cid, ans = entry.get("content_id"), entry.get("answer")
+        info = db_content_status.get(cid)
+        if info is None:
+            errs.append(f"{iid}: 원본 content_id {cid} 없음(entry {entry.get('number')})")
+            continue
+        status, exposure, public_ready, lemma = info
+        if status not in ELIGIBLE_CONTENT_STATUSES or exposure != 0 or public_ready != 0:
+            errs.append(f"{iid}: AUTO_HOLD/공개 상태 content_id {cid} 참조(entry {entry.get('number')})")
+        if lemma is not None and ans != lemma:
+            errs.append(f"{iid} entry {entry.get('number')}: 정답({ans!r})이 원본 lemma({lemma!r})와 다름")
+
+    return errs
+
+
+def validate_crossword_batch(crossword_items: list[dict]) -> list[str]:
+    """100세트 전체를 대상으로 하는 집계 검사(조합 고유성, 어휘 재사용 횟수 등)."""
+    errs: list[str] = []
+    if len(crossword_items) != CROSSWORD_EXPECTED_SETS:
+        errs.append(f"CROSSWORD 세트 수가 {CROSSWORD_EXPECTED_SETS}개가 아님(실제 {len(crossword_items)}개)")
+
+    signatures: set[tuple[str, ...]] = set()
+    usage: collections.Counter = collections.Counter()
+    total_entries = 0
+    for item in crossword_items:
+        cids = item.get("content_ids") or []
+        sig = tuple(sorted(cids))
+        if sig in signatures:
+            errs.append(f"{item.get('item_id')}: 다른 세트와 동일한 어휘 조합 중복")
+        signatures.add(sig)
+        for cid in cids:
+            usage[cid] += 1
+        total_entries += len(item.get("entries") or [])
+
+    if total_entries != CROSSWORD_EXPECTED_SETS * CROSSWORD_ENTRIES_PER_SET:
+        errs.append(f"CROSSWORD 전체 entry 수가 {CROSSWORD_EXPECTED_SETS * CROSSWORD_ENTRIES_PER_SET}개가 아님"
+                     f"(실제 {total_entries}개)")
+
+    distinct = len(usage)
+    if distinct != CROSSWORD_DISTINCT_VOCAB:
+        errs.append(f"CROSSWORD 서로 다른 어휘 수가 {CROSSWORD_DISTINCT_VOCAB}개가 아님(실제 {distinct}개)")
+
+    over_used = [cid for cid, n in usage.items() if n > CROSSWORD_MAX_REUSE]
+    if over_used:
+        errs.append(f"CROSSWORD 어휘 재사용 {CROSSWORD_MAX_REUSE}회 초과 {len(over_used)}건: {over_used[:5]}...")
+
+    return errs
 
 
 def validate(meta: dict, items: list[dict], upstream_ok: bool, upstream_note: str,
@@ -270,16 +482,20 @@ def validate(meta: dict, items: list[dict], upstream_ok: bool, upstream_note: st
     if version_mismatch:
         hard.append(f"source_version이 기대값({EXPECTED_SOURCE_VERSION!r})과 다른 문항 {version_mismatch}건")
 
+    # CROSSWORD는 entry 단위로 더 정밀하게 검사하므로(validate_crossword_item) 여기서는 제외 -
+    # 같은 문제를 두 번 다른 표현으로 보고하지 않기 위함.
     missing_content = 0
     ineligible_content = 0
     for i in items:
-        cids = i.get("content_ids") if i.get("item_type") == "MATCH_WORD_MEANING" else [i.get("content_id")]
+        if i.get("item_type") == "CROSSWORD":
+            continue
+        cids = i.get("content_ids") if i.get("item_type") in MULTI_CONTENT_TYPES else [i.get("content_id")]
         for cid in cids:
             info = db_content_status.get(cid)
             if info is None:
                 missing_content += 1
                 continue
-            status, exposure, public_ready = info
+            status, exposure, public_ready, _lemma = info
             if status not in ELIGIBLE_CONTENT_STATUSES or exposure != 0 or public_ready != 0:
                 ineligible_content += 1
     if missing_content:
@@ -287,16 +503,22 @@ def validate(meta: dict, items: list[dict], upstream_ok: bool, upstream_note: st
     if ineligible_content:
         hard.append(f"AUTO_HOLD/공개·노출 상태 원본 콘텐츠를 참조하는 문항 {ineligible_content}건")
 
+    crossword_items = [i for i in items if i.get("item_type") == "CROSSWORD"]
+    if crossword_items:
+        for ci in crossword_items:
+            hard.extend(validate_crossword_item(ci, db_content_status))
+        hard.extend(validate_crossword_batch(crossword_items))
+
     return hard, soft
 
 
 # ==================== DB 헬퍼 ====================
 
-def load_content_status(conn: sqlite3.Connection) -> dict[str, tuple[str, int, int]]:
+def load_content_status(conn: sqlite3.Connection) -> dict[str, tuple[str, int, int, str]]:
     rows = conn.execute(
-        "SELECT content_id, generation_status, student_exposure, public_ready FROM vocabulary_contents"
+        "SELECT content_id, generation_status, student_exposure, public_ready, lemma FROM vocabulary_contents"
     ).fetchall()
-    return {r[0]: (r[1], r[2], r[3]) for r in rows}
+    return {r[0]: (r[1], r[2], r[3], r[4]) for r in rows}
 
 
 def _table_count(conn: sqlite3.Connection, table: str) -> int:
@@ -305,25 +527,26 @@ def _table_count(conn: sqlite3.Connection, table: str) -> int:
 
 _UPDATE_FIELDS = [
     "item_type", "source_content_id", "source_content_ids_json", "sense_id", "sense_ids_json",
-    "lemma", "pos", "prompt", "options_json", "correct_option", "answer_payload_json",
-    "explanation", "cognitive_level", "qa_flags_json", "generator_version",
+    "lemma", "pos", "prompt", "options_json", "correct_option", "public_payload_json",
+    "answer_payload_json", "explanation", "cognitive_level", "qa_flags_json", "generator_version",
 ]
 
 
 def _row_values(item: dict, generator_version: str) -> dict:
     t = item["item_type"]
-    is_match = t == "MATCH_WORD_MEANING"
+    is_multi = t in MULTI_CONTENT_TYPES  # MATCH_WORD_MEANING/CROSSWORD는 content_id가 여러 개
     return {
         "item_type": t,
-        "source_content_id": None if is_match else item.get("content_id"),
-        "source_content_ids_json": json.dumps(item.get("content_ids"), ensure_ascii=False) if is_match else None,
-        "sense_id": None if is_match else item.get("sense_id"),
-        "sense_ids_json": json.dumps(item.get("sense_ids"), ensure_ascii=False) if is_match else None,
+        "source_content_id": None if is_multi else item.get("content_id"),
+        "source_content_ids_json": json.dumps(item.get("content_ids"), ensure_ascii=False) if is_multi else None,
+        "sense_id": None if is_multi else item.get("sense_id"),
+        "sense_ids_json": json.dumps(item.get("sense_ids"), ensure_ascii=False) if is_multi else None,
         "lemma": item.get("lemma"),
         "pos": item.get("pos"),
         "prompt": item["prompt"],
         "options_json": json.dumps(item.get("options"), ensure_ascii=False) if item.get("options") else None,
         "correct_option": item.get("correct_option"),
+        "public_payload_json": json.dumps(_build_public_payload(item), ensure_ascii=False),
         "answer_payload_json": json.dumps(_build_answer_payload(item), ensure_ascii=False),
         "explanation": item.get("explanation"),
         "cognitive_level": item.get("cognitive_level"),

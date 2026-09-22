@@ -158,9 +158,13 @@ def run() -> bool:
             item = r.json()["item"]
             check(item["item_type"] == item_type, f"[{item_type}] 요청한 유형과 출제된 유형 일치")
 
-            # 정답 필드 비노출 확인
+            # 정답 필드 비노출 확인 (CROSSWORD의 "cells"는 공개 payload에도 정당하게 존재하는
+            # 필드라 여기서는 entries 안에 "answer"가 섞여 있는지로 따로 검사한다)
             secret_keys = {"correct_option", "answer_text", "accepted_answers", "answers"}
             leaked = secret_keys & set(item.keys())
+            if item_type == "CROSSWORD":
+                leaked_answer_in_entries = any("answer" in e for e in item.get("entries") or [])
+                check(not leaked_answer_in_entries, f"[{item_type}] entries에 answer 필드 비노출")
             check(not leaked, f"[{item_type}] 문제 조회 응답에 정답 필드 비노출({leaked or '없음'})")
 
             # DB에서 실제 정답을 가져와 정답 제출
@@ -176,6 +180,8 @@ def run() -> bool:
                 body = {"item_id": item["item_id"], "selected_option": payload["correct_option"]}
             elif item_type == "CONTEXT_CLOZE":
                 body = {"item_id": item["item_id"], "answer_text": payload["answer_text"]}
+            elif item_type == "CROSSWORD":
+                body = {"item_id": item["item_id"], "cells": payload["cells"]}
             else:
                 body = {"item_id": item["item_id"], "answers": payload["answers"]}
 
@@ -293,6 +299,56 @@ def run() -> bool:
 
         r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/hint", json={"item_id": item["item_id"]})
         check(r.status_code == 409, "이미 확정된 문항에 힌트 요청 시 409")
+
+        # ---------- 4.6 CROSSWORD 전용 검증 ----------
+        r = client.post("/api/vocabulary-quiz/sessions",
+                         json={"item_types": ["CROSSWORD", "MEANING_CHOICE"], "question_count": 5})
+        check(r.status_code == 400, "CROSSWORD를 다른 유형과 섞어 요청하면 400")
+
+        r = client.post("/api/vocabulary-quiz/sessions", json={"item_types": ["CROSSWORD"], "question_count": 10})
+        check(r.status_code == 200, "CROSSWORD 단독 세션 생성 성공")
+        cw_sid = r.json()["session_id"]
+        session_ids.append(cw_sid)
+        check(r.json()["question_count"] == 1, "CROSSWORD는 question_count 요청값과 무관하게 항상 1로 강제됨")
+
+        cw_item = client.get(f"/api/vocabulary-quiz/sessions/{cw_sid}/next").json()["item"]
+        conn = sqlite3.connect(db_path)
+        cw_payload = json.loads(conn.execute(
+            "SELECT answer_payload_json FROM vocabulary_multiformat_items WHERE item_id=?", (cw_item["item_id"],)
+        ).fetchone()[0])
+        conn.close()
+        correct_cells = cw_payload["cells"]
+        total_cells = len(correct_cells)
+        check(total_cells == len(cw_item["cells"]), "공개 payload의 활성 칸 수가 정답 칸 수와 일치")
+
+        # 절반은 정답, 절반은 오답으로 제출 - 부분 점수 확인
+        keys = list(correct_cells.keys())
+        half = len(keys) // 2
+        submitted = {}
+        for i, k in enumerate(keys):
+            submitted[k] = correct_cells[k] if i < half else "X"
+        r = client.post(f"/api/vocabulary-quiz/sessions/{cw_sid}/answer",
+                         json={"item_id": cw_item["item_id"], "cells": submitted})
+        check(r.status_code == 200, "십자말 부분 제출 성공")
+        cw_data = r.json()
+        check(cw_data["is_correct"] is False, "일부 칸이 틀리면 세트 전체는 오답 처리")
+        check(cw_data["correct_count"] == half and cw_data["total_count"] == total_cells,
+              f"부분 점수 정확(실제 correct_count={cw_data['correct_count']}, total={cw_data['total_count']})")
+        check(cw_data["cell_results"] is not None and len(cw_data["cell_results"]) == total_cells,
+              "칸별 정오(cell_results)가 활성 칸 수만큼 반환됨")
+        check(all(cw_data["cell_results"][keys[i]] for i in range(half)) and
+              not any(cw_data["cell_results"][keys[i]] for i in range(half, total_cells)),
+              "cell_results가 실제 정오와 정확히 일치")
+        check(cw_data["correct_answer"]["cells"] == correct_cells, "확정 후 정답 좌표 전체가 공개됨")
+        check(cw_data["is_last"] is True, "십자말은 단일 시도로 즉시 확정(is_last=true)")
+
+        # 직전 세트 즉시 반복 방지 - 다음 세션은 다른 세트여야 한다(전체 100세트 중 하나이므로
+        # 우연히 같아질 확률은 사실상 없지만, "가능하면 피한다"는 로직 자체를 확인)
+        r = client.post("/api/vocabulary-quiz/sessions", json={"item_types": ["CROSSWORD"], "question_count": 1})
+        cw_sid2 = r.json()["session_id"]
+        session_ids.append(cw_sid2)
+        cw_item2 = client.get(f"/api/vocabulary-quiz/sessions/{cw_sid2}/next").json()["item"]
+        check(cw_item2["item_id"] != cw_item["item_id"], "직전 십자말 세트와 다른 세트가 출제됨")
 
         # ---------- 5. 혼합 세션(10문항) - 중복 없음, 진행률, 완료 처리 ----------
         r = client.post("/api/vocabulary-quiz/sessions", json={"question_count": 10})
