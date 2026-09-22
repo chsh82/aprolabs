@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+{% block title %}다유형 어휘 퀴즈{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-xl mx-auto px-6 py-10">
+  <div class="text-center mb-6">
+    <div class="text-5xl mb-4">🧩</div>
+    <h1 class="text-2xl font-bold mb-2">다유형 어휘 퀴즈 (파일럿 R&D)</h1>
+    <p class="text-sm text-gray-500">관리자 전용, 학생 비공개 · 서버 채점</p>
+  </div>
+
+  <div id="setup-screen">
+    <p class="text-sm font-semibold text-gray-700 mb-2">유형 선택 (선택 안 하면 전체 혼합)</p>
+    <div class="grid grid-cols-1 gap-2 mb-4" id="type-checkboxes">
+      {% for t in item_types %}
+      <label class="flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer">
+        <input type="checkbox" value="{{ t }}" class="type-checkbox">
+        <span>{{ t }}</span>
+      </label>
+      {% endfor %}
+    </div>
+    <label class="block text-sm font-semibold text-gray-700 mb-1">문항 수</label>
+    <input type="number" id="question-count" value="{{ default_question_count }}" min="1" max="50"
+           class="border rounded-lg px-3 py-2 w-full mb-4 text-sm">
+    <button id="start-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 rounded-xl text-base">
+      퀴즈 시작
+    </button>
+    <p id="setup-error" class="text-sm text-red-600 mt-3 hidden"></p>
+  </div>
+
+  <div id="question-screen" class="hidden">
+    <div class="flex justify-between items-center text-xs text-gray-500 mb-2">
+      <span id="progress-label"></span>
+      <span id="type-label" class="font-semibold text-gray-700"></span>
+    </div>
+    <div class="w-full bg-gray-100 rounded-full h-2 mb-5">
+      <div id="progress-bar" class="bg-blue-600 h-2 rounded-full" style="width:0%"></div>
+    </div>
+
+    <div id="prompt-box" class="text-base font-medium mb-5 whitespace-pre-line"></div>
+    <div id="answer-area" class="mb-4"></div>
+
+    <button id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-base mb-3">
+      제출
+    </button>
+
+    <div id="feedback-box" class="hidden">
+      <div id="feedback-result" class="text-base font-bold mb-2"></div>
+      <div id="feedback-correct" class="text-sm text-gray-700 mb-2"></div>
+      <div id="feedback-explanation" class="text-sm text-gray-500 mb-4"></div>
+      <button id="next-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 rounded-xl text-base">
+        다음 문제
+      </button>
+    </div>
+    <p id="question-error" class="text-sm text-red-600 mt-3 hidden"></p>
+  </div>
+
+  <div id="result-screen" class="hidden">
+    <h2 class="text-xl font-bold mb-1 text-center">결과</h2>
+    <p id="result-summary" class="text-center text-gray-600 mb-6"></p>
+    <div id="result-by-type" class="space-y-2 mb-6"></div>
+    <div id="result-wrong" class="space-y-3 mb-6"></div>
+    <button id="restart-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 rounded-xl text-base">
+      다시 풀기
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const API = "/api/vocabulary-quiz";
+  let sessionId = null;
+  let currentItem = null;
+
+  const setupScreen = document.getElementById("setup-screen");
+  const questionScreen = document.getElementById("question-screen");
+  const resultScreen = document.getElementById("result-screen");
+
+  const setupError = document.getElementById("setup-error");
+  const questionError = document.getElementById("question-error");
+
+  function showError(el, msg) {
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+  function hideError(el) {
+    el.classList.add("hidden");
+  }
+
+  async function api(path, options) {
+    const res = await fetch(API + path, Object.assign({
+      headers: { "Content-Type": "application/json" },
+    }, options));
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* no body */ }
+    if (!res.ok) {
+      const detail = (data && data.detail) ? data.detail : ("HTTP " + res.status);
+      throw new Error(detail);
+    }
+    return data;
+  }
+
+  document.getElementById("start-btn").addEventListener("click", async () => {
+    hideError(setupError);
+    const types = Array.from(document.querySelectorAll(".type-checkbox:checked")).map(el => el.value);
+    const questionCount = parseInt(document.getElementById("question-count").value, 10) || {{ default_question_count }};
+    try {
+      const data = await api("/sessions", {
+        method: "POST",
+        body: JSON.stringify({ item_types: types.length ? types : null, question_count: questionCount }),
+      });
+      sessionId = data.session_id;
+      setupScreen.classList.add("hidden");
+      questionScreen.classList.remove("hidden");
+      await loadNext();
+    } catch (e) {
+      showError(setupError, e.message);
+    }
+  });
+
+  async function loadNext() {
+    hideError(questionError);
+    document.getElementById("feedback-box").classList.add("hidden");
+    document.getElementById("submit-btn").classList.remove("hidden");
+    const data = await api(`/sessions/${sessionId}/next`);
+    if (data.done) {
+      await showResult();
+      return;
+    }
+    currentItem = data.item;
+    renderProgress(data.progress);
+    renderQuestion(currentItem);
+  }
+
+  function renderProgress(progress) {
+    document.getElementById("progress-label").textContent = `${progress.answered + 1} / ${progress.total}`;
+    document.getElementById("progress-bar").style.width = `${(progress.answered / progress.total) * 100}%`;
+  }
+
+  const TYPE_LABELS = {
+    MEANING_CHOICE: "낱말 → 뜻", WORD_FROM_DEFINITION: "뜻 → 낱말", CONTEXT_MEANING: "문맥 속 의미",
+    CONTEXT_CLOZE: "문맥 빈칸(직접 입력)", MATCH_WORD_MEANING: "네 쌍 연결",
+  };
+
+  function renderQuestion(item) {
+    document.getElementById("type-label").textContent = TYPE_LABELS[item.item_type] || item.item_type;
+    document.getElementById("prompt-box").textContent = item.prompt;
+    const area = document.getElementById("answer-area");
+    area.innerHTML = "";
+
+    if (["MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING"].includes(item.item_type)) {
+      item.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice-btn w-full text-left border rounded-lg px-4 py-3 mb-2 text-sm hover:bg-gray-50";
+        btn.textContent = `${idx + 1}. ${opt}`;
+        btn.dataset.value = String(idx + 1);
+        btn.addEventListener("click", () => {
+          area.querySelectorAll(".choice-btn").forEach(b => b.classList.remove("border-blue-600", "bg-blue-50"));
+          btn.classList.add("border-blue-600", "bg-blue-50");
+        });
+        area.appendChild(btn);
+      });
+    } else if (item.item_type === "CONTEXT_CLOZE") {
+      const hint = document.createElement("p");
+      hint.className = "text-xs text-gray-400 mb-2";
+      hint.textContent = item.input_hint ? `힌트: ${item.input_hint}` : "";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = "cloze-input";
+      input.className = "border rounded-lg px-3 py-2 w-full text-sm";
+      input.placeholder = "빈칸에 들어갈 낱말을 입력하세요";
+      area.appendChild(hint);
+      area.appendChild(input);
+    } else if (item.item_type === "MATCH_WORD_MEANING") {
+      item.words.forEach(word => {
+        const row = document.createElement("div");
+        row.className = "flex items-center gap-2 mb-2";
+        const label = document.createElement("div");
+        label.className = "w-24 shrink-0 text-sm font-semibold";
+        label.textContent = word;
+        const select = document.createElement("select");
+        select.className = "match-select border rounded-lg px-2 py-2 text-sm flex-1";
+        select.dataset.word = word;
+        select.innerHTML = '<option value="">뜻을 선택하세요</option>' +
+          item.definitions.map(d => `<option value="${escapeAttr(d)}">${escapeHtml(d)}</option>`).join("");
+        row.appendChild(label);
+        row.appendChild(select);
+        area.appendChild(row);
+      });
+    }
+  }
+
+  function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+  function escapeAttr(s) { return escapeHtml(s); }
+
+  function collectAnswerBody(item) {
+    if (["MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING"].includes(item.item_type)) {
+      const selected = document.querySelector(".choice-btn.border-blue-600");
+      if (!selected) return null;
+      return { item_id: item.item_id, selected_option: parseInt(selected.dataset.value, 10) };
+    }
+    if (item.item_type === "CONTEXT_CLOZE") {
+      const val = document.getElementById("cloze-input").value.trim();
+      if (!val) return null;
+      return { item_id: item.item_id, answer_text: val };
+    }
+    if (item.item_type === "MATCH_WORD_MEANING") {
+      const selects = Array.from(document.querySelectorAll(".match-select"));
+      if (selects.some(s => !s.value)) return null;
+      const answers = {};
+      selects.forEach(s => { answers[s.dataset.word] = s.value; });
+      return { item_id: item.item_id, answers };
+    }
+    return null;
+  }
+
+  document.getElementById("submit-btn").addEventListener("click", async () => {
+    hideError(questionError);
+    const body = collectAnswerBody(currentItem);
+    if (!body) {
+      showError(questionError, "답을 모두 선택/입력해 주세요.");
+      return;
+    }
+    try {
+      const data = await api(`/sessions/${sessionId}/answer`, { method: "POST", body: JSON.stringify(body) });
+      renderFeedback(data);
+    } catch (e) {
+      showError(questionError, e.message);
+    }
+  });
+
+  function renderFeedback(data) {
+    document.getElementById("submit-btn").classList.add("hidden");
+    const box = document.getElementById("feedback-box");
+    box.classList.remove("hidden");
+    const resultEl = document.getElementById("feedback-result");
+    if (currentItem.item_type === "MATCH_WORD_MEANING") {
+      resultEl.textContent = `${data.correct_count} / ${data.total_count} 쌍 정답`;
+      resultEl.className = data.is_correct ? "text-base font-bold mb-2 text-green-600" : "text-base font-bold mb-2 text-amber-600";
+    } else {
+      resultEl.textContent = data.is_correct ? "정답이에요!" : "틀렸어요";
+      resultEl.className = "text-base font-bold mb-2 " + (data.is_correct ? "text-green-600" : "text-red-600");
+    }
+
+    const correctEl = document.getElementById("feedback-correct");
+    const ca = data.correct_answer;
+    if (currentItem.item_type === "MATCH_WORD_MEANING") {
+      correctEl.textContent = "정답: " + Object.entries(ca.answers).map(([w, d]) => `${w}=${d}`).join(" / ");
+    } else if (currentItem.item_type === "CONTEXT_CLOZE") {
+      correctEl.textContent = "정답: " + ca.answer_text;
+    } else {
+      correctEl.textContent = "정답: " + ca.correct_text;
+    }
+    document.getElementById("feedback-explanation").textContent = data.explanation || "";
+  }
+
+  document.getElementById("next-btn").addEventListener("click", loadNext);
+
+  async function showResult() {
+    questionScreen.classList.add("hidden");
+    resultScreen.classList.remove("hidden");
+    const data = await api(`/sessions/${sessionId}/result`);
+    document.getElementById("result-summary").textContent =
+      `${data.correct} / ${data.total} 정답 (${data.accuracy}%)`;
+
+    const byType = document.getElementById("result-by-type");
+    byType.innerHTML = "";
+    Object.entries(data.by_type).forEach(([type, stats]) => {
+      const row = document.createElement("div");
+      row.className = "flex justify-between text-sm border rounded-lg px-3 py-2";
+      row.innerHTML = `<span>${TYPE_LABELS[type] || type}</span><span>${stats.correct}/${stats.total} (${stats.accuracy}%)</span>`;
+      byType.appendChild(row);
+    });
+
+    const wrongBox = document.getElementById("result-wrong");
+    wrongBox.innerHTML = "";
+    if (data.wrong_items.length) {
+      const heading = document.createElement("p");
+      heading.className = "text-sm font-semibold text-gray-700";
+      heading.textContent = "다시 볼 문제";
+      wrongBox.appendChild(heading);
+      data.wrong_items.forEach(w => {
+        const card = document.createElement("div");
+        card.className = "border rounded-lg px-3 py-2 text-sm";
+        card.innerHTML = `<div class="font-medium mb-1">${escapeHtml(w.prompt || "")}</div>` +
+          `<div class="text-gray-500">${escapeHtml(w.explanation || "")}</div>`;
+        wrongBox.appendChild(card);
+      });
+    }
+  }
+
+  document.getElementById("restart-btn").addEventListener("click", () => {
+    resultScreen.classList.add("hidden");
+    setupScreen.classList.remove("hidden");
+    sessionId = null;
+    currentItem = null;
+  });
+})();
+</script>
+{% endblock %}

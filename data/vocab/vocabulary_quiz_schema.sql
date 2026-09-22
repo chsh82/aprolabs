@@ -200,3 +200,103 @@ CREATE VIEW v_vq_review_progress AS
 SELECT sample_version, review_status, COUNT(*) AS n
 FROM vocabulary_review_samples
 GROUP BY sample_version, review_status;
+
+-- ------------------------------------------------------------
+-- 7. 초등 다유형 어휘 퀴즈(파일럿) - 기존 vocabulary_items(4지선다 단일
+--    유형)와 별개로, content 1건에서 여러 유형의 파생 문항을 만들어내는
+--    구조. 5개 유형(MEANING_CHOICE/WORD_FROM_DEFINITION/CONTEXT_MEANING/
+--    CONTEXT_CLOZE/MATCH_WORD_MEANING)을 한 테이블에 담되, 유형마다
+--    필요한 필드가 달라 정답 관련 정보는 answer_payload_json 하나에
+--    정규화해서 넣는다(채점 로직이 이 필드 하나만 보면 되게) - 정답
+--    노출 방지를 위해 API 응답에서는 이 컬럼을 절대 내려주지 않는다.
+--    관리자 전용, R&D 전용 - 기존 vocabulary_quiz_sessions/attempts
+--    (단일 유형 MVP)와도 별도 테이블을 쓴다(섞지 않음).
+-- ------------------------------------------------------------
+CREATE TABLE vocabulary_multiformat_items (
+    id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id                  TEXT NOT NULL UNIQUE,
+    item_type                TEXT NOT NULL CHECK (item_type IN
+                              ('MEANING_CHOICE','WORD_FROM_DEFINITION','CONTEXT_MEANING',
+                               'CONTEXT_CLOZE','MATCH_WORD_MEANING')),
+    source_content_id        TEXT REFERENCES vocabulary_contents(content_id),  -- MATCH_WORD_MEANING은 NULL(대신 아래 _ids_json)
+    source_content_ids_json  TEXT,   -- MATCH_WORD_MEANING 전용: content_id 4개 배열
+    sense_id                 TEXT,
+    sense_ids_json           TEXT,   -- MATCH_WORD_MEANING 전용: sense_id 4개 배열
+    lemma                    TEXT,   -- MATCH_WORD_MEANING은 NULL(표제어 4개가 words에 있음)
+    pos                      TEXT,
+    prompt                   TEXT NOT NULL,
+    options_json             TEXT,   -- 선택형 3종만: 보기 4개 배열. CONTEXT_CLOZE/MATCH는 NULL
+    correct_option           INTEGER CHECK (correct_option IS NULL OR correct_option BETWEEN 1 AND 4),
+    answer_payload_json      TEXT NOT NULL,  -- 유형별 정답 정보 정규화(위 주석 참고) - 채점 전용, 클라이언트에 내려주지 않음
+    explanation              TEXT,
+    cognitive_level          INTEGER,
+    qa_flags_json            TEXT,
+    generator_version        TEXT,   -- 생성 파이프라인 식별자(예: 'pilot_multiformat_v1') - 콘텐츠 버전(source_version)과는 별개
+    source_version            TEXT NOT NULL,
+    is_active                 INTEGER NOT NULL DEFAULT 1,
+    created_at                 TEXT DEFAULT (datetime('now')),
+    updated_at                 TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX idx_vmi_item_type ON vocabulary_multiformat_items(item_type);
+CREATE INDEX idx_vmi_source_content ON vocabulary_multiformat_items(source_content_id);
+CREATE INDEX idx_vmi_source_version ON vocabulary_multiformat_items(source_version);
+
+CREATE TABLE vocabulary_multiformat_import_batches (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    version              TEXT NOT NULL,
+    source_filename       TEXT,
+    source_sha256         TEXT,
+    seed                   INTEGER,
+    selected_words         INTEGER,
+    started_at             TEXT,
+    completed_at           TEXT,
+    status                 TEXT NOT NULL DEFAULT 'PENDING'
+                           CHECK (status IN ('PENDING','DRY_RUN_OK','DRY_RUN_FAILED','COMPLETED','FAILED')),
+    item_count             INTEGER,
+    item_type_counts_json   TEXT,
+    inserted_count          INTEGER,
+    updated_count           INTEGER,
+    unchanged_count         INTEGER,
+    validation_result       TEXT,   -- JSON: {"hard": [...], "soft": [...]}
+    notes                   TEXT
+);
+
+CREATE INDEX idx_mf_batches_version ON vocabulary_multiformat_import_batches(version);
+
+-- 세션(1회 플레이) + 응답(문항별 1행). 기존 vocabulary_quiz_sessions/attempts
+-- (단일 4지선다 MVP)와 구조가 달라(유형 혼합, 유형별 채점 방식이 다름) 별도로 둔다.
+CREATE TABLE vocabulary_multiformat_sessions (
+    id               TEXT PRIMARY KEY,
+    user_id          TEXT NOT NULL,
+    source_version   TEXT NOT NULL,
+    item_types_json  TEXT,     -- 요청한 유형 필터 JSON 배열, NULL/미지정이면 혼합(전체 유형)
+    question_count   INTEGER NOT NULL,
+    correct_count    INTEGER NOT NULL DEFAULT 0,
+    status           TEXT NOT NULL DEFAULT 'in_progress' CHECK (status IN ('in_progress', 'completed')),
+    started_at       TEXT NOT NULL,
+    completed_at     TEXT
+);
+
+CREATE INDEX idx_mf_sessions_user ON vocabulary_multiformat_sessions(user_id, status);
+
+CREATE TABLE vocabulary_multiformat_responses (
+    id                        INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id                 TEXT NOT NULL REFERENCES vocabulary_multiformat_sessions(id) ON DELETE CASCADE,
+    item_id                     TEXT NOT NULL REFERENCES vocabulary_multiformat_items(item_id),
+    order_index                 INTEGER NOT NULL,
+    item_type                   TEXT NOT NULL,
+    submitted_payload_json       TEXT,    -- 학생이 제출한 원본 응답(선택형 selected_option / 직접입력 answer_text / 연결형 answers)
+    is_correct                   INTEGER, -- NULL=미응답. 연결형은 correct_count==total_count일 때만 1
+    correct_count                 INTEGER, -- 연결형 전용: 4쌍 중 맞은 개수. 그 외 유형은 NULL
+    total_count                   INTEGER, -- 연결형 전용: 4. 그 외 유형은 NULL
+    answered_at                   TEXT,
+    UNIQUE (session_id, item_id)
+);
+
+CREATE INDEX idx_mf_responses_session ON vocabulary_multiformat_responses(session_id, order_index);
+
+CREATE VIEW v_vmf_item_type_counts AS
+SELECT source_version, item_type, COUNT(*) AS n
+FROM vocabulary_multiformat_items
+GROUP BY source_version, item_type;

@@ -182,3 +182,103 @@ class VocabularyQuizAttempt(Base):
     correct_option = Column(Integer, nullable=False)
     is_correct = Column(Integer, nullable=True)
     answered_at = Column(Text, nullable=True)
+
+
+class VocabularyMultiformatItem(Base):
+    """초등 다유형 퀴즈(파일럿) 파생 문항. 유형마다 필요한 필드가 달라 정답
+    정보는 answer_payload_json 하나로 정규화한다(채점 로직이 유형 분기 없이
+    이 필드만 보면 되게) - API가 이 컬럼을 클라이언트에 내려주면 안 된다."""
+    __tablename__ = "vocabulary_multiformat_items"
+    __table_args__ = (
+        CheckConstraint(
+            "item_type IN ('MEANING_CHOICE','WORD_FROM_DEFINITION','CONTEXT_MEANING',"
+            "'CONTEXT_CLOZE','MATCH_WORD_MEANING')",
+            name="ck_mf_item_type",
+        ),
+        CheckConstraint("correct_option IS NULL OR correct_option BETWEEN 1 AND 4",
+                         name="ck_mf_item_correct_option"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    item_id = Column(Text, nullable=False, unique=True)
+    item_type = Column(Text, nullable=False, index=True)
+    source_content_id = Column(Text, ForeignKey("vocabulary_contents.content_id"), nullable=True, index=True)
+    source_content_ids_json = Column(Text, nullable=True)
+    sense_id = Column(Text, nullable=True)
+    sense_ids_json = Column(Text, nullable=True)
+    lemma = Column(Text, nullable=True)
+    pos = Column(Text, nullable=True)
+    prompt = Column(Text, nullable=False)
+    options_json = Column(Text, nullable=True)
+    correct_option = Column(Integer, nullable=True)
+    answer_payload_json = Column(Text, nullable=False)
+    explanation = Column(Text, nullable=True)
+    cognitive_level = Column(Integer, nullable=True)
+    qa_flags_json = Column(Text, nullable=True)
+    generator_version = Column(Text, nullable=True)
+    source_version = Column(Text, nullable=False, index=True)
+    is_active = Column(Integer, nullable=False, server_default=text("1"))
+    created_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
+    updated_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
+
+
+class VocabularyMultiformatImportBatch(Base):
+    __tablename__ = "vocabulary_multiformat_import_batches"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('PENDING','DRY_RUN_OK','DRY_RUN_FAILED','COMPLETED','FAILED')",
+            name="ck_mf_batch_status",
+        ),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    version = Column(Text, nullable=False, index=True)
+    source_filename = Column(Text, nullable=True)
+    source_sha256 = Column(Text, nullable=True)
+    seed = Column(Integer, nullable=True)
+    selected_words = Column(Integer, nullable=True)
+    started_at = Column(Text, nullable=True)
+    completed_at = Column(Text, nullable=True)
+    status = Column(Text, nullable=False, server_default=text("'PENDING'"))
+    item_count = Column(Integer, nullable=True)
+    item_type_counts_json = Column(Text, nullable=True)
+    inserted_count = Column(Integer, nullable=True)
+    updated_count = Column(Integer, nullable=True)
+    unchanged_count = Column(Integer, nullable=True)
+    validation_result = Column(Text, nullable=True)
+    notes = Column(Text, nullable=True)
+
+
+class VocabularyMultiformatSession(Base):
+    __tablename__ = "vocabulary_multiformat_sessions"
+    __table_args__ = (
+        CheckConstraint("status IN ('in_progress', 'completed')", name="ck_mf_session_status"),
+    )
+
+    id = Column(Text, primary_key=True)
+    user_id = Column(Text, nullable=False, index=True)
+    source_version = Column(Text, nullable=False)
+    item_types_json = Column(Text, nullable=True)
+    question_count = Column(Integer, nullable=False)
+    correct_count = Column(Integer, nullable=False, server_default=text("0"))
+    status = Column(Text, nullable=False, server_default=text("'in_progress'"))
+    started_at = Column(Text, nullable=False)
+    completed_at = Column(Text, nullable=True)
+
+
+class VocabularyMultiformatResponse(Base):
+    __tablename__ = "vocabulary_multiformat_responses"
+    __table_args__ = (
+        UniqueConstraint("session_id", "item_id", name="uq_mf_response_session_item"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(Text, ForeignKey("vocabulary_multiformat_sessions.id", ondelete="CASCADE"), nullable=False)
+    item_id = Column(Text, ForeignKey("vocabulary_multiformat_items.item_id"), nullable=False)
+    order_index = Column(Integer, nullable=False)
+    item_type = Column(Text, nullable=False)
+    submitted_payload_json = Column(Text, nullable=True)
+    is_correct = Column(Integer, nullable=True)
+    correct_count = Column(Integer, nullable=True)
+    total_count = Column(Integer, nullable=True)
+    answered_at = Column(Text, nullable=True)

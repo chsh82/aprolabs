@@ -29,6 +29,11 @@ data/import/qa_sample_v*.csv
 data/import/qa_sample_manifest_v*.json
 data/import/import_failures_v*.json
 
+# 초등 다유형 어휘 퀴즈(파일럿, v1~) - scripts/vocab/import_multiformat_quiz.py로
+# 재생성 가능한 압축 해제 산출물/실패 리포트. 원본 ZIP은 위 *.zip 규칙으로 이미 제외됨.
+data/import/vocabulary_multiformat_*/
+data/import/import_multiformat_failures_*.json
+
 # 학습지 편집 프로젝트(momo_book_db/worksheet/edit_projects/) - 사용자가 화면에서 만드는
 # 편집 프로젝트 파일(문항 덮어쓰기, 업로드 이미지, 버전별 빌드/PDF)로 위 generated/와 같은
 # 이유(용량 크고 화면에서 재생성 가능, 실제 자산은 서버에 수동 동기화)로 git에 안 올림.
