@@ -192,6 +192,108 @@ def run() -> bool:
             r = client.get(f"/api/vocabulary-quiz/sessions/{sid}/result")
             check(r.status_code == 200 and r.json()["correct"] == 1, f"[{item_type}] 결과 집계 정확(1/1 정답)")
 
+        # ---------- 4.5 CONTEXT_CLOZE 초성 힌트/재시도 기능 ----------
+        def _new_cloze_session():
+            r = client.post("/api/vocabulary-quiz/sessions", json={"item_types": ["CONTEXT_CLOZE"], "question_count": 1})
+            sid_ = r.json()["session_id"]
+            session_ids.append(sid_)
+            item_ = client.get(f"/api/vocabulary-quiz/sessions/{sid_}/next").json()["item"]
+            conn_ = sqlite3.connect(db_path)
+            payload_ = json.loads(conn_.execute(
+                "SELECT answer_payload_json FROM vocabulary_multiformat_items WHERE item_id=?", (item_["item_id"],)
+            ).fetchone()[0])
+            conn_.close()
+            return sid_, item_, payload_["answer_text"]
+
+        # (a) 스스로 요청하는 힌트 - 시도 횟수를 소모하지 않는다
+        sid, item, answer_text = _new_cloze_session()
+        check(item.get("choseong_hint") is None and item.get("attempt_count") == 0,
+              "CONTEXT_CLOZE 최초 조회 시 힌트 미노출, attempt_count=0")
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/hint", json={"item_id": item["item_id"]})
+        check(r.status_code == 200, "초성 힌트 요청 성공")
+        hint_data = r.json()
+        expected_choseong = mf._to_choseong(answer_text)
+        check(hint_data["choseong_hint"] == expected_choseong,
+              f"초성 힌트가 정답과 일치({hint_data['choseong_hint']} == {expected_choseong})")
+        conn = sqlite3.connect(db_path)
+        row = conn.execute(
+            "SELECT attempt_count, hint_used, answered_at FROM vocabulary_multiformat_responses "
+            "WHERE session_id=? AND item_id=?", (sid, item["item_id"]),
+        ).fetchone()
+        conn.close()
+        check(row == (0, 1, None), f"힌트 요청은 attempt_count를 소모하지 않고 hint_used만 1로 표시(실제 {row})")
+
+        # 힌트를 봤어도 1차 시도에 정답을 맞히면 재시도 없이 바로 확정된다(재시도는 "오답일 때만" 열림)
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/answer",
+                         json={"item_id": item["item_id"], "answer_text": answer_text})
+        check(r.status_code == 200, "힌트 열람 후 정답 제출 성공")
+        data_a = r.json()
+        check(data_a["is_correct"] is True and data_a.get("retry_available") is False and data_a["is_last"] is True,
+              "힌트를 봤어도 1차 시도 정답이면 재시도 없이 즉시 확정")
+
+        # (b) 1차 오답 -> 확정되지 않고 재시도 허용 + 힌트 자동 공개
+        sid, item, answer_text = _new_cloze_session()
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/answer",
+                         json={"item_id": item["item_id"], "answer_text": "완전히다른오답"})
+        check(r.status_code == 200, "1차 오답 제출 성공")
+        data = r.json()
+        check(data["is_correct"] is False and data["retry_available"] is True and data["is_last"] is False,
+              "1차 오답 - is_correct=false, retry_available=true, is_last=false")
+        check(data["choseong_hint"] == mf._to_choseong(answer_text), "1차 오답 시 초성 힌트 자동 공개")
+        check(data["attempts_left"] == 1, "1차 오답 후 남은 시도 1회")
+
+        conn = sqlite3.connect(db_path)
+        row = conn.execute(
+            "SELECT attempt_count, hint_used, answered_at, is_correct FROM vocabulary_multiformat_responses "
+            "WHERE session_id=? AND item_id=?", (sid, item["item_id"]),
+        ).fetchone()
+        conn.close()
+        check(row == (1, 1, None, None), f"1차 오답은 DB에서 미확정 상태로 남음(실제 {row})")
+
+        # next()는 확정되지 않은 같은 문항을 다시 내려주고, 이미 공개된 힌트도 함께 보여준다
+        r = client.get(f"/api/vocabulary-quiz/sessions/{sid}/next")
+        next_item = r.json()["item"]
+        check(next_item["item_id"] == item["item_id"], "1차 오답 후 next()가 같은 문항을 다시 반환")
+        check(next_item["attempt_count"] == 1 and next_item["attempts_left"] == 1,
+              "재조회 시 attempt_count/attempts_left 정확")
+        check(next_item["choseong_hint"] == mf._to_choseong(answer_text),
+              "재조회 시 이미 공개된 초성 힌트를 계속 보여줌")
+
+        # 2차 시도(정답) -> 확정, 정답 처리
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/answer",
+                         json={"item_id": item["item_id"], "answer_text": answer_text})
+        check(r.status_code == 200, "2차(정답) 제출 성공")
+        data2 = r.json()
+        check(data2["is_correct"] is True and data2.get("retry_available") is False and data2["is_last"] is True,
+              "2차 시도 정답 - 확정(is_correct=true, is_last=true)")
+
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/answer",
+                         json={"item_id": item["item_id"], "answer_text": answer_text})
+        check(r.status_code == 409, "확정된 문항 3차 제출 차단(409)")
+
+        # (c) 2차 시도도 오답 -> 그제서야 확정(오답)되고 정답/해설 공개
+        sid, item, answer_text = _new_cloze_session()
+        client.post(f"/api/vocabulary-quiz/sessions/{sid}/answer",
+                    json={"item_id": item["item_id"], "answer_text": "오답1"})
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/answer",
+                         json={"item_id": item["item_id"], "answer_text": "오답2"})
+        data3 = r.json()
+        check(data3["is_correct"] is False and data3.get("retry_available") is False and data3["is_last"] is True,
+              "2차 시도도 오답이면 그때 확정(is_correct=false, retry_available=false)")
+        check(data3["correct_answer"]["answer_text"] == answer_text and data3.get("explanation") is not None,
+              "2차 확정 오답 응답에는 정답/해설이 공개됨")
+
+        # (d) 다른 유형에는 힌트 엔드포인트 사용 불가, 완료된 세션엔 힌트 요청 차단
+        r = client.post("/api/vocabulary-quiz/sessions", json={"item_types": ["MEANING_CHOICE"], "question_count": 1})
+        sid_choice = r.json()["session_id"]
+        session_ids.append(sid_choice)
+        item_choice = client.get(f"/api/vocabulary-quiz/sessions/{sid_choice}/next").json()["item"]
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid_choice}/hint", json={"item_id": item_choice["item_id"]})
+        check(r.status_code == 400, "MEANING_CHOICE 문항에 힌트 요청 시 400")
+
+        r = client.post(f"/api/vocabulary-quiz/sessions/{sid}/hint", json={"item_id": item["item_id"]})
+        check(r.status_code == 409, "이미 확정된 문항에 힌트 요청 시 409")
+
         # ---------- 5. 혼합 세션(10문항) - 중복 없음, 진행률, 완료 처리 ----------
         r = client.post("/api/vocabulary-quiz/sessions", json={"question_count": 10})
         check(r.status_code == 200, "혼합(전체 유형) 세션 생성 성공")
@@ -213,11 +315,18 @@ def run() -> bool:
         conn.close()
         check(source_versions == {"2.1.29"}, "출제 문항 전부 source_version=2.1.29")
 
+        # CONTEXT_CLOZE는 1차 오답 시 확정되지 않고 재시도가 열리므로(retry_available)
+        # 같은 문항이 next()에서 다시 나올 수 있다 - done이 될 때까지 반복한다.
         last_is_last = None
-        for i in range(10):
+        finalized_count = 0
+        guard = 0
+        while True:
+            guard += 1
+            check(guard <= 40, "혼합 세션 next/answer 반복 횟수가 비정상적으로 많지 않음(무한루프 방지)")
             r = client.get(f"/api/vocabulary-quiz/sessions/{mixed_sid}/next")
             data = r.json()
-            check(data["done"] is False, f"혼합 세션 {i+1}번째 문항 조회 성공")
+            if data["done"]:
+                break
             item = data["item"]
             conn = sqlite3.connect(db_path)
             row = conn.execute(
@@ -232,8 +341,12 @@ def run() -> bool:
             else:
                 body = {"item_id": item["item_id"], "answers": {}}
             r = client.post(f"/api/vocabulary-quiz/sessions/{mixed_sid}/answer", json=body)
-            last_is_last = r.json()["is_last"]
-        check(last_is_last is True, "혼합 세션 10번째(마지막) 문항 제출 시 is_last=true")
+            ans = r.json()
+            last_is_last = ans["is_last"]
+            if not ans.get("retry_available"):
+                finalized_count += 1
+        check(finalized_count == 10, f"혼합 세션 10문항 전부 확정됨(실제 {finalized_count})")
+        check(last_is_last is True, "혼합 세션 마지막 문항 확정 제출 시 is_last=true")
 
         r = client.get(f"/api/vocabulary-quiz/sessions/{mixed_sid}/next")
         check(r.json()["done"] is True, "완료된 세션은 next 조회 시 done=true")

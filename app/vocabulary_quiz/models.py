@@ -281,4 +281,6 @@ class VocabularyMultiformatResponse(Base):
     is_correct = Column(Integer, nullable=True)
     correct_count = Column(Integer, nullable=True)
     total_count = Column(Integer, nullable=True)
+    attempt_count = Column(Integer, nullable=False, server_default=text("0"))
+    hint_used = Column(Integer, nullable=False, server_default=text("0"))
     answered_at = Column(Text, nullable=True)

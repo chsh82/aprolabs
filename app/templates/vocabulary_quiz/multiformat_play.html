@@ -167,10 +167,48 @@
       const input = document.createElement("input");
       input.type = "text";
       input.id = "cloze-input";
-      input.className = "border rounded-lg px-3 py-2 w-full text-sm";
+      input.className = "border rounded-lg px-3 py-2 w-full text-sm mb-2";
       input.placeholder = "빈칸에 들어갈 낱말을 입력하세요";
+
+      const hintBtn = document.createElement("button");
+      hintBtn.type = "button";
+      hintBtn.id = "choseong-hint-btn";
+      hintBtn.className = "text-xs text-blue-600 hover:underline mb-1";
+      hintBtn.textContent = "초성힌트보기";
+
+      const choseongDisplay = document.createElement("p");
+      choseongDisplay.id = "choseong-hint-display";
+      choseongDisplay.className = "text-sm font-semibold text-blue-700 mb-2";
+
+      const retryNotice = document.createElement("p");
+      retryNotice.id = "cloze-retry-notice";
+      retryNotice.className = "text-sm text-amber-600 mb-2 hidden";
+
+      hintBtn.addEventListener("click", async () => {
+        try {
+          const data = await api(`/sessions/${sessionId}/hint`, {
+            method: "POST", body: JSON.stringify({ item_id: currentItem.item_id }),
+          });
+          choseongDisplay.textContent = `초성 힌트: ${data.choseong_hint}`;
+        } catch (e) {
+          showError(questionError, e.message);
+        }
+      });
+
       area.appendChild(hint);
       area.appendChild(input);
+      area.appendChild(hintBtn);
+      area.appendChild(choseongDisplay);
+      area.appendChild(retryNotice);
+
+      // 재접속 등으로 이미 1차 시도를 틀려 힌트가 공개된 상태로 돌아온 경우
+      if (item.choseong_hint) {
+        choseongDisplay.textContent = `초성 힌트: ${item.choseong_hint}`;
+      }
+      if (item.attempt_count > 0) {
+        retryNotice.textContent = `아쉬워요! 초성 힌트를 보고 한 번 더 시도해 보세요. (남은 기회 ${item.attempts_left}회)`;
+        retryNotice.classList.remove("hidden");
+      }
     } else if (item.item_type === "MATCH_WORD_MEANING") {
       item.words.forEach(word => {
         const row = document.createElement("div");
@@ -223,14 +261,38 @@
     }
     try {
       const data = await api(`/sessions/${sessionId}/answer`, { method: "POST", body: JSON.stringify(body) });
-      renderFeedback(data);
+      if (data.retry_available) {
+        renderRetry(data);
+      } else {
+        renderFeedback(data);
+      }
     } catch (e) {
       showError(questionError, e.message);
     }
   });
 
+  function renderRetry(data) {
+    // 문맥빈칸 1차 시도 오답 - 확정하지 않고 초성 힌트를 보여준 뒤 같은 문항을 다시 풀게 한다.
+    const notice = document.getElementById("cloze-retry-notice");
+    notice.textContent = `아쉬워요! 초성 힌트를 보고 한 번 더 시도해 보세요. (남은 기회 ${data.attempts_left}회)`;
+    notice.classList.remove("hidden");
+    document.getElementById("choseong-hint-display").textContent = `초성 힌트: ${data.choseong_hint}`;
+    const input = document.getElementById("cloze-input");
+    input.value = "";
+    input.focus();
+  }
+
   function renderFeedback(data) {
     document.getElementById("submit-btn").classList.add("hidden");
+    if (currentItem.item_type === "CONTEXT_CLOZE") {
+      // 확정됐으면(정답이거나 2차 시도까지 끝났으면) 재시도 안내/입력을 정리해 최종 피드백만 보이게 한다.
+      const notice = document.getElementById("cloze-retry-notice");
+      if (notice) notice.classList.add("hidden");
+      const input = document.getElementById("cloze-input");
+      if (input) input.disabled = true;
+      const hintBtn = document.getElementById("choseong-hint-btn");
+      if (hintBtn) hintBtn.disabled = true;
+    }
     const box = document.getElementById("feedback-box");
     box.classList.remove("hidden");
     const resultEl = document.getElementById("feedback-result");

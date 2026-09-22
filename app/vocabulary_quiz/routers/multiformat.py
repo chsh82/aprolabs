@@ -17,6 +17,15 @@ answer_text, accepted_answers, 연결형 answers)를 절대 포함하지 않는�
 직접입력형(CONTEXT_CLOZE) 채점: 앞뒤 공백 제거 + Unicode NFC 정규화 후
 accepted_answers와 정확히 비교한다. 유사어/LLM 판정은 쓰지 않는다.
 
+문맥빈칸(CONTEXT_CLOZE)은 최대 2회 시도를 허용한다 - 1차 시도가 틀리면
+정답 처리를 확정하지 않고(응답 행이 계속 "미응답" 상태로 남아 GET .../next가
+같은 문항을 다시 내려준다) 초성 힌트를 자동으로 공개한다. 학생이 스스로
+POST .../hint를 호출해 1차 시도 전에 미리 힌트를 볼 수도 있다 - 힌트 열람은
+시도 횟수를 소모하지 않는다. 2차 시도(정답이든 오답이든)에서 비로소 확정
+(answered_at 기록)한다. 초성은 정답을 완전히 노출하지 않는 부분 힌트이지만
+그래도 서버가 요청 시점에만 계산해서 내려주고 문제 조회 응답에 기본으로
+포함하지 않는다(힌트를 이미 본 문항만 GET .../next에도 다시 포함).
+
 연결형(MATCH_WORD_MEANING) 채점: 4개 낱말-뜻 매핑을 전부 비교해 correct_count
 (0~4)를 반환한다 - is_correct는 4/4일 때만 1.
 """
@@ -52,6 +61,21 @@ ITEM_TYPES = (
     "CONTEXT_CLOZE", "MATCH_WORD_MEANING",
 )
 CHOICE_TYPES = ("MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING")
+MAX_CLOZE_ATTEMPTS = 2
+
+_CHOSEONG_LIST = list("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ")
+
+
+def _to_choseong(word: str) -> str:
+    """완성형 한글 음절만 초성으로 바꾸고, 그 외 문자(공백 등)는 그대로 둔다."""
+    result = []
+    for ch in word:
+        code = ord(ch) - 0xAC00
+        if 0 <= code <= 11171:
+            result.append(_CHOSEONG_LIST[code // (21 * 28)])
+        else:
+            result.append(ch)
+    return "".join(result)
 
 
 # ==================== 요청 바디 스키마 ====================
@@ -66,6 +90,10 @@ class AnswerBody(BaseModel):
     selected_option: int | None = None
     answer_text: str | None = None
     answers: dict[str, str] | None = None
+
+
+class HintBody(BaseModel):
+    item_id: str
 
 
 # ==================== 문항 선택 ====================
@@ -96,7 +124,8 @@ def _get_owned_session(db: Session, session_id: str, admin: str) -> VocabularyMu
 
 # ==================== 문제 조회용 payload (정답 필드 제외) ====================
 
-def _public_item_payload(item: VocabularyMultiformatItem) -> dict:
+def _public_item_payload(item: VocabularyMultiformatItem,
+                          response: VocabularyMultiformatResponse | None = None) -> dict:
     payload = json.loads(item.answer_payload_json)
     base = {
         "item_id": item.item_id,
@@ -110,6 +139,11 @@ def _public_item_payload(item: VocabularyMultiformatItem) -> dict:
         base["options"] = json.loads(item.options_json)
     elif item.item_type == "CONTEXT_CLOZE":
         base["input_hint"] = payload.get("input_hint")
+        base["attempt_count"] = response.attempt_count if response else 0
+        base["attempts_left"] = MAX_CLOZE_ATTEMPTS - (response.attempt_count if response else 0)
+        # 이미 힌트를 본 문항이면(1차 시도를 틀렸거나 스스로 요청) 재접속/재조회 시에도
+        # 다시 보여준다 - 한 번 열람 권한을 얻은 힌트를 새로고침으로 잃게 하지 않는다.
+        base["choseong_hint"] = _to_choseong(payload["answer_text"]) if response and response.hint_used else None
     elif item.item_type == "MATCH_WORD_MEANING":
         words = list(payload.get("words") or [])
         definitions = list(payload.get("definitions") or [])
@@ -256,10 +290,49 @@ def next_question(session_id: str, response: Response, db: Session = Depends(get
 
     return {
         "done": False,
-        "item": _public_item_payload(item),
+        "item": _public_item_payload(item, response),
         "order_index": response.order_index,
         "progress": {"answered": answered, "total": session.question_count},
     }
+
+
+def _find_response(db: Session, session_id: str, item_id: str) -> VocabularyMultiformatResponse:
+    response = db.query(VocabularyMultiformatResponse).filter(
+        VocabularyMultiformatResponse.session_id == session_id,
+        VocabularyMultiformatResponse.item_id == item_id,
+    ).first()
+    if response is None:
+        raise HTTPException(status_code=404, detail="문항을 찾을 수 없습니다")
+    return response
+
+
+@api_router.post("/sessions/{session_id}/hint")
+def request_hint(session_id: str, body: HintBody, response: Response,
+                  db: Session = Depends(get_vocabulary_quiz_db), admin: str = Depends(require_admin)):
+    """문맥빈칸(CONTEXT_CLOZE) 전용 - 학생이 스스로 요청하는 초성 힌트.
+    시도 횟수를 소모하지 않는다(attempt_count는 그대로 두고 hint_used만 1로 표시)."""
+    _apply_noindex(response)
+    session = _get_owned_session(db, session_id, admin)
+    if session.status == "completed":
+        raise HTTPException(status_code=409, detail="이미 완료된 세션입니다")
+
+    resp_row = _find_response(db, session_id, body.item_id)
+    if resp_row.item_type != "CONTEXT_CLOZE":
+        raise HTTPException(status_code=400, detail="초성 힌트는 문맥빈칸(CONTEXT_CLOZE) 문항에서만 사용할 수 있습니다")
+    if resp_row.answered_at is not None:
+        raise HTTPException(status_code=409, detail="이미 완료된 문항입니다")
+
+    item = db.query(VocabularyMultiformatItem).filter(
+        VocabularyMultiformatItem.item_id == body.item_id
+    ).first()
+    answer_payload = json.loads(item.answer_payload_json)
+    choseong_hint = _to_choseong(answer_payload["answer_text"])
+
+    resp_row.hint_used = 1
+    db.commit()
+
+    return {"choseong_hint": choseong_hint, "attempt_count": resp_row.attempt_count,
+            "attempts_left": MAX_CLOZE_ATTEMPTS - resp_row.attempt_count}
 
 
 @api_router.post("/sessions/{session_id}/answer")
@@ -270,13 +343,8 @@ def submit_answer(session_id: str, body: AnswerBody, response: Response,
     if session.status == "completed":
         raise HTTPException(status_code=409, detail="이미 완료된 세션입니다")
 
-    response = db.query(VocabularyMultiformatResponse).filter(
-        VocabularyMultiformatResponse.session_id == session_id,
-        VocabularyMultiformatResponse.item_id == body.item_id,
-    ).first()
-    if response is None:
-        raise HTTPException(status_code=404, detail="문항을 찾을 수 없습니다")
-    if response.answered_at is not None:
+    resp_row = _find_response(db, session_id, body.item_id)
+    if resp_row.answered_at is not None:
         raise HTTPException(status_code=409, detail="이미 답변한 문항입니다 - 변경할 수 없습니다")
 
     item = db.query(VocabularyMultiformatItem).filter(
@@ -284,12 +352,33 @@ def submit_answer(session_id: str, body: AnswerBody, response: Response,
     ).first()
 
     result = _grade(item, body)
+    resp_row.submitted_payload_json = json.dumps(result["submitted"], ensure_ascii=False)
+    resp_row.attempt_count += 1
 
-    response.submitted_payload_json = json.dumps(result["submitted"], ensure_ascii=False)
-    response.is_correct = result["is_correct"]
-    response.correct_count = result["correct_count"]
-    response.total_count = result["total_count"]
-    response.answered_at = datetime.now(timezone.utc).isoformat()
+    # 문맥빈칸은 최대 2회 시도 - 1차 시도가 틀리면 확정하지 않고(answered_at 유지 NULL)
+    # 초성 힌트를 자동 공개한 뒤 재시도를 허용한다. 그 외 유형/2차 시도는 즉시 확정한다.
+    is_retry_pending = (
+        item.item_type == "CONTEXT_CLOZE"
+        and not result["is_correct"]
+        and resp_row.attempt_count < MAX_CLOZE_ATTEMPTS
+    )
+
+    if is_retry_pending:
+        resp_row.hint_used = 1
+        db.commit()
+        answer_payload = json.loads(item.answer_payload_json)
+        return {
+            "is_correct": False,
+            "retry_available": True,
+            "attempts_left": MAX_CLOZE_ATTEMPTS - resp_row.attempt_count,
+            "choseong_hint": _to_choseong(answer_payload["answer_text"]),
+            "is_last": False,
+        }
+
+    resp_row.is_correct = result["is_correct"]
+    resp_row.correct_count = result["correct_count"]
+    resp_row.total_count = result["total_count"]
+    resp_row.answered_at = datetime.now(timezone.utc).isoformat()
     if result["is_correct"]:
         session.correct_count += 1
 
@@ -311,6 +400,7 @@ def submit_answer(session_id: str, body: AnswerBody, response: Response,
 
     return {
         "is_correct": bool(result["is_correct"]),
+        "retry_available": False,
         "correct_count": result["correct_count"],
         "total_count": result["total_count"],
         "correct_answer": _correct_answer_payload(item),
@@ -352,6 +442,8 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
                 "correct_answer": _correct_answer_payload(item) if item else None,
                 "correct_count": r.correct_count,
                 "total_count": r.total_count,
+                "attempt_count": r.attempt_count,
+                "hint_used": bool(r.hint_used),
             })
 
     for stats in by_type.values():

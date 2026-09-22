@@ -290,6 +290,8 @@ CREATE TABLE vocabulary_multiformat_responses (
     is_correct                   INTEGER, -- NULL=미응답. 연결형은 correct_count==total_count일 때만 1
     correct_count                 INTEGER, -- 연결형 전용: 4쌍 중 맞은 개수. 그 외 유형은 NULL
     total_count                   INTEGER, -- 연결형 전용: 4. 그 외 유형은 NULL
+    attempt_count                 INTEGER NOT NULL DEFAULT 0,  -- 문맥빈칸 전용: 제출 시도 횟수(최대 2) - 그 외 유형은 0 또는 1
+    hint_used                     INTEGER NOT NULL DEFAULT 0,  -- 문맥빈칸 전용: 초성 힌트를 본 적 있으면 1
     answered_at                   TEXT,
     UNIQUE (session_id, item_id)
 );
