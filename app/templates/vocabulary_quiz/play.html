@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}어휘 퀴즈{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-md mx-auto px-6 py-10 text-center">
+  <div class="text-5xl mb-4">📚</div>
+  <h1 class="text-2xl font-bold mb-2">어휘 퀴즈 (R&D)</h1>
+  <p class="text-sm text-gray-500 mb-8">버전 {{ source_version }} · {{ question_count }}문항 · 관리자 전용, 학생 비공개</p>
+
+  {% if in_progress %}
+  <a href="/vocabulary-quiz/session/{{ in_progress.id }}"
+     class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl text-base mb-3">
+    진행 중인 퀴즈 이어하기
+  </a>
+  <p class="text-xs text-gray-400 mb-6">시작: {{ in_progress.started_at[:16] }}</p>
+  {% endif %}
+
+  <form method="post" action="/vocabulary-quiz/play">
+    <button type="submit"
+            class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 rounded-xl text-base">
+      새 퀴즈 시작 ({{ question_count }}문항)
+    </button>
+  </form>
+</div>
+{% endblock %}

@@ -15,14 +15,12 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.auth import get_current_user_id
-from app.database import get_db
-from app.models.user import User
+from app.vocabulary_quiz.auth import NOINDEX_HEADERS as _NOINDEX_HEADERS, require_admin
 from app.vocabulary_quiz.db import get_vocabulary_quiz_db
 from app.vocabulary_quiz.models import VocabularyContent, VocabularyItem, VocabularyReviewSample
 
@@ -30,21 +28,6 @@ router = APIRouter(prefix="/vocabulary-quiz")
 templates = Jinja2Templates(directory="app/templates")
 
 _VALID_STATUSES = ("UNREVIEWED", "PASS", "REVISE", "EXCLUDE")
-_NOINDEX_HEADERS = {"X-Robots-Tag": "noindex, nofollow", "Cache-Control": "private, no-store"}
-
-
-def require_admin(request: Request) -> str:
-    user_id = get_current_user_id(request)
-    if not user_id:
-        raise HTTPException(status_code=401, detail="로그인이 필요합니다")
-    db = next(get_db())
-    try:
-        user = db.query(User).filter(User.id == user_id).first()
-    finally:
-        db.close()
-    if not user or not user.is_admin:
-        raise HTTPException(status_code=403, detail="관리자만 접근할 수 있습니다")
-    return user_id
 
 
 @router.get("/review")

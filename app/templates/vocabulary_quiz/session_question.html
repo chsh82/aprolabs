@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}어휘 퀴즈 - 문제 {{ attempt.order_index }}{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-4 py-6 sm:px-6">
+
+  <div class="flex items-center justify-between mb-3 text-sm text-gray-500">
+    <span>문제 {{ attempt.order_index }} / {{ session.question_count }}</span>
+    <span>{{ content.lemma }}</span>
+  </div>
+  <div class="w-full bg-gray-100 rounded-full h-2 mb-6">
+    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ ((attempt.order_index - 1) / session.question_count * 100) }}%"></div>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-5 sm:p-6">
+    <div class="text-lg font-medium mb-5">{{ item.stem }}</div>
+
+    <form method="post" action="/vocabulary-quiz/session/{{ session.id }}/answer">
+      <input type="hidden" name="item_id" value="{{ item.item_id }}">
+      <div class="space-y-3 mb-6">
+        {% for i in [1, 2, 3, 4] %}
+        <label class="block">
+          <input type="radio" name="selected_option" value="{{ i }}" required class="peer sr-only">
+          <div class="px-4 py-3.5 rounded-xl border-2 border-gray-200 peer-checked:border-blue-500
+                      peer-checked:bg-blue-50 cursor-pointer text-base leading-snug transition select-none active:scale-[0.99]">
+            {{ item['option_' ~ i] }}
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+      <button type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl text-base">
+        답 제출
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

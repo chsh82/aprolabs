@@ -12,6 +12,7 @@ from app.routers import literacy_admin, literacy_api
 from app.vocab.routers import quiz_api as vocab_quiz_api
 from app.vocab.routers import attempt_api as vocab_attempt_api
 from app.vocabulary_quiz.routers import review as vocabulary_quiz_review
+from app.vocabulary_quiz.routers import quiz as vocabulary_quiz_play
 from app import isbn
 from app.auth import get_current_user_id
 
@@ -73,6 +74,7 @@ app.include_router(literacy_api.router)
 app.include_router(vocab_quiz_api.router)
 app.include_router(vocab_attempt_api.router)
 app.include_router(vocabulary_quiz_review.router)
+app.include_router(vocabulary_quiz_play.router)
 
 # 외부 서비스(momoai_web) 연동용 - 세션 쿠키가 아니라 X-API-Key로 자체 인증하므로
 # 아래 auth_middleware의 로그인 리디렉션 대상에서 빼야 한다(안 빼면 미로그인

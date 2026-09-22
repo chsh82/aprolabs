@@ -126,3 +126,59 @@ class VocabularyReviewSample(Base):
     reviewed_at = Column(Text, nullable=True)
     created_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
     updated_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
+
+
+class VocabularyQaBatch(Base):
+    """사람이 표본을 검수한 세션 단위 요약(승인 의사결정) 기록.
+    vocabulary_review_samples(개별 항목 상태)와는 별개다."""
+    __tablename__ = "vocabulary_qa_batches"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    version = Column(Text, nullable=False, index=True)
+    reviewed_sample_count = Column(Integer, nullable=False)
+    pass_count = Column(Integer, nullable=False)
+    revise_count = Column(Integer, nullable=False)
+    exclude_count = Column(Integer, nullable=False)
+    critical_error_count = Column(Integer, nullable=False)
+    major_error_count = Column(Integer, nullable=False)
+    minor_error_count = Column(Integer, nullable=False)
+    approved_for_rnd_quiz = Column(Integer, nullable=False, server_default=text("0"))
+    approved_for_public = Column(Integer, nullable=False, server_default=text("0"))
+    reviewed_at = Column(Text, nullable=False)
+    notes = Column(Text, nullable=True)
+    created_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
+
+
+class VocabularyQuizSession(Base):
+    __tablename__ = "vocabulary_quiz_sessions"
+    __table_args__ = (
+        CheckConstraint("status IN ('in_progress', 'completed')", name="ck_quiz_session_status"),
+    )
+
+    id = Column(Text, primary_key=True)
+    user_id = Column(Text, nullable=False, index=True)
+    source_version = Column(Text, nullable=False)
+    question_count = Column(Integer, nullable=False)
+    correct_count = Column(Integer, nullable=False, server_default=text("0"))
+    status = Column(Text, nullable=False, server_default=text("'in_progress'"))
+    started_at = Column(Text, nullable=False)
+    completed_at = Column(Text, nullable=True)
+
+
+class VocabularyQuizAttempt(Base):
+    __tablename__ = "vocabulary_quiz_attempts"
+    __table_args__ = (
+        CheckConstraint("selected_option IS NULL OR selected_option BETWEEN 1 AND 4",
+                         name="ck_attempt_selected_option"),
+        CheckConstraint("correct_option BETWEEN 1 AND 4", name="ck_attempt_correct_option"),
+        UniqueConstraint("session_id", "item_id", name="uq_attempt_session_item"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    session_id = Column(Text, ForeignKey("vocabulary_quiz_sessions.id", ondelete="CASCADE"), nullable=False)
+    item_id = Column(Text, nullable=False)
+    order_index = Column(Integer, nullable=False)
+    selected_option = Column(Integer, nullable=True)
+    correct_option = Column(Integer, nullable=False)
+    is_correct = Column(Integer, nullable=True)
+    answered_at = Column(Text, nullable=True)

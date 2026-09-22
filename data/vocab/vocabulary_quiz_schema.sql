@@ -124,6 +124,62 @@ CREATE TABLE vocabulary_review_samples (
 CREATE INDEX idx_review_version ON vocabulary_review_samples(sample_version);
 CREATE INDEX idx_review_status  ON vocabulary_review_samples(review_status);
 
+-- ------------------------------------------------------------
+-- 5. QA 배치 검수 이력 - 사람이 표본을 검수한 "세션" 단위 요약 기록.
+--    vocabulary_review_samples(개별 항목 상태)와 별개로, "이 버전을
+--    R&D 퀴즈/운영에 써도 되는가"를 판단한 의사결정 자체를 남긴다.
+-- ------------------------------------------------------------
+CREATE TABLE vocabulary_qa_batches (
+    id                     INTEGER PRIMARY KEY AUTOINCREMENT,
+    version                TEXT NOT NULL,
+    reviewed_sample_count  INTEGER NOT NULL,
+    pass_count             INTEGER NOT NULL,
+    revise_count           INTEGER NOT NULL,
+    exclude_count          INTEGER NOT NULL,
+    critical_error_count   INTEGER NOT NULL,
+    major_error_count      INTEGER NOT NULL,
+    minor_error_count      INTEGER NOT NULL,
+    approved_for_rnd_quiz  INTEGER NOT NULL DEFAULT 0,
+    approved_for_public    INTEGER NOT NULL DEFAULT 0,
+    reviewed_at            TEXT NOT NULL,
+    notes                  TEXT,
+    created_at             TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX idx_qa_batches_version ON vocabulary_qa_batches(version);
+
+-- ------------------------------------------------------------
+-- 6. 어휘 퀴즈 MVP - 세션(1회 플레이) + 응답(문항별 1행).
+--    관리자 전용, 학생 비공개. 정답은 서버가 vocabulary_items.correct_option
+--    기준으로 채점 - 클라이언트가 보낸 정답 여부를 신뢰하지 않는다.
+-- ------------------------------------------------------------
+CREATE TABLE vocabulary_quiz_sessions (
+    id              TEXT PRIMARY KEY,
+    user_id         TEXT NOT NULL,
+    source_version  TEXT NOT NULL,
+    question_count  INTEGER NOT NULL,
+    correct_count   INTEGER NOT NULL DEFAULT 0,
+    status          TEXT NOT NULL DEFAULT 'in_progress' CHECK (status IN ('in_progress', 'completed')),
+    started_at      TEXT NOT NULL,
+    completed_at    TEXT
+);
+
+CREATE INDEX idx_quiz_sessions_user ON vocabulary_quiz_sessions(user_id, status);
+
+CREATE TABLE vocabulary_quiz_attempts (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id       TEXT NOT NULL REFERENCES vocabulary_quiz_sessions(id) ON DELETE CASCADE,
+    item_id          TEXT NOT NULL,
+    order_index      INTEGER NOT NULL,     -- 세션 내 문제 순서(1부터) - 진행 화면 표시/다음 문제 판단용
+    selected_option  INTEGER CHECK (selected_option BETWEEN 1 AND 4),  -- NULL = 아직 미응답
+    correct_option   INTEGER NOT NULL CHECK (correct_option BETWEEN 1 AND 4),
+    is_correct       INTEGER,
+    answered_at      TEXT,
+    UNIQUE (session_id, item_id)
+);
+
+CREATE INDEX idx_quiz_attempts_session ON vocabulary_quiz_attempts(session_id, order_index);
+
 -- ============================================================
 -- 검수/집계용 뷰
 -- ============================================================

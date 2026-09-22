@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}어휘 퀴즈 - 최종 결과{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-4 py-6 sm:px-6">
+
+  <div class="text-center mb-8">
+    <div class="text-5xl mb-3">{{ '🎉' if accuracy >= 80 else ('👍' if accuracy >= 50 else '📖') }}</div>
+    <h1 class="text-2xl font-bold mb-1">퀴즈 완료</h1>
+    <p class="text-sm text-gray-500">버전 {{ session.source_version }}</p>
+  </div>
+
+  <div class="grid grid-cols-3 gap-3 mb-8">
+    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-green-600">{{ correct }}</div>
+      <div class="text-xs text-gray-500 mt-1">정답</div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-red-500">{{ wrong_count }}</div>
+      <div class="text-xs text-gray-500 mt-1">오답</div>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl p-4 text-center">
+      <div class="text-2xl font-bold text-blue-600">{{ accuracy }}%</div>
+      <div class="text-xs text-gray-500 mt-1">정답률</div>
+    </div>
+  </div>
+
+  <form method="post" action="/vocabulary-quiz/play" class="mb-8">
+    <button type="submit"
+            class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 rounded-xl text-base">
+      새 퀴즈 시작
+    </button>
+  </form>
+
+  {% if wrong_details %}
+  <h2 class="text-base font-bold mb-3">틀린 문제 다시 보기 ({{ wrong_details|length }}건)</h2>
+  <div class="space-y-3">
+    {% for w in wrong_details %}
+    <div class="bg-white border border-gray-200 rounded-xl p-4">
+      <div class="text-xs text-gray-400 mb-1">{{ w.content.lemma }} · {{ w.content.pos or '-' }}</div>
+      <div class="font-medium mb-3">{{ w.item.stem }}</div>
+      <div class="space-y-1.5 mb-3 text-sm">
+        {% for i in [1, 2, 3, 4] %}
+        <div class="px-3 py-2 rounded-lg border
+                    {% if i == w.item.correct_option %}border-green-400 bg-green-50
+                    {% elif i == w.attempt.selected_option %}border-red-400 bg-red-50
+                    {% else %}border-gray-200{% endif %}">
+          {% if i == w.item.correct_option %}<span class="text-green-600 font-semibold">[정답]</span>{% endif %}
+          {% if i == w.attempt.selected_option %}<span class="text-red-600 font-semibold">[선택함]</span>{% endif %}
+          {{ w.item['option_' ~ i] }}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="text-xs text-gray-600 bg-gray-50 rounded-lg p-3">{{ w.item.explanation }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
