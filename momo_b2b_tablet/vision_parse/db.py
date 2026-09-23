@@ -66,9 +66,13 @@ CREATE TABLE IF NOT EXISTS run_log (
 
 
 def get_connection() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
+    # WAL 모드 + 넉넉한 busy_timeout - run.py --workers로 여러 문서를 동시에
+    # 처리할 때 각 스레드가 자기 커넥션으로 짧게 쓰기 때문에, WAL이 아니면
+    # "database is locked"가 자주 날 수 있다.
+    conn = sqlite3.connect(DB_PATH, timeout=30.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA busy_timeout = 30000")
     return conn
 
 

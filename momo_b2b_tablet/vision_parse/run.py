@@ -189,28 +189,37 @@ def main() -> int:
         ap.error("--doc-ids, --all, --sample 중 하나는 필요합니다")
         return 2
 
-    print(f"대상 {len(targets)}건, force={args.force}")
-    ok = failed = skipped = 0
-    for i, doc_id in enumerate(targets, 1):
+    todo = []
+    skipped = 0
+    for doc_id in targets:
         if not args.force and vdb.doc_already_done(doc_id, PROMPT_VERSION):
-            print(f"[{i}/{len(targets)}] {doc_id}: 이미 완료 - 건너뜀")
+            print(f"{doc_id}: 이미 완료 - 건너뜀")
             skipped += 1
             continue
         if doc_id not in manifest:
-            print(f"[{i}/{len(targets)}] {doc_id}: manifest에 없음 - 건너뜀")
+            print(f"{doc_id}: manifest에 없음 - 건너뜀")
             skipped += 1
             continue
+        todo.append(doc_id)
+
+    print(f"대상 {len(targets)}건 중 처리할 것 {len(todo)}건(건너뜀 {skipped}건), force={args.force}")
+    ok = failed = 0
+
+    # 문서 단위 병렬(ThreadPoolExecutor)도 시도해 봤으나, sqlite3 쓰기 락이
+    # busy_timeout/WAL 설정에도 "database is locked"로 즉시 실패하는 걸
+    # 반복 확인했다(원인을 더 파는 것보다, 백그라운드로 돌리는 무인 실행이라
+    # 안정성이 속도보다 중요하다고 판단 - 순차 실행으로 확정).
+    for i, doc_id in enumerate(todo, 1):
         t0 = time.time()
         result = run_document(doc_id, manifest[doc_id]["sha256"])
         dt = time.time() - t0
         if result["status"] == "success":
             ok += 1
-            print(f"[{i}/{len(targets)}] {doc_id}: 성공 - {result['pages_done']}쪽, "
+            print(f"[{i}/{len(todo)}] {doc_id}: 성공 - {result['pages_done']}쪽, "
                   f"{dt:.1f}s, in={result['input_tokens']} out={result['output_tokens']}")
         else:
             failed += 1
-            print(f"[{i}/{len(targets)}] {doc_id}: 실패 - {result['error']}")
-
+            print(f"[{i}/{len(todo)}] {doc_id}: 실패 - {result['error']}")
     print(f"\n완료: 성공 {ok} / 실패 {failed} / 건너뜀 {skipped}")
     return 0 if failed == 0 else 1
 
