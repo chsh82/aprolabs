@@ -216,11 +216,11 @@ def main() -> int:
         if result["status"] == "success":
             ok += 1
             print(f"[{i}/{len(todo)}] {doc_id}: 성공 - {result['pages_done']}쪽, "
-                  f"{dt:.1f}s, in={result['input_tokens']} out={result['output_tokens']}")
+                  f"{dt:.1f}s, in={result['input_tokens']} out={result['output_tokens']}", flush=True)
         else:
             failed += 1
-            print(f"[{i}/{len(todo)}] {doc_id}: 실패 - {result['error']}")
-    print(f"\n완료: 성공 {ok} / 실패 {failed} / 건너뜀 {skipped}")
+            print(f"[{i}/{len(todo)}] {doc_id}: 실패 - {result['error']}", flush=True)
+    print(f"\n완료: 성공 {ok} / 실패 {failed} / 건너뜀 {skipped}", flush=True)
     return 0 if failed == 0 else 1
 
 

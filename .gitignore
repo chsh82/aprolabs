@@ -22,7 +22,7 @@ momo_book_db/vision_source_pdfs/
 
 # 방식 B(비전 파싱) 결과 저장소 - momo_book.db/edition_store.db와 같은 이유로 git에 안 올림
 # (실행할 때마다 커지는 산출물 - 필요하면 서버에 수동 동기화)
-momo_b2b_tablet/vision_parse/vision_extract.db
+momo_b2b_tablet/vision_parse/vision_extract.db*
 
 # 학습지 자동 생성기(momo_book_db/generate, worksheet/scripts) - node_modules는 npm install로
 # 서버에서 직접 설치(배포 스크립트가 pip install만 해주고 npm install은 안 해줌 - 수동 1회 설치

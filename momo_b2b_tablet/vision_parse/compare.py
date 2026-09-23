@@ -25,6 +25,7 @@ for p in (REPO_ROOT, PKG_ROOT):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
+from normalize.db import get_connection as get_momo_connection  # noqa: E402
 from normalize.run import normalize_document  # noqa: E402
 from vision_parse import db as vdb  # noqa: E402
 
@@ -48,6 +49,49 @@ def _unsplit_score(excerpt: str | None, question: str | None) -> bool:
 
 def _scramble_count(*texts: str | None) -> int:
     return sum(1 for t in texts if t and _SUSPICIOUS_RESIDUE.search(t))
+
+
+_PAGE_NUM_RE = re.compile(r"\d+")
+
+
+def _known_page_range(doc_id: str) -> tuple[int, int] | None:
+    """momo_book.db에 실제 기록된 쪽수(excerpt_page/evidence_page)의 최소~최대
+    범위 - 원본 DB 원문은 노출하지 않고 정수 범위만 읽는다(읽기 전용)."""
+    conn = get_momo_connection()
+    try:
+        pages = [r[0] for r in conn.execute(
+            "SELECT excerpt_page FROM discussion_qa WHERE doc_id=? AND excerpt_page IS NOT NULL "
+            "UNION SELECT evidence_page FROM ox_quiz WHERE doc_id=? AND evidence_page IS NOT NULL",
+            (doc_id, doc_id),
+        )]
+    finally:
+        conn.close()
+    if not pages:
+        return None
+    return min(pages), max(pages)
+
+
+def _page_number_plausibility(doc_id: str, b_items) -> dict:
+    """B가 뽑은 page_number 중 몇 건이 원본 DB에 기록된 실제 쪽수 범위 밖인지
+    - 항목 단위 1:1 대조가 아니라 "이 문서에서 나올 법한 쪽수 범위" 안에 있는지
+    보는 느슨한 개연성 체크다(정밀 검증 아님 - 상대 비교/이상치 탐지용)."""
+    page_range = _known_page_range(doc_id)
+    cited = implausible = unparseable = 0
+    for it in b_items:
+        pn = it["page_number"]
+        if not pn:
+            continue
+        cited += 1
+        nums = [int(x) for x in _PAGE_NUM_RE.findall(str(pn))]
+        if not nums:
+            unparseable += 1
+            continue
+        if page_range is not None:
+            lo, hi = page_range
+            if any(n < max(lo - 5, 1) or n > hi + 5 for n in nums):
+                implausible += 1
+    return {"cited": cited, "implausible": implausible, "unparseable": unparseable,
+            "known_range": page_range}
 
 
 def compare_doc(doc_id: str) -> dict:
@@ -82,6 +126,7 @@ def compare_doc(doc_id: str) -> dict:
         layout_dist[shape] = layout_dist.get(shape, 0) + 1
 
     parse_errors = sum(1 for p in b_pages if p["parse_error"])
+    page_plaus = _page_number_plausibility(doc_id, b_items)
 
     return {
         "doc_id": doc_id,
@@ -99,6 +144,9 @@ def compare_doc(doc_id: str) -> dict:
         "b_input_tokens": sum(p["input_tokens"] for p in b_pages),
         "b_output_tokens": sum(p["output_tokens"] for p in b_pages),
         "layout_dist": layout_dist,
+        "b_page_cited": page_plaus["cited"],
+        "b_page_implausible": page_plaus["implausible"],
+        "b_page_unparseable": page_plaus["unparseable"],
     }
 
 
@@ -130,7 +178,8 @@ def main() -> int:
     lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     tot = {k: 0 for k in ("a_qa_count", "a_unsplit", "a_scramble_hits", "a_open_flags",
                            "b_item_count", "b_unsplit", "b_scramble_hits", "b_table_or_blanks",
-                           "b_pages", "b_parse_errors")}
+                           "b_pages", "b_parse_errors", "b_page_cited", "b_page_implausible",
+                           "b_page_unparseable")}
     layout_total: dict[str, int] = {}
     total_elapsed = total_in = total_out = 0.0
     for r in results:
@@ -154,6 +203,11 @@ def main() -> int:
     lines.append("\n## layout_hint.shape 분포 (표본 전체)\n")
     for shape, cnt in sorted(layout_total.items(), key=lambda x: -x[1]):
         lines.append(f"- {shape}: {cnt}건")
+
+    lines.append("\n## 쪽수 오추출 개연성 체크 (느슨한 휴리스틱 - 항목 단위 1:1 대조 아님)\n")
+    lines.append(f"- page_number이 채워진 항목: {tot['b_page_cited']}건")
+    lines.append(f"- 원본 DB에 기록된 쪽수 범위를 벗어난 것으로 의심: {tot['b_page_implausible']}건")
+    lines.append(f"- 숫자를 못 뽑은(형식 이상) 것: {tot['b_page_unparseable']}건")
 
     cost = (total_in * 3 + total_out * 15) / 1_000_000
     lines.append(f"\n## 비용/시간 실측 ({tot['b_pages']}쪽)\n")
