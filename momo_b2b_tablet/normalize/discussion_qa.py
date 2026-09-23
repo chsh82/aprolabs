@@ -137,8 +137,31 @@ def normalize_discussion_qa(rows: list[sqlite3.Row]) -> tuple[list[NormalizedQA]
 
     for order_no in sorted(groups):
         group = groups[order_no]
+        # unknown 행은 보통 question_text/excerpt_text가 둘 다 비어 있고 raw_text만
+        # 제시문 후보로 쓸 수 있지만(L2/L9 문서화된 패턴 - question_text에 물음표 섞인
+        # 서술문이 들어있어도 excerpt_text는 항상 None), L5-Q4-W02 order_no=4는
+        # 예외였다: unknown 행인데 excerpt_text와 question_text가 "둘 다" 이미 제대로
+        # 채워져 있었다(ui_type 판정만 실패한 경우). 이런 행을 excerpt_candidates
+        # 경로로만 다루면 question_text를 통째로 버리고 "제시문만 있고 질문이 없음"
+        # 으로 잘못 판정한다(실제로 이 버그를 발견해 고쳤다). question_text만으로
+        # 판단하면 L2처럼 서술문 안에 물음표가 섞인 정상 케이스까지 잘못 승격시키므로
+        # (실제로 이 오탐을 만들고 골든 테스트로 잡아냈다), excerpt_text까지 자기 소유로
+        # 채워져 있을 때만("제시문+질문 둘 다 이미 분리돼 있다"는 신호) 승격한다.
+        promoted_ids: set[int] = set()
         real_rows = [r for r in group if r["ui_type"] != "unknown"]
-        unknown_rows = [r for r in group if r["ui_type"] == "unknown"]
+        for r in group:
+            if (r["ui_type"] == "unknown"
+                    and (r["excerpt_text"] or "").strip()
+                    and not _is_garbage_question(r["question_text"])):
+                real_rows.append(r)
+                promoted_ids.add(r["id"])
+                doc_flags.append(Flag(
+                    kind="split", order_no=order_no,
+                    message="unknown 행이지만 excerpt_text·question_text가 자체적으로 "
+                            "이미 분리돼 있어 text_long으로 승격(raw_text 기반 제시문 "
+                            "추출 경로를 타지 않음)",
+                ))
+        unknown_rows = [r for r in group if r["ui_type"] == "unknown" and r["id"] not in promoted_ids]
 
         excerpt_candidates: list[tuple[str | None, str, sqlite3.Row]] = []
         for u in unknown_rows:
@@ -238,7 +261,10 @@ def normalize_discussion_qa(rows: list[sqlite3.Row]) -> tuple[list[NormalizedQA]
                     order_no=order_no,
                     order_label=r["order_label"] or str(order_no),
                     reading_type=reading_type,
-                    ui_type=r["ui_type"],
+                    # 승격된 unknown 행(위 promoted_ids)은 원본 ui_type이 여전히
+                    # 'unknown'이므로 완료 기준("ui_type이 여기 남으면 안 됨")을 지키기
+                    # 위해 text_long으로 해석한다(다른 unknown 유래 QA와 동일한 기본값).
+                    ui_type=r["ui_type"] if r["ui_type"] != "unknown" else "text_long",
                     excerpt_text=repaired_excerpt,
                     excerpt_page=r["excerpt_page"],
                     question_text=repaired_question or "",
