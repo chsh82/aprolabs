@@ -32,6 +32,16 @@ data/import/import_failures_v*.json
 # 초등 다유형 어휘 퀴즈(파일럿, v1~) - scripts/vocab/import_multiformat_quiz.py로
 # 재생성 가능한 압축 해제 산출물/실패 리포트. 원본 ZIP은 위 *.zip 규칙으로 이미 제외됨.
 data/import/vocabulary_multiformat_*/
+
+# 어휘 레벨(자동 후보, v0.1~) - scripts/vocab/import_vocabulary_levels.py로 재생성
+# 가능한 CSV/JSON 원본. 원본 ZIP은 위 *.zip 규칙으로 이미 제외됨. 정책 문서
+# (docs/vocabulary/LEVEL_POLICY_v0.1.md)와 마이그레이션/import 스크립트/테스트/
+# 모델 코드는 그대로 커밋한다.
+data/import/vocabulary_level*_v*.csv
+data/import/vocabulary_level*_v*.json
+data/import/level_audit_v*.json
+data/import/level_review_sample_v*.csv
+data/import/crossword_level_analysis_v*.csv
 data/import/import_multiformat_failures_*.json
 
 # 학습지 편집 프로젝트(momo_book_db/worksheet/edit_projects/) - 사용자가 화면에서 만드는

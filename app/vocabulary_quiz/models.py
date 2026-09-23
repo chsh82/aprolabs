@@ -9,6 +9,7 @@ from __future__ import annotations
 from sqlalchemy import (
     CheckConstraint,
     Column,
+    Float,
     ForeignKey,
     Integer,
     Text,
@@ -285,3 +286,34 @@ class VocabularyMultiformatResponse(Base):
     attempt_count = Column(Integer, nullable=False, server_default=text("0"))
     hint_used = Column(Integer, nullable=False, server_default=text("0"))
     answered_at = Column(Text, nullable=True)
+
+
+class VocabularyContentLevel(Base):
+    """vocabulary_contents 1건당 정책 버전별로 여러 행을 가질 수 있다(정책이
+    바뀌면 새 level_version으로 새 행 추가, 과거 후보도 보존) - UNIQUE는
+    content_id 단독이 아니라 (content_id, level_version) 복합키. 아직 학생
+    출제/공개(student_exposure, public_ready)에는 전혀 연결되지 않은
+    "자동 후보" 단계."""
+    __tablename__ = "vocabulary_content_levels"
+    __table_args__ = (
+        CheckConstraint("vocab_level BETWEEN 0 AND 6", name="ck_vcl_vocab_level"),
+        CheckConstraint("level_confidence IS NULL OR (level_confidence BETWEEN 0 AND 1)",
+                         name="ck_vcl_level_confidence"),
+        CheckConstraint("level_status IN ('PROVISIONAL_AUTO', 'REVIEW_BOUNDARY')", name="ck_vcl_level_status"),
+        UniqueConstraint("content_id", "level_version", name="uq_vcl_content_version"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    content_id = Column(Text, ForeignKey("vocabulary_contents.content_id"), nullable=False, index=True)
+    vocab_level = Column(Integer, nullable=False)
+    target_grade_band = Column(Text, nullable=True)
+    level_score = Column(Float, nullable=True)
+    level_confidence = Column(Float, nullable=True)
+    level_status = Column(Text, nullable=False)
+    boundary_flag = Column(Integer, nullable=False, server_default=text("0"))
+    level_source = Column(Text, nullable=True)
+    level_version = Column(Text, nullable=False, index=True)
+    level_reason_json = Column(Text, nullable=True)
+    is_active = Column(Integer, nullable=False, server_default=text("1"))
+    created_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
+    updated_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))

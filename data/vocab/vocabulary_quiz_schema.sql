@@ -306,3 +306,34 @@ CREATE VIEW v_vmf_item_type_counts AS
 SELECT source_version, item_type, COUNT(*) AS n
 FROM vocabulary_multiformat_items
 GROUP BY source_version, item_type;
+
+-- ------------------------------------------------------------
+-- 8. 어휘 레벨(자동 후보) - vocabulary_contents 1건당 정책 버전별로 여러 행을
+--    가질 수 있다(정책이 바뀌면 새 level_version으로 새 행 추가, 과거 후보도
+--    보존) - 그래서 UNIQUE는 content_id 단독이 아니라 (content_id, level_version)
+--    복합키다. 아직 학생 출제/공개(student_exposure, public_ready)에는 전혀
+--    연결되지 않은 "자동 후보" 단계 - level_status는 PROVISIONAL_AUTO
+--    (경계 아님, 잠정 확정) 또는 REVIEW_BOUNDARY(레벨 경계라 사람 검수 권장)
+--    둘 중 하나만 허용한다(운영 승격된 상태는 이 버전엔 없음).
+-- ------------------------------------------------------------
+CREATE TABLE vocabulary_content_levels (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    content_id          TEXT NOT NULL REFERENCES vocabulary_contents(content_id),
+    vocab_level         INTEGER NOT NULL CHECK (vocab_level BETWEEN 0 AND 6),
+    target_grade_band   TEXT,
+    level_score         REAL,
+    level_confidence    REAL CHECK (level_confidence IS NULL OR (level_confidence BETWEEN 0 AND 1)),
+    level_status        TEXT NOT NULL CHECK (level_status IN ('PROVISIONAL_AUTO', 'REVIEW_BOUNDARY')),
+    boundary_flag       INTEGER NOT NULL DEFAULT 0,
+    level_source        TEXT,
+    level_version       TEXT NOT NULL,
+    level_reason_json   TEXT,
+    is_active           INTEGER NOT NULL DEFAULT 1,
+    created_at          TEXT DEFAULT (datetime('now')),
+    updated_at          TEXT DEFAULT (datetime('now')),
+    UNIQUE (content_id, level_version)
+);
+
+CREATE INDEX idx_vcl_content_id ON vocabulary_content_levels(content_id);
+CREATE INDEX idx_vcl_level_version ON vocabulary_content_levels(level_version);
+CREATE INDEX idx_vcl_vocab_level ON vocabulary_content_levels(vocab_level);
