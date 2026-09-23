@@ -138,29 +138,38 @@ def normalize_discussion_qa(rows: list[sqlite3.Row]) -> tuple[list[NormalizedQA]
     for order_no in sorted(groups):
         group = groups[order_no]
         # unknown 행은 보통 question_text/excerpt_text가 둘 다 비어 있고 raw_text만
-        # 제시문 후보로 쓸 수 있지만(L2/L9 문서화된 패턴 - question_text에 물음표 섞인
-        # 서술문이 들어있어도 excerpt_text는 항상 None), L5-Q4-W02 order_no=4는
-        # 예외였다: unknown 행인데 excerpt_text와 question_text가 "둘 다" 이미 제대로
-        # 채워져 있었다(ui_type 판정만 실패한 경우). 이런 행을 excerpt_candidates
-        # 경로로만 다루면 question_text를 통째로 버리고 "제시문만 있고 질문이 없음"
-        # 으로 잘못 판정한다(실제로 이 버그를 발견해 고쳤다). question_text만으로
-        # 판단하면 L2처럼 서술문 안에 물음표가 섞인 정상 케이스까지 잘못 승격시키므로
-        # (실제로 이 오탐을 만들고 골든 테스트로 잡아냈다), excerpt_text까지 자기 소유로
-        # 채워져 있을 때만("제시문+질문 둘 다 이미 분리돼 있다"는 신호) 승격한다.
+        # 제시문 후보로 쓸 수 있지만(L2/L9 문서화된 패턴), 실제로는 "같은 그룹 안에
+        # 진짜(ui_type != unknown) 행이 하나도 없는" unknown 행 자체가 이미 완결된
+        # 질문(예: L5-Q4-W02 order_no=4, "...생각해 볼까요?")을 담고 있는 경우가
+        # 305건 전체에서 79건 중 74건(단독 69건 + 같은 조건의 2행 그룹 5건)이나
+        # 됐다 - 이 행들을 raw_text 기반 excerpt_candidates 경로로만 다루면
+        # question_text를 통째로 버리고 "제시문만 있고 질문이 없음"으로 잘못
+        # 판정한다(실제로 발견해 고쳤다).
+        #
+        # 반대로 L2처럼 "같은 그룹에 진짜 행이 이미 있고" 그 진짜 행이 짧은 질문을
+        # 갖고 있는 경우, unknown 행은 서술문 안에 물음표 섞인 대사("뭐라고?" 등)가
+        # 있어도 그건 학생에게 던지는 질문이 아니라 그냥 이야기 속 대사다 - 이런
+        # 그룹은 승격 대상에서 제외해야 한다(실제로 이 오탐을 만들고 골든 테스트로
+        # 잡아냈다). 그래서 "같은 그룹에 진짜 행이 전혀 없을 때만" 승격 대상으로
+        # 좁히고, 그 안에서도 물음표가 있는(학생에게 직접 묻는 문장일 가능성이 높은)
+        # 행만 승격한다 - 물음표 없이 파편적인 내용(빈칸 채우기 답안 조각 등, 실제
+        # 사례: L1-Q3-W11 id=2965)은 애매하므로 승격하지 않고 그대로 둔다.
+        has_real_sibling = any(r["ui_type"] != "unknown" for r in group)
         promoted_ids: set[int] = set()
         real_rows = [r for r in group if r["ui_type"] != "unknown"]
-        for r in group:
-            if (r["ui_type"] == "unknown"
-                    and (r["excerpt_text"] or "").strip()
-                    and not _is_garbage_question(r["question_text"])):
-                real_rows.append(r)
-                promoted_ids.add(r["id"])
-                doc_flags.append(Flag(
-                    kind="split", order_no=order_no,
-                    message="unknown 행이지만 excerpt_text·question_text가 자체적으로 "
-                            "이미 분리돼 있어 text_long으로 승격(raw_text 기반 제시문 "
-                            "추출 경로를 타지 않음)",
-                ))
+        if not has_real_sibling:
+            for r in group:
+                qtext = r["question_text"] or ""
+                if "?" in qtext and not _is_garbage_question(qtext):
+                    real_rows.append(r)
+                    promoted_ids.add(r["id"])
+                    doc_flags.append(Flag(
+                        kind="split", order_no=order_no,
+                        message="unknown 행이지만 같은 그룹에 진짜 행이 없고 자체 "
+                                "question_text에 완결된 질문(물음표 포함)이 있어 "
+                                "text_long으로 승격(raw_text 기반 제시문 추출 경로를 "
+                                "타지 않음)",
+                    ))
         unknown_rows = [r for r in group if r["ui_type"] == "unknown" and r["id"] not in promoted_ids]
 
         excerpt_candidates: list[tuple[str | None, str, sqlite3.Row]] = []
