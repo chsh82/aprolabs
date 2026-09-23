@@ -1,6 +1,27 @@
 # momo_b2b_tablet 검수 가이드
 
-## 1. 서버 띄우기
+## 0. 지금 떠 있는 배포 (2026-09-23)
+
+GCP 서버(`aprolabs`, 34.158.219.100)에 **이미 떠 있습니다** — 아래 URL로 바로 접속하시면 됩니다.
+태블릿에서도 됩니다(방화벽 `allow-momo-b2b-tablet` 규칙으로 8001 포트 열어 둠).
+
+- 검수: `http://34.158.219.100:8001/review/index.html?edition=1` (~5)
+- 학생 화면: `http://34.158.219.100:8001/renderer/viewer.html?doc=L9-Q3-W07&mode=student&adapter=api&edition=3`
+
+**주의**: systemd가 아니라 **백그라운드 프로세스**로만 띄워 뒀습니다(권한 문제로 systemd 등록은 못 했습니다 - 아래 "서버가 꺼졌을 때" 참고). 서버가 재부팅되면 같이 죽습니다. 평문 HTTP라 브라우저에 "안전하지 않음" 경고가 뜰 수 있는데, 검토용 임시 배포라 그렇습니다(TLS는 아직 없음).
+
+### 서버가 꺼졌을 때(재부팅 등) 다시 띄우는 법
+
+```bash
+ssh aprolabs   # 로컬 ~/.ssh/config에 등록돼 있음
+cd ~/aprolabs/momo_b2b_tablet
+source ~/aprolabs/venv/bin/activate
+set -a; source ~/aprolabs/.env; set +a
+nohup uvicorn edition.api:app --host 0.0.0.0 --port 8001 > server.log 2>&1 < /dev/null &
+disown
+```
+
+## 1. 로컬에서 띄우기
 
 ```bash
 cd momo_b2b_tablet
@@ -10,6 +31,8 @@ uvicorn edition.api:app --port 8000
 `ANTHROPIC_API_KEY` 환경변수가 있어야 학생 화면의 "글자로 확인"(손글씨 인식)이 실제로 동작합니다. 없어도 나머지(검수·학생 화면 조작·인쇄)는 전부 됩니다.
 
 ## 2. 화면별 URL
+
+아래는 URL *형식*입니다 - 지금 배포된 서버에서 쓰려면 `http://127.0.0.1:8000`을 `http://34.158.219.100:8001`로 바꾸면 됩니다.
 
 | 화면 | URL 형식 | 비고 |
 |---|---|---|
@@ -40,7 +63,7 @@ momo_book.db(원본)는 이 DB와 완전히 분리돼 있어 절대 건드리지
 | **4** | L5-Q4-W02 | choice_ab 4건 - 두근두근 한국사 1권(고학년) |
 | **5** | L7-Q1-W08 | 프로즈형 배경지식 - 젊은 예술가의 초상(중등, bgtext 2쪽 분할) |
 
-검수 화면 예: `http://127.0.0.1:8000/review/index.html?edition=3`
+검수 화면 예(배포된 서버): `http://34.158.219.100:8001/review/index.html?edition=3`
 
 ## 5. 초안 품질 요약 (검수 손이 얼마나 갈지 미리 보기)
 
