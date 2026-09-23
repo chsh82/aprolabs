@@ -19,6 +19,7 @@ POST /momo-review/{doc_id}/essay_prompt/{item_id}/upload-image
 POST /momo-review/{doc_id}/image/{image_id}/delete
                                                  -> 잘못 캡처된 이미지 삭제(표지/삽화/보기/발췌문/글쓰기)
 POST /momo-review/{doc_id}/reparse              -> 원본 PDF로 다시 파싱(파서 수정 후 재추출용)
+POST /momo-review/{doc_id}/reparse-upload       -> 원본 경로를 못 찾을 때 PDF를 직접 업로드해 다시 파싱
 """
 import os
 import sqlite3
@@ -46,6 +47,10 @@ _IMAGES_DIR = os.path.join(
     "momo_book_db", "extracted_images",
 )
 _ALLOWED_IMAGE_EXT = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
+_REPARSE_UPLOAD_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    "momo_book_db", "reparse_uploads",
+)
 
 # item_id가 있는 4개 테이블만 개별 승인 대상(essay_outline_question은 essay_prompt에 딸려서 별도 승인 없음)
 EDITABLE_TABLES = {
@@ -449,31 +454,25 @@ def momo_review_delete_image(doc_id: str, image_id: int, back: str = ""):
     return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
 
 
-@router.post("/{doc_id}/reparse")
-def momo_review_reparse(doc_id: str, back: str = ""):
-    """원본 PDF를 파서로 다시 돌려서 덮어씀(파서 버그를 고친 뒤 재추출할 때 사용).
-    기존에 검수자가 손으로 고친 내용은 다시 파싱하면서 다 지워지니, 확인 후에 눌러야 함."""
+def _get_doc_or_404(doc_id: str):
+    conn = _db()
+    doc = conn.execute("SELECT * FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
+    conn.close()
+    if not doc:
+        raise HTTPException(status_code=404, detail="문서를 찾을 수 없습니다.")
+    return doc
+
+
+def _reparse_doc(doc, pdf_path: str, back: str):
+    """doc(documents 행)을 pdf_path로 다시 파싱해 덮어씀. /reparse와 /reparse-upload가 공유."""
     import sys
     momo_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "momo_book_db")
     if momo_dir not in sys.path:
         sys.path.insert(0, momo_dir)
     from loader import load_pdf_into_db
 
-    conn = _db()
-    doc = conn.execute("SELECT * FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
-    conn.close()
-    if not doc:
-        raise HTTPException(status_code=404, detail="문서를 찾을 수 없습니다.")
-
-    source_file = doc["source_file"]
-    if not os.path.isfile(source_file):
-        raise HTTPException(
-            status_code=400,
-            detail=f"원본 PDF를 찾을 수 없습니다: {source_file} (USB/외장 드라이브 연결 확인 필요)",
-        )
-
     doc_meta = {
-        "doc_id": doc_id,
+        "doc_id": doc["doc_id"],
         "curriculum_id": doc["curriculum_id"],
         "level": doc["level"],
         "quarter": doc["quarter"],
@@ -482,5 +481,42 @@ def momo_review_reparse(doc_id: str, back: str = ""):
         "book_author": doc["book_author"],
         "isbn": doc["isbn"],
     }
-    load_pdf_into_db(source_file, doc_meta, use_llm=True, force=True)
-    return RedirectResponse(url=_detail_url(doc_id, back), status_code=303)
+    load_pdf_into_db(pdf_path, doc_meta, use_llm=True, force=True)
+    return RedirectResponse(url=_detail_url(doc["doc_id"], back), status_code=303)
+
+
+@router.post("/{doc_id}/reparse")
+def momo_review_reparse(doc_id: str, back: str = ""):
+    """원본 PDF를 파서로 다시 돌려서 덮어씀(파서 버그를 고친 뒤 재추출할 때 사용).
+    기존에 검수자가 손으로 고친 내용은 다시 파싱하면서 다 지워지니, 확인 후에 눌러야 함."""
+    doc = _get_doc_or_404(doc_id)
+    source_file = doc["source_file"]
+    if not os.path.isfile(source_file):
+        raise HTTPException(
+            status_code=400,
+            detail=f"원본 PDF를 찾을 수 없습니다: {source_file} (USB/외장 드라이브 연결 확인 필요 - "
+                   f"또는 아래 'PDF 업로드로 다시 파싱'으로 파일을 직접 올려 다시 파싱할 수 있습니다)",
+        )
+    return _reparse_doc(doc, source_file, back)
+
+
+@router.post("/{doc_id}/reparse-upload")
+async def momo_review_reparse_upload(doc_id: str, file: UploadFile = File(...), back: str = ""):
+    """원본 PDF 경로를 찾을 수 없을 때(USB/외장 드라이브 분리 등) PDF를 직접 업로드해 다시 파싱함.
+    업로드분은 momo_book_db/reparse_uploads/{doc_id}.pdf로 저장하고 documents.source_file도
+    이 경로로 갱신되므로(load_pdf_into_db 내부에서 처리), 다음부터는 업로드 없이도
+    '원본 다시 파싱'을 다시 쓸 수 있다."""
+    doc = _get_doc_or_404(doc_id)
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext != ".pdf":
+        raise HTTPException(status_code=400, detail=f"PDF 파일만 업로드할 수 있습니다: {ext or '(확장자 없음)'}")
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=400, detail="빈 파일입니다.")
+
+    os.makedirs(_REPARSE_UPLOAD_DIR, exist_ok=True)
+    saved_path = os.path.join(_REPARSE_UPLOAD_DIR, f"{doc_id}.pdf")
+    with open(saved_path, "wb") as f:
+        f.write(content)
+
+    return _reparse_doc(doc, saved_path, back)
