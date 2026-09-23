@@ -16,6 +16,14 @@ momo_book_db/extracted_images/
 # 재파싱용으로 업로드한 원본 PDF(용량이 크고 개인 자료라 git에 안 올림 - db처럼 서버에 수동 동기화)
 momo_book_db/reparse_uploads/
 
+# 비전 파싱 실험용으로 외장 드라이브에서 복사해 둔 원본 PDF 305건(237MB, 저작권 있는 교재
+# 원본이라 git에 안 올림 - _manifest.json에 경로/해시/복사 시각 기록해 뒀으니 유실 시 재복사 가능)
+momo_book_db/vision_source_pdfs/
+
+# 방식 B(비전 파싱) 결과 저장소 - momo_book.db/edition_store.db와 같은 이유로 git에 안 올림
+# (실행할 때마다 커지는 산출물 - 필요하면 서버에 수동 동기화)
+momo_b2b_tablet/vision_parse/vision_extract.db
+
 # 학습지 자동 생성기(momo_book_db/generate, worksheet/scripts) - node_modules는 npm install로
 # 서버에서 직접 설치(배포 스크립트가 pip install만 해주고 npm install은 안 해줌 - 수동 1회 설치
 # 필요), generated/는 웹 화면에서 버튼으로 만드는 산출물이라 재생성 가능 - 둘 다 git에 안 올림.
