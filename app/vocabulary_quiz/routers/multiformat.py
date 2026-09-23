@@ -43,6 +43,22 @@ options / 빈칸 input_hint / 연결형 words·definitions / 십자말 rows·col
 활성칸·entries(정답 제외)) - API는 매 요청마다 answer_payload_json에서
 다시 골라내는 대신 이 컬럼을 그대로 쓰고, 세션 상태에 따라 달라지는 부분
 (문맥빈칸 힌트, 연결형 뜻 순서 섞기)만 요청 시점에 덧붙인다.
+
+관리자 전용 레벨별 출제(v1, admin_level_quiz_v1 패키지 이식) - 기존 세션
+생성 구조를 확장한다(별도 앱/라우터를 만들지 않음). selected_vocab_level이
+주어지면:
+  - 단일 어휘형은 vocabulary_multiformat_items.source_content_id가
+    vocabulary_content_levels와 (level_version='level_policy_v0.1',
+    is_active=1, vocab_level=선택레벨, level_status IN 신뢰도모드허용값)로
+    일치해야 한다.
+  - 복합형(MATCH_WORD_MEANING)은 source_content_ids_json의 모든 content_id가
+    위 조건을 전부 만족해야 한다 - 평균/대표 레벨을 만들지 않는다(패키지
+    reference/admin_level_quiz.py의 eligible_items()와 동일 규칙).
+  - CROSSWORD는 레벨 모드에서 완전히 제외(선택 자체가 422) - 전체 모드는
+    기존 동작 그대로.
+  - 후보가 요청 문항 수보다 적으면 다른 레벨/유형으로 자동 보충하지 않고
+    409(INSUFFICIENT_LEVEL_CANDIDATES)로 거부한다.
+selected_vocab_level이 None이면(전체 모드) 기존 동작과 100% 동일하다.
 """
 from __future__ import annotations
 
@@ -52,7 +68,7 @@ import unicodedata
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -60,6 +76,7 @@ from sqlalchemy.orm import Session
 from app.vocabulary_quiz.auth import NOINDEX_HEADERS, require_admin
 from app.vocabulary_quiz.db import get_vocabulary_quiz_db
 from app.vocabulary_quiz.models import (
+    VocabularyContentLevel,
     VocabularyMultiformatItem,
     VocabularyMultiformatResponse,
     VocabularyMultiformatSession,
@@ -77,6 +94,19 @@ ITEM_TYPES = (
 )
 CHOICE_TYPES = ("MEANING_CHOICE", "WORD_FROM_DEFINITION", "CONTEXT_MEANING")
 MAX_CLOZE_ATTEMPTS = 2
+
+# ==================== 레벨별 출제(v1) 상수 ====================
+LEVEL_VERSION = "level_policy_v0.1"
+VALID_LEVELS = frozenset(range(7))
+CONFIDENCE_MODES = {
+    "all_candidates": ("PROVISIONAL_AUTO", "REVIEW_BOUNDARY"),
+    "auto_only": ("PROVISIONAL_AUTO",),
+}
+GRADE_LABELS = {
+    0: "초등 1~2학년", 1: "초등 3~4학년", 2: "초등 5~6학년",
+    3: "중등 1~2학년", 4: "중등 3학년", 5: "고등 1~2학년", 6: "고등 3학년",
+}
+LEVEL_MODE_ITEM_TYPES = tuple(t for t in ITEM_TYPES if t != "CROSSWORD")
 
 _CHOSEONG_LIST = list("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ")
 
@@ -98,6 +128,8 @@ def _to_choseong(word: str) -> str:
 class CreateSessionBody(BaseModel):
     item_types: list[str] | None = None
     question_count: int = DEFAULT_QUESTION_COUNT
+    selected_vocab_level: int | None = None
+    confidence_mode: str = "all_candidates"
 
 
 class AnswerBody(BaseModel):
@@ -153,6 +185,71 @@ def _select_crossword_item(db: Session, admin: str) -> str:
     last_id = _last_crossword_item_id(db, admin)
     pool = [i for i in ids if i != last_id] if last_id and len(ids) > 1 else ids
     return random.choice(pool)
+
+
+# ==================== 레벨별 출제(v1) 후보 선택 ====================
+
+def _matching_level_content_ids(db: Session, level: int, confidence_mode: str) -> set[str]:
+    statuses = CONFIDENCE_MODES[confidence_mode]
+    rows = db.query(VocabularyContentLevel.content_id).filter(
+        VocabularyContentLevel.level_version == LEVEL_VERSION,
+        VocabularyContentLevel.is_active == 1,
+        VocabularyContentLevel.vocab_level == level,
+        VocabularyContentLevel.level_status.in_(statuses),
+    ).all()
+    return {r[0] for r in rows}
+
+
+def _select_level_candidates(db: Session, level: int, item_types: list[str], confidence_mode: str) -> list[str]:
+    """레벨 모드 후보 item_id 목록. 단일 어휘형은 source_content_id가, 복합형
+    (MATCH_WORD_MEANING)은 source_content_ids_json의 전부가 선택 레벨과
+    일치할 때만 포함한다 - 평균/대표 레벨을 임의로 만들지 않는다."""
+    matching = _matching_level_content_ids(db, level, confidence_mode)
+    if not matching:
+        return []
+    types = [t for t in item_types if t != "CROSSWORD"]  # 레벨 모드는 CROSSWORD 완전 제외
+    items = db.query(VocabularyMultiformatItem).filter(
+        VocabularyMultiformatItem.source_version == SOURCE_VERSION,
+        VocabularyMultiformatItem.is_active == 1,
+        VocabularyMultiformatItem.item_type.in_(types),
+    ).all()
+    candidates = []
+    for item in items:
+        if item.item_type == "MATCH_WORD_MEANING":
+            cids = json.loads(item.source_content_ids_json or "[]")
+            if cids and all(c in matching for c in cids):
+                candidates.append(item.item_id)
+        else:
+            if item.source_content_id in matching:
+                candidates.append(item.item_id)
+    return candidates
+
+
+def _level_availability(db: Session, level: int, confidence_mode: str, item_types: list[str]) -> dict:
+    types = [t for t in item_types if t != "CROSSWORD"]
+    candidate_ids = _select_level_candidates(db, level, types, confidence_mode)
+    items = (
+        db.query(VocabularyMultiformatItem)
+        .filter(VocabularyMultiformatItem.item_id.in_(candidate_ids)).all()
+        if candidate_ids else []
+    )
+    distinct_words: set[str] = set()
+    by_type: dict[str, int] = {t: 0 for t in types}
+    for item in items:
+        by_type[item.item_type] = by_type.get(item.item_type, 0) + 1
+        if item.item_type == "MATCH_WORD_MEANING":
+            distinct_words.update(json.loads(item.source_content_ids_json or "[]"))
+        else:
+            distinct_words.add(item.source_content_id)
+    return {
+        "level": level,
+        "grade_label": GRADE_LABELS.get(level),
+        "confidence_mode": confidence_mode,
+        "level_version": LEVEL_VERSION,
+        "available_items": len(items),
+        "distinct_words": len(distinct_words),
+        "by_type": by_type,
+    }
 
 
 def _get_owned_session(db: Session, session_id: str, admin: str) -> VocabularyMultiformatSession:
@@ -280,10 +377,55 @@ def _apply_noindex(response: Response) -> None:
         response.headers[k] = v
 
 
+@api_router.get("/availability")
+def get_availability(
+    response: Response,
+    level: int | None = Query(None),
+    confidence_mode: str = Query("all_candidates"),
+    item_type: list[str] = Query(default=[]),
+    db: Session = Depends(get_vocabulary_quiz_db),
+    admin: str = Depends(require_admin),
+):
+    """레벨 모드 설정 화면이 실시간으로 호출하는 가용량 조회 - 클라이언트가
+    보낸 level/status/count는 신뢰하지 않고 세션 생성 시 서버가 동일 조건으로
+    다시 검증한다(이 엔드포인트는 표시 전용, 세션을 만들지 않는다)."""
+    _apply_noindex(response)
+    if confidence_mode not in CONFIDENCE_MODES:
+        raise HTTPException(status_code=422, detail="지원하지 않는 신뢰도 필터입니다(all_candidates/auto_only만 허용)")
+    if level is not None and level not in VALID_LEVELS:
+        raise HTTPException(status_code=422, detail="레벨은 0~6 또는 전체(생략)여야 합니다")
+
+    unknown = set(item_type) - set(ITEM_TYPES)
+    if unknown:
+        raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
+    types = list(item_type) if item_type else list(LEVEL_MODE_ITEM_TYPES if level is not None else ITEM_TYPES)
+
+    if level is None:
+        # 전체 모드 - 레벨 필터 없이 현재 존재하는 문항 수만 보여준다(회귀 없음, 참고용).
+        rows = db.query(VocabularyMultiformatItem.item_type, VocabularyMultiformatItem.item_id).filter(
+            VocabularyMultiformatItem.source_version == SOURCE_VERSION,
+            VocabularyMultiformatItem.is_active == 1,
+            VocabularyMultiformatItem.item_type.in_(types),
+        ).all()
+        by_type: dict[str, int] = {}
+        for item_type_name, _ in rows:
+            by_type[item_type_name] = by_type.get(item_type_name, 0) + 1
+        return {
+            "level": None, "grade_label": None, "confidence_mode": confidence_mode, "level_version": None,
+            "available_items": len(rows), "distinct_words": None, "by_type": by_type,
+        }
+
+    types = [t for t in types if t != "CROSSWORD"]
+    return _level_availability(db, level, confidence_mode, types)
+
+
 @api_router.post("/sessions")
 def create_session(body: CreateSessionBody, response: Response, db: Session = Depends(get_vocabulary_quiz_db),
                     admin: str = Depends(require_admin)):
     _apply_noindex(response)
+    if body.confidence_mode not in CONFIDENCE_MODES:
+        raise HTTPException(status_code=422, detail="지원하지 않는 신뢰도 필터입니다(all_candidates/auto_only만 허용)")
+
     item_types = None
     if body.item_types:
         unknown = set(body.item_types) - set(ITEM_TYPES)
@@ -291,7 +433,41 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
             raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
         item_types = body.item_types
 
-    if item_types and "CROSSWORD" in item_types:
+    metadata: dict | None = None
+    candidate_count: int | None = None
+
+    if body.selected_vocab_level is not None:
+        # ---------- 레벨별 출제(v1) ----------
+        if body.selected_vocab_level not in VALID_LEVELS:
+            raise HTTPException(status_code=422, detail="레벨은 0~6 또는 전체(null)여야 합니다")
+        if not item_types:
+            raise HTTPException(status_code=422, detail="레벨별 출제는 문항 유형을 하나 이상 선택해야 합니다")
+        if "CROSSWORD" in item_types:
+            raise HTTPException(status_code=422, detail="십자말은 레벨별 출제 v1에서 지원하지 않습니다")
+        if body.question_count < 1 or body.question_count > 50:
+            raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
+
+        candidate_ids = _select_level_candidates(db, body.selected_vocab_level, item_types, body.confidence_mode)
+        candidate_count = len(candidate_ids)
+        if candidate_count < body.question_count:
+            raise HTTPException(status_code=409, detail={
+                "code": "INSUFFICIENT_LEVEL_CANDIDATES",
+                "requested": body.question_count,
+                "available": candidate_count,
+                "level": body.selected_vocab_level,
+            })
+        item_ids = random.sample(candidate_ids, body.question_count)
+        metadata = {
+            "audience": "ADMIN_ONLY",
+            "selected_vocab_level": body.selected_vocab_level,
+            "confidence_mode": body.confidence_mode,
+            "level_version": LEVEL_VERSION,
+            "requested_count": body.question_count,
+            "candidate_count": candidate_count,
+            "actual_count": len(item_ids),
+            "item_types": item_types,
+        }
+    elif item_types and "CROSSWORD" in item_types:
         if item_types != ["CROSSWORD"]:
             raise HTTPException(status_code=400,
                                  detail="CROSSWORD는 단독 모드로만 선택할 수 있습니다(다른 유형과 섞을 수 없습니다)")
@@ -300,6 +476,7 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
         if body.question_count < 1 or body.question_count > 50:
             raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
         item_ids = _select_question_items(db, body.question_count, item_types)
+
     items_by_id = {
         row.item_id: row for row in
         db.query(VocabularyMultiformatItem).filter(VocabularyMultiformatItem.item_id.in_(item_ids)).all()
@@ -311,6 +488,7 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
         id=session_id, user_id=admin, source_version=SOURCE_VERSION,
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
+        metadata_json=json.dumps(metadata, ensure_ascii=False) if metadata else None,
     )
     db.add(session)
     db.flush()  # session INSERT를 먼저 내보내지 않으면 responses의 session_id FK가 아직 없는
@@ -328,6 +506,7 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
         "question_count": len(item_ids),
         "item_types": item_types,
         "source_version": SOURCE_VERSION,
+        "level_info": metadata,
     }
 
 
@@ -531,6 +710,21 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
     correct = session.correct_count
     accuracy = round(correct / total * 100, 1) if total else 0.0
 
+    # 기존 세션(레벨별 출제 v1 이전에 생성됨)은 metadata_json이 NULL이다 - "레벨 미지정"으로 표시.
+    metadata = json.loads(session.metadata_json) if session.metadata_json else None
+    level_info = None
+    if metadata:
+        selected_level = metadata.get("selected_vocab_level")
+        level_info = {
+            "selected_vocab_level": selected_level,
+            "grade_label": GRADE_LABELS.get(selected_level) if selected_level is not None else None,
+            "confidence_mode": metadata.get("confidence_mode"),
+            "level_version": metadata.get("level_version"),
+            "requested_count": metadata.get("requested_count"),
+            "candidate_count": metadata.get("candidate_count"),
+            "actual_count": metadata.get("actual_count"),
+        }
+
     return {
         "session_id": session_id,
         "status": session.status,
@@ -539,13 +733,22 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
         "accuracy": accuracy,
         "by_type": by_type,
         "wrong_items": wrong_items,
+        "level_info": level_info,  # None = "레벨 미지정"(기존 세션 또는 전체 모드)
     }
 
 
 # ==================== 관리자 화면 ====================
 
 @page_router.get("/play")
-def play_page(request: Request, admin: str = Depends(require_admin)):
+def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), admin: str = Depends(require_admin)):
+    # 레벨 선택기에서 "데이터 준비 중"으로 비활성화할 레벨 - 전체 후보 기준으로
+    # 가용 문항이 0건이면 비활성화(현재는 L5/L6, 데이터가 채워지면 자동으로 활성화된다).
+    level_disabled = []
+    for lv in VALID_LEVELS:
+        matching = _matching_level_content_ids(db, lv, "all_candidates")
+        if not matching:
+            level_disabled.append(lv)
     return templates.TemplateResponse("vocabulary_quiz/multiformat_play.html", {
         "request": request, "item_types": ITEM_TYPES, "default_question_count": DEFAULT_QUESTION_COUNT,
+        "level_grade_labels": GRADE_LABELS, "level_disabled": set(level_disabled),
     }, headers=NOINDEX_HEADERS)

@@ -9,21 +9,48 @@
   </div>
 
   <div id="setup-screen">
+    <p class="text-sm font-semibold text-gray-700 mb-2">출제 범위 (관리자 전용)</p>
+    <select id="level-select" class="border rounded-lg px-3 py-2 w-full mb-1 text-sm">
+      <option value="">전체</option>
+      {% for lv, label in level_grade_labels.items() %}
+      <option value="{{ lv }}" {% if lv in level_disabled %}disabled{% endif %}>
+        L{{ lv }} {{ label }}{% if lv in level_disabled %} — 데이터 준비 중{% endif %}
+      </option>
+      {% endfor %}
+    </select>
+    <p id="level-warning-badge" class="text-xs text-amber-600 mb-3 hidden"></p>
+
+    <div id="confidence-field" class="hidden">
+      <p class="text-sm font-semibold text-gray-700 mb-2">후보 신뢰도</p>
+      <div class="flex gap-2 mb-3">
+        <label class="flex-1 border rounded-lg px-3 py-2 text-xs cursor-pointer flex items-center gap-1.5">
+          <input type="radio" name="confidence-mode" value="all_candidates" checked>
+          <span>전체 후보(권장)</span>
+        </label>
+        <label class="flex-1 border rounded-lg px-3 py-2 text-xs cursor-pointer flex items-center gap-1.5">
+          <input type="radio" name="confidence-mode" value="auto_only">
+          <span>고신뢰도만</span>
+        </label>
+      </div>
+    </div>
+
     <p class="text-sm font-semibold text-gray-700 mb-2">유형 선택 (선택 안 하면 전체 혼합)</p>
-    <div class="grid grid-cols-1 gap-2 mb-4" id="type-checkboxes">
+    <div class="grid grid-cols-1 gap-2 mb-1" id="type-checkboxes">
       {% for t in item_types %}
-      <label class="flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer">
-        <input type="checkbox" value="{{ t }}" class="type-checkbox">
-        <span>{{ t }}</span>
+      <label class="flex items-center justify-between gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer" data-type-row="{{ t }}">
+        <span class="flex items-center gap-2"><input type="checkbox" value="{{ t }}" class="type-checkbox"><span>{{ t }}</span></span>
+        <span class="text-xs text-gray-400 type-count" data-type-count="{{ t }}"></span>
       </label>
       {% endfor %}
     </div>
+    <p id="crossword-notice" class="text-sm text-gray-500 mb-4 hidden"></p>
+
     <div id="question-count-field">
       <label class="block text-sm font-semibold text-gray-700 mb-1">문항 수</label>
       <input type="number" id="question-count" value="{{ default_question_count }}" min="1" max="50"
-             class="border rounded-lg px-3 py-2 w-full mb-4 text-sm">
+             class="border rounded-lg px-3 py-2 w-full mb-1 text-sm">
+      <p id="availability-info" class="text-xs text-gray-500 mb-4"></p>
     </div>
-    <p id="crossword-notice" class="text-sm text-gray-500 mb-4 hidden">십자말은 항상 1세트가 출제됩니다.</p>
     <button id="start-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3.5 rounded-xl text-base">
       퀴즈 시작
     </button>
@@ -59,7 +86,8 @@
 
   <div id="result-screen" class="hidden">
     <h2 class="text-xl font-bold mb-1 text-center">결과</h2>
-    <p id="result-summary" class="text-center text-gray-600 mb-6"></p>
+    <p id="result-summary" class="text-center text-gray-600 mb-2"></p>
+    <p id="result-level-info" class="text-center text-xs text-gray-400 mb-6"></p>
     <div id="result-by-type" class="space-y-2 mb-6"></div>
     <div id="result-wrong" class="space-y-3 mb-6"></div>
     <button id="restart-btn" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 rounded-xl text-base">
@@ -97,11 +125,104 @@
     let data = null;
     try { data = await res.json(); } catch (e) { /* no body */ }
     if (!res.ok) {
-      const detail = (data && data.detail) ? data.detail : ("HTTP " + res.status);
+      let detail = (data && data.detail) ? data.detail : ("HTTP " + res.status);
+      if (detail && typeof detail === "object") {
+        // 후보 부족(INSUFFICIENT_LEVEL_CANDIDATES) 등 구조화된 오류 - 사람이 읽을 문장으로 변환
+        detail = detail.code === "INSUFFICIENT_LEVEL_CANDIDATES"
+          ? `요청한 ${detail.requested}문항 중 ${detail.available}문항만 현재 조건(레벨 ${detail.level})에 맞습니다.`
+          : JSON.stringify(detail);
+      }
       throw new Error(detail);
     }
     return data;
   }
+
+  // ---------- 레벨별 출제(v1, 관리자 전용) ----------
+  const levelSelect = document.getElementById("level-select");
+  const confidenceField = document.getElementById("confidence-field");
+  const availabilityInfo = document.getElementById("availability-info");
+  const levelWarningBadge = document.getElementById("level-warning-badge");
+  const startBtn = document.getElementById("start-btn");
+  let lastAvailability = null;
+
+  function selectedLevel() {
+    return levelSelect.value === "" ? null : parseInt(levelSelect.value, 10);
+  }
+  function selectedConfidenceMode() {
+    const checked = document.querySelector('input[name="confidence-mode"]:checked');
+    return checked ? checked.value : "all_candidates";
+  }
+
+  async function refreshAvailability() {
+    const level = selectedLevel();
+    const types = Array.from(document.querySelectorAll(".type-checkbox:checked:not(:disabled)")).map(el => el.value);
+    const params = new URLSearchParams();
+    if (level !== null) params.set("level", String(level));
+    params.set("confidence_mode", selectedConfidenceMode());
+    types.forEach(t => params.append("item_type", t));
+    try {
+      const data = await api(`/availability?${params.toString()}`);
+      lastAvailability = data;
+      if (level === null) {
+        availabilityInfo.textContent = "";
+        levelWarningBadge.classList.add("hidden");
+      } else {
+        availabilityInfo.textContent =
+          `현재 조건 가용 문항: ${data.available_items}개 · 고유 어휘: ${data.distinct_words}개`;
+        if (data.available_items > 0 && data.distinct_words <= 5) {
+          levelWarningBadge.textContent = "표본 부족 - 이 조건은 문항 수가 매우 적습니다. 전체 후보로 바꾸거나 다른 레벨을 시험해 보세요.";
+          levelWarningBadge.classList.remove("hidden");
+        } else {
+          levelWarningBadge.classList.add("hidden");
+        }
+      }
+      document.querySelectorAll(".type-count").forEach(el => {
+        const t = el.dataset.typeCount;
+        if (level === null || !(data.by_type && t in data.by_type)) { el.textContent = ""; return; }
+        el.textContent = `${data.by_type[t] || 0}문항`;
+      });
+      updateStartButton();
+    } catch (e) {
+      availabilityInfo.textContent = "";
+      showError(setupError, e.message);
+    }
+  }
+
+  function updateStartButton() {
+    const questionCount = parseInt(document.getElementById("question-count").value, 10) || 0;
+    if (selectedLevel() !== null && lastAvailability) {
+      startBtn.disabled = questionCount > lastAvailability.available_items || lastAvailability.available_items === 0;
+      startBtn.classList.toggle("opacity-40", startBtn.disabled);
+      startBtn.classList.toggle("cursor-not-allowed", startBtn.disabled);
+    } else {
+      startBtn.disabled = false;
+      startBtn.classList.remove("opacity-40", "cursor-not-allowed");
+    }
+  }
+
+  levelSelect.addEventListener("change", () => {
+    const level = selectedLevel();
+    const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
+    if (level !== null) {
+      confidenceField.classList.remove("hidden");
+      if (crosswordCb) {
+        crosswordCb.checked = false;
+        crosswordCb.disabled = true;
+      }
+      crosswordNotice.textContent = "레벨을 선택하면 십자말은 다음 단계에서 지원됩니다.";
+      crosswordNotice.classList.remove("hidden");
+      questionCountField.classList.remove("hidden");
+    } else {
+      confidenceField.classList.add("hidden");
+      levelWarningBadge.classList.add("hidden");
+      availabilityInfo.textContent = "";
+      if (crosswordCb) crosswordCb.disabled = false;
+      crosswordNotice.classList.add("hidden");
+    }
+    refreshAvailability();
+  });
+  document.querySelectorAll('input[name="confidence-mode"]').forEach(r => r.addEventListener("change", refreshAvailability));
+  document.getElementById("question-count").addEventListener("input", updateStartButton);
 
   // CROSSWORD는 단독 모드 전용(서버도 400으로 거부한다) - 체크하면 다른 유형은 자동
   // 해제·비활성화하고 문항 수 선택기를 숨긴다. 다른 유형을 고르면 반대로 CROSSWORD를 끈다.
@@ -115,6 +236,7 @@
           if (other !== cb) { other.checked = false; other.disabled = true; }
         });
         questionCountField.classList.add("hidden");
+        crosswordNotice.textContent = "십자말은 항상 1세트가 출제됩니다.";
         crosswordNotice.classList.remove("hidden");
       } else if (cb.value === "CROSSWORD" && !cb.checked) {
         typeCheckboxes.forEach(other => { other.disabled = false; });
@@ -122,11 +244,12 @@
         crosswordNotice.classList.add("hidden");
       } else if (cb.checked) {
         const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
-        if (crosswordCb) { crosswordCb.checked = false; crosswordCb.disabled = false; }
-        typeCheckboxes.forEach(other => { other.disabled = false; });
-        questionCountField.classList.remove("hidden");
-        crosswordNotice.classList.add("hidden");
+        if (crosswordCb && selectedLevel() === null) { crosswordCb.checked = false; crosswordCb.disabled = false; }
+        typeCheckboxes.forEach(other => { if (other.value !== "CROSSWORD" || selectedLevel() === null) other.disabled = false; });
+        if (selectedLevel() === null) questionCountField.classList.remove("hidden");
+        if (selectedLevel() === null) crosswordNotice.classList.add("hidden");
       }
+      refreshAvailability();
     });
   });
 
@@ -134,11 +257,14 @@
     hideError(setupError);
     const types = Array.from(document.querySelectorAll(".type-checkbox:checked")).map(el => el.value);
     const questionCount = parseInt(document.getElementById("question-count").value, 10) || {{ default_question_count }};
+    const level = selectedLevel();
     try {
-      const data = await api("/sessions", {
-        method: "POST",
-        body: JSON.stringify({ item_types: types.length ? types : null, question_count: questionCount }),
-      });
+      const body = { item_types: types.length ? types : null, question_count: questionCount };
+      if (level !== null) {
+        body.selected_vocab_level = level;
+        body.confidence_mode = selectedConfidenceMode();
+      }
+      const data = await api("/sessions", { method: "POST", body: JSON.stringify(body) });
       sessionId = data.session_id;
       setupScreen.classList.add("hidden");
       questionScreen.classList.remove("hidden");
@@ -466,6 +592,12 @@
     const data = await api(`/sessions/${sessionId}/result`);
     document.getElementById("result-summary").textContent =
       `${data.correct} / ${data.total} 정답 (${data.accuracy}%)`;
+
+    const levelInfoEl = document.getElementById("result-level-info");
+    const li = data.level_info;
+    levelInfoEl.textContent = li
+      ? `L${li.selected_vocab_level} ${li.grade_label} · ${li.confidence_mode === "auto_only" ? "고신뢰도만" : "전체 후보"} · ${li.level_version} · 후보 ${li.candidate_count}문항`
+      : "레벨 미지정(전체 모드)";
 
     const byType = document.getElementById("result-by-type");
     byType.innerHTML = "";

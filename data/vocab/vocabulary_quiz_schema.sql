@@ -278,7 +278,9 @@ CREATE TABLE vocabulary_multiformat_sessions (
     correct_count    INTEGER NOT NULL DEFAULT 0,
     status           TEXT NOT NULL DEFAULT 'in_progress' CHECK (status IN ('in_progress', 'completed')),
     started_at       TEXT NOT NULL,
-    completed_at     TEXT
+    completed_at     TEXT,
+    metadata_json    TEXT   -- 관리자 레벨별 출제(v1) 선택 조건 스냅샷(선택 레벨/신뢰도/후보 수 등).
+                            -- 기존 세션은 NULL - 결과 화면에서 "레벨 미지정"으로 표시.
 );
 
 CREATE INDEX idx_mf_sessions_user ON vocabulary_multiformat_sessions(user_id, status);

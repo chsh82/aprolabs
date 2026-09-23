@@ -266,6 +266,9 @@ class VocabularyMultiformatSession(Base):
     status = Column(Text, nullable=False, server_default=text("'in_progress'"))
     started_at = Column(Text, nullable=False)
     completed_at = Column(Text, nullable=True)
+    metadata_json = Column(Text, nullable=True)  # 관리자 레벨별 출제(v1)의 선택 조건 스냅샷 -
+    # {audience, selected_vocab_level, confidence_mode, level_version, requested_count,
+    # candidate_count, actual_count, item_types}. 기존 세션은 NULL - 결과 화면에서 "레벨 미지정"으로 표시.
 
 
 class VocabularyMultiformatResponse(Base):
