@@ -1,0 +1,12 @@
+{
+  "name": "momo-b2b-tablet",
+  "private": true,
+  "version": "0.1.0",
+  "description": "B2B 태블릿 학습지 - 페이지 조판 + 인터랙티브 웹 콘텐츠 렌더러",
+  "scripts": {
+    "verify:stage2": "node tests/verify_stage2.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

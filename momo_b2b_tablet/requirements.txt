@@ -1,0 +1,5 @@
+# momo_b2b_tablet 전용 추가 의존성 - fastapi/uvicorn/python-multipart/anthropic/pillow는
+# aprolabs 메인 requirements.txt(같은 venv를 공유)에 이미 있어서 여기 안 넣는다.
+jsonpatch==1.33
+jsonpointer==3.1.1
+playwright==1.63.0

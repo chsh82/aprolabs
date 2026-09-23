@@ -1,0 +1,104 @@
+:root{
+  --ink:#1b2430; --sub:#5b6472; --line:#dfe3e8; --paper:#ffffff; --bg:#f4f5f7;
+  --accent:#0a6e92; --accent-soft:#e3f1f6;
+  --warn:#b8830f; --warn-soft:#fbf1dd;
+  --danger:#b3261e; --danger-soft:#fdeceb;
+  --ok:#2f7a46; --ok-soft:#e7f4ea;
+  box-sizing:border-box;
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans-serif;display:flex;flex-direction:column}
+
+.topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--line)}
+.topbar__title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;min-width:0}
+.topbar__title span#docTitle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font:700 11px/1 "Noto Sans KR",sans-serif;padding:3px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.badge[data-status="approved"]{background:var(--ok-soft);color:var(--ok)}
+.badge[data-status="published"]{background:var(--ok);color:#fff}
+.rev{font-size:11px;color:var(--sub)}
+.topbar__actions{display:flex;align-items:center;gap:10px}
+.quarter-preview{display:flex;gap:4px;padding:3px;background:var(--bg);border-radius:8px}
+.quarter-preview .tb.sw{border:0;background:transparent;border-radius:6px;padding:4px;cursor:pointer}
+.quarter-preview .tb.sw i{display:block;width:14px;height:14px;border-radius:50%}
+.quarter-preview .tb.sw[aria-pressed="true"]{outline:2px solid var(--accent)}
+
+.btn{appearance:none;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:500 13px/1 "Noto Sans KR",sans-serif;padding:9px 14px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn--primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn--primary:disabled{background:var(--line);border-color:var(--line);color:var(--sub)}
+.btn--small{padding:5px 9px;font-size:12px;border-radius:6px}
+.btn--danger{color:var(--danger);border-color:var(--danger)}
+
+.approve-reason{padding:10px 16px;background:var(--warn-soft);color:#7a5608;font-size:12.5px;border-bottom:1px solid var(--line)}
+.conflict-banner{padding:10px 16px;background:var(--danger-soft);color:var(--danger);font-weight:700;font-size:12.5px;border-bottom:1px solid var(--line)}
+
+.layout{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:300px 1fr 320px}
+.pane{min-height:0;overflow-y:auto;padding:14px}
+.pane h2{margin:0 0 8px;font:700 12px/1 "Noto Sans KR",sans-serif;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
+.pane--left{background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
+.pane--center{background:var(--bg);display:flex;padding:0}
+.pane--right{background:var(--paper);border-left:1px solid var(--line)}
+
+.flag-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.flag-filter{appearance:none;border:1px solid var(--line);background:var(--paper);border-radius:99px;padding:4px 10px;font:600 11px/1 "Noto Sans KR",sans-serif;cursor:pointer;color:var(--sub)}
+.flag-filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.flag-filter[data-kind="placeholder"]{color:var(--danger)}
+.flag-filter[data-kind="widget_unavailable"]{color:var(--warn)}
+.flag-progress{font-size:12px;color:var(--sub);margin-bottom:8px}
+.flag-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:38vh;overflow-y:auto}
+.flag-item{border:1px solid var(--line);border-radius:8px;padding:8px 9px;display:flex;flex-direction:column;gap:5px;background:var(--paper)}
+.flag-item[data-kind="placeholder"]{border-color:#f2c9c5;background:var(--danger-soft)}
+.flag-item[data-kind="widget_unavailable"]{border-color:#eed6a3;background:var(--warn-soft)}
+.flag-item .kind{font:700 10px/1 "Noto Sans KR",sans-serif;text-transform:uppercase;letter-spacing:.03em;color:var(--sub)}
+.flag-item .msg{font-size:12px;line-height:1.4}
+.flag-item .row{display:flex;gap:6px;justify-content:flex-end}
+.flag-item.resolved{opacity:.45}
+.flag-empty{font-size:12px;color:var(--sub)}
+
+.page-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;flex:1 1 auto}
+.page-item{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer;background:var(--paper)}
+.page-item:hover{border-color:var(--accent)}
+.page-item.selected{border-color:var(--accent);background:var(--accent-soft)}
+.page-item.excluded{opacity:.5}
+.page-item .thumb{flex:0 0 auto;width:30px;height:22px;border-radius:4px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font:700 9px/1 "Noto Sans KR",sans-serif;color:var(--sub)}
+.page-item .info{flex:1 1 auto;min-width:0}
+.page-item .info .t{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.page-item .info .s{font-size:11px;color:var(--sub)}
+.page-item .flagcount{flex:0 0 auto;font:700 10px/1 "Noto Sans KR",sans-serif;padding:3px 6px;border-radius:99px;background:var(--bg);color:var(--sub)}
+.page-item .flagcount.has-critical{background:var(--danger-soft);color:var(--danger)}
+.page-item .reorder{flex:0 0 auto;display:flex;gap:2px}
+.page-item .reorder .btn{padding:2px 5px;font-size:10px;line-height:1.2}
+.page-list-section,.tone-lines-section{display:flex;flex-direction:column;gap:6px}
+.tone-lines-section .hint{font-size:11px;color:var(--sub);margin:0 0 4px}
+.page-item input[type="checkbox"]{flex:0 0 auto}
+
+.preview-frame-wrap{flex:1 1 auto;display:flex;align-items:stretch}
+.preview-frame{flex:1 1 auto;border:0;width:100%;height:100%}
+
+.inspector__empty{color:var(--sub);font-size:12.5px}
+.field{margin-bottom:14px}
+.field label{display:block;font:700 11px/1.3 "Noto Sans KR",sans-serif;color:var(--sub);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+.field input[type="text"],.field input[type="number"],.field textarea,.field select{
+  width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:400 13px/1.5 "Noto Sans KR",sans-serif;background:var(--paper);color:var(--ink);
+}
+.field textarea{min-height:64px;resize:vertical}
+.field .hint{font-size:11px;color:var(--sub);margin-top:3px}
+.field-check{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.diff-box{border:1px solid var(--line);border-radius:6px;padding:8px 9px;font-size:12px;line-height:1.55;background:var(--bg);white-space:pre-wrap;word-break:break-word;max-height:140px;overflow-y:auto;margin-top:6px}
+.diff-box .diff-label{font:700 10px/1 "Noto Sans KR",sans-serif;color:var(--sub);text-transform:uppercase;display:block;margin-bottom:4px}
+.subfield-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.subfield-row input{flex:1 1 auto}
+.subfield-add{margin-top:2px}
+.section-divider{border:0;border-top:1px solid var(--line);margin:16px 0}
+.todo-note{font-size:11.5px;color:var(--sub);background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:8px 9px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,10px);background:var(--ink);color:#fff;font:500 12.5px/1.4 "Noto Sans KR",sans-serif;padding:9px 14px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;max-width:80vw}
+.toast.show{opacity:.96;transform:translate(-50%,0)}
+
+@media (max-width:1100px){
+  .layout{grid-template-columns:1fr}
+  .pane--left,.pane--right{border:0;border-bottom:1px solid var(--line)}
+  .pane--center{min-height:60vh}
+}

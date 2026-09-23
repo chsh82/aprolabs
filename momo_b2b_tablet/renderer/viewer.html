@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>momo_b2b_tablet 뷰어</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="renderer.css">
+</head>
+<body>
+<script type="module">
+  import { mountEdition } from "./renderer.js";
+  import { createLocalAdapters } from "./adapters/local.js";
+  import { createApiAdapters } from "./adapters/api.js";
+  import { createReviewAdapters } from "./adapters/review.js";
+  import { createPrintAdapters } from "./adapters/print.js";
+
+  const qs = new URLSearchParams(location.search);
+  const docId = qs.get("doc") || "L9-Q3-W07";
+  const mode = qs.get("mode") === "student" ? "student" : "review";
+  const adapterName = ["api", "review", "print"].includes(qs.get("adapter")) ? qs.get("adapter") : "local";
+
+  async function boot() {
+    const editionId = qs.get("edition") || docId;
+    const baseUrl = qs.get("base") || "";
+    const adapters = adapterName === "api"
+      ? createApiAdapters({
+          editionId, baseUrl,
+          launchToken: qs.get("launch") || "",
+          recognizeModel: qs.get("model") || "", // 손글씨 인식 모델 비교용(사용자 지시 7단계)
+        })
+      : adapterName === "review"
+      ? createReviewAdapters({ editionId, baseUrl })
+      : adapterName === "print"
+      ? createPrintAdapters({ editionId, baseUrl, ink: qs.get("ink") === "true", studentId: qs.get("student") || "" })
+      : createLocalAdapters({ docId });
+
+    const { edition, images } = await adapters.loadEdition();
+    window.__viewer = await mountEdition({ edition, images, mode, adapters });
+    window.__viewerReady = true;
+  }
+
+  boot().catch(err => {
+    document.body.innerHTML = `<pre style="padding:24px;color:#b00;white-space:pre-wrap">${String(err && err.stack || err)}</pre>`;
+    console.error(err);
+  });
+</script>
+</body>
+</html>

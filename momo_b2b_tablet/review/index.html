@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>momo_b2b_tablet 검수·편집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar__title">
+    <span id="docTitle">불러오는 중…</span>
+    <span class="badge" id="statusBadge">-</span>
+    <span class="rev" id="revLabel"></span>
+  </div>
+  <div class="topbar__actions">
+    <div class="quarter-preview" id="quarterPreview" role="group" aria-label="분기 색 미리보기">
+      <button class="tb sw" data-q="winter" title="겨울 고전"><i style="background:#1C2A39"></i></button>
+      <button class="tb sw" data-q="spring" title="봄 탐구"><i style="background:#3F7A46"></i></button>
+      <button class="tb sw" data-q="summer" title="여름 문학"><i style="background:#0A6E92"></i></button>
+      <button class="tb sw" data-q="autumn" title="가을 인문"><i style="background:#836B5D"></i></button>
+    </div>
+    <button class="btn" id="btnPrintPreview">인쇄 미리보기</button>
+    <button class="btn btn--primary" id="btnApprove" disabled>승인</button>
+    <button class="btn" id="btnPublish" disabled>공개</button>
+  </div>
+</header>
+<div id="approveReason" class="approve-reason" hidden></div>
+<div id="conflictBanner" class="conflict-banner" hidden>
+  다른 사람이 먼저 이 edition을 고쳤습니다. 최신 내용을 다시 불러옵니다…
+</div>
+
+<main class="layout">
+  <aside class="pane pane--left">
+    <section class="flag-queue">
+      <h2>플래그 큐</h2>
+      <div class="flag-filters" id="flagFilters"></div>
+      <div class="flag-progress" id="flagProgress"></div>
+      <ol class="flag-list" id="flagList"></ol>
+    </section>
+    <section class="page-list-section">
+      <h2>페이지 목록</h2>
+      <ol class="page-list" id="pageList"></ol>
+    </section>
+    <section class="tone-lines-section">
+      <h2>답란 줄 수(문서 전체 - tone.lines)</h2>
+      <p class="hint">비워두면 렌더러 기본값을 씁니다. 최소/최대 줄 수를 지정하면 그 kind를 쓰는 모든 답란에 적용됩니다.</p>
+      <div id="toneLinesBody"></div>
+    </section>
+  </aside>
+
+  <section class="pane pane--center">
+    <div class="preview-frame-wrap">
+      <iframe id="previewFrame" class="preview-frame" title="렌더러 미리보기"></iframe>
+    </div>
+  </section>
+
+  <aside class="pane pane--right" id="inspector">
+    <h2>인스펙터</h2>
+    <p class="inspector__empty" id="inspectorEmpty">왼쪽에서 페이지를 선택하세요.</p>
+    <div id="inspectorBody" hidden></div>
+  </aside>
+</main>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module" src="review.js"></script>
+</body>
+</html>

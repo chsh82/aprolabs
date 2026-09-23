@@ -1,0 +1,57 @@
+"""STEP3 페이지(essay + memos) - essay_prompt/essay_outline_question 기반.
+SPEC §2.1, §3.4 "주제 페이지 -> 메모 페이지"."""
+from __future__ import annotations
+
+from normalize.models import Flag, NormalizedDoc
+
+from .rules import WRITING_CHARACTER, split_dialog_lines
+
+_GUIDE = {"img": WRITING_CHARACTER, "rt": "주제 글쓰기", "nm": "앤과 이야기 짓기"}
+_DEFAULT_CLOSING = "생각한 내용을 엮어서 글쓰기."
+_MEMOS_CLOSING = "세 메모를 차례대로 엮으면 한 편의 글의 뼈대가 됩니다. 완성한 글은 원고지에 이어서 씁니다."
+
+
+def build_step3_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
+    if doc.essay is None:
+        return [], [Flag(kind="missing", message="essay_prompt 레코드가 없어 STEP3를 만들지 못함")]
+
+    flags: list[Flag] = []
+    essay = doc.essay
+
+    dialog = split_dialog_lines(essay.lead)
+    if not dialog:
+        flags.append(Flag(kind="derived",
+                           message="STEP3 도입 인용문(dialog)을 essay.lead(writing_guide)에서 "
+                                   "뽑지 못함(따옴표로 감싼 대화문이 없음) - LLM 창작 필요"))
+        dialog = [essay.lead] if essay.lead else []
+
+    closing = essay.closing_instruction or ""
+    if not closing:
+        flags.append(Flag(kind="missing", message="essay_prompt.closing_instruction이 비어 있음"))
+        closing = _DEFAULT_CLOSING
+
+    slot: dict
+    if essay.image_path:
+        slot = {"img": essay.image_path, "src": "원본 이미지"}
+    else:
+        slot = {"scene": "(LLM 생성 필요)", "avoid": "메모 질문의 답을 암시하는 요소를 넣지 않는다."}
+        flags.append(Flag(kind="derived", category="placeholder",
+                           message="STEP3 이미지가 원본에 없어 생성 지시문이 필요함(자리표시자)"))
+
+    essay_page = {
+        "type": "essay", "step": "STEP 3", "title": "내 글로 엮기", "guide": _GUIDE,
+        "topic": essay.main_topic, "dialog": dialog, "closing": closing, "slot": slot,
+    }
+
+    memos_qs = [
+        {"id": f"S3-{i}", "no": str(i), "t": o.question_text, "kind": "memo"}
+        for i, o in enumerate(essay.outline, start=1)
+    ]
+    if not memos_qs:
+        flags.append(Flag(kind="missing", message="essay_outline_question이 없어 STEP3 메모 질문을 만들지 못함"))
+
+    memos_page = {
+        "type": "memos", "step": "STEP 3", "title": "생각 모으기", "guide": _GUIDE,
+        "topic": essay.main_topic, "closing": _MEMOS_CLOSING, "qs": memos_qs,
+    }
+    return [essay_page, memos_page], flags
