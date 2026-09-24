@@ -73,13 +73,9 @@ def _insert_flags(conn, edition_id: int, layout: dict, flags: list[Flag]) -> Non
         )
 
 
-def create_draft(doc_id: str, created_by: str | None = None) -> int:
-    """POST /api/editions/draft - 정규화 + 조판 초안 생성(②/③단계를 그대로 호출)."""
-    try:
-        layout, flags = generate_layout(doc_id)
-    except ValueError as e:
-        raise NotFound(str(e)) from e
-
+def _insert_draft(doc_id: str, layout: dict, flags: list[Flag], created_by: str | None = None) -> int:
+    """이미 만들어진 layout/flags를 edition으로 저장 - create_draft()와
+    vision_parse.generate로 만든 초안(2026-09-24 지시 [5]) 둘 다 이 함수를 쓴다."""
     source_hash = hashlib.sha256(
         json.dumps(layout, ensure_ascii=False, sort_keys=True).encode("utf-8")
     ).hexdigest()
@@ -101,6 +97,15 @@ def create_draft(doc_id: str, created_by: str | None = None) -> int:
         return edition_id
     finally:
         conn.close()
+
+
+def create_draft(doc_id: str, created_by: str | None = None) -> int:
+    """POST /api/editions/draft - 정규화 + 조판 초안 생성(②/③단계를 그대로 호출)."""
+    try:
+        layout, flags = generate_layout(doc_id)
+    except ValueError as e:
+        raise NotFound(str(e)) from e
+    return _insert_draft(doc_id, layout, flags, created_by)
 
 
 def get_edition_row(edition_id: int):

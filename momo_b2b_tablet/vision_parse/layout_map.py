@@ -39,10 +39,10 @@ def _looks_numbered_list(rows: list[list]) -> bool:
     return all(_NUMBERED_LABEL_RE.match(lbl) for lbl in labels)
 
 
-def layout_hint_to_form(item: dict) -> tuple[dict, str]:
+def layout_hint_to_form(item: dict) -> tuple[dict, str, list[str]]:
     """vision_item 1건(dict, sqlite3.Row도 dict()로 감싸서 전달) ->
-    (q에 병합할 form 필드 dict, 판정 근거 태그). 판정 근거 태그는
-    VISION_LAYOUT_MAPPING_REPORT.md 집계에 쓴다."""
+    (q에 병합할 form 필드 dict, 판정 근거 태그, 추가로 남길 플래그 메시지 목록).
+    판정 근거 태그는 VISION_LAYOUT_MAPPING_REPORT.md 집계에 쓴다."""
     shape = item.get("layout_shape")
     table = _parse_json_field(item.get("table_json"), None)
     blanks = _parse_json_field(item.get("blanks_json"), [])
@@ -54,12 +54,20 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str]:
         rows = table["rows"]
         if _looks_numbered_list(rows):
             items = [{"hint": None, "prompt": (r[0] if r else "")} for r in rows]
-            return {"form": "list", "items": items, "rowKind": "rowTall" if len(rows) <= 3 else "row"}, "table_answer->list(numbered)"
-        if len(rows) == 2 and not _looks_numbered_list(rows):
-            # 사용자 기본 매핑 그대로(table) - compare와 구분할 신호가 없음을
-            # 확인했다(위 모듈 docstring). 억지로 compare로 승격하지 않는다.
-            pass
-        return {"form": "table", "rows": [{"label": (r[0] if r else ""), "prompt": question_text} for r in rows]}, "table_answer->table"
+            return ({"form": "list", "items": items, "rowKind": "rowTall" if len(rows) <= 3 else "row"},
+                    "table_answer->list(numbered)", [])
+        notes: list[str] = []
+        if len(rows) == 2:
+            # 사용자 지시(2026-09-24) [2]: compare와 구분할 신호가 없다는 걸
+            # 억지로 해결하려 하지 않고, "compare 후보" 플래그만 남겨 검수에서
+            # 드롭다운 한 번으로 바꿀 수 있게 한다(야옹아 1번이 이 패턴).
+            notes.append(
+                f"2행 표(table)로 매핑했지만 라벨이 대립하는 두 항목("
+                f"{rows[0][0] if rows[0] else ''!r} / {rows[1][0] if rows[1] else ''!r})"
+                f"처럼 보여 compare 후보임 - 검수에서 필요하면 compare로 전환"
+            )
+        return ({"form": "table", "rows": [{"label": (r[0] if r else ""), "prompt": question_text} for r in rows]},
+                "table_answer->table", notes)
 
     if shape == "compare_two_col":
         # vision이 실제로 compare_two_col을 준 경우는 그대로 카드로 - table_json이
@@ -69,7 +77,7 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str]:
             cards = [{"title": (r[0] if r else ""), "prompt": question_text} for r in table["rows"]]
         elif blanks:
             cards = [{"title": b, "prompt": question_text} for b in blanks]
-        return {"form": "compare", "cards": cards}, "compare_two_col->compare"
+        return {"form": "compare", "cards": cards}, "compare_two_col->compare", []
 
     if shape == "numbered_list":
         items = []
@@ -77,31 +85,34 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str]:
             items = [{"hint": None, "prompt": b} for b in blanks]
         elif table and table.get("rows"):
             items = [{"hint": None, "prompt": (r[0] if r else "")} for r in table["rows"]]
-        return {"form": "list", "items": items, "rowKind": "rowTall" if len(items) <= 3 else "row"}, "numbered_list->list"
+        return ({"form": "list", "items": items, "rowKind": "rowTall" if len(items) <= 3 else "row"},
+                "numbered_list->list", [])
 
     if shape == "choice_options":
         opts = choices or blanks
         if len(opts) == 2:
-            return {"form": "choice", "cards": [{"title": o} for o in opts]}, "choice_options->choice(2)"
-        return {"form": "choiceList", "options": opts, "single": True}, "choice_options->choiceList(N)"
+            return {"form": "choice", "cards": [{"title": o} for o in opts]}, "choice_options->choice(2)", []
+        return {"form": "choiceList", "options": opts, "single": True}, "choice_options->choiceList(N)", []
 
     if shape == "boxed_form":
         n = blank_lines or (len(table["rows"]) if table and table.get("rows") else 1)
-        return {"form": "pledge", "n": n}, "boxed_form->pledge"
+        return {"form": "pledge", "n": n}, "boxed_form->pledge", []
 
     if shape == "speech_bubble":
         starter = item.get("excerpt_text") or ""
-        return {"form": "speech", "starter": starter}, "speech_bubble->speech"
+        return {"form": "speech", "starter": starter}, "speech_bubble->speech", []
 
     if shape == "ruled_lines":
         kind = "short" if blank_lines and blank_lines <= 1 else "long"
-        return {"form": "single", "kind": kind}, "ruled_lines->single"
+        return {"form": "single", "kind": kind}, "ruled_lines->single", []
 
     if shape == "reference_table":
-        # 학생 답란이 없는 참고용 표(예: 열하일기 5-1 한자표) - SPEC의 8개 form
-        # 어디에도 "정답 없는 표"는 없다. table로 강제 매핑하면 빈 정답칸이
-        # 있는 것처럼 보여서 억지로 끼워 맞추지 않는다 - 별도 태그로만 표시.
-        return {"form": "reference", "rows": (table["rows"] if table else [])}, "reference_table->reference(no-answer)"
+        # 학생 답란이 없는 참고용 표(예: 열하일기 5-1 한자표) - qaref.ref로
+        # 연결한다(vision_parse/build_normalized.py가 이 반환값을 직접 안
+        # 쓰고 ref_table 전용 경로로 처리 - layout_hint_to_form은 q용 form만
+        # 다루므로 여기 도달하면 "같은 페이지에 붙일 qa가 없어 독립 항목으로
+        # 남은" 예외적인 경우다).
+        return {"form": "reference", "rows": (table["rows"] if table else [])}, "reference_table->reference(no-answer)", []
 
     # unclear 및 알 수 없는 shape(null 포함) - 사용자 지시대로 single + flag
-    return {"form": "single", "kind": "long"}, f"{shape}->single(flag)"
+    return {"form": "single", "kind": "long"}, f"{shape}->single(flag)", []

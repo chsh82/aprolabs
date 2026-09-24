@@ -59,6 +59,14 @@ class NormalizedQA:
     source_page: int | None
     ui_config: dict = field(default_factory=dict)
     flags: list[Flag] = field(default_factory=list)
+    # ②단계 전용(선택, 사용자 지시 2026-09-24) - 방식 B(비전) 출처 문서에서만 채운다.
+    # 채워져 있으면 layout/step2.py가 form_for_ui_type() 대신 이 값을 그대로 쓴다.
+    # DB(momo_book.db) 기반 정규화는 이 필드를 절대 안 채우므로 기존 동작은 그대로다.
+    form_override: dict | None = None
+    # 이 문항의 페이지에 붙일 참고표(qaref.ref) - {"title": str, "rows": [...]}.
+    # vision_parse 쪽에서 같은 페이지의 reference_table 항목을 여기 직접 연결한다
+    # (기존 hanja_glossary 기반 "첫 excerpt 문항에 붙임" 휴리스틱보다 정확함).
+    ref_table: dict | None = None
 
 
 @dataclass

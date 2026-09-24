@@ -103,26 +103,34 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
                                        f"대응 위젯이 아직 없어 자동 생성에서 제외함 - 검수에서 수동 추가"))
             continue
 
-        q_fields, form_flags = form_for_ui_type(qa.ui_type, qa.ui_config, qa.question_text)
-        for f in form_flags:
-            f.order_no = qa.order_no
-        if qa.ui_type in ("text_long", "text_short"):
-            # 비교형(compare)/목록형(list)/서약형(pledge)/말풍선형(speech) 위젯은 DB
-            # ui_type에 신호가 없다(momo_book.db 실측: 전부 text_long/short로만 옴) -
-            # 이 문항을 더 풍부한 위젯으로 바꿀지는 검수 단계의 창작적 선택으로 남긴다.
-            # 사용자 지시(2026-09-23) 4단계 방침: 규칙 엔진은 억지로 추론하지 않고,
-            # 검수에서 바꾼 이력(form_change)을 correction_log에 쌓아 나중에 규칙화한다.
-            flags.append(Flag(order_no=qa.order_no, kind="derived", category="widget_unavailable",
-                               message=f"문항 {qa.order_label}: 단순 답란(single)으로 매핑함 - "
-                                       f"비교형/목록형/서약형/말풍선형 등으로 바꾸는 건 DB에 신호가 "
-                                       f"없는 창작적 선택이라 검수 단계에서 결정"))
+        if qa.form_override is not None:
+            # 방식 B(비전) 출처 문항 - layout_hint로 이미 form이 정해져 있으므로
+            # ui_type 기반 규칙(momo_book.db 전용)을 건너뛴다. widget_unavailable도
+            # 안 남긴다 - "DB에 신호가 없어서" 단순 답란이 된 게 아니라 vision이
+            # 실제로 그렇게 봤기 때문(2026-09-24 지시 [1]/[2]).
+            q_fields = dict(qa.form_override)
+            form_flags: list[Flag] = []
+        else:
+            q_fields, form_flags = form_for_ui_type(qa.ui_type, qa.ui_config, qa.question_text)
+            for f in form_flags:
+                f.order_no = qa.order_no
+            if qa.ui_type in ("text_long", "text_short"):
+                # 비교형(compare)/목록형(list)/서약형(pledge)/말풍선형(speech) 위젯은 DB
+                # ui_type에 신호가 없다(momo_book.db 실측: 전부 text_long/short로만 옴) -
+                # 이 문항을 더 풍부한 위젯으로 바꿀지는 검수 단계의 창작적 선택으로 남긴다.
+                # 사용자 지시(2026-09-23) 4단계 방침: 규칙 엔진은 억지로 추론하지 않고,
+                # 검수에서 바꾼 이력(form_change)을 correction_log에 쌓아 나중에 규칙화한다.
+                flags.append(Flag(order_no=qa.order_no, kind="derived", category="widget_unavailable",
+                                   message=f"문항 {qa.order_label}: 단순 답란(single)으로 매핑함 - "
+                                           f"비교형/목록형/서약형/말풍선형 등으로 바꾸는 건 DB에 신호가 "
+                                           f"없는 창작적 선택이라 검수 단계에서 결정"))
         flags.extend(form_flags)
         q = {"id": qa.order_label, "t": qa.question_text, **q_fields}
 
         guide, guide_flags = _guide_for(doc, qa)
         flags.extend(guide_flags)
 
-        has_ref = ref_bearer == qa.order_label
+        has_ref = qa.ref_table is not None or ref_bearer == qa.order_label
         if not qa.excerpt_text:
             # SPEC §4 "중등 제시문이 질문 안에 섞임" - ①단계가 일부러 분리하지 않고
             # 남겨 둔 경계(기존 골든 비교 테스트에서도 같은 경계를 확인했다). 여기서는
@@ -139,7 +147,12 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
                 "excerpt": {"p": qa.excerpt_page, "text": [qa.excerpt_text]},
             }
             page.update(extra)
-            if has_ref:
+            if qa.ref_table is not None:
+                # 방식 B: 같은 페이지의 reference_table 항목을 그대로 연결(2026-09-24
+                # 지시 [1] "이미 qaref로 구현돼 있으니 연결만") - 어느 문항에 붙일지
+                # 추측하는 휴리스틱이 필요 없다(원본 페이지 번호로 이미 확정됨).
+                page["ref"] = qa.ref_table
+            elif has_ref:
                 page["ref"] = _hanja_ref_table(doc)
                 flags.append(Flag(order_no=qa.order_no, kind="derived", category="placeholder",
                                    message=f"문항 {qa.order_label}: 참고표 제목(ref.title)이 DB에 "
