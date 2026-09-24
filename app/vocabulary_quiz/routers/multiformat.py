@@ -104,7 +104,7 @@ CONFIDENCE_MODES = {
 }
 GRADE_LABELS = {
     0: "초등 1~2학년", 1: "초등 3~4학년", 2: "초등 5~6학년",
-    3: "중등 1~2학년", 4: "중등 3학년", 5: "고등 1~2학년", 6: "고등 3학년",
+    3: "중등 1~2학년", 4: "중등 3학년", 5: "고등 1학년", 6: "고등 2~3학년",
 }
 LEVEL_MODE_ITEM_TYPES = tuple(t for t in ITEM_TYPES if t != "CROSSWORD")
 

@@ -1,9 +1,20 @@
-"""속담·관용구·사자성어(level IS NULL) 레벨 자동 부여 - 완전자동(사람 확인 없음).
+"""속담·관용구·사자성어(level IS NULL) 레벨 자동 부여 - 원칙적으로 완전자동
+(사람 확인 없음), 단 학년 근거가 부족한 판정만 예외적으로 보류.
 
 사용자 결정(2026-09-02): 검수 UI(수동)와 별개로, Gemini가 판정하면 사람
 확인 없이 바로 확정한다. 다만 "누가/무엇이 판정했는지"는 note에 남겨서
 나중에 구분할 수 있게 한다 - review_status='검수완료'가 사람 검수인지
 AI 자동 판정인지 note로만 구분 가능(스키마는 안 바꿈).
+
+정책 갱신(2026-09-24, `docs/literacy/07-학년경계정책-L5L6.md` 참고): 학년
+경계를 L5=고1/L6=고2~3로 통일하면서, Gemini에게 판정마다 `grounded`(학년
+근거가 실제로 있는지)도 같이 표시하게 했다. `grounded=false`(뜻과 난이도로
+대략 짐작만 한 경우)면 level 값은 채우되 review_status를 '검수완료'가 아니라
+'보류'로 남긴다 - "AI가 레벨만 추측해도 곧바로 검수완료로 넘어가지 않게"
+하는 안전장치다(`save_result()` 참고). grounded=true(또는 level=null인
+"해당없음")는 기존과 동일하게 즉시 확정한다. **이 정책 갱신은 앞으로 이
+스크립트를 실행할 때만 적용된다 - 과거에 이미 '검수완료'로 저장된 판정
+(2,944건)은 소급 재분류하지 않는다.**
 
 대상: terms WHERE category IN ('속담','관용구','사자성어') AND level IS NULL
       AND definition IS NOT NULL AND review_status != '제외'
@@ -13,6 +24,8 @@ AI 자동 판정인지 note로만 구분 가능(스키마는 안 바꿈).
 
 레벨 0~6 중 하나 또는 "해당없음"(교육과정에 낼 만하지 않음 - review_UI의
 "해당없음" 버튼과 같은 의미) 판정. "해당없음"이면 review_status='제외'.
+레벨이 있으면 grounded 여부에 따라 review_status가 '검수완료' 또는 '보류'로
+갈린다(위 정책 갱신 참고).
 
 실행:
     python auto_review_level.py --dry-run          # 10건만 판정해서 출력, 저장 안 함
@@ -52,8 +65,8 @@ LEVEL_TABLE = """| level | 학년 |
 | 2 | 초5~6 |
 | 3 | 중1~2 |
 | 4 | 중3 |
-| 5 | 고1~2 |
-| 6 | 고3 |"""
+| 5 | 고1 |
+| 6 | 고2~3 |"""
 
 
 def select_targets(conn: sqlite3.Connection, limit: int | None) -> list[dict]:
@@ -83,7 +96,13 @@ def build_prompt(batch: list[dict]) -> str:
         "- 초중고 교육과정에 낼 만한 표현이 아니면(너무 저속하거나, 사장된 표현이거나, "
         "교육적으로 부적절하면) \"해당없음\"으로 판정한다",
         "",
-        "아래 각 항목에 대해 레벨(0~6) 또는 \"해당없음\"을 판정하고, 한 줄 근거를 달아라.",
+        "아래 각 항목에 대해 레벨(0~6) 또는 \"해당없음\"을 판정하고, 한 줄 근거를 달아라. "
+        "그리고 그 판정이 실제로 학년 근거가 있는 추정인지 스스로 표시하라(grounded):",
+        "- grounded=true: 이 표현이 특정 학년군에서 흔히 쓰이거나 교과서/교육과정에 등장한다고 "
+        "구체적으로 알고 있어서 레벨을 확정할 수 있다",
+        "- grounded=false: 뜻과 난이도로 대략 짐작만 할 뿐, 어느 학년군에서 실제로 쓰이는지 "
+        "확신할 근거가 부족하다(단어가 생소하거나, 여러 학년에 걸쳐 쓰일 법하거나, 판단이 애매한 "
+        "경우) — 이 경우에도 level은 최선의 추정값을 채우되 grounded는 반드시 false로 표시한다",
         "",
     ]
     for item in batch:
@@ -94,9 +113,11 @@ def build_prompt(batch: list[dict]) -> str:
 
     parts.append(
         "출력은 아래 JSON 형식만 반환하라:\n"
-        '{"items": [{"id": 123, "level": 3, "reason": "..."}, '
-        '{"id": 456, "level": null, "reason": "..."}, ...]}\n'
-        "level은 0~6 정수 또는 해당없음이면 null이다. "
+        '{"items": [{"id": 123, "level": 3, "grounded": true, "reason": "..."}, '
+        '{"id": 456, "level": null, "grounded": true, "reason": "..."}, '
+        '{"id": 789, "level": 2, "grounded": false, "reason": "..."}, ...]}\n'
+        "level은 0~6 정수 또는 해당없음이면 null이다. level이 null이면 grounded는 true로 채운다"
+        "(해당없음 자체는 근거 부족이 아니라 교육과정 부적합 판정이다). "
         f"배열에는 위 {len(batch)}개 id가 전부, 그리고 그것만 있어야 한다."
     )
     return "\n".join(parts)
@@ -106,18 +127,40 @@ def make_batches(targets: list[dict]) -> list[list[dict]]:
     return [targets[i:i + BATCH_SIZE] for i in range(0, len(targets), BATCH_SIZE)]
 
 
-def save_result(conn: sqlite3.Connection, term_id: int, level: int | None, reason: str, now: str) -> None:
+def save_result(
+    conn: sqlite3.Connection,
+    term_id: int,
+    level: int | None,
+    reason: str,
+    now: str,
+    grounded: bool = True,
+) -> None:
+    """AI 판정 저장.
+
+    level이 None이면(해당없음) 기존과 동일하게 review_status='제외'로 확정한다.
+    level이 있어도 grounded=False(학년 근거 부족을 AI 스스로 표시)면
+    review_status를 '검수완료'로 바로 올리지 않고 '보류'로 남긴다 - literacy.db
+    전반에서 '보류'는 이미 "사람 확인 전까지는 확정 아님"을 뜻하는 기존 상태값이다
+    (예: krdict 폴백 동음이의/다의어 보류, S(schema) 정의 없는 행 보류와 동일 계열).
+    grounded=True인 기존 경로는 회귀 없이 그대로 '검수완료'로 확정한다.
+    """
     if level is None:
         conn.execute(
             "UPDATE terms SET review_status='제외', reviewed_at=?, "
             "note = COALESCE(note || ' / ', '') || ? WHERE id=?",
             (now, f"[AI 자동 판정: 해당없음] {reason}", term_id),
         )
-    else:
+    elif grounded:
         conn.execute(
             "UPDATE terms SET level=?, grade_source='auto', review_status='검수완료', reviewed_at=?, "
             "note = COALESCE(note || ' / ', '') || ? WHERE id=?",
             (level, now, f"[AI 자동 레벨 부여: {level}] {reason}", term_id),
+        )
+    else:
+        conn.execute(
+            "UPDATE terms SET level=?, grade_source='auto', review_status='보류', reviewed_at=?, "
+            "note = COALESCE(note || ' / ', '') || ? WHERE id=?",
+            (level, now, f"[AI 자동 레벨 부여-근거부족(보류): {level}] {reason}", term_id),
         )
 
 
@@ -163,10 +206,14 @@ def main() -> int:
                 continue
             level = result.get("level")
             reason = result.get("reason", "")
+            # grounded 필드가 없으면(AI 응답 누락/구버전 프롬프트) 안전 쪽으로 기본값을
+            # False(보류)로 둔다 - "필드가 없다고 검수완료로 확정"하는 쪽이 더 위험하다.
+            grounded = bool(result.get("grounded", False)) if level is not None else True
             if args.dry_run:
-                print(f"  {item['headword']}: level={level} - {reason}")
+                hold_note = "" if grounded else " [보류 예정-근거부족]"
+                print(f"  {item['headword']}: level={level}{hold_note} - {reason}")
             else:
-                save_result(conn, term_id, level, reason, now)
+                save_result(conn, term_id, level, reason, now, grounded=grounded)
                 done += 1
         if not args.dry_run:
             conn.commit()
