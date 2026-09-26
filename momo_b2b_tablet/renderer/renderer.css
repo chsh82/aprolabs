@@ -180,6 +180,8 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .cmp-fig{margin:0;display:flex;align-items:center;justify-content:center;min-height:0;overflow:hidden}
 .cmp-fig img{max-width:100%;max-height:100%;object-fit:contain;border-radius:1mm}
 .card{background:#fff;border-radius:1mm;border-top:1.1mm solid var(--main);padding:2.6mm 3.2mm 3mm;display:flex;flex-direction:column;gap:2.2mm;min-height:0}
+.cmp-card-fig{margin:0;flex:0 0 auto;max-height:28mm;display:flex;justify-content:center}
+.cmp-card-fig img{max-width:100%;max-height:28mm;object-fit:contain;border-radius:1mm}
 .card h4{margin:0;font:700 14px/1.35 var(--serif);color:var(--main-deep);word-break:keep-all}
 /* ---------- 선택형(choice) - compare 위젯(.cmp/.card)을 그대로 쓰고 탭 선택만 얹는다 ---------- */
 .choice-wrap{display:flex;flex-direction:column;gap:2.6mm;flex:1 1 auto;min-height:0}

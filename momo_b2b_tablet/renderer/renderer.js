@@ -150,11 +150,16 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     } else if (f === "list") {
       h = `<div class="nlist" data-alloc>${q.items.map((it, k) => { const pt = P(`${q.id}#${k + 1}`, `${k + 1}번${it.hint ? " (" + it.hint + ")" : ""}`, it.prompt); return `<div class="nrow"><div class="nside"><span class="nn">${k + 1}</span>${it.hint ? `<span class="hint">${esc(it.hint)}</span>` : ""}</div><div class="nb">${inkBox(pt.id, q.rowKind || "row")}</div></div>`; }).join("")}</div>`;
     } else if (f === "compare") {
+      // 카드별 이미지(c.img, 2026-09-26) - 대립하는 두 항목 각각에 원본 사진이
+      // 있는 경우(두근두근 한국사 "사라진 조선총독부"/"남아있는 삼전도비" 등)를
+      // 위해 카드 하나당 이미지 하나를 더 지원한다(기존 q.img는 카드 전체가
+      // 공유하는 이미지 한 장짜리 - 그대로 유지).
       const cards = q.cards.map((c, ci) => {
+        const cardImg = c.img ? `<figure class="cmp-card-fig"><img src="${IMG[c.img]}" alt=""></figure>` : "";
         if (c.n) { const rows = Array.from({ length: c.n }, (_, k) => { const pt = P(`${q.id}#${ci + 1}-${k + 1}`, `${c.title} ${k + 1}`, c.prompt); return `<div class="nrow"><span class="nn">${k + 1}</span><div class="nb">${inkBox(pt.id, "row")}</div></div>`; }).join("");
-          return `<div class="card" data-alloc><h4>${esc(c.title)}</h4><div class="nlist in">${rows}</div></div>`; }
+          return `<div class="card" data-alloc><h4>${esc(c.title)}</h4>${cardImg}<div class="nlist in">${rows}</div></div>`; }
         const pt = P(`${q.id}#${ci + 1}`, c.title, c.prompt);
-        return `<div class="card" data-alloc><h4>${esc(c.title)}</h4>${inkBox(pt.id, "cardInk")}</div>`;
+        return `<div class="card" data-alloc><h4>${esc(c.title)}</h4>${cardImg}${inkBox(pt.id, "cardInk")}</div>`;
       }).join("");
       h = `<div class="cmp" style="grid-template-columns:${q.img ? "0.75fr " : ""}${q.cards.map(() => "1fr").join(" ")}">${q.img ? `<figure class="cmp-fig"><img src="${IMG[q.img]}" alt=""></figure>` : ""}${cards}</div>`;
     } else if (f === "table") {

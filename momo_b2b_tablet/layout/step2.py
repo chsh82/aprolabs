@@ -26,6 +26,12 @@ _STEP2_NM = {
 }
 _WIDE_FORMS = {"table", "compare", "choice", "choiceList"}
 _LEAKY_FORMS = {"choice", "choiceList"}  # 선택지 자체가 답이라 이미지 지시문에서 답 유출을 따로 조심해야 함
+# 2026-09-26: document_image.image_type이 "illustration"만 있는 게 아니다(실측:
+# reference 5건, excerpt 2건 - 전부 source_page가 있는 진짜 참고 이미지/원문
+# 이미지였다. 두근두근 한국사 조선총독부·삼전도비 사진이 image_type='reference'로
+# 들어 있어 기존엔 "illustration"만 찾아 통째로 누락됐었다). 표지/배경은 여전히
+# 제외한다(이미 cover/background 페이지가 따로 쓴다).
+_ORIGINAL_IMAGE_TYPES = {"illustration", "reference", "excerpt"}
 
 # 제시문 분리(2026-09-26 사용자 지시 [3순위]) - 실제 페이지 조판이 아니라
 # 글자수 기준 경험적 규칙이다(렌더러가 고정 크기 슬라이드라 텍스트가 흐르지
@@ -104,10 +110,20 @@ def _original_image_for_qa(doc: NormalizedDoc, qa: NormalizedQA, claimed: set[st
     정하기 전에 먼저 확인해야 한다(바로 아래 주석 참고). claimed에 있는 파일은
     이미 qaref(참고표)가 전용으로 쓴 것이라 건너뛴다(아래 _slot_for_qa 참고)."""
     for img in doc.images:
-        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page \
+        if img.image_type in _ORIGINAL_IMAGE_TYPES and img.source_page and img.source_page == qa.source_page \
                 and img.file_path not in claimed:
             return img.file_path
     return None
+
+
+def _all_images_for_qa(doc: NormalizedDoc, qa: NormalizedQA, claimed: set[str] = frozenset()) -> list[str]:
+    """qa.source_page와 같은 쪽의 원본 이미지 전부(claimed 제외) - compare
+    카드별 이미지 배정용(2026-09-26 두근두근 한국사 "사라진 조선총독부"/
+    "남아있는 삼전도비" 검수에서 발견: 같은 쪽에 이미지가 2장 있는데 기존엔
+    첫 번째 것만 골라 나머지가 그냥 버려지고 있었다)."""
+    return [img.file_path for img in doc.images
+            if img.image_type in _ORIGINAL_IMAGE_TYPES and img.source_page and img.source_page == qa.source_page
+            and img.file_path not in claimed]
 
 
 def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None,
@@ -124,7 +140,7 @@ def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None,
     쪽에 잘못 들어갔다"는 인상을 줬다. qaband끼리 같은 이미지를 공유하는 기존
     동작(야옹아 등, 특별한 참고표가 아닌 경우)은 그대로 둔다."""
     for img in doc.images:
-        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page \
+        if img.image_type in _ORIGINAL_IMAGE_TYPES and img.source_page and img.source_page == qa.source_page \
                 and img.file_path not in claimed:
             return {"img": img.file_path, "src": f"원본 {img.source_page}쪽"}, None
     flag = Flag(order_no=qa.order_no, kind="derived", category="placeholder",
@@ -227,8 +243,19 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
         # 같은 기준) form이 table/compare가 아니어도 3층 구조를 위해 wide로 뺀다
         # (젊은 예술가의 초상 8·19쪽 - 긴 단답형 질문이 반쪽 칸에 눌려 있던 문제).
         is_long_question = len(qa.question_text or "") >= LONG_QUESTION_MIN
-        original_img = _original_image_for_qa(doc, qa, claimed_images)
-        if page["type"] != "solo" and (q_fields.get("form") in _WIDE_FORMS or is_long_question) and not original_img:
+        compare_cards = q_fields.get("cards") if q_fields.get("form") == "compare" else None
+        multi_images = _all_images_for_qa(doc, qa, claimed_images) if compare_cards else []
+        if compare_cards and len(multi_images) >= 2 and len(multi_images) >= len(compare_cards):
+            # 2026-09-26: compare 카드 수만큼(또는 그 이상) 원본 이미지가 같은
+            # 쪽에 있으면 카드마다 하나씩 배정한다(두근두근 한국사 "사라진
+            # 조선총독부"/"남아있는 삼전도비" - 기존엔 첫 이미지 하나만 골라
+            # 나머지가 버려지고 있었다). 전부 claimed 처리해 다른 문항이 또
+            # 못 쓰게 한다.
+            for card, img_path in zip(q["cards"], multi_images):
+                card["img"] = img_path
+                claimed_images.add(img_path)
+            page["wide"] = True
+        elif page["type"] != "solo" and (q_fields.get("form") in _WIDE_FORMS or is_long_question) and not _original_image_for_qa(doc, qa, claimed_images):
             page["wide"] = True
         else:
             # original_img가 있으면 _slot_for_qa가 어차피 같은 걸 찾아 슬롯을 채운다
