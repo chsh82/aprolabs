@@ -261,6 +261,11 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 /* ---------- step 3 ---------- */
 /* 2026-09-26: STEP3 첫 페이지 - 단 구분 없이 중앙 상단, 큰 폰트(옛 .topic 대체) */
 .essay-topic{font:700 26px/1.3 var(--cover);color:var(--main-deep);text-align:center;word-break:keep-all;margin:1mm 0 4mm}
+
+/* ---------- 검수 프리셋: 제목 중앙 상단(qa/qaband/qaref/solo, 2026-09-27) ---------- */
+.q-title-top{display:flex;align-items:center;justify-content:center;gap:3mm;margin:0 0 4mm;text-align:center}
+.q-title-top h3{font:700 20px/1.3 var(--cover);color:var(--main-deep);word-break:keep-all;margin:0}
+.page.title-top .qhead{display:none}
 .lead{font:400 11.5px/1.6 var(--sans);color:#3b3a33;word-break:keep-all;margin:0}
 .dialog{background:var(--paper);border-left:1.3mm solid var(--point);padding:3.4mm 4.2mm;font:500 13.5px/1.75 var(--serif);flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:1.6mm}
 .dialog p{margin:0}

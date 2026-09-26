@@ -20,7 +20,9 @@ from fastapi.staticfiles import StaticFiles
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from pydantic import BaseModel
 
-from . import db, print_pdf as print_pdf_mod, recognize as recognize_mod, store
+import jsonpatch
+
+from . import db, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, store
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -67,6 +69,14 @@ class ResolveFlagRequest(BaseModel):
     resolved_by: str | None = None
 
 
+class PresetRequest(BaseModel):
+    preset: str
+    page_idx: int
+    params: dict | None = None
+    editor: str | None = None
+    expected_rev: int | None = None
+
+
 class AnswerBody(BaseModel):
     ink: list | None = None
     text: dict | None = None
@@ -106,6 +116,55 @@ def patch_edition(edition_id: int, req: PatchRequest):
     row = store.get_edition_row(new_id)
     return {"id": new_id, "doc_id": row["doc_id"], "version": row["version"], "rev": row["rev"],
             "status": row["status"], "layout": json.loads(row["layout_json"])}
+
+
+@app.post("/api/editions/{edition_id}/preset-preview")
+def edition_preset_preview(edition_id: int, req: PresetRequest):
+    """SPEC_프롬프트_편집_기능.md 1단계 - 프리셋 버튼 미리보기. 실제로 저장하지
+    않고, 지금 layout에 프리셋을 적용하면 어떤 모습이 되는지(layout)와 무엇이
+    바뀌는지(summary)만 계산해 돌려준다. 검수 화면이 이 layout으로 렌더러를
+    다시 그려 원래 화면과 토글 비교하게 한다."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    layout = json.loads(row["layout_json"])
+    try:
+        result = presets.compute(layout, req.page_idx, req.preset, req.params)
+    except presets.PresetNotApplicable as e:
+        raise HTTPException(422, str(e)) from e
+    try:
+        preview_layout = jsonpatch.JsonPatch(result.ops).apply(layout)
+    except jsonpatch.JsonPatchException as e:
+        raise HTTPException(400, str(e)) from e
+    return {"summary": result.summary, "layout": preview_layout}
+
+
+@app.post("/api/editions/{edition_id}/preset-apply")
+def edition_preset_apply(edition_id: int, req: PresetRequest):
+    """프리셋을 실제로 적용한다 - 미리보기와 같은 계산을 지금 상태 기준으로
+    다시 해서(그 사이 다른 수정이 있었을 수 있으니 미리보기 결과를 그대로
+    믿지 않는다) store.patch_edition에 kind="prompt_edit"로 남긴다."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    layout = json.loads(row["layout_json"])
+    try:
+        result = presets.compute(layout, req.page_idx, req.preset, req.params)
+    except presets.PresetNotApplicable as e:
+        raise HTTPException(422, str(e)) from e
+    label = presets.PRESET_LABELS.get(req.preset, req.preset)
+    try:
+        new_id = store.patch_edition(edition_id, result.ops, editor=req.editor, reason=f"검수 프리셋: {label}",
+                                      expected_rev=req.expected_rev, kind="prompt_edit", summary=result.summary)
+    except store.NotFound as e:
+        raise HTTPException(404, str(e)) from e
+    except store.ConflictError as e:
+        raise HTTPException(409, str(e)) from e
+    except store.PatchError as e:
+        raise HTTPException(400, str(e)) from e
+    new_row = store.get_edition_row(new_id)
+    return {"id": new_id, "doc_id": new_row["doc_id"], "version": new_row["version"], "rev": new_row["rev"],
+            "status": new_row["status"], "layout": json.loads(new_row["layout_json"]), "summary": result.summary}
 
 
 @app.get("/api/editions/{edition_id}/flags")

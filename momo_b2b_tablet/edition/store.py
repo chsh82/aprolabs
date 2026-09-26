@@ -141,7 +141,8 @@ def _order_label_for_path(layout: dict, path: str) -> str | None:
 
 
 def patch_edition(edition_id: int, patch_ops: list[dict], editor: str | None = None,
-                   reason: str | None = None, expected_rev: int | None = None) -> int:
+                   reason: str | None = None, expected_rev: int | None = None,
+                   kind: str | None = None, summary: str | None = None) -> int:
     """PATCH /api/editions/{id} - JSON Patch 적용 + correction_log 기록.
 
     SPEC §5: "확정된 edition의 layout_json은 수정 불가. 고치면 새 version." -
@@ -151,7 +152,13 @@ def patch_edition(edition_id: int, patch_ops: list[dict], editor: str | None = N
     expected_rev: 낙관적 잠금(5단계 요구사항) - 두 사람이 같은 draft를 열어 놓고
     있다가 한쪽이 먼저 저장하면, 다른 쪽이 들고 있던 rev는 낡은 값이 된다. 클라이언트가
     화면을 처음 불러왔을 때의 rev를 그대로 실어 보내면, 그 사이 다른 사람이 먼저
-    고쳐서 rev가 바뀌어 있을 경우 ConflictError로 막고 최신 내용을 다시 불러오게 한다."""
+    고쳐서 rev가 바뀌어 있을 경우 ConflictError로 막고 최신 내용을 다시 불러오게 한다.
+
+    kind/summary(2026-09-27 검수 프리셋 버튼, SPEC_프롬프트_편집_기능.md 1단계):
+    presets.py가 계산한 패치는 여러 op로 이뤄질 수 있어(예: 표 머리칸 여러 곳을
+    한 번에 채움) op 하나하나를 "text_correction"으로 남기면 무슨 프리셋을 눌렀는지
+    알아보기 어렵다. kind를 주면(예: "prompt_edit") per-op 자동 분류를 건너뛰고
+    correction_log에 summary 문장 하나로 통합해 기록한다."""
     row = get_edition_row(edition_id)
     if row is None:
         raise NotFound(f"edition {edition_id} 없음")
@@ -185,30 +192,40 @@ def patch_edition(edition_id: int, patch_ops: list[dict], editor: str | None = N
                          (json.dumps(after_layout, ensure_ascii=False), edition_id))
             target_id = edition_id
 
-        for op in patch_ops:
-            path = op.get("path", "")
-            form_change = _form_change_before_after(before_layout, op)
-            if form_change is not None:
-                before_display, after_display = form_change
-                order_label = _order_label_for_path(before_layout, path)
-                field_path = f"{path} (문항 {order_label})" if order_label else path
-                conn.execute(
-                    "INSERT INTO correction_log (doc_id, edition_id, field_path, before, after, "
-                    "kind, reason, editor, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-                    (row["doc_id"], target_id, field_path, str(before_display), str(after_display),
-                     "form_change", reason, editor, _now()),
-                )
-            else:
-                before_val = jsonpointer.resolve_pointer(before_layout, path, default=None)
-                after_val = op.get("value")
-                conn.execute(
-                    "INSERT INTO correction_log (doc_id, edition_id, field_path, before, after, "
-                    "kind, reason, editor, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
-                    (row["doc_id"], target_id, path,
-                     json.dumps(before_val, ensure_ascii=False) if before_val is not None else None,
-                     json.dumps(after_val, ensure_ascii=False) if after_val is not None else None,
-                     "text_correction", reason, editor, _now()),
-                )
+        if kind is not None:
+            first_path = patch_ops[0].get("path", "") if patch_ops else ""
+            order_label = _order_label_for_path(before_layout, first_path)
+            field_path = f"{first_path} (문항 {order_label})" if order_label else first_path
+            conn.execute(
+                "INSERT INTO correction_log (doc_id, edition_id, field_path, before, after, "
+                "kind, reason, editor, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+                (row["doc_id"], target_id, field_path, None, summary, kind, reason, editor, _now()),
+            )
+        else:
+            for op in patch_ops:
+                path = op.get("path", "")
+                form_change = _form_change_before_after(before_layout, op)
+                if form_change is not None:
+                    before_display, after_display = form_change
+                    order_label = _order_label_for_path(before_layout, path)
+                    field_path = f"{path} (문항 {order_label})" if order_label else path
+                    conn.execute(
+                        "INSERT INTO correction_log (doc_id, edition_id, field_path, before, after, "
+                        "kind, reason, editor, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+                        (row["doc_id"], target_id, field_path, str(before_display), str(after_display),
+                         "form_change", reason, editor, _now()),
+                    )
+                else:
+                    before_val = jsonpointer.resolve_pointer(before_layout, path, default=None)
+                    after_val = op.get("value")
+                    conn.execute(
+                        "INSERT INTO correction_log (doc_id, edition_id, field_path, before, after, "
+                        "kind, reason, editor, created_at) VALUES (?,?,?,?,?,?,?,?,?)",
+                        (row["doc_id"], target_id, path,
+                         json.dumps(before_val, ensure_ascii=False) if before_val is not None else None,
+                         json.dumps(after_val, ensure_ascii=False) if after_val is not None else None,
+                         "text_correction", reason, editor, _now()),
+                    )
         conn.commit()
         return target_id
     finally:

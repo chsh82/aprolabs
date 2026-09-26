@@ -26,6 +26,7 @@ const el = (tag, attrs = {}, children = []) => {
 const state = {
   editionId, docId: null, layout: null, rev: null, status: null,
   flags: [], flagFilter: "all", showResolved: false, selectedPageIdx: null,
+  presetPreview: null,
 };
 
 let toastTimer = 0;
@@ -310,6 +311,7 @@ async function movePage(idx, dir) {
 }
 
 function selectPage(idx) {
+  if (state.presetPreview) { cancelPresetPreview(); }
   state.selectedPageIdx = idx;
   renderPageList();
   renderInspector();
@@ -317,8 +319,9 @@ function selectPage(idx) {
 }
 
 /* ============ 중앙 미리보기(iframe) ============ */
-function previewSrc() {
-  return `/renderer/viewer.html?doc=${encodeURIComponent(state.docId)}&mode=review&adapter=review&edition=${editionId}&_=${Date.now()}`;
+function previewSrc(previewKey) {
+  const base = `/renderer/viewer.html?doc=${encodeURIComponent(state.docId)}&mode=review&adapter=review&edition=${editionId}&_=${Date.now()}`;
+  return previewKey ? `${base}&previewKey=${encodeURIComponent(previewKey)}` : base;
 }
 
 async function waitForViewer(frameEl, timeoutMs = 4000) {
@@ -336,7 +339,12 @@ async function waitForViewer(frameEl, timeoutMs = 4000) {
 
 async function refreshPreviewFrame() {
   const frame = $("#previewFrame");
-  frame.src = previewSrc();
+  // loadFrameWithSrc와 같은 이유(경쟁 상태) - src 교체 직후엔 frame.contentWindow가
+  // 잠깐 옛 문서를 가리켜 go()가 새 문서에 반영 안 될 수 있다. load를 먼저 기다린다.
+  await new Promise(resolve => {
+    frame.addEventListener("load", resolve, { once: true });
+    frame.src = previewSrc();
+  });
   const viewer = await waitForViewer(frame);
   if (viewer && state.selectedPageIdx != null) viewer.go(state.selectedPageIdx);
 }
@@ -348,6 +356,127 @@ async function goToPreviewPage(idx) {
   const viewer = await waitForViewer(frame);
   if (viewer) viewer.go(idx);
 }
+
+/* ============ 검수 프리셋(SPEC_프롬프트_편집_기능.md 1단계, 2026-09-27) ============
+ * 흐름: 버튼 클릭 -> preset-preview로 계산만 해서 미리보기 iframe에 즉시 보여줌
+ * (원래 화면과 토글 비교 가능) -> 적용(실제 저장, kind=prompt_edit) 또는 취소
+ * (sessionStorage만 지우고 아무것도 저장 안 함). */
+const PRESET_DEFS = [
+  { key: "mirror", label: "좌우 바꾸기", types: new Set(["qa", "qaband", "qaref", "solo"]) },
+  { key: "title_top", label: "제목 중앙 상단", types: new Set(["qa", "qaband", "qaref", "solo"]) },
+  { key: "three_tier", label: "3층 구조", types: new Set(["qa", "qaband", "qaref"]) },
+  { key: "lines_more", label: "답란 늘리기" },
+  { key: "lines_less", label: "답란 줄이기" },
+  { key: "add_image_slot", label: "이미지 자리 추가" },
+  { key: "table_header", label: "표 머리칸 넣기" },
+  { key: "merge_pages", label: "페이지 합치기" },
+  { key: "split_page", label: "페이지 나누기" },
+];
+
+function renderPresetPanel(body, page, idx) {
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("h3", {}, "프리셋 버튼"));
+  body.append(el("p", { class: "hint" }, "LLM 없이 바로 적용되는 고정 패치입니다. 눌러도 바로 저장되지 않고 먼저 미리보기로 보여줍니다."));
+  const grid = el("div", { class: "preset-grid" });
+  PRESET_DEFS.forEach(def => {
+    if (def.types && !def.types.has(page.type)) return;
+    const btn = el("button", { class: "btn btn--small" }, def.label);
+    btn.onclick = () => openPresetPreview(idx, def.key, def.label);
+    grid.append(btn);
+  });
+  body.append(grid);
+}
+
+async function loadFrameWithSrc(src, pageIdx) {
+  const frame = $("#previewFrame");
+  // frame.src를 바꾼 직후엔 frame.contentWindow가 아직 "옛 문서"를 가리킬 수
+  // 있어(내비게이션은 비동기) waitForViewer가 그 옛 문서의 __viewerReady를
+  // 그대로 보고 즉시 반환해 버리는 경쟁 상태가 있었다(그 옛 문서는 곧 사라져
+  // go(pageIdx)가 새 문서에 반영 안 됨 - 프리셋 미리보기가 항상 1쪽만 보이던
+  // 원인). load 이벤트로 "새 문서로 내비게이션이 실제로 끝남"을 먼저 확인한
+  // 뒤에 폴링을 시작한다.
+  await new Promise(resolve => {
+    frame.addEventListener("load", resolve, { once: true });
+    frame.src = src;
+  });
+  const viewer = await waitForViewer(frame);
+  if (viewer && pageIdx != null) viewer.go(pageIdx);
+}
+
+function renderPresetPreviewBar() {
+  const bar = $("#presetPreviewBar");
+  const pp = state.presetPreview;
+  if (!pp) { bar.hidden = true; return; }
+  bar.hidden = false;
+  $("#presetPreviewSummary").textContent = `[${pp.label}] ${pp.summary}`;
+  $("#presetPreviewToggle").textContent = pp.showingPreview ? "원래 화면 보기" : "미리보기 다시 보기";
+}
+
+async function openPresetPreview(pageIdx, presetKey, label) {
+  try {
+    const res = await api(`/api/editions/${editionId}/preset-preview`, {
+      method: "POST",
+      body: JSON.stringify({ preset: presetKey, page_idx: pageIdx }),
+    });
+    const key = `preset-preview:${editionId}`;
+    sessionStorage.setItem(key, JSON.stringify(res.layout));
+    state.presetPreview = { pageIdx, preset: presetKey, label, summary: res.summary, key, showingPreview: true };
+    renderPresetPreviewBar();
+    await loadFrameWithSrc(previewSrc(key), pageIdx);
+  } catch (e) {
+    toast(`적용 불가: ${e.message}`);
+  }
+}
+
+async function togglePresetPreviewView() {
+  const pp = state.presetPreview;
+  if (!pp) return;
+  pp.showingPreview = !pp.showingPreview;
+  renderPresetPreviewBar();
+  await loadFrameWithSrc(pp.showingPreview ? previewSrc(pp.key) : previewSrc(), pp.pageIdx);
+}
+
+async function applyPresetPreview() {
+  const pp = state.presetPreview;
+  if (!pp) return;
+  try {
+    const data = await api(`/api/editions/${editionId}/preset-apply`, {
+      method: "POST",
+      body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, editor: "reviewer", expected_rev: state.rev }),
+    });
+    state.layout = data.layout; state.rev = data.rev; state.status = data.status;
+    sessionStorage.removeItem(pp.key);
+    state.presetPreview = null;
+    renderPresetPreviewBar();
+    await refreshAll();
+    toast(`적용했습니다: ${pp.label}`);
+  } catch (e) {
+    if (e.status === 409) {
+      sessionStorage.removeItem(pp.key);
+      state.presetPreview = null;
+      renderPresetPreviewBar();
+      $("#conflictBanner").hidden = false;
+      await refreshAll();
+      setTimeout(() => { $("#conflictBanner").hidden = true; }, 4000);
+      return;
+    }
+    toast(`적용 실패: ${e.message}`);
+  }
+}
+
+function cancelPresetPreview() {
+  const pp = state.presetPreview;
+  if (!pp) return;
+  sessionStorage.removeItem(pp.key);
+  state.presetPreview = null;
+  renderPresetPreviewBar();
+  refreshPreviewFrame();
+  toast("취소했습니다. 저장된 것은 없습니다.");
+}
+
+$("#presetPreviewToggle").onclick = togglePresetPreviewView;
+$("#presetPreviewApply").onclick = applyPresetPreview;
+$("#presetPreviewCancel").onclick = cancelPresetPreview;
 
 /* ============ 인스펙터(우) ============ */
 const Q_FIELDS = ["form", "kind", "starter", "blanks", "rows", "items", "cards", "rowKind", "n", "img", "options", "single"];
@@ -410,6 +539,7 @@ function renderInspector() {
 
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (SLOT_CAPABLE_TYPES.has(page.type)) renderSlotInspector(body, page, idx, basePath);
+  renderPresetPanel(body, page, idx);
 
   body.append(el("hr", { class: "section-divider" }));
   body.append(el("div", { class: "todo-note" },

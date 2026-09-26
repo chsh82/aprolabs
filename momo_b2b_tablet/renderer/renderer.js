@@ -117,8 +117,14 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
   function partsOf(q) { return (q.blanks || []).map(x => typeof x === "string" ? { label: x } : x); }
   function register(q, parts) { QREG.push({ id: q.id, no: q.no || q.id, text: q.t, parts }); parts.forEach(pt => { PARENT[pt.id] = q.t; }); }
   const LINES = Object.assign({ blankTall: [2, 4], long: [2, 4], short: [2, 3], blank: [1, 2], memo: [3, 3], vocab: [2, 3], one: [1, 1], row: [1, 2], cardInk: [2, 4], inline: [1, 1], cell: [2, 4], rowTall: [1, 3] }, TONE.lines || {});
+  // 2026-09-27 검수 프리셋 "답란 늘리기/줄이기"(edition/presets.py preset_lines) -
+  // 페이지 하나 전체의 답란 줄 수를 문서 전체 기본값과 별도로 조정한다.
+  // renderPage()가 페이지를 그리기 직전에 이 값을 세팅해 두면 그 페이지 안의
+  // 모든 inkBox() 호출에 균일하게 적용된다(위젯 종류를 가리지 않는 범용 방식).
+  let LINE_BOOST = 0;
   function inkBox(id, kind, starter = "", ph = "") {
-    const [mn, mx] = LINES[kind];
+    let [mn, mx] = LINES[kind];
+    if (LINE_BOOST) { mn = Math.max(1, mn + LINE_BOOST); mx = Math.max(mn, mx + LINE_BOOST); }
     return `<div class="ink" data-id="${esc(id)}" data-min="${mn}" data-max="${mx}" style="height:calc(var(--line) * ${mn})">${starter ? `<span class="starter">${esc(starter)}</span>` : ""}${ph ? `<span class="ph">${esc(ph)}</span>` : ""}<canvas aria-label="필기 답란"></canvas><span class="badge"></span><button class="ink-read" type="button">글자로 확인</button></div>`;
   }
   function drawBox(id) {
@@ -194,6 +200,21 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     return h;
   }
   function qHead(q) { QTEXT[q.id] = q.t; return `<div class="qhead"><span class="stamp">${esc(q.id)}</span><div class="qtext">${esc(q.t)}</div></div>`; }
+  // 2026-09-27 검수 프리셋 "제목 중앙 상단"(edition/presets.py preset_title_top) -
+  // STEP3 essay 페이지의 중앙 상단 제목 처리를 qa/qaband/qaref/solo에도 쓸 수
+  // 있게 뽑아낸 배너. 본문 안의 원래 qHead()는 CSS(.title-top .qhead)로
+  // 숨기기만 하고 그대로 호출한다 - QTEXT 등록 같은 부수효과를 중복 구현하지
+  // 않기 위함(중복 등록 자체는 멱등이라 문제 없음).
+  function qHeadTop(q) { return `<div class="q-title-top"><span class="stamp">${esc(q.id)}</span><h3>${esc(q.t)}</h3></div>`; }
+  // 검수 프리셋 "좌우 바꾸기"(preset_mirror) - 2단 레이아웃 페이지(qa/qaref/solo)
+  // 공통으로 쓰는 좌우 반전 헬퍼. ratio 문자열도 함께 뒤집어 비율이 반대편에서도
+  // 그대로 유지되게 한다.
+  function mirrorCols(ratio, leftHtml, rightHtml, mirror) {
+    if (!mirror) return { html: `${leftHtml}${rightHtml}`, ratio };
+    const parts = (ratio || "1fr 1fr").trim().split(/\s+/);
+    const revRatio = parts.length === 2 ? `${parts[1]} ${parts[0]}` : ratio;
+    return { html: `${rightHtml}${leftHtml}`, ratio: revRatio };
+  }
   function question(q) {
     if (q.form && q.form !== "blanks") { return `<div class="q qw">${qHead(q)}${widget(q)}</div>`; }
     QTEXT[q.id] = q.t;
@@ -210,6 +231,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     return `<div class="q">${headHtml}${inkBox(q.id, q.kind, q.starter || "")}</div>`;
   }
   function renderPage(p, i) {
+    LINE_BOOST = p.linesBoost || 0;
     if (p.type === "blank") {
       // ⑥단계 인쇄 전용(edition/store.py의 print_view) - 쪽수가 홀수일 때 2-up 짝을
       // 맞추려고 서버가 임시로 덧붙이는 완전히 빈 면. 스파인·헤더 없이 진짜 백지.
@@ -242,7 +264,14 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       // 한국사 전부에서 동일하게 요청) - qa는 원래 형태로 복귀.
       const contNote = p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : "";
       const ex = `${contNote}<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}<span class="cite">p.${p.excerpt.p}</span></div>`;
-      inner = `<div class="cols" style="grid-template-columns:${p.ratio}"><div class="col">${ex}</div><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}${question(p.q)}</div></div>`;
+      const topBanner = p.titleTop ? qHeadTop(p.q) : "";
+      if (p.wide) {
+        inner = `${topBanner}${ex}${qHead(p.q)}${widget(p.q)}`;
+      } else {
+        const right = `<div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}${question(p.q)}</div>`;
+        const { html, ratio } = mirrorCols(p.ratio, `<div class="col">${ex}</div>`, right, p.mirror);
+        inner = `${topBanner}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
+      }
     } else if (p.type === "essay") {
       // 2026-09-26 STEP3 첫 페이지 규칙(사용자 지시, 5종 공통) - 글쓰기 전체
       // 질문(주제)은 단 구분 없이 페이지 중앙 상단에 큰 폰트로, 그 아래를
@@ -265,20 +294,35 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       inner = `<div class="draw-top"><p class="inst">${esc(p.inst)}</p><span class="chip">${esc(p.chip || "그림 칸은 글자로 바꾸지 않아요")}</span></div>${drawBox(p.id)}`;
     } else if (p.type === "qaband") {
       const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
+      const topBanner = p.titleTop ? qHeadTop(p.q) : "";
       if (p.wide) {
-        inner = `${band}${qHead(p.q)}${widget(p.q)}`;
+        inner = `${topBanner}${band}${qHead(p.q)}${widget(p.q)}`;
       } else {
         const w = widget(p.q);
-        inner = `${band}<div class="cols" style="grid-template-columns:${p.ratio || "1fr 1.15fr"}"><div class="col" data-alloc>${qHead(p.q)}${p.slot ? slotHtml(p.slot, p.q) : ""}</div><div class="col wcol">${w}</div></div>`;
+        const left = `<div class="col" data-alloc>${qHead(p.q)}${p.slot ? slotHtml(p.slot, p.q) : ""}</div>`;
+        const right = `<div class="col wcol">${w}</div>`;
+        const { html, ratio } = mirrorCols(p.ratio || "1fr 1.15fr", left, right, p.mirror);
+        inner = `${topBanner}${band}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
       }
     } else if (p.type === "qaref") {
       const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
       const rows = p.ref.rows.map(r => r.gap ? `<tr class="gap"><td colspan="2">⋯</td></tr>` : `<tr><th>${esc(r.n)}</th><td>${esc(r.v)}</td></tr>`).join("");
       const ref = `<div class="ref"><h4>${esc(p.ref.title)}</h4><div class="ref-body"><table class="rt"><tbody>${rows}</tbody></table>${p.ref.img ? `<img src="${IMG[p.ref.img]}" alt="">` : ""}</div>${p.ref.note ? `<p class="note">${esc(p.ref.note)}</p>` : ""}</div>`;
-      inner = `${band}<div class="cols" style="grid-template-columns:${p.ratio || "1fr 1fr"}"><div class="col">${ref}</div><div class="col">${qHead(p.q)}<div class="wcol">${widget(p.q)}</div></div></div>`;
+      const topBanner = p.titleTop ? qHeadTop(p.q) : "";
+      if (p.wide) {
+        inner = `${topBanner}${band}${ref}${qHead(p.q)}${widget(p.q)}`;
+      } else {
+        const right = `<div class="col">${qHead(p.q)}<div class="wcol">${widget(p.q)}</div></div>`;
+        const { html, ratio } = mirrorCols(p.ratio || "1fr 1fr", `<div class="col">${ref}</div>`, right, p.mirror);
+        inner = `${topBanner}${band}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
+      }
     } else if (p.type === "solo") {
       const w = widget(p.q);
-      inner = `<div class="cols" style="grid-template-columns:${p.ratio || "1fr 1.25fr"}"><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}</div><div class="col">${qHead(p.q)}<div class="wcol">${w}</div></div></div>`;
+      const topBanner = p.titleTop ? qHeadTop(p.q) : "";
+      const left = `<div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}</div>`;
+      const right = `<div class="col">${qHead(p.q)}<div class="wcol">${w}</div></div>`;
+      const { html, ratio } = mirrorCols(p.ratio || "1fr 1.25fr", left, right, p.mirror);
+      inner = `${topBanner}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
     } else if (p.type === "memos") {
       const rows = p.qs.map(q => { QTEXT[q.id] = q.t; register(q, [{ id: q.id, label: "", prompt: "" }]); return `<div class="mrow"><div class="mq"><span class="num-sq">${esc(q.no)}</span><div class="qtext">${esc(q.t)}</div></div>${inkBox(q.id, "memo")}</div>`; }).join("");
       const mFig = p.slot && p.slot.img ? `<figure class="m-fig"><img src="${IMG[p.slot.img]}" alt=""></figure>` : "";
@@ -287,7 +331,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     return `<div class="frame">${spine(i, p)}<div class="body">${head(p)}${inner}</div></div>`;
   }
   const pagesEl = document.getElementById("pages");
-  pagesEl.innerHTML = PAGES.map((p, i) => `<section class="page ${p.type}" data-i="${i}" aria-label="${i === 0 ? "표지" : i + "쪽"}">${renderPage(p, i)}</section>`).join("");
+  pagesEl.innerHTML = PAGES.map((p, i) => `<section class="page ${p.type}${p.titleTop ? " title-top" : ""}" data-i="${i}" aria-label="${i === 0 ? "표지" : i + "쪽"}">${renderPage(p, i)}</section>`).join("");
   const pageEls = [...pagesEl.children];
 
   /* ============ state (adapter 주입) ============ */

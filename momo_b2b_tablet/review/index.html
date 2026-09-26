@@ -53,6 +53,12 @@
   </aside>
 
   <section class="pane pane--center">
+    <div class="preset-preview-bar" id="presetPreviewBar" hidden>
+      <span class="preset-preview-bar__summary" id="presetPreviewSummary"></span>
+      <button class="btn btn--small" id="presetPreviewToggle">미리보기 보기</button>
+      <button class="btn btn--small btn--primary" id="presetPreviewApply">적용</button>
+      <button class="btn btn--small" id="presetPreviewCancel">취소</button>
+    </div>
     <div class="preview-frame-wrap">
       <iframe id="previewFrame" class="preview-frame" title="렌더러 미리보기"></iframe>
     </div>
