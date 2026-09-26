@@ -1,0 +1,578 @@
+﻿literacy_term_id,v_s,source,headword,definition,subject_category,note_raw,review_status_raw,reviewed_at,ai_tagged,external_id,classification
+5747,S,schemareading-schema,합리성,이치나 논리에 맞고 타당한 성질.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-768,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5748,S,schemareading-schema,경제적 자원,"인간의 경제 활동에 필요한 물자, 노동, 자본 따위를 통틀어 이르는 말.",사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-769,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5749,S,schemareading-schema,상품,사고팔기 위하여 시장에 내놓는 물건.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-770,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5750,S,schemareading-schema,자유재,대가를 지불하지 않고도 원하는 만큼 얻을 수 있는 재화.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-771,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5751,S,schemareading-schema,경제재,희소성이 있어 대가를 지불해야만 얻을 수 있는 재화.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-772,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5752,S,schemareading-schema,경제주체,"경제 활동에 참여하는 주체로, 가계, 기업, 정부 따위를 이름.",사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-773,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5753,S,schemareading-schema,자유경쟁시장,정부의 개입 없이 개개인의 자유로운 경쟁에 맡기는 시장.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-775,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5754,S,schemareading-schema,완전경쟁시장,다수의 수요자와 공급자가 제한 없이 자유롭게 거래하는 시장.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-776,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5755,S,schemareading-schema,독점적 경쟁시장,다수의 판매자가 유사하지만 차별화된 상품을 파는 시장.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-777,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5756,S,schemareading-schema,과점시장,소수의 기업이 시장의 공급을 대부분 차지하고 있는 시장.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-778,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5757,S,schemareading-schema,독점시장,하나의 기업이 시장 전체의 상품 공급을 독점하고 있는 시장.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-779,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5758,S,schemareading-schema,독과점시장,하나의 기업 또는 소수의 기업이 시장을 지배하고 있는 시장.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-780,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5759,S,schemareading-schema,시장경제,가격 기구에 의해 상품의 생산과 소비가 결정되는 경제 체제.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-781,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5760,S,schemareading-schema,수요와 공급,"상품을 사려는 욕구와 파려는 욕구, 또는 그 수량.",사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-782,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5761,S,schemareading-schema,수요의 법칙,가격이 오르면 수요량이 줄고 내리면 수요량이 늘어나는 법칙.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-783,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5762,S,schemareading-schema,공급의 법칙,가격이 오르면 공급량이 늘고 가격이 내리면 공급량이 줄어드는 원리.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-784,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5763,S,schemareading-schema,탄력성,가격이나 소득 등이 변할 때 수요나 공급이 반응하여 변하는 정도.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-785,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5764,S,schemareading-schema,수요탄력성,가격이나 소득의 변화에 따라 수요량이 변하는 비율.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-786,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5765,S,schemareading-schema,공급탄력성,가격이 변함에 따라 상품의 공급량이 변하는 비율.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-787,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5766,S,schemareading-schema,소득탄력성,소득이 변함에 따라 상품의 수요량이 변하는 정도.,사회,소분류: 경제와 생활 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-788,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5767,S,schemareading-schema,균형가격,시장에서 수요량과 공급량이 서로 일치하여 결정되는 가격.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-789,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5768,S,schemareading-schema,소비자 잉여,소비자가 지불할 용의가 있는 최대 금액과 실제 지불한 금액의 차이.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-790,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5769,S,schemareading-schema,생산자 잉여,생산자가 실제로 받은 금액과 판매하고자 하는 최소 금액의 차이.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-791,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5770,S,schemareading-schema,효용,재화나 서비스를 소비할 때 얻는 주관적인 만족이나 유용성.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-792,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5771,S,schemareading-schema,한계효용,재화나 서비스를 한 단위 추가로 소비할 때 늘어나는 효용.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-793,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5772,S,schemareading-schema,한계효용 체감의 법칙,재화의 소비량이 증가함에 따라 추가로 얻는 한계효용이 줄어든다는 법칙.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-794,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5773,S,schemareading-schema,대체효과,한 상품의 가격 변화로 상대적으로 싸진 다른 상품으로 소비를 바꾸는 효과.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-795,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5774,S,schemareading-schema,소득효과,가격의 변화로 실질 소득이 변하여 상품의 수요량이 변하는 효과.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-796,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5775,S,schemareading-schema,기펜재,가격이 오르면 오히려 수요량이 늘어나는 성질을 가진 재화.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-797,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5776,S,schemareading-schema,대체재,서로 비슷하여 한 재화 대신 다른 재화를 쓸 수 있는 관계의 재화.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-798,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5777,S,schemareading-schema,보완재,두 가지 이상의 재화를 함께 사용할 때 만족감이 더욱 커지는 재화.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-799,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5778,S,schemareading-schema,생산요소,"재화나 서비스를 생산하는 과정에 투입되는 토지, 노동, 자본 따위의 자원.",사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-800,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5779,S,schemareading-schema,수확체감의 법칙,다른 생산 요소가 고정된 상태에서 한 요소를 추가할 때 늘어나는 생산량이 점차 줄어드는 법칙.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-801,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5780,S,schemareading-schema,생산비용,"재화나 서비스를 생산하는 데 필요한 원자재비, 임금 따위의 모든 비용.",사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-802,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5781,S,schemareading-schema,한계비용,재화나 서비스의 생산량을 한 단위 늘릴 때 추가로 들어가는 비용.,사회,소분류: 가격과 시장 균형 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-803,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5782,S,schemareading-schema,규모의 경제,생산 규모를 늘릴수록 제품 한 단위당 드는 평균 생산 비용이 줄어드는 현상.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-804,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5783,S,schemareading-schema,범위의 경제,한 기업이 여러 종류의 제품을 함께 생산함으로써 생산 비용을 줄이는 현상.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-805,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5784,S,schemareading-schema,경제적 지대,"공급이 제한된 생산 요소의 소유자가 얻는, 최소 수입을 초과하는 잉여 소득.",사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-806,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5785,S,schemareading-schema,한계소비성향,소득이 한 단위 늘어났을 때 소비가 늘어나는 비율.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-807,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5786,S,schemareading-schema,직접세,세금을 실제로 부담하는 납세자와 세금을 납부하는 의무자가 같은 조세.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-808,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5787,S,schemareading-schema,간접세,세금을 실제로 부담하는 사람과 이를 납부하는 의무자가 서로 다른 조세.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-809,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5788,S,schemareading-schema,조세의 전가,납세 의무자가 자신이 부담해야 할 세금을 상품 가격 등에 포함시켜 다른 사람에게 넘기는 일.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-810,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5789,S,schemareading-schema,사용가치,물건이 사람의 필요나 욕망을 충족해 주는 유용성의 정도.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-811,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5790,S,schemareading-schema,교환가치,어떤 물건이 다른 물건과 교환되는 가치나 비율.,사회,소분류: 경제 문제 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-812,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5791,S,schemareading-schema,경기,매매나 거래 등 경제 활동의 전반적인 활성화 상태.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-813,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5792,S,schemareading-schema,경기조절정책,경기가 지나치게 과열되거나 침체할 때 이를 적정한 수준으로 조절하는 정책.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-814,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5793,S,schemareading-schema,경기안정화정책,경제의 급격한 변동을 줄이고 물가와 고용을 안정시키기 위해 펼치는 정책.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-815,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5794,S,schemareading-schema,국민소득,한 나라의 국민이 일정 기간 새로 생산한 재화와 서비스의 가치를 합한 소득.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-816,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5795,S,schemareading-schema,국민소득 3면 등가의 법칙,"국민소득이 생산, 분배, 지출의 세 가지 측면에서 측정했을 때 모두 같다는 법칙.",사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-817,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5796,S,schemareading-schema,국민총소득,한 나라의 국민이 일정 기간 국내외에서 생산 활동에 참여하여 얻은 소득의 합계.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-818,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5797,S,schemareading-schema,국민순소득,국민총소득에서 생산 설비의 가치 감소분인 감가상각비를 뺀 소득.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-819,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5798,S,schemareading-schema,국내총생산,일정 기간 한 나라 안에서 생산된 최종 생산물의 시장 가치를 모두 합한 것.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-820,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5799,S,schemareading-schema,경제성장률,일정 기간 한 나라의 경제 규모나 실질 생산량이 얼마나 증가했는지를 나타내는 비율.,사회,소분류: 시장과 경제 활동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-821,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5800,S,schemareading-schema,명목GDP,물가 변동을 반영하지 않고 당해 연도의 시장 가격을 기준으로 계산한 국내총생산.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-822,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5801,S,schemareading-schema,실질GDP,물가 변동의 영향을 제외하고 기준 연도의 가격을 적용하여 산출한 국내총생산.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-823,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5802,S,schemareading-schema,기대 인플레이션,기업이나 소비자 등 경제 주체들이 앞으로 물가가 얼마나 오를지 예상하는 정도.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-824,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5803,S,schemareading-schema,기저효과,비교하는 기준 시점의 수치가 너무 높거나 낮아 결과가 실제보다 크게 distortion되어 보이는 현상.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-825,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5804,S,schemareading-schema,긴축정책,경기 과열이나 물가 상승을 막기 위해 통화량을 줄이거나 정부 지출을 축소하는 정책.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-826,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5805,S,schemareading-schema,낙수효과,대기업이나 고소득층의 경제적 성과가 늘어나면 저소득층에게도 혜택이 돌아간다는 이론.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-827,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5806,S,schemareading-schema,명목소득,물가 변동에 따른 구매력을 고려하지 않고 현재 화폐 단위의 금액으로 나타낸 소득.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-830,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5807,S,schemareading-schema,실질소득,물가 변동을 반영하여 실제로 물건을 살 수 있는 돈의 가치를 나타낸 소득.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-831,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5808,S,schemareading-schema,물가지수,물가의 변동을 종합적으로 알아보기 위하여 기준 시점의 물가를 기준으로 나타낸 지표.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-832,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5809,S,schemareading-schema,스태그플레이션,경기가 침체하여 불황인데도 물가가 계속해서 오르는 현상.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-833,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5810,S,schemareading-schema,양적완화정책,중앙은행이 시장에 직접 돈을 풀어서 경기 침체를 막고 통화량을 늘리는 정책.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-834,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5811,S,schemareading-schema,재정정책,정부가 세금이나 지출을 조절하여 경기를 안정시키고 경제 성장을 조절하는 정책.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-835,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5812,S,schemareading-schema,정책시차,경제 정책을 수립하고 시행하여 실제 효과가 나타날 때까지 걸리는 시간.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-836,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5813,S,schemareading-schema,조세부담률,한 나라의 국민소득에서 국민이 내는 세금이 차지하는 비율.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-837,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5814,S,schemareading-schema,피셔효과,명목 금리가 실질 금리와 예상되는 물가 상승률의 합과 같아지는 현상.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-838,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5815,S,schemareading-schema,GDP갭,한 나라의 실제 국내총생산(GDP)과 잠재 국내총생산의 차이.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-839,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5816,S,schemareading-schema,GDP 디플레이터,명목 국내총생산(GDP)을 실질 국내총생산으로 나누어 국민경제의 전체 물가 수준을 나타낸 지수.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-840,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5817,S,schemareading-schema,세이의 법칙,공급이 그 자체의 수요를 스스로 창출하므로 만성적인 공급 과잉은 발생하지 않는다는 법칙.,사회,소분류: 정부의 경제정책 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-841,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5818,S,schemareading-schema,정보의 비대칭성,경제적 거래에서 한쪽 당사자가 다른 쪽보다 더 많거나 정확한 정보를 가진 상태.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-842,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5819,S,schemareading-schema,도덕적 해이,감시가 불충분하거나 위험을 타인에게 떠넘길 수 있을 때 주의를 게을리하는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-843,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5820,S,schemareading-schema,역선택,정보가 부족하여 바람직하지 않거나 불리한 대상을 선택하게 되는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-844,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5821,S,schemareading-schema,낙인효과,한번 나쁜 사람으로 인식이 되면 실제로도 그러할 것이라고 평가받는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-845,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5822,S,schemareading-schema,분수효과,저소득층의 소비 증대가 경제 전체를 활성화하고 고소득층의 소득까지 늘리는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-846,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5823,S,schemareading-schema,네트워크효과,어떤 상품이나 서비스를 사용하는 사람이 늘어날수록 그 가치와 효용이 커지는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-847,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5824,S,schemareading-schema,밴드웨건효과,다른 사람들의 소비 흐름에 따라 자신도 특정 상품을 따라 구매하게 되는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-848,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5825,S,schemareading-schema,스놉효과,남들이 많이 구매하는 상품의 소비는 피하고 자신만의 특별한 제품을 구하려는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-849,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5826,S,schemareading-schema,속물효과,많은 사람이 소비하는 제품을 피하여 자신만의 차별성과 희소성을 추구하는 소비 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-850,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5827,S,schemareading-schema,베블런효과,가격이 오르는데도 허영심이나 과시욕 때문에 수요가 오히려 늘어나는 현상.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-851,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5828,S,schemareading-schema,로렌츠곡선,인구의 누적 비율과 소득의 누적 비율 관계를 나타내어 소득 분배 상태를 보여 주는 곡선.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-852,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5829,S,schemareading-schema,지니계수,소득 불평등의 정도를 0과 1 사이의 수치로 나타낸 경제 지표.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-853,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5830,S,schemareading-schema,이스털린의 역설,소득이 일정 수준을 넘으면 소득이 늘어나도 행복도가 더 이상 비례하여 증가하지 않는다는 이론.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-854,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5831,S,schemareading-schema,골디락스,물가 상승에 대한 우려 없이 안정적이고 높은 경제 성장을 이어 가는 이상적인 경제 상태.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-855,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5832,S,schemareading-schema,체리피커,기업의 혜택이나 실속만 챙기고 정작 주요 상품이나 서비스는 이용하지 않는 소비자.,사회,소분류: 바람직한 소비선택 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-856,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5833,S,schemareading-schema,통화정책수단,중앙은행이 시중의 통화량이나 금리를 조절하여 경제를 안정시키기 위해 사용하는 정책적 도구.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-857,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5834,S,schemareading-schema,지급준비제도,금융 기관이 예금자의 출금 요구에 응하기 위해 예금액의 일정 비율을 중앙은행에 예치하도록 하는 제도.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-858,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5835,S,schemareading-schema,공개시장운영정책,중앙은행이 금융 시장에서 국공채 등을 매매하여 시중의 통화량과 금리를 조절하는 정책.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-859,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5836,S,schemareading-schema,대출정책,중앙은행이 예금 은행에 자금을 대출하거나 조건과 금리를 조절하여 시중 통화량을 관리하는 정책.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-860,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5837,S,schemareading-schema,통화지표,시중에 유통되는 돈의 양과 흐름을 나타내는 지표.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-861,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5838,S,schemareading-schema,본원통화,중앙은행이 공급하여 통화 창출의 기초가 되는 돈.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-862,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5839,S,schemareading-schema,파생통화,금융 기관의 예금과 대출을 통해 새로 만들어진 통화.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-863,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5840,S,schemareading-schema,통화승수,본원통화 한 단위가 창출해 내는 총통화량의 배수.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-864,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5841,S,schemareading-schema,신용창조,은행이 예금을 바탕으로 대출을 반복하며 통화량을 늘려 가는 일.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-865,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5842,S,schemareading-schema,승수효과,어떤 경제 요인의 변화가 연쇄적인 영향을 미쳐 사회 전체의 소득을 크게 늘리는 효과.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-866,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5843,S,schemareading-schema,유동성함정,금리를 낮추어도 경제 주체들이 돈을 쓰지 않아 경기가 회복되지 않는 상태.,사회,소분류: 통화정책 / 주차: 7주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-868,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5844,S,schemareading-schema,환율의 경기자동조절기능,환율 변동에 따라 수출입과 물가가 조정되면서 경기가 자동으로 조절되는 기능.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-870,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5845,S,schemareading-schema,고정환율제도,정부나 중앙은행이 환율을 일정한 수준으로 고정해 두는 제도.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-871,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5846,S,schemareading-schema,변동환율제도,외환 시장의 수요와 공급에 따라 환율이 결정되도록 하는 제도.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-872,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5847,S,schemareading-schema,기준금리,"한 나라의 금리 체계에서 기준이 되는 금리로, 중앙은행이 결정한다.",사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-873,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5848,S,schemareading-schema,기준환율,다른 나라 돈과 교환할 때 기준이 되는 환율.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-874,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5849,S,schemareading-schema,기축통화,국제적인 거래나 금융 결제에서 기본으로 사용되는 통화.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-875,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5850,S,schemareading-schema,디커플링,한 국가의 경제가 세계 경제나 다른 국가의 흐름과 벗어나 독자적으로 움직이는 현상.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-876,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5851,S,schemareading-schema,명목금리,물가 변동을 반영하지 않고 금융 기관이 표면상으로 제시한 금리.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-877,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5852,S,schemareading-schema,실질금리,명목 금리에서 물가 상승률을 뺀 실제 금리.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-878,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5853,S,schemareading-schema,평가절상,한 나라의 통화 가치를 다른 나라의 통화에 비해 높이는 일.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-879,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5854,S,schemareading-schema,평가절하,한 나라의 통화 가치를 다른 나라의 통화에 비해 낮추는 일.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-880,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5855,S,schemareading-schema,환리스크,환율 변동으로 인해 손실을 입을 가능성이나 위험.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-881,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5856,S,schemareading-schema,환차손,환율이 변동함에 따라 발생하는 손실.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-882,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5857,S,schemareading-schema,환차익,환율이 변동함에 따라 발생하는 이익.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-883,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5858,S,schemareading-schema,J커브효과,환율 상승 초기에는 무역 수지가 악화되다가 시간이 지나며 개선되는 현상.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-884,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5859,S,schemareading-schema,리디노미네이션,화폐의 가치는 그대로 유지하면서 액면가를 낮추어 표기하는 일.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-885,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5860,S,schemareading-schema,토빈세,단기 투기성 자금의 급격한 이동을 막기 위해 국제 금융 거래에 부과하는 세금.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-886,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5861,S,schemareading-schema,블랙스완,발생 가능성은 매우 낮지만 일단 발생하면 커다란 충격을 주는 사건.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-887,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5862,S,schemareading-schema,화이트스완,충분히 예측할 수 있고 예방할 수 있지만 반복해서 나타나는 위기 상황.,사회,소분류: 환율 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-888,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5863,S,schemareading-schema,자유의지,자신의 행동과 의사를 외부의 강요 없이 스스로 결정할 수 있는 의지.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-889,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5864,S,schemareading-schema,결정론,세상의 모든 사건이나 인간의 행동이 이미 결정되어 있다는 견해.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-890,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5865,S,schemareading-schema,소극적자유,타인이나 국가 등의 외부로부터 간섭이나 구속을 받지 않는 상태.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-891,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5866,S,schemareading-schema,적극적자유,자신의 의지에 따라 스스로 목표를 정하고 실현할 수 있는 상태.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-892,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5867,S,schemareading-schema,자유의 역설,무제한의 자유가 오히려 타인의 자유를 침해하는 결과를 가져오는 현상.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-893,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5868,S,schemareading-schema,도덕적 자율,외부의 강요 없이 스스로 도덕 규범을 세우고 이를 실천하는 태도.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-894,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5869,S,schemareading-schema,도덕적 갈등상황,서로 충돌하는 둘 이상의 도덕적 가치 사이에서 선택해야 하는 상황.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-895,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5870,S,schemareading-schema,사실판단과 가치판단,객관적 사실을 판단하는 것과 주관적 가치 기준에 따라 판단하는 것.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-896,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5871,S,schemareading-schema,도덕적 상대주의,도덕적 가치나 규범이 사회나 시대에 따라 달라진다고 보는 견해.,사회,소분류: 자유와 평등 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-897,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5872,S,schemareading-schema,도덕적 정당화,어떤 행위나 판단이 도덕적으로 옳음을 이치에 맞게 증명함.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-898,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5873,S,schemareading-schema,동기론,행위의 결과보다 행위를 하게 된 동기를 도덕적 평가의 기준으로 삼는 관점.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-899,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5874,S,schemareading-schema,결과론,행위의 동기보다 행위가 가져오는 결과를 도덕적 평가의 기준으로 삼는 관점.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-900,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5875,S,schemareading-schema,형식적평등,개인의 차이를 고려하지 않고 모든 사람을 똑같이 대우하는 것.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-902,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5876,S,schemareading-schema,실질적평등,개인의 조건과 차이를 고려하여 실질적으로 균등한 기회를 제공하는 것.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-903,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5877,S,schemareading-schema,합리적차별,합당한 이유와 정당한 기준에 따라 다르게 대우하는 일.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-904,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5878,S,schemareading-schema,형식적정의,법이나 규칙을 적용할 때 동일한 기준과 절차를 공정하게 따르는 정의.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-905,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5879,S,schemareading-schema,실질적정의,개인의 구체적인 조건이나 차이를 고려하여 실질적 평등을 실현하는 정의.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-906,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5880,S,schemareading-schema,공리의 원리,최대 다수의 최대 행복을 행위나 정책의 올바른 평가 기준으로 삼는 원리.,사회,소분류: 정의와 공정 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-907,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5881,S,schemareading-schema,공권력,국가나 공공 단체가 공공복리를 위하여 국민에게 행사하는 강제적인 권력.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-908,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5882,S,schemareading-schema,국가주의,국가의 이익과 발전을 개인의 자유나 권리보다 우선시하는 정치 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-909,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5883,S,schemareading-schema,무정부주의,모든 형태의 국가 권력과 강제적인 정부 통제를 부정하는 정치 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-910,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5884,S,schemareading-schema,공화제,세습 군주 없이 국민이 선출한 대표가 국가를 통치하는 정치 형태.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-911,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5885,S,schemareading-schema,입헌군주제,헌법에 따라 군주의 권력을 제한하고 법을 준수하게 하는 정치 형태.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-912,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5886,S,schemareading-schema,이데올로기,인간과 사회에 대한 체계적이고 신념화된 행동 지침이나 생각의 틀.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-913,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5887,S,schemareading-schema,자연권,"인간이 태어나면서부터 자연적으로 가지는, 누구도 침해할 수 없는 권리.",사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-914,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5888,S,schemareading-schema,홉스의 사회계약론,혼란을 벗어나기 위해 절대 권력자에게 권리를 양도한다는 사회 계약 이론.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-915,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5889,S,schemareading-schema,로크의 사회계약론,기본권 보장을 위해 정부에 권한을 위임하고 저항권을 명시한 사회 계약 이론.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-916,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5890,S,schemareading-schema,루소의 사회계약론,일반의지에 따라 주권을 가진 국민이 직접 공동체를 형성한다는 사회 계약 이론.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-917,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5891,S,schemareading-schema,국가 중립성,국가가 특정한 종교나 가치관에 개입하지 않고 중립을 지켜야 한다는 원칙.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-918,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5892,S,schemareading-schema,공유의 비극,모두가 함께 쓰는 자원이 개인의 이기심으로 인해 남용되어 고갈되는 현상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-919,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5893,S,schemareading-schema,구성적 공동체,개인이 속한 공동체가 개인의 정체성 형성에 결정적 역할을 한다고 보는 공동체.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-920,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5894,S,schemareading-schema,공동선,사회 구성원 모두에게 공통으로 이익이 되는 선이나 복지.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-921,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5895,S,schemareading-schema,도덕적 인간과 비도덕적 사회,개인은 도덕적일 수 있으나 집단은 이기적으로 행동하기 쉽다는 라인홀드 니부어의 이론.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-922,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5896,S,schemareading-schema,집단 이기주의,자신이 속한 집단의 이익만을 이기적으로 추구하는 태도.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-923,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5897,S,schemareading-schema,개인주의,국가나 집단보다 개인의 자유와 권리를 우선시하는 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-924,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5898,S,schemareading-schema,이기주의,타인이나 사회보다 자신의 이익만을 우선으로 생각하고 추구하는 태도.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-925,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5899,S,schemareading-schema,님비,혐오 시설이나 기피 시설이 자신이 사는 지역에 들어서는 것을 반대하는 현상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-926,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5900,S,schemareading-schema,핌비,편의 시설이나 이익이 되는 시설을 자신이 사는 지역에 유치하려는 현상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-927,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5901,S,schemareading-schema,사회윤리,"사회 구조나 제도, 집단 간의 관계에서 지켜야 할 도덕적 규범.",사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-928,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5902,S,schemareading-schema,연대의식,같은 집단의 구성원으로서 서로 돕고 책임과 운명을 함께하려는 의식.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-929,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5903,S,schemareading-schema,정치적의무,국가나 정치 공동체의 법과 권위에 따르고 협력해야 할 시민의 의무.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-930,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5904,S,schemareading-schema,민족정체성,한 민족의 구성원으로서 공유하는 역사적·문화적 소속감과 자의식.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-931,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5905,S,schemareading-schema,국가정체성,특정 국가의 국민으로서 갖는 소속감과 자의식.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-932,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5906,S,schemareading-schema,세계주의,인류 전체를 하나의 공동체로 보고 국가나 민족의 경계를 뛰어넘으려는 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-933,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5907,S,schemareading-schema,민본주의,백성을 국가의 근본으로 여기고 백성의 삶을 최우선으로 삼는 정치 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-934,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5908,S,schemareading-schema,보이지않는손,개인의 사적 이익 추구가 시장 가격을 통해 사회 전체의 이익으로 이어지는 자율적 조정 기능.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-935,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5909,S,schemareading-schema,가치전도현상,본래의 중요한 목적과 수단이 뒤바뀌어 수단이 목적처럼 취급되는 현상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-936,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5910,S,schemareading-schema,인간소외현상,인간이 만든 물질이나 제도에 인간 스스로가 지배당하여 인간성을 잃어버리는 현상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-937,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5911,S,schemareading-schema,사회주의,생산 수단의 사회적 소유와 관리를 통해 평등한 사회를 건설하고자 하는 사상 및 제도.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-938,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5912,S,schemareading-schema,민주사회주의,민주주의적인 절차와 방법에 따라 사회주의적 가치를 실현하려는 정치 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-939,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5913,S,schemareading-schema,전체주의,개인의 자유와 권리보다 국가나 집단의 이익을 절대적으로 우선시하는 정치 사상이나 체제.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-940,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5914,S,schemareading-schema,복지자본주의,자본주의 시장 경제를 기본으로 하면서 국가의 복지 정책을 통해 국민의 삶을 보장하는 제도.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-941,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5915,S,schemareading-schema,시장자유주의,정부의 개입을 줄이고 시장의 자율성과 개인의 자유로운 경제 활동을 강조하는 사상.,사회,소분류: 개인과 국가 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-942,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5916,S,schemareading-schema,민족,"같은 언어, 문화, 역사를 공유하며 공동체 의식을 가지고 있는 사람들의 집단.",사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-943,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5917,S,schemareading-schema,민족주의,"자기 민족의 독립과 발전, 단결을 최고의 가치로 여기는 사상이나 태도.",사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-944,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5918,S,schemareading-schema,자민족중심주의,자기 민족의 문화나 가치만을 우월하다고 믿고 다른 민족을 배척하는 태도.,사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-945,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5919,S,schemareading-schema,열린민족주의,자기 민족의 주체성을 지키면서 다른 민족이나 문화에 대하여 열린 태도를 가지는 사상.,사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-946,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5920,S,schemareading-schema,닫힌민족주의,자기 민족의 이익만을 내세우며 다른 민족이나 문화를 배척하고 닫힌 태도를 보이는 사상.,사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-947,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5921,S,schemareading-schema,민족문화,한 민족이 역사 속에서 오랜 기간에 걸쳐 형성하고 발전시켜 온 고유한 문화.,사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-948,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5922,S,schemareading-schema,정체성,어떤 존재가 자기 자신에 대해 가지는 변함없는 본질이나 독자적인 자아의식.,사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-949,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5923,S,schemareading-schema,자아정체성,자기 자신의 독특성과 연속성에 대해 갖는 통일된 자의식.,사회,소분류: 민족주의 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-950,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5924,S,schemareading-schema,정치의 의미,사회 구성원 간의 대립과 갈등을 조정하고 이해관계를 해결하는 활동.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-951,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5925,S,schemareading-schema,라스웰의 권력개념,"정치학자 라스웰이 정의한, 가치의 권위적 배분을 결정하는 영향력.",사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-952,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5926,S,schemareading-schema,다원주의,사회의 다양한 집단이 독립성을 가지며 자율적으로 의사를 결정하는 사상.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-953,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5927,S,schemareading-schema,민주정치의 이념,인간의 존엄성 실현을 최고 가치로 하고 자유와 평등을 보장하는 정치의 목표.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-954,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5928,S,schemareading-schema,민주정치의 기본원리,"국민 주권, 권력 분립 등 민주 정치를 올바르게 운용하기 위한 기본 원칙.",사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-955,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5929,S,schemareading-schema,민주주의,국가의 주권이 국민에게 있고 국민의 뜻에 따라 국정을 운영하는 정치 체제나 사상.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-956,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5930,S,schemareading-schema,절차적민주주의,선거와 법적 절차의 공정성과 합법성을 중심으로 운영되는 민주주의.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-957,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5931,S,schemareading-schema,실질적민주주의,형식적인 절차를 넘어 사회 구성원의 실질적인 자유와 평등을 실현하는 민주주의.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-958,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5932,S,schemareading-schema,자유민주주의,개인의 자유와 권리를 최대한 보장하며 국민 주권을 실현하는 정치 체제.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-959,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5933,S,schemareading-schema,국민주권론,국가의 최고 권력인 주권이 국민에게 있고 모든 권력은 국민으로부터 나온다는 이론.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-960,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5934,S,schemareading-schema,대의제,국민이 선출한 대표자를 통하여 국가의 의사를 결정하고 국정을 운영하는 제도.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-962,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5935,S,schemareading-schema,다수결원칙,집단의 의사를 결정할 때 다수의 의견을 전체의 의사로 채택하는 원리.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-963,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5936,S,schemareading-schema,중우정치,사려 깊지 못한 대중이 선동이나 감정에 이끌려 정치를 그르치는 상태.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-964,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5937,S,schemareading-schema,국민투표,국가의 중대한 정책이나 헌법 개정안을 국민이 직접 투표하여 결정하는 제도.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-965,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5938,S,schemareading-schema,심의민주주의,시민들이 숙의와 토론을 거쳐 합리적인 정책을 결정하는 민주주의 제도.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-966,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5939,S,schemareading-schema,전자민주주의,정보 통신 기술을 활용하여 시민의 정치 참여를 확대하는 민주주의 형태.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-967,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5940,S,schemareading-schema,권력분립의 원리,국가 권력을 여러 기관에 나누어 견제와 균형을 이루게 하는 원리.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-968,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5941,S,schemareading-schema,교섭단체,국회에서 의사 진행을 원활하게 하기 위해 일정 수 이상의 의원으로 구성하는 단체.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-971,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5942,S,schemareading-schema,헌법개정,정해진 절차에 따라 기존 헌법의 내용을 수정하거나 바꾸는 일.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-972,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5943,S,schemareading-schema,법률제정,국회에서 정해진 절차를 거쳐 새로운 법률을 만드는 일.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-973,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5944,S,schemareading-schema,법률개정,기존 법률의 내용 중 일부를 수정하거나 바꾸는 일.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-974,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5945,S,schemareading-schema,탄핵소추,고위 공직자의 위법 행위에 대해 국회가 파면을 요구하는 결의를 하는 일.,사회,소분류: 민주정치와 법치주의 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-975,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5946,S,schemareading-schema,의원내각제,의회의 다수당을 중심으로 내각을 구성하여 국정을 담당하는 정부 형태.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-978,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5947,S,schemareading-schema,대통령의 지위와 권한,국가 원수이자 행정부 수반으로서 대통령이 가지는 법적 위치와 권리.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-979,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5948,S,schemareading-schema,법원,법을 적용하여 사회적 분쟁을 해결하고 재판하는 국가 기관.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-980,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5949,S,schemareading-schema,민사재판,개인 사이의 권리관계나 법률적 다툼을 해결하기 위하여 진행하는 재판.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-982,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5950,S,schemareading-schema,형사재판,범죄 성립 여부를 밝히고 형벌을 정하기 위하여 진행하는 재판.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-983,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5951,S,schemareading-schema,행정재판,행정 기관의 위법한 처분에 의한 권리 침해를 구제하기 위한 재판.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-984,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5952,S,schemareading-schema,선거재판,선거의 효력이나 당선의 유효 여부에 관한 다툼을 해결하기 위한 재판.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-985,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5953,S,schemareading-schema,군사재판,군인이나 군무원의 범죄를 심판하기 위하여 군사 법원에서 하는 재판.,사회,소분류: 정부형태와 정치제도 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-986,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5954,S,schemareading-schema,정당정치,정당이 중심이 되어 국가의 정치를 이끌어 가는 정치 형태.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-988,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5955,S,schemareading-schema,복수정당제,둘 이상의 정당이 자유롭게 경쟁하고 활동할 수 있도록 보장하는 제도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-989,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5956,S,schemareading-schema,공약,정당이나 후보자가 선거에 당선되면 이행하겠다고 국민에게 한 약속.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-991,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5957,S,schemareading-schema,다수대표제,한 선거구에서 가장 많은 표를 얻은 후보자를 당선자로 선출하는 제도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-992,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5958,S,schemareading-schema,비례대표제,각 정당이 얻은 득표율에 비례하여 의석을 배분하는 선거 제도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-993,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5959,S,schemareading-schema,선거구제,선거를 실시하기 위해 대표자를 선출할 지역 단위를 나누는 제도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-994,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5960,S,schemareading-schema,사표,선거에서 낙선한 후보에게 투표하여 당선 결정에 영향을 주지 못한 표.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-995,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5961,S,schemareading-schema,공직선거법,공직 선거가 공정하게 치러지도록 필요한 사항을 정해 놓은 법률.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-996,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5962,S,schemareading-schema,선거구법정주의,선거구의 구획을 자의적으로 나누지 못하도록 반드시 법률로 정하는 원칙.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-997,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5963,S,schemareading-schema,정치참여,국민이 국가의 정치 과정이나 결정에 영향력을 행사하는 여러 활동.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-998,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5964,S,schemareading-schema,정치적효용감,자신의 정치적 행위가 정치 과정에 영향을 미칠 수 있다고 믿는 태도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-999,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5965,S,schemareading-schema,옴브즈맨,행정 기관의 부당한 권력 남용이나 행위로부터 국민의 권리를 보호하는 제도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1000,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5966,S,schemareading-schema,여론정치,대다수 국민의 의견이나 여론을 바탕으로 국가의 정치를 이끌어 가는 방식.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1001,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5967,S,schemareading-schema,정치적 무관심,국민이 정치 현상이나 국가의 정치적 문제에 아무런 관심도 가지지 않는 상태.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1002,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5968,S,schemareading-schema,포퓰리즘,대중의 인기나 이익만을 겨냥하여 정책을 추진하는 정치적 경향.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1003,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5969,S,schemareading-schema,헤게모니,한 집단이나 국가가 주도권을 잡고 우월한 영향력을 행사하는 일.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1004,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5970,S,schemareading-schema,게리맨더링,특정 정당이나 후보에게 유리하게 선거구를 불공정하게 나누는 일.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1005,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5971,S,schemareading-schema,전자정부,정보 통신 기술을 활용하여 행정 업무를 효율적으로 처리하는 정부.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1007,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5972,S,schemareading-schema,샤프파워,정보 교란이나 매수 등을 통해 은밀하게 영향력을 행사하는 권력.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1008,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5973,S,schemareading-schema,가짜뉴스,정치적·상업적 이익을 위해 거짓 정보를 사실처럼 작성하여 퍼뜨리는 뉴스.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1009,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5974,S,schemareading-schema,사회적 폭포효과,일부의 의견이나 정보가 폭포처럼 급격히 퍼져 전체 동의를 이루는 현상.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1010,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5975,S,schemareading-schema,아그레망,새로운 외교 파견 사절에 대해 상대국이 비공식적으로 동의하는 일.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1011,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5976,S,schemareading-schema,레임덕,임기 만료를 앞둔 지도자의 권력이나 통솔력이 떨어지는 현상.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1012,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5977,S,schemareading-schema,브래들리효과,인종이나 사회적 편견 때문에 여론 조사와 실제 투표 결과가 다르게 나오는 현상.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1013,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5978,S,schemareading-schema,언더독효과,약자나 열세에 있는 후보에게 동정표가 몰려 투표 결과가 뒤바뀌는 현상.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1014,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5979,S,schemareading-schema,왝더독효과,하위의 주장이나 이슈가 전체나 본질을 끌고 가는 주객전도의 현상.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1015,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5980,S,schemareading-schema,엽관제도,선거에서 이긴 정당이 공로가 있는 지지자에게 관직을 주는 제도.,사회,소분류: 정당과 선거제도 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1016,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5981,S,schemareading-schema,민법의 기본원리,개인의 사적 자치와 권리 보장을 바탕으로 민법의 해석과 적용의 기준이 되는 기본 원칙.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1018,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5982,S,schemareading-schema,신의성실의 원칙,권리의 행사와 의무의 이행은 신의에 조화되도록 성실하게 하여야 한다는 원칙.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1019,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5983,S,schemareading-schema,귄리남용 금지의 원칙,권리를 가졌다 하더라도 그것을 사회적 정당성을 벗어나 함부로 행사해서는 안 된다는 원칙.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1020,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5984,S,schemareading-schema,사정변경의 원칙,계약 체결 당시의 사정이 현저히 바뀐 경우 계약 내용을 변경하거나 해제할 수 있다는 원칙.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1021,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5985,S,schemareading-schema,모순행위금지의 원칙,자신의 선행 행위와 모순되는 행위를 함으로써 상대방의 신뢰를 침해해서는 안 된다는 원칙.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1022,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5986,S,schemareading-schema,실효의 원칙,권리자가 오랫동안 권리를 행사하지 않아 상대방이 이를 신뢰한 경우 권리 행사를 제한하는 원칙.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1023,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5987,S,schemareading-schema,계약의 종류,"법률상의 성질이나 목적, 방식 따위에 따라 구별되는 계약의 여러 형태.",사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1024,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5988,S,schemareading-schema,매매,당사자 한쪽이 재산권을 넘겨줄 것을 약정하고 상대방은 그 대금을 지급할 것을 약정하는 계약.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1025,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5989,S,schemareading-schema,임대차,당사자 한쪽이 상대방에게 물건을 사용·수익하게 하고 상대방은 이에 대해 차임을 지급할 것을 약정하는 계약.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1027,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5990,S,schemareading-schema,증여,당사자 한쪽이 대가 없이 자신의 재산을 상대방에게 준다는 의사를 표시하고 상대방이 이를 승낙하는 계약.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1028,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5991,S,schemareading-schema,교환,당사자 쌍방이 금전 이외의 재산권을 서로 이전할 것을 약정함으로써 성립하는 계약.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1029,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5992,S,schemareading-schema,도급,당사자 한쪽이 어떤 일을 완성할 것을 약정하고 상대방은 그 일의 결과에 대해 보수를 지급할 것을 약정하는 계약.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1030,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5993,S,schemareading-schema,계약의 성립,청약과 승낙이라는 서로 대립하는 두 개 이상의 의사표시가 합치하여 계약의 효력이 발생하는 것.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1031,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5994,S,schemareading-schema,청약,계약을 체결하고 싶다는 뜻으로 상대방에게 행하는 일방적이고 구체적인 의사표시.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1032,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5995,S,schemareading-schema,승낙,상대방의 청약을 받아들여 계약을 성립시키겠다는 뜻으로 행하는 의사표시.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1033,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5996,S,schemareading-schema,계약의 효력,계약이 성립함에 따라 당사자 간에 권리와 의무가 발생하는 법적 효력.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1034,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5997,S,schemareading-schema,의사능력,자신의 행위가 지니는 법적 의미나 결과를 판단할 수 있는 정신적 능력.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1035,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5998,S,schemareading-schema,행위능력,단독으로 유효한 법률행위를 행할 수 있는 법적인 능력.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1036,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5999,S,schemareading-schema,미성년자의 법률행위,"미성년자가 하는 법률행위로, 원칙적으로 법정대리인의 동의가 필요함.",사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1037,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6000,S,schemareading-schema,불법행위,고의나 과실로 타인에게 손해를 입히는 위법한 행위.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1038,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6001,S,schemareading-schema,손해배상,위법한 행위로 타인에게 입힌 손해를 물어 주어 원래 상태로 돌려놓는 일.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1039,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6002,S,schemareading-schema,징벌적 손해배상제도,가해자의 악의적인 행위에 대해 실제 손해보다 더 많은 배상금을 부과하는 제도.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1040,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6003,S,schemareading-schema,특수불법행위,타인의 행위나 공작물 등의 하자에 대해 특정한 자에게 지우는 불법행위 책임.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1041,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6004,S,schemareading-schema,권리능력,권리를 누리고 의무를 질 수 있는 주체가 될 수 있는 법적 자격.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1042,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6005,S,schemareading-schema,책임능력,자신의 위법한 행위에 대한 법적 책임을 판단하여 질 수 있는 능력.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1043,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6006,S,schemareading-schema,법률관계,법에 의해 규율되고 보호되는 사람 간 또는 사람과 물건 간의 관계.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1044,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6007,S,schemareading-schema,공증,법률관계나 사문서의 작성 및 내용에 대하여 국가가 증명하여 주는 일.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1045,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6008,S,schemareading-schema,민사조정제도,판사의 판결에 의하지 않고 조정위원회의 중재를 통해 민사 분쟁을 해결하는 제도.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1046,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6009,S,schemareading-schema,지급명령제도,법원이 서류 심사만으로 채무자에게 돈을 지급하도록 명령하는 간이 재판 제도.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1047,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6010,S,schemareading-schema,대안적 분쟁해결방법,소송과 같은 법원의 재판을 거치지 않고 분쟁을 해결하는 제도나 방법.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1048,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6011,S,schemareading-schema,법률구조제도,경제적 어려움 등으로 법적 보호를 받지 못하는 사람에게 법률 지원을 제공하는 제도.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1049,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6012,S,schemareading-schema,자연인과 법인,살아 있는 사람인 자연인과 법에 의해 권리와 의무의 주체로 인정받은 기관이나 단체.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1050,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6013,S,schemareading-schema,친권,부모가 미성년자인 자녀를 보호·양육하고 그 재산을 관리할 법률상의 권리와 의무.,사회,소분류: 민법 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1051,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6014,S,schemareading-schema,부동산,토지 및 건물처럼 정착되어 있어 쉽게 옮길 수 없는 재산.,사회,소분류: 상법 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1053,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6015,S,schemareading-schema,등기제도,부동산의 권리 관계 등을 국가 기관의 공적 장부에 기록하여 공개하는 제도.,사회,소분류: 상법 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1054,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6016,S,schemareading-schema,공시,일정한 법률 상태나 권리 관계를 불특정 다수가 알 수 있게 공식적으로 알리는 일.,사회,소분류: 상법 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1055,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6017,S,schemareading-schema,주택임대차,주택 소유자에게 차임을 지급하고 주택을 빌려 사용하는 계약 관계.,사회,소분류: 상법 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1056,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6029,S,schemareading-schema,상소절차,법원의 판결에 불복하여 상급 법원에 다시 재판을 신청하는 절차.,사회,소분류: 형법 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,social-1069,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6756,S,schemareading-schema,고기압,주위보다 상대적으로 기압이 높은 영역이나 그러한 기압계.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-792,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6757,S,schemareading-schema,저기압,주위보다 상대적으로 기압이 낮은 영역이나 그러한 기압계.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-793,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6758,S,schemareading-schema,온대저기압,중위도 지방에서 온난 전선과 한랭 전선을 동반하며 발생하고 발달하는 저기압.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-794,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6759,S,schemareading-schema,열대저기압,열대 지방의 따뜻한 해상에서 발생하는 강한 저기압.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-795,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6760,S,schemareading-schema,폐색전선,이동 속도가 빠른 한랭 전선이 온난 전선을 따라잡아 두 전선이 겹쳐져서 생기는 전선.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-798,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6761,S,schemareading-schema,정체전선,세력이 비슷한 두 기단이 만나 이동하지 않고 한 곳에 오래 머물러 있는 전선.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-799,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6762,S,schemareading-schema,습도,공기 속에 수증기가 포함되어 있는 정도.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-800,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6763,S,schemareading-schema,포화수증기압,어떤 온도에서 공기가 수증기를 최대로 포함하고 있을 때의 수증기 압력.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-801,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6764,S,schemareading-schema,이슬점,공기가 냉각되어 수증기가 물방울로 응결하기 시작하는 온도.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-802,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6765,S,schemareading-schema,열,온도 차이에 의해 온도가 높은 물체에서 온도가 낮은 물체로 이동하는 에너지.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-803,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6766,S,schemareading-schema,푄현상,바람이 산맥을 넘어 내려오면서 기온이 올라가고 건조해지는 현상.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-807,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6767,S,schemareading-schema,건조단열감률,수증기가 포화되지 않은 공기 덩어리가 상승할 때 높이에 따라 기온이 낮아지는 비율.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-808,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6768,S,schemareading-schema,습윤단열감률,수증기가 포화된 공기 덩어리가 상승할 때 높이에 따라 기온이 낮아지는 비율.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-809,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6769,S,schemareading-schema,대기대순환,지구 전체 규모로 일어나는 대기의 대규모 순환 운동.,과학,소분류: 날씨 / 주차: 1주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-810,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6770,S,schemareading-schema,수온,"바다, 호수, 강 등 물의 온도.",과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-813,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6771,S,schemareading-schema,표층순환,바람의 영향으로 해수면 가까운 바닷물이 크게 순환하는 현상.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-814,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6772,S,schemareading-schema,심층순환,수온과 염분에 따른 밀도 차이로 인해 깊은 바다에서 일어나는 해수의 순환.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-815,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6773,S,schemareading-schema,용승과 침강,깊은 곳의 바닷물이 위로 올라오는 현상과 표층의 바닷물이 아래로 내려가는 현상.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-816,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6774,S,schemareading-schema,해파,바람이나 지진 등으로 인해 해수면이 위아래로 주기적으로 출렁이는 파도.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-817,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6775,S,schemareading-schema,풍랑,바람이 직접 불어 해수면에 생기는 불규칙하고 뾰족한 파도.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-818,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6776,S,schemareading-schema,너울,바람이 그치거나 바람이 불던 해역에서 벗어나 멀리까지 이동해 온 둥그스름한 파도.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-819,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6777,S,schemareading-schema,연안쇄파,해파가 수심이 얕은 해안으로 다가가면서 파도의 윗부분이 무너져 부서지는 현상.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-820,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6778,S,schemareading-schema,천해파,수심이 파장의 20분의 1보다 얕은 바다에서 밑바닥의 영향을 받으며 진행하는 해파.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-821,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6779,S,schemareading-schema,심해파,수심이 파장의 2분의 1보다 깊은 바다에서 밑바닥의 영향을 받지 않고 진행하는 해파.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-822,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6780,S,schemareading-schema,쓰나미,해저 지진이나 화산 폭발 등으로 생겨 해안가로 밀려오는 거대한 지진해일.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-823,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6781,S,schemareading-schema,사리(대조),달과 태양의 인력이 합쳐져 만조와 간조 때의 해수면 높이 차가 가장 커지는 시기.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-825,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6782,S,schemareading-schema,조금(소조),달과 태양의 인력이 상쇄되어 만조와 간조 때의 해수면 높이 차가 가장 작아지는 시기.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-826,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6783,S,schemareading-schema,기조력,달과 태양의 인력 및 지구 원심력의 합으로 지구에 조석 현상을 일으키는 힘.,과학,소분류: 해양 / 주차: 2주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-827,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6784,S,schemareading-schema,지구공전궤도의 이심률변화,지구의 공전 궤도가 원에서 타원 모양으로 찌그러진 정도가 주기적으로 변하는 현상.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-828,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6785,S,schemareading-schema,근일점,태양 주위를 돌고 있는 행성이나 천체가 태양과 가장 가까워지는 궤도상의 지점.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-830,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6786,S,schemareading-schema,원일점,태양 주위를 도는 천체의 궤도에서 태양과 가장 멀어지는 지점.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-831,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6787,S,schemareading-schema,이심률,행성의 타원 궤도가 원 모양에서 벗어난 정도를 나타내는 값.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-832,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6788,S,schemareading-schema,지구자전축의 기울기변화,지구 자전축의 경사각이 오랜 주기에 걸쳐 변하는 현상.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-833,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6789,S,schemareading-schema,자전축의 세차운동,지구 자전축이 팽이처럼 비틀거리며 회전하는 운동.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-835,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6790,S,schemareading-schema,태양의 활동변화,흑점 수 변화 등 태양이 방출하는 에너지의 양이 변하는 현상.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-836,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6791,S,schemareading-schema,기후변화의 지구내적요인,화산 활동이나 수륙 분포 변화처럼 지구 내부나 지표에서 일어나는 기후 변화 원인.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-837,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6792,S,schemareading-schema,반사율,물체의 표면에 들어오는 빛의 양에 대한 반사되는 빛의 비율.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-838,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6793,S,schemareading-schema,온실기체,지표면에서 방출되는 열을 흡수하여 지구를 따뜻하게 유지하는 대기 중의 기체.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-841,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6794,S,schemareading-schema,열수지 평형,지구에 흡수되는 복사 에너지와 우주로 방출되는 복사 에너지가 같은 상태.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-842,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6795,S,schemareading-schema,에어로졸,대기 중에 떠 있는 미세한 고체 입자나 액체 방울을 통틀어 이르는 말.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-843,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6796,S,schemareading-schema,엘니뇨,적도 부근 동태평양의 해수면 온도가 평년보다 높게 지속되는 현상.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-844,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6797,S,schemareading-schema,라니냐,적도 부근 동태평양의 해수면 온도가 평년보다 낮게 지속되는 현상.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-845,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6798,S,schemareading-schema,남방진동,남태평양 동부와 인도네시아 부근 사이의 해수면 기압이 주기적으로 변화하는 현상.,과학,소분류: 기후변화 / 주차: 3주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-846,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6799,S,schemareading-schema,항성,스스로 빛과 열을 내며 위치를 바꾸지 않는 것처럼 보이는 천체.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-847,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6800,S,schemareading-schema,위성,행성의 주위를 일정한 궤도로 도는 천체.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-849,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6801,S,schemareading-schema,지구의 운동,지구가 자전하거나 태양 주위를 공전하는 움직임.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-850,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6802,S,schemareading-schema,일주운동,지구의 자전 때문에 천체가 하루에 한 바퀴씩 돌게 보이는 운동.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-851,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6803,S,schemareading-schema,천구,관측자를 중심으로 모든 천체가 붙어 있는 것처럼 보이는 가상의 거대한 구.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-852,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6804,S,schemareading-schema,연주운동,지구의 공전 때문에 태양이나 별이 1년을 주기로 돌게 보이는 운동.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-853,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6805,S,schemareading-schema,시차,관측하는 위치에 따라 대상 물체가 보이는 방향이 달라지는 각도 차이.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-854,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6806,S,schemareading-schema,태양의 운동,지구의 자전과 공전으로 인해 태양이 하늘에서 위치를 바꾸어 보이는 운동.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-855,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6807,S,schemareading-schema,달의 운동,달이 지구 둘레를 공전하거나 스스로 자전하는 움직임.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-856,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6808,S,schemareading-schema,행성의 운동,행성들이 태양 둘레를 공전하거나 스스로 자전하는 움직임.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-858,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6809,S,schemareading-schema,내행성,태양계에서 지구 공전 궤도의 안쪽에서 태양 둘레를 도는 행성.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-859,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6810,S,schemareading-schema,외행성,태양계에서 지구 공전 궤도의 바깥쪽에서 태양 둘레를 도는 행성.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-860,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6811,S,schemareading-schema,순행,행성이 천구상에서 별자리 사이를 서쪽에서 동쪽으로 이동하는 운동.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-861,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6812,S,schemareading-schema,역행,행성이 천구상에서 별자리 사이를 동쪽에서 서쪽으로 이동하는 운동.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-862,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6813,S,schemareading-schema,회합주기,지구에서 볼 때 행성과 태양의 상대적인 위치 관계가 다시 같아지는 주기.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-863,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6814,S,schemareading-schema,이각,지구에서 보았을 때 태양과 천체가 이루는 각도의 크기.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-864,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6815,S,schemareading-schema,태양중심설(지동설),태양이 중심에 있고 지구를 비롯한 행성들이 그 주위를 돈다는 학설.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-865,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6816,S,schemareading-schema,지구중심설(천동설),지구가 우주의 중심에 고정되어 있고 모든 천체가 지구 둘레를 돈다는 설.,과학,소분류: 천체의 운동 / 주차: 4주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-866,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6817,S,schemareading-schema,별의 진화,별이 가시구름에서 탄생하여 성장하고 변형하여 마침내 사멸하기까지의 과정.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-867,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6818,S,schemareading-schema,주계열성,수소 핵융합 반응으로 에너지를 내며 별의 일생 중 가장 오랜 시간을 보내는 단계의 별.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-868,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6819,S,schemareading-schema,적색거성,주계열성 이후 단계에서 바깥층이 크게 팽창하여 크고 붉게 보이는 별.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-869,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6820,S,schemareading-schema,초신성,질량이 큰 별이 일생의 마지막에 대폭발을 일으키며 매우 밝게 빛나는 현상 또는 그 별.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-870,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6821,S,schemareading-schema,백색왜성,태양 정도 질량의 별이 진화의 마지막 단계에서 형성되는 작고 밀도가 높은 밀집성.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-871,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6822,S,schemareading-schema,행성상성운,적색거성이 수명을 다할 때 방출한 가스층이 중심별 주변을 둘러싸고 형성된 성운.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-872,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6823,S,schemareading-schema,중성자별,초신성 폭발 후 중심핵이 강력한 중력으로 붕괴하여 중성자로만 이루어진 매우 빽빽한 별.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-873,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6824,S,schemareading-schema,블랙홀,중력이 매우 강하여 빛을 포함한 어떤 물체도 빠져나올 수 없는 천체나 영역.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-874,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6825,S,schemareading-schema,겉보기등급과 절대등급,눈으로 보이는 별의 밝기 등급과 모든 별을 동일한 거리에 놓았을 때의 실제 밝기 등급.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-875,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6826,S,schemareading-schema,정상우주론,우주가 팽창하면서 새 물질이 계속 생성되어 평균 밀도와 관측 모습이 일정하게 유지된다는 이론.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-876,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6827,S,schemareading-schema,우주배경복사,빅뱅 직후 초기 우주에서 발생하여 오늘날 우주 전역에 고르게 분포하는 전자기파.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-877,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6828,S,schemareading-schema,대폭발우주론,우주가 매우 작고 뜨거운 한 점에서 일어난 대폭발로 시작되어 팽창하고 있다는 우주론.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-878,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6829,S,schemareading-schema,빅뱅우주론,초고온·초고밀도의 한 점에서 시작된 대폭발을 통해 현재의 우주가 만들어졌다는 모형.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-879,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6830,S,schemareading-schema,암흑물질,빛을 방출하거나 반사하지 않아 직접 관측되지 않지만 중력을 통해 존재가 확인되는 물질.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-880,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6831,S,schemareading-schema,암흑에너지,우주의 가속 팽창을 일으키는 원인으로 추정되는 미지의 에너지.,과학,소분류: 별의 진화와 우주론 / 주차: 5주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-881,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6832,S,schemareading-schema,면역,체내에 침입한 병원체나 이물질에 맞서 몸을 보호하고 질병을 예방하는 작용.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-883,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6833,S,schemareading-schema,비특이적 방어작용,병원체의 종류를 가리지 않고 체내 침입을 막거나 공격하는 선천적 방어 작용.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-884,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6834,S,schemareading-schema,특이적 방어작용,특정 항원을 정확히 인식하여 선택적으로 제거하는 후천적 방어 작용.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-885,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6835,S,schemareading-schema,항원,체내에 침입하여 면역 반응을 일으키게 하는 이물질이나 병원체.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-886,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6836,S,schemareading-schema,항체,항원과 결합하여 이를 무력화하거나 제거하기 위해 림프구가 만드는 단백질.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-887,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6837,S,schemareading-schema,항원 항체 반응의 특이성,하나의 항체가 그에 입체적으로 대응하는 특정 항원하고만 결합하는 성질.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-888,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6838,S,schemareading-schema,면역 세포,체내에 침입한 병원체나 이물질을 공격하여 몸을 지키는 세포.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-889,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6839,S,schemareading-schema,대식 세포,체내의 병원체를 잡아먹어 분해하고 다른 세포에 항원을 제시하는 면역 세포.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-890,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6840,S,schemareading-schema,비만 세포,히스타민 등을 분비하여 염증이나 알레르기 반응을 일으키는 면역 세포.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-891,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6841,S,schemareading-schema,림프구,"백혈구의 한 종류로, 특이적 면역 반응을 중심적으로 담당하는 세포.",과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-892,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6842,S,schemareading-schema,항원 제시,면역 세포가 침입한 병원체를 조각내어 그 조각을 표면에 나타내어 알려 주는 작용.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-893,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6843,S,schemareading-schema,T림프구,가슴샘에서 성숙하여 감염된 세포를 직접 파괴하거나 면역 반응을 돕는 림프구.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-894,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6844,S,schemareading-schema,B림프구,골수에서 성숙하며 항체를 생성하는 형질세포로 분화하는 림프구.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-895,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6845,S,schemareading-schema,형질세포,B림프구에서 분화되어 항체를 집중적으로 합성하고 분비하는 세포.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-896,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6846,S,schemareading-schema,기억세포,항원을 접한 뒤 그 정보를 기억하여 재침입 시 빠르게 반응하도록 돕는 세포.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-897,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6847,S,schemareading-schema,세포성 면역,T림프구가 감염된 세포를 직접 파괴하여 항원을 제거하는 면역 작용.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-898,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6848,S,schemareading-schema,체액성 면역,B림프구가 만든 항체가 체액 속 항원과 결합하여 무력화하는 면역 작용.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-899,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6849,S,schemareading-schema,1차면역반응,항원에 처음 침입받았을 때 항체를 느리고 적게 생성하는 면역 반응.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-900,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6850,S,schemareading-schema,2차면역반응,같은 항원에 다시 침입받았을 때 기억 세포에 의해 빠르고 강하게 나타나는 면역 반응.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-901,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6851,S,schemareading-schema,백신,면역을 형성하기 위해 약화하거나 죽인 병원체를 이용해 만든 의약품.,과학,소분류: 방어 작용 / 주차: 6주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-902,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6852,S,schemareading-schema,유전정보,생물의 형질을 결정하고 부모에게서 자손으로 전달되는 생명 정보.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-904,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6853,S,schemareading-schema,DNA,생물체의 유전 정보를 저장하고 전달하는 디옥시리보핵산.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-905,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6854,S,schemareading-schema,염기서열,DNA나 RNA를 구성하는 염기들이 배열되어 있는 순서.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-906,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6855,S,schemareading-schema,상보적 결합,DNA나 RNA를 이루는 염기들이 특정 짝과만 결합하는 현상.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-907,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6856,S,schemareading-schema,유전자,생물의 형질을 결정하고 부모에게서 자손으로 물려지는 유전 정보의 단위.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-908,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6857,S,schemareading-schema,RNA,DNA의 유전 정보를 전달하여 단백질을 합성하는 데 관여하는 핵산.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-909,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6858,S,schemareading-schema,전사,DNA에 저장되어 있는 유전 정보를 RNA로 합성해내는 과정.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-910,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6859,S,schemareading-schema,번역,RNA의 유전 정보에 따라 아미노산이 연결되어 단백질이 합성되는 과정.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-911,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6860,S,schemareading-schema,중심원리,유전 정보가 DNA에서 RNA를 거쳐 단백질로 전달된다는 생물학의 기본 원리.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-912,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6861,S,schemareading-schema,유전자 발현,유전자의 유전 정보가 RNA나 단백질로 합성되어 실제 형질로 나타나는 과정.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-913,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6862,S,schemareading-schema,돌연변이,유전물질인 DNA의 변화로 인해 어버이에 없던 새로운 형질이 자손에게 나타나는 현상.,과학,"소분류: 유전물질, 유전자의 발현 / 주차: 7주차 / [AI 자동 생성 뜻풀이]",검수완료,2026-09-01 23:47:34,Y,sci-914,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6863,S,schemareading-schema,줄기세포 연구,줄기세포의 분화 능력을 이용하여 질병 치료 및 재생 의학 기술을 개발하는 연구.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-915,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6864,S,schemareading-schema,분화,생물의 미분화된 세포나 조직이 고유한 형태와 기능을 가진 세포로 달라지는 현상.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-916,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6865,S,schemareading-schema,역분화,이미 분화가 끝난 성숙한 세포가 분화 전의 초기 미분화 상태로 되돌아가는 현상.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-917,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6866,S,schemareading-schema,배아,수정란이 세포 분열을 시작하여 하나의 완전한 개체가 되기 전까지의 생물체.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-918,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6867,S,schemareading-schema,줄기세포,다양한 신체 조직 세포로 분화할 수 있는 능력을 지닌 미분화 세포.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-919,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6868,S,schemareading-schema,배아 줄기세포,발생 초기의 배아에서 추출하여 모든 종류의 조직 세포로 분화할 수 있는 줄기세포.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-920,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6869,S,schemareading-schema,성체 줄기세포,성인의 몸 여러 조직이나 장기에 존재하며 특정 세포로 분화할 수 있는 줄기세포.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-921,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6870,S,schemareading-schema,유도 만능 줄기세포,분화된 체세포에 인위적으로 유전자를 넣어 배아 줄기세포와 같은 만능성을 갖게 한 세포.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-922,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6871,S,schemareading-schema,유전자 재조합 기술,특정한 유전자를 잘라내어 다른 생물체의 DNA에 결합시켜 새로운 유전 물질을 만드는 기술.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-923,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6872,S,schemareading-schema,표적 유전자,유전자 재조합이나 치료 연구 등에서 이동시키거나 조작하려는 목적이 되는 유전자.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-924,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6873,S,schemareading-schema,DNA 운반체,원하는 유전자를 다른 세포나 생물체 안으로 운반하기 위해 사용하는 DNA 분자.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-925,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6874,S,schemareading-schema,플라스미드,세균의 세포 내에 존재하며 주 DNA와 별도로 독자적으로 복제할 수 있는 고리 모양의 DNA.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-926,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6875,S,schemareading-schema,제한 효소,DNA의 특정 염기 서열을 인식하여 절단하는 효소.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-927,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6876,S,schemareading-schema,DNA 연결효소,절단된 DNA의 조각들을 서로 연결해 주는 효소.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-928,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6877,S,schemareading-schema,형질전환,외부 유전자에 의해 생물의 형질이 바뀌는 현상.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-929,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6878,S,schemareading-schema,세포융합기술,서로 다른 두 세포를 합쳐 두 세포의 형질을 모두 가진 새로운 세포를 만드는 기술.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-930,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6879,S,schemareading-schema,클론,어버이와 유전적으로 완전히 동일하게 복제된 세포나 개체.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-931,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6880,S,schemareading-schema,단일클론항체,하나의 항원 결정기에만 특이적으로 반응하는 항체.,과학,소분류: 생명공학기술 / 주차: 8주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-932,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6881,S,schemareading-schema,생명의 기원과 종의 진화,생명이 지구에 처음 등장한 역사와 여러 생물 종으로 발전해 온 과정.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-933,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6882,S,schemareading-schema,유기물,탄소를 기본 골격으로 가진 생명체의 구성 물질 및 탄소 화합물.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-934,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6883,S,schemareading-schema,무기물,탄소를 기본 골격으로 하지 않으며 생명체를 구성하는 유기물 이외의 물질.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-935,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6884,S,schemareading-schema,종속영양생물,스스로 영양분을 만들지 못하고 다른 생물을 섭취하여 유기물을 얻는 생물.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-936,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6885,S,schemareading-schema,독립영양생물,빛이나 화학에너지를 이용해 필요한 유기물을 스스로 합성하는 생물.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-937,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6886,S,schemareading-schema,리보자임,화학 반응을 촉매하는 기능을 가진 RNA 분자.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-938,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6887,S,schemareading-schema,인지질,친수성 부위와 소수성 부위를 모두 가지며 세포막을 이루는 대표적 주성분.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-939,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6888,S,schemareading-schema,리포솜,인지질 이중층이 공 모양의 구형을 이룬 미세한 인공 주머니.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-940,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6889,S,schemareading-schema,생물학적 종,자연 상태에서 서로 교배하여 생식 능력이 있는 자손을 낳는 생물 무리.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-941,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6890,S,schemareading-schema,종분화,하나의 종에서 격리나 진화를 거쳐 둘 이상의 새로운 종으로 갈라지는 현상.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-942,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6891,S,schemareading-schema,진화,생물이 여러 세대를 거치면서 환경에 적응하며 몸의 구조나 형질이 변하는 현상.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-943,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6892,S,schemareading-schema,상동성,생물의 기관이나 유전자가 공통 조상에서 유래하여 형태나 구조가 닮은 성질.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-944,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6893,S,schemareading-schema,상사성,발생 기원은 다르지만 비슷한 환경에 적응하면서 형태나 기능이 닮아진 성질.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-945,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6894,S,schemareading-schema,생물의 분류체계,생물을 진화적 계통과 형태적 유사성에 따라 기준을 세워 단계별로 정리한 체계.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-947,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6895,S,schemareading-schema,3역6계 분류체계,생물을 세 개의 역과 여섯 개의 계로 나누어 정리한 생물 분류 체계.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-948,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6896,S,schemareading-schema,진정세균계,핵막이 없는 세포 구조를 가진 단세포 생물 중 고세균을 제외한 세균류의 무리.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-949,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6897,S,schemareading-schema,고세균계,온천이나 염전 같은 극단적인 환경에 주로 살며 핵막이 없는 원핵생물군.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-950,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6898,S,schemareading-schema,식물계,엽록체를 가지고 있어 광합성을 통해 스스로 유기물을 합성하는 다세포 진핵생물군.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-951,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6899,S,schemareading-schema,균계,광합성을 하지 못하고 다른 생물체나 유기물을 분해하여 영양분을 얻는 진핵생물군.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-952,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6900,S,schemareading-schema,동물계,광합성을 하지 못하여 다른 생물을 먹이로 섭취하고 운동성이 있는 다세포 진핵생물군.,과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-953,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6901,S,schemareading-schema,원생생물계,"진핵생물 중 동물, 식물, 균계 어디에도 속하지 않는 생물들의 무리.",과학,소분류: 생명체의 진화 / 주차: 9주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-954,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6902,S,schemareading-schema,유전체,한 생물체가 가지고 있는 모든 유전 정보의 전체.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-955,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6903,S,schemareading-schema,암호화 DNA,단백질을 합성하는 데 필요한 유전 정보를 담고 있는 DNA 영역.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-957,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6904,S,schemareading-schema,엑손,유전자 서열 중 최종 단백질을 만드는 데 쓰이는 정보를 포함한 부위.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-958,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6905,S,schemareading-schema,비암호화 DNA,단백질 합성에 사용되는 유전 정보를 담고 있지 않은 DNA 영역.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-959,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6906,S,schemareading-schema,인트론,유전자 서열 중 단백질을 만드는 과정에서 제거되는 비암호화 부위.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-960,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6907,S,schemareading-schema,반복서열,DNA나 RNA에서 같은 염기 서열이 여러 번 반복하여 나타나는 부분.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-961,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6908,S,schemareading-schema,위유전자,유전자와 구조는 비슷하지만 돌연변이 등으로 인해 기능을 잃은 유전자.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-962,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6909,S,schemareading-schema,텔로미어,염색체 끝부분에 위치하여 염색체를 보호하고 세포 노화에 관여하는 부분.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-963,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6910,S,schemareading-schema,조절부위,유전자의 전사와 발현 과정을 조절하는 DNA의 특정 영역.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-964,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6911,S,schemareading-schema,전이인자,생물체의 유전체 내에서 위치를 스스로 이동할 수 있는 DNA 서열.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-965,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6912,S,schemareading-schema,RNA 가공,전사를 통해 만들어진 초기 RNA를 기능이 있는 성숙한 RNA로 바꾸는 과정.,과학,소분류: 유전체의 진화 / 주차: 10주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-966,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6913,S,schemareading-schema,기체의 압력,기체 입자가 용기 벽면에 끊임없이 충돌하며 단위 면적에 가하는 힘.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-968,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6914,S,schemareading-schema,기체의 부피,기체가 공간에서 차지하고 있는 크기.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-969,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6915,S,schemareading-schema,섭씨 온도,"1기압에서 물의 어는점을 0도, 끓는점을 100도로 하여 100등분한 온도 체계.",과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-970,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6916,S,schemareading-schema,절대 온도,입자의 열운동이 정지하는 상태를 0으로 정한 온도 체계.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-971,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6917,S,schemareading-schema,기체의 운동법칙,기체 입자들의 무질서한 운동과 성질을 설명하는 법칙.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-972,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6918,S,schemareading-schema,이상 기체,분자 자체의 부피와 분자 간 상호작용이 없다고 가정한 가상의 기체.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-973,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6919,S,schemareading-schema,아보가드로 법칙,온도와 압력이 같을 때 모든 기체는 같은 부피 속에 같은 수의 분자를 가진다는 법칙.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-976,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6920,S,schemareading-schema,이상기체방정식,"이상 기체의 압력, 부피, 몰수, 절대 온도 사이의 관계를 나타낸 수식.",과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-977,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6921,S,schemareading-schema,혼합기체,두 가지 이상의 서로 다른 기체가 섞여 있는 기체.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-978,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6922,S,schemareading-schema,부분압력,혼합 기체에서 각 성분 기체가 용기 안을 혼자 차지할 때 나타내는 압력.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-979,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6923,S,schemareading-schema,부분압력법칙,혼합 기체의 전체 압력은 각 성분 기체의 부분 압력의 합과 같다는 법칙.,과학,소분류: 기체 운동 / 주차: 11주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-980,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6924,S,schemareading-schema,분자간 상호작용,이웃한 분자들 사이에 서로 끌어당기거나 밀어내는 작용.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-981,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6925,S,schemareading-schema,극성분자,분자 내 전하가 불균일하게 분포하여 부분적인 극성을 띠는 분자.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-983,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6926,S,schemareading-schema,무극성분자,분자 내 전하가 균일하게 분포하여 극성을 띠지 않는 분자.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-984,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6927,S,schemareading-schema,쌍극자,크기가 같고 부호가 반대인 두 전하가 일정한 거리를 두고 떨어진 계.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-985,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6928,S,schemareading-schema,쌍극자 모멘트,분자 안에서 전하의 분리 정도와 그 크기를 나타내는 물리량.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-986,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6929,S,schemareading-schema,수소 결합,전기 음성도가 높은 원자에 결합한 수소 원자가 다른 분자의 원자 쪽으로 끌리는 강한 분자 간 인력.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-987,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6930,S,schemareading-schema,편극 현상,전하를 띤 물질이 접근할 때 분자 내 전하 분포가 한쪽으로 쏠려 극성을 띠는 현상.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-988,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6931,S,schemareading-schema,반데르발스 힘,분자 사이에 작용하는 끌어당기거나 밀쳐내는 약한 인력과 반발력을 통틀어 이르는 힘.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-989,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6932,S,schemareading-schema,증발,액체 표면의 입자가 스스로 운동하여 기체 상태로 변하는 현상.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-990,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6933,S,schemareading-schema,응축,기체가 냉각되거나 압력을 받아 액체 상태로 변하는 현상.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-991,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6934,S,schemareading-schema,증기 압력,닫힌 용기 속에서 액체와 그 증기가 동적 평형 상태를 이룰 때 증기가 나타내는 압력.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-992,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6935,S,schemareading-schema,끓음,액체 표면과 내부 모두에서 기화가 일어나 액체 전체가 기체로 변하는 현상.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-993,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6936,S,schemareading-schema,열용량,어떤 물질의 온도를 1도 올려주는 데 필요한 열량.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-995,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6937,S,schemareading-schema,표면장력,액체 표면이 스스로 작아지려고 축소되는 방향으로 작용하는 힘.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-996,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6938,S,schemareading-schema,모세관 현상,가느다란 관을 액체에 넣었을 때 관 속의 액체 수면이 높아지거나 낮아지는 현상.,과학,소분류: 액체와 물 / 주차: 12주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-997,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6939,S,schemareading-schema,열과 일의 등가성,"열과 일은 서로 변환될 수 있으며, 변환되는 양적 관계가 일정하다는 성질.",과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1003,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6940,S,schemareading-schema,열역학,"열과 일의 이동, 에너지의 변환과 물질의 상태 변화를 다루는 물리학의 한 분야.",과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1004,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6941,S,schemareading-schema,열역학 제0법칙,두 물체가 각각 제3의 물체와 열평형을 이루면 두 물체도 서로 열평형 상태에 있다는 법칙.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1005,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6942,S,schemareading-schema,열역학 제1법칙,에너지는 형태가 바뀌어도 그 전체 양은 항상 일정하게 보존된다는 법칙.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1006,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6943,S,schemareading-schema,열역학 제2법칙,고립계에서 자연스럽게 일어나는 변화는 항상 엔트로피가 증가하는 방향으로 진행한다는 법칙.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1007,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6944,S,schemareading-schema,엔트로피,물질계의 무질서한 정도나 열적 상태를 나타내는 열역학적 물리량.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1008,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6945,S,schemareading-schema,열역학 제3법칙,절대 온도 0 켈빈(K)에서 완전히 정렬된 결정 물질의 엔트로피는 0이 된다는 법칙.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1009,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6946,S,schemareading-schema,열기관,열에너지를 흡수하여 기계적인 일로 바꾸는 장치.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1010,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6947,S,schemareading-schema,열효율,열기관에 공급된 전체 열에너지 중 일로 전환된 에너지를 비율로 나타낸 값.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1011,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6948,S,schemareading-schema,열화학,화학 반응에 동반되는 열의 흡수와 방출 등 열에너지의 변화를 연구하는 화학 분야.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1012,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6949,S,schemareading-schema,엔탈피,물질계가 가지고 있는 전체 에너지의 합을 나타내는 열역학적 상태량.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1014,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6950,S,schemareading-schema,흡열반응,화학 반응이 일어날 때 주위로부터 열에너지를 흡수하는 반응.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1015,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6951,S,schemareading-schema,발열반응,화학 반응이 일어날 때 주위로 열에너지를 방출하는 반응.,과학,소분류: 열화학 / 주차: 13주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1016,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6952,S,schemareading-schema,정반응,화학 반응에서 반응 물질이 생성 물질로 변하는 방향의 반응.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1020,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6953,S,schemareading-schema,역반응,화학 반응에서 생성 물질이 다시 반응 물질로 변하는 방향의 반응.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1021,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6954,S,schemareading-schema,화학 평형,가역 반응에서 정반응과 역반응의 속도가 같아 생성물과 반응물의 농도가 일정하게 유지되는 상태.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1022,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6955,S,schemareading-schema,동적 평형,정반응과 역반응이 같은 속도로 진행되어 겉보기에 반응이 멈춘 것처럼 보이는 상태.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1023,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6956,S,schemareading-schema,가역 반응,조건에 따라 정반응과 역반응이 양방향으로 모두 일어날 수 있는 화학 반응.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1024,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6957,S,schemareading-schema,비가역 반응,반응 물질이 생성 물질로 변한 뒤 다시 원래 물질로 돌아가지 않는 화학 반응.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1025,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6958,S,schemareading-schema,평형상수,가역 반응이 화학 평형에 도달했을 때 반응물과 생성물의 농도 관계를 나타낸 상수.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1026,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6959,S,schemareading-schema,평형이동,화학 평형 상태인 계의 조건이 변할 때 이를 완화하는 방향으로 새로운 평형에 도달하는 현상.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1027,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6960,S,schemareading-schema,르 샤를리에 원리,평형 상태의 화학 계에 변화를 주면 그 변화를 완화하는 방향으로 평형이 이동한다는 원리.,과학,소분류: 화학 평형 / 주차: 14주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1028,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6961,S,schemareading-schema,유효충돌,화학 반응을 일으킬 수 있을 만큼 충분한 에너지와 적절한 방향으로 일어나는 충돌.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1029,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6962,S,schemareading-schema,활성화 에너지,화학 반응이 일어나는 데 필요한 최소한의 에너지.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1030,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6963,S,schemareading-schema,반응속도,화학 반응이 진행될 때 단위 시간 동안 일어나는 반응물이나 생성물의 농도 변화량.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1031,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6964,S,schemareading-schema,반응속도식,화학 반응의 속도와 반응 물질의 농도 사이의 수학적 관계를 나타낸 식.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1032,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6965,S,schemareading-schema,0차반응,반응 속도가 반응 물질의 농도 변화에 영향을 받지 않고 일정하게 유지되는 반응.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1033,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6966,S,schemareading-schema,1차반응,반응 속도가 반응 물질의 농도에 직접 비례하여 변하는 화학 반응.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1034,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6967,S,schemareading-schema,반감기,반응 물질의 양이나 농도가 처음 양의 절반으로 줄어드는 데 걸리는 시간.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1035,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6968,S,schemareading-schema,반응 속도와 농도,반응 물질의 농도가 높아질수록 입자 간 충돌이 많아져 반응 속도가 빨라지는 관계.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1036,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6969,S,schemareading-schema,반응속도와 온도,온도가 높아질수록 입자의 운동 에너지가 증가하여 반응 속도가 빨라지는 관계.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1037,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6970,S,schemareading-schema,반응속도와 촉매,촉매를 첨가하여 활성화 에너지를 바꾸어 반응 속도를 변화시키는 관계.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1038,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6971,S,schemareading-schema,촉매,자신은 변하지 않으면서 화학 반응의 속도를 변화시키는 물질.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1039,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6972,S,schemareading-schema,정촉매,활성화 에너지를 낮추어 화학 반응 속도를 빠르게 하는 촉매.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1040,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6973,S,schemareading-schema,부촉매,화학 반응의 속도를 느리게 하는 촉매.,과학,소분류: 반응 속도와 촉매 / 주차: 15주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1041,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6974,S,schemareading-schema,시공간과 상대성,"시간과 공간을 하나의 연속체로 보고, 관찰자의 운동에 따라 물리량이 달라짐을 설명하는 개념.",과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1042,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6975,S,schemareading-schema,기준틀,물체의 위치나 운동을 기술하기 위해 기준으로 삼는 좌표계.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1043,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6976,S,schemareading-schema,관성 기준틀,정지해 있거나 등속 직선 운동을 하여 관성 법칙이 성립하는 좌표계.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1044,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6977,S,schemareading-schema,상대성원리,모든 관성 기준틀에서 자연의 물리 법칙이 동일하게 적용된다는 원리.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1045,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6978,S,schemareading-schema,절대공간,관찰자의 운동과 관계없이 언제나 고정되어 변하지 않는다고 본 가상의 공간.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1046,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6979,S,schemareading-schema,절대시간,관찰자의 운동 상태에 영향받지 않고 누구에게나 일정하게 흐른다고 본 가상의 시간.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1047,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6980,S,schemareading-schema,에테르,빛이 파동으로서 전파하는 데 필요하다고 여겼던 가상의 매질.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1048,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6981,S,schemareading-schema,특수상대성이론,등속 운동하는 관성 기준틀에서 시공간의 성질을 다룬 아인슈타인의 이론.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1049,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6982,S,schemareading-schema,광속불변원리,진공 중에서 빛의 속도는 관찰자나 광원의 운동 상태와 상관없이 항상 일정하다는 원리.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1050,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6983,S,schemareading-schema,동시성의 상대성,한 기준틀에서 동시에 일어난 사건이 다른 운동 상태의 관찰자에게는 동시에 일어나지 않는 현상.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1051,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6984,S,schemareading-schema,시간 팽창,정지한 관찰자가 볼 때 빠르게 움직이는 계의 시간이 천천히 흐르는 현상.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1052,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6985,S,schemareading-schema,길이 수축,정지한 관찰자가 볼 때 빠르게 움직이는 물체의 길이가 운동 방향으로 줄어드는 현상.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1053,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6986,S,schemareading-schema,질량 에너지 등가원리,질량과 에너지는 서로 변환될 수 있으며 본질적으로 같다는 원리.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1054,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6987,S,schemareading-schema,핵반응,"원자핵이 다른 입자와 충돌하여 변화하거나 분열, 융합하면서 성질이 바뀌는 현상.",과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1055,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6988,S,schemareading-schema,일반 상대성이론,가속 운동과 중력을 시공간의 휘어짐으로 설명하는 아인슈타인의 물리 이론.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1056,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6989,S,schemareading-schema,중력 시간지연,중력이 강할수록 시간이 더 천천히 흐르는 현상.,과학,소분류: 상대성 이론 / 주차: 16주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1057,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6990,S,schemareading-schema,양자,더 이상 나눌 수 없는 양의 최소 단위.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1058,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6991,S,schemareading-schema,양자화 가설,에너지가 연속적이지 않고 불연속적인 단위로 존재한다는 가설.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1059,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6992,S,schemareading-schema,광양자설,빛이 불연속적인 입자의 흐름으로 이루어져 있다는 학설.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1060,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6993,S,schemareading-schema,광전효과,금속 등의 물질에 빛을 비추었을 때 전자가 튀어나오는 현상.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1061,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6994,S,schemareading-schema,빛의 이중성,빛이 파동의 성질과 입자의 성질을 모두 가지는 특성.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1062,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6995,S,schemareading-schema,물질파,전자나 원자 등 운동하는 물질 입자가 가지는 파동.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1063,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6996,S,schemareading-schema,물질의 이중성,전자와 같은 물질이 입자와 파동의 성질을 모두 가지는 현상.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1064,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6997,S,schemareading-schema,파동적 성질,파동처럼 넓게 퍼지거나 간섭 및 회절을 일으키는 성질.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1065,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6998,S,schemareading-schema,입자적 성질,입자처럼 한 곳에 위치하고 충돌하여 에너지를 전달하는 성질.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1066,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+6999,S,schemareading-schema,파동함수,양자 역학에서 미시적 입자의 상태와 존재 확률을 나타내는 함수.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1067,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7000,S,schemareading-schema,양자 역학적 현상,원자나 전자 등 미시적인 세계에서 일어나는 물리적 현상.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1068,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7001,S,schemareading-schema,양자 터널링,미시적 입자가 자신이 가진 에너지보다 높은 장벽을 통과하는 현상.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1069,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7002,S,schemareading-schema,양자 상태,양자 역학에서 계의 물리적 상태를 나타내는 개념.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1070,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7003,S,schemareading-schema,파동 함수의 중첩,여러 양자 상태의 파동함수가 합쳐져 존재할 수 있는 현상.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1071,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7004,S,schemareading-schema,양자 역학의 활용,양자 역학의 원리를 응용하여 첨단 기술이나 기기를 개발하고 사용하는 일.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1072,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7005,S,schemareading-schema,광 다이오드,빛을 받으면 전류를 발생시키는 성질을 이용한 반도체 소자.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1073,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7006,S,schemareading-schema,전자 현미경,빛 대신 전자선을 사용하여 물체를 매우 크게 확대하여 관찰하는 장치.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1074,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7007,S,schemareading-schema,양자 통신,양자 역학의 원리를 이용하여 정보를 안전하게 전달하는 통신 기술.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1075,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7008,S,schemareading-schema,양자점,빛을 받으면 특정 색의 빛을 내는 나노미터 크기의 초미세 반도체 결정.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1076,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7009,S,schemareading-schema,양자 컴퓨터,양자 역학의 원리를 응용하여 복잡한 연산을 매우 빠르게 처리하는 컴퓨터.,과학,소분류: 양자 역학 / 주차: 17주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1077,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7010,S,schemareading-schema,열의 이동,온도가 높은 곳에서 온도가 낮은 곳으로 열에너지가 옮겨 가는 현상.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1078,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7011,S,schemareading-schema,열과 일의 변환,열이 일로 바뀌거나 반대로 일이 열로 바뀌는 상호 변환 과정.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1083,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7012,S,schemareading-schema,일의 일당량,단위 양의 일이 발생시키는 열의 양.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1084,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7013,S,schemareading-schema,내연기관,기관의 내부에서 연료를 태워 발생하는 열에너지로 동력을 얻는 장치.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1085,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7014,S,schemareading-schema,외연기관,기관의 외부에서 연료를 태워 발생시킨 기체의 힘으로 동력을 얻는 장치.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1086,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7015,S,schemareading-schema,고열원,열기관에 열을 공급하는 온도가 높은 열원.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1088,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7016,S,schemareading-schema,저열원,열기관에서 일을 하고 남은 열을 받아들이는 온도가 낮은 열원.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1089,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7017,S,schemareading-schema,열적 평형,온도가 다른 물체들이 접촉하여 열이 이동한 끝에 온도가 같아진 상태.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1090,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7018,S,schemareading-schema,절대 영도,분자의 열운동이 완전히 정지한 상태의 이론상 가장 낮은 온도.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1091,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7019,S,schemareading-schema,영구기관,외부의 에너지 공급 없이 영원히 계속해서 일을 하는 가상의 장치.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1093,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7020,S,schemareading-schema,자유에너지,계의 일정한 상태에서 유용한 일로 변환될 수 있는 에너지의 양.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1094,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7021,S,schemareading-schema,열역학의 활용,열과 에너지 사이의 전환 법칙을 산업이나 일상생활에 응용하는 일.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1095,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7022,S,schemareading-schema,가스터빈,고온·고압의 가스를 분사하여 터빈을 돌림으로써 동력을 얻는 원동기.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1096,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7023,S,schemareading-schema,열펌프,저온의 열원에서 열을 흡수하여 고온의 열원으로 이동시키는 장치.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1097,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7024,S,schemareading-schema,열전소자,열에너지와 전기에너지를 직접 서로 변환하는 전자 부품.,과학,소분류: 열역학과 열기관 / 주차: 18주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1098,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7025,S,schemareading-schema,전도성과 반도체,"물질이 전기를 통하는 성질과, 도체와 절연체 중간 성질을 가진 물질.",과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1099,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7026,S,schemareading-schema,전기 전도성,물질 안에서 전하가 이동하여 전기가 잘 통하는 정도나 성질.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1100,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7027,S,schemareading-schema,반도체,전기 전도도가 도체와 절연체의 중간 정도인 물질.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1101,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7028,S,schemareading-schema,불순물 반도체,순수한 반도체에 불순물을 첨가하여 전기 전도성을 높인 반도체.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1102,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7029,S,schemareading-schema,p형 반도체,양공이 주요 전하 운반자로 작용하여 전기를 통하게 하는 불순물 반도체.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1103,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7030,S,schemareading-schema,n형 반도체,전자가 주요 전하 운반자로 작용하여 전기를 통하게 하는 불순물 반도체.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1104,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7031,S,schemareading-schema,양공,반도체에서 전자가 빠져나간 자리에 생기는 양(+)전하 성질의 구멍.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1105,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7032,S,schemareading-schema,전도전자,원자에 매이지 않고 결정 내부를 자유롭게 이동하며 전기를 전달하는 전자.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1106,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7033,S,schemareading-schema,에너지 준위,원자나 분자 속 전자가 가질 수 있는 불연속적인 에너지 상태.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1107,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7034,S,schemareading-schema,바닥상태,원자나 분자 따위가 가질 수 있는 가장 낮은 에너지를 가진 안정된 상태.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1108,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7035,S,schemareading-schema,들뜬상태,원자나 분자가 외부 에너지를 받아 바닥상태보다 높은 에너지를 가지는 상태.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1109,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7036,S,schemareading-schema,에너지띠,결정 안에서 전자가 가질 수 있는 에너지 수준이 띠 모양으로 촘촘히 모여 있는 범위.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1110,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7037,S,schemareading-schema,띠 간격,에너지띠 사이에 전자가 존재할 수 없는 에너지의 간격.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1111,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7038,S,schemareading-schema,반도체의 활용,전기 전도성이 중간인 반도체의 성질을 활용하여 다양한 전자 제품을 만드는 일.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1112,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7039,S,schemareading-schema,p-n접합 다이오드,p형 반도체와 n형 반도체를 접합하여 전류를 한쪽 방향으로만 흐르게 하는 소자.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1113,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7040,S,schemareading-schema,발광 다이오드,전류가 흐르면 빛을 방출하는 반도체 소자.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1114,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7041,S,schemareading-schema,트랜지스터,전기 신호를 증폭하거나 스위치 역할을 하는 반도체 소자.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1115,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7042,S,schemareading-schema,태양전지,태양의 빛에너지를 전기 에너지로 직접 바꾸는 장치.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1116,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7043,S,schemareading-schema,초전도체,특정 온도 이하에서 전기 저항이 0이 되는 물질.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1117,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7044,S,schemareading-schema,그래핀,탄소 원자가 육각형 벌집 모양으로 연결된 평면 구조의 물질.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1118,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7045,S,schemareading-schema,강유전체,외부 전기장이 없어도 스스로 전기 분극을 가지는 물질.,과학,소분류: 반도체와 신소재 / 주차: 19주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1119,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7046,S,schemareading-schema,뉴클레오타이드,"핵산을 구성하는 기본 단위로, 당과 염기, 인산이 결합한 화합물.",과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1120,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7047,S,schemareading-schema,리보뉴클레오타이드,오탄당으로 리보스를 포함하며 RNA를 구성하는 뉴클레오타이드.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1121,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7048,S,schemareading-schema,디디옥시뉴클레오타이드,산소 원자가 하나 더 없어 DNA 합성을 중단시키는 뉴클레오타이드.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1122,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7049,S,schemareading-schema,DNA 중합효소,DNA 복제 과정에서 새로운 DNA 가닥을 합성하는 효소.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1123,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7050,S,schemareading-schema,주형 DNA,새로운 DNA 가닥을 합성할 때 바탕이 되는 DNA 가닥.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1124,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7051,S,schemareading-schema,프라이머,DNA 합성이나 증폭 과정에서 시작점 역할을 하는 짧은 유전자 조각.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1125,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7052,S,schemareading-schema,형광물질,빛이나 방사선을 흡수하여 스스로 빛을 내는 물질.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1126,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7053,S,schemareading-schema,형광 단백질,빛을 받으면 특정 색의 형광을 발하는 단백질.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1127,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7054,S,schemareading-schema,형광 염료,특정 물질이나 세포에 결합하여 형광을 띠게 만드는 염료.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1128,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7055,S,schemareading-schema,형광 표지,관찰하려는 물질의 위치나 변화를 추적하기 위해 형광 물질을 붙이는 일.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1129,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7056,S,schemareading-schema,탐침자,특정 유전자나 분자를 검출하기 위해 사용하는 표지된 핵산 가닥.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1130,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7057,S,schemareading-schema,중합효소연쇄반응(PCR),DNA의 특정 영역을 빠르게 복제하여 대량으로 증폭하는 기술.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1131,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7058,S,schemareading-schema,실시간 중합효소연쇄반응,DNA의 증폭 과정을 실시간으로 확인하고 정량 분석하는 기술.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1132,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+7059,S,schemareading-schema,검체,검사나 진단을 위해 생체 등에서 채취한 시험용 물질.,과학,소분류: DNA 분석 기술 / 주차: 20주차 / [AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,sci-1133,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
+5022,V,schemareading-tooldict,이면적,겉으로 드러나지 않은 속이나 뒷면의. 또는 그런 것.,,[AI 자동 생성 뜻풀이],검수완료,2026-09-01 23:47:34,Y,L6-175,REQUEUE_AI_GENERATED_PENDING_HUMAN_REVIEW
