@@ -39,8 +39,14 @@ _ORIGINAL_IMAGE_TYPES = {"illustration", "reference", "excerpt"}
 # 확인해야 한다 - 젊은 예술가의 초상 4쪽처럼 1,000자가 넘는 전기적 배경
 # 설명이 한 페이지에 안 들어가는 사례가 실측 근거). 문단(줄바꿈) 경계로만
 # 나누고 문장 중간을 자르지 않는다.
+# SPLIT_THRESHOLD(문항+답란과 같이 있을 때 기준)와 PAGE_BUDGET(제시문만 있는
+# 전용 페이지 기준)을 분리했다 - 전용 페이지는 문항·답란이 없어 여유가 더
+# 있는데도 같은 500자를 썼더니 823자짜리 제시문이 굳이 3쪽(전용 2 + 결합
+# 1)으로 쪼개져 "두 쪽을 합쳐도 될 듯"하다는 지적을 받았다(2026-09-26,
+# 젊은 예술가의 초상 15·16쪽) - PAGE_BUDGET만 800으로 올려 같은 예시가
+# 2쪽(전용 1 + 결합 1)으로 줄도록 조정.
 _EXCERPT_SPLIT_THRESHOLD = 500
-_EXCERPT_PAGE_BUDGET = 500
+_EXCERPT_PAGE_BUDGET = 800
 
 
 def _split_excerpt_into_pages(excerpt_text: str, budget: int) -> list[str]:
