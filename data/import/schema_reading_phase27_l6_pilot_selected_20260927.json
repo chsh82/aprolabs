@@ -1,0 +1,162 @@
+[
+ {
+  "content_id": "SR_L6CORE_4942",
+  "lemma": "아이디어",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4942,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4943",
+  "lemma": "야기",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4943,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4944",
+  "lemma": "엄밀",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4944,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4945",
+  "lemma": "오류",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4945,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4946",
+  "lemma": "완결",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4946,
+  "caution": "기존 콘텐츠 '완료'(완전히 끝마침, content_id=SR_L4CORE_4759)와 뜻이 매우 근접한 유의어 - 동일 개념은 아니지만(완결은 저작물·연재물이 매듭지어짐에, 완료는 일반적 과업 종료에 더 흔히 쓰임) 출제 시 혼동 가능성이 있어 구분 문구 권장."
+ },
+ {
+  "content_id": "SR_L6CORE_4947",
+  "lemma": "왜곡",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4947,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4948",
+  "lemma": "용이",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4948,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4950",
+  "lemma": "운용",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4950,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4951",
+  "lemma": "위계",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4951,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4953",
+  "lemma": "의지",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4953,
+  "caution": "이번 배치 내 '견지'(어떤 견해나 입장을 굳게 지니거나 지킴)와 '마음/입장을 굳게 지닌다'는 결의의 뉘앙스가 인접 - 지향/지양급 반의는 아니나 동시 출제 시 구분 문구 권장."
+ },
+ {
+  "content_id": "SR_L6CORE_4955",
+  "lemma": "일괄",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4955,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4956",
+  "lemma": "자발적",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4956,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4957",
+  "lemma": "자아",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4957,
+  "caution": "원천 정의의 정신분석학 상세 설명(이드·초자아 관계)은 학생용 정의에서 핵심 의미(자기 자신에 대한 의식/관념)만 남기고 생략했다 - 새로운 의미를 추가한 것이 아니라 동일 표제어의 핵심 의미만 남긴 것이므로 의미 확장 아님."
+ },
+ {
+  "content_id": "SR_L6CORE_4958",
+  "lemma": "잠정",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4958,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6COREV2_4959",
+  "lemma": "전면",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v2",
+  "literacy_term_id": "4959",
+  "caution": "'이면'(뒷면)과 정반대 의미의 대비 짝(앞면/뒷면) - 동시 출제 시 구분 문구 권장."
+ },
+ {
+  "content_id": "SR_L6CORE_4960",
+  "lemma": "전이",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4960,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4961",
+  "lemma": "전제",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4961,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4962",
+  "lemma": "전형적",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4962,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4964",
+  "lemma": "창출",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4964,
+  "caution": ""
+ },
+ {
+  "content_id": "SR_L6CORE_4965",
+  "lemma": "체재",
+  "pos": "명사",
+  "source_version": "schema_reading_literacy_l6_manual_v1",
+  "literacy_term_id": 4965,
+  "caution": "동음이의어 '체제'(정치·사회 조직)와 발음이 유사해 혼동될 수 있으나 literacy.db 표제어 자체는 '체재'로 별도 항목 - 표기 그대로 사용."
+ }
+]

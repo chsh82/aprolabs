@@ -1,0 +1,322 @@
+[
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_001",
+  "source_content_id": "SR_L6CORE_4942",
+  "lemma": "아이디어",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_001",
+  "source_content_id": "SR_L6CORE_4942",
+  "lemma": "아이디어",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_002",
+  "source_content_id": "SR_L6CORE_4943",
+  "lemma": "야기",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_002",
+  "source_content_id": "SR_L6CORE_4943",
+  "lemma": "야기",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_003",
+  "source_content_id": "SR_L6CORE_4944",
+  "lemma": "엄밀",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_003",
+  "source_content_id": "SR_L6CORE_4944",
+  "lemma": "엄밀",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_004",
+  "source_content_id": "SR_L6CORE_4945",
+  "lemma": "오류",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_004",
+  "source_content_id": "SR_L6CORE_4945",
+  "lemma": "오류",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_005",
+  "source_content_id": "SR_L6CORE_4946",
+  "lemma": "완결",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_005",
+  "source_content_id": "SR_L6CORE_4946",
+  "lemma": "완결",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_006",
+  "source_content_id": "SR_L6CORE_4947",
+  "lemma": "왜곡",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_006",
+  "source_content_id": "SR_L6CORE_4947",
+  "lemma": "왜곡",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_007",
+  "source_content_id": "SR_L6CORE_4948",
+  "lemma": "용이",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_007",
+  "source_content_id": "SR_L6CORE_4948",
+  "lemma": "용이",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_008",
+  "source_content_id": "SR_L6CORE_4950",
+  "lemma": "운용",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_008",
+  "source_content_id": "SR_L6CORE_4950",
+  "lemma": "운용",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_009",
+  "source_content_id": "SR_L6CORE_4951",
+  "lemma": "위계",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_009",
+  "source_content_id": "SR_L6CORE_4951",
+  "lemma": "위계",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_010",
+  "source_content_id": "SR_L6CORE_4953",
+  "lemma": "의지",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_010",
+  "source_content_id": "SR_L6CORE_4953",
+  "lemma": "의지",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_011",
+  "source_content_id": "SR_L6CORE_4955",
+  "lemma": "일괄",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_011",
+  "source_content_id": "SR_L6CORE_4955",
+  "lemma": "일괄",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_012",
+  "source_content_id": "SR_L6CORE_4956",
+  "lemma": "자발적",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_012",
+  "source_content_id": "SR_L6CORE_4956",
+  "lemma": "자발적",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_013",
+  "source_content_id": "SR_L6CORE_4957",
+  "lemma": "자아",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_013",
+  "source_content_id": "SR_L6CORE_4957",
+  "lemma": "자아",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_014",
+  "source_content_id": "SR_L6CORE_4958",
+  "lemma": "잠정",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_014",
+  "source_content_id": "SR_L6CORE_4958",
+  "lemma": "잠정",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_015",
+  "source_content_id": "SR_L6COREV2_4959",
+  "lemma": "전면",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_015",
+  "source_content_id": "SR_L6COREV2_4959",
+  "lemma": "전면",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_016",
+  "source_content_id": "SR_L6CORE_4960",
+  "lemma": "전이",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_016",
+  "source_content_id": "SR_L6CORE_4960",
+  "lemma": "전이",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_017",
+  "source_content_id": "SR_L6CORE_4961",
+  "lemma": "전제",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_017",
+  "source_content_id": "SR_L6CORE_4961",
+  "lemma": "전제",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_018",
+  "source_content_id": "SR_L6CORE_4962",
+  "lemma": "전형적",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_018",
+  "source_content_id": "SR_L6CORE_4962",
+  "lemma": "전형적",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_019",
+  "source_content_id": "SR_L6CORE_4964",
+  "lemma": "창출",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_019",
+  "source_content_id": "SR_L6CORE_4964",
+  "lemma": "창출",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_A_SC_SRL6PILOT_20260927_L6_020",
+  "source_content_id": "SR_L6CORE_4965",
+  "lemma": "체재",
+  "item_type": "MEANING_CHOICE",
+  "auto_validation_status": "PASS",
+  "issues": []
+ },
+ {
+  "item_id": "MF_C_SC_SRL6PILOT_20260927_L6_020",
+  "source_content_id": "SR_L6CORE_4965",
+  "lemma": "체재",
+  "item_type": "CONTEXT_MEANING",
+  "auto_validation_status": "PASS",
+  "issues": []
+ }
+]
