@@ -39,6 +39,31 @@ def _looks_numbered_list(rows: list[list]) -> bool:
     return all(_NUMBERED_LABEL_RE.match(lbl) for lbl in labels)
 
 
+def _headers_as_compare_cards(table: dict, question_text: str) -> tuple[list[dict], list[str]] | None:
+    """대립하는 두 입장에 각각 답을 쓰는 표는 vision이 표 값(rows)이 아니라
+    머리칸(headers)에 "이해할 수 있어요!"/"보존해야 해요!" 같은 진짜 라벨을
+    담아 온다(2026-09-26 두근두근 한국사 5·10쪽, 젊은 예술가의 초상 18·21쪽
+    검수에서 발견 - rows는 학생이 채울 빈 칸이라 대개 빈 문자열이거나, 드물게
+    이미지 캡션 같은 참고 텍스트가 그대로 들어 있다). headers가 2개 이상
+    있으면 그걸 compare 카드 제목으로 쓴다 - rows[0]의 빈 문자열을 라벨로
+    잘못 쓰던 버그를 고침. rows에 실제 값이 있으면(빈 답란이 아닐 가능성)
+    검수용 note를 남기고 카드 자체는 건드리지 않는다(정답을 함부로 안 채움)."""
+    headers = [str(h).strip() for h in (table.get("headers") or []) if str(h).strip()]
+    if len(headers) < 2:
+        return None
+    notes: list[str] = []
+    rows = table.get("rows") or []
+    for r in rows:
+        for i, h in enumerate(headers):
+            if i < len(r) and str(r[i]).strip():
+                notes.append(
+                    f"머리칸 '{h}' 아래 원본 표에 값 '{r[i]}'가 있었음 - 학생이 쓸 빈 답란이 "
+                    f"아니라 참고 캡션/라벨일 수 있어 검수 확인 필요"
+                )
+    cards = [{"title": h, "prompt": question_text} for h in headers]
+    return cards, notes
+
+
 def layout_hint_to_form(item: dict) -> tuple[dict, str, list[str]]:
     """vision_item 1건(dict, sqlite3.Row도 dict()로 감싸서 전달) ->
     (q에 병합할 form 필드 dict, 판정 근거 태그, 추가로 남길 플래그 메시지 목록).
@@ -52,6 +77,10 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str, list[str]]:
 
     if shape == "table_answer" and table and table.get("rows"):
         rows = table["rows"]
+        headers_compare = _headers_as_compare_cards(table, question_text)
+        if headers_compare is not None:
+            cards, header_notes = headers_compare
+            return {"form": "compare", "cards": cards}, "table_answer->compare(headers)", header_notes
         if _looks_numbered_list(rows):
             items = [{"hint": None, "prompt": (r[0] if r else "")} for r in rows]
             return ({"form": "list", "items": items, "rowKind": "rowTall" if len(rows) <= 3 else "row"},
@@ -70,8 +99,13 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str, list[str]]:
                 "table_answer->table", notes)
 
     if shape == "compare_two_col":
-        # vision이 실제로 compare_two_col을 준 경우는 그대로 카드로 - table_json이
-        # 있으면 각 행을 카드로, blanks만 있으면 blanks를 카드 제목으로 쓴다.
+        # vision이 실제로 compare_two_col을 준 경우는 그대로 카드로. 머리칸에
+        # 진짜 라벨이 있으면(2026-09-26, _headers_as_compare_cards 참고) 그걸
+        # 우선하고, 없으면 기존처럼 table_json 행 또는 blanks를 카드 제목으로.
+        headers_compare = _headers_as_compare_cards(table, question_text) if table else None
+        if headers_compare is not None:
+            cards, header_notes = headers_compare
+            return {"form": "compare", "cards": cards}, "compare_two_col->compare(headers)", header_notes
         cards = []
         if table and table.get("rows"):
             cards = [{"title": (r[0] if r else ""), "prompt": question_text} for r in table["rows"]]
@@ -95,6 +129,14 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str, list[str]]:
         return {"form": "choiceList", "options": opts, "single": True}, "choice_options->choiceList(N)", []
 
     if shape == "boxed_form":
+        if "공통점" in question_text and "차이점" in question_text:
+            # boxed_form은 서약서·분석란을 시각적으로 구분 못 한다(둘 다 테두리
+            # 박스) - 질문이 "공통점과 차이점을 정리해 봅시다"류면 서약서가 아니라
+            # 비교 분석표다(2026-09-26 젊은 예술가의 초상 21쪽 검수에서 발견 -
+            # 305건 전수조사 결과 이 텍스트 패턴은 이 1건뿐이라 안전하게 규칙화).
+            return {"form": "compare", "cards": [
+                {"title": "공통점", "prompt": question_text}, {"title": "차이점", "prompt": question_text},
+            ]}, "boxed_form(공통점/차이점)->compare", []
         n = blank_lines or (len(table["rows"]) if table and table.get("rows") else 1)
         return {"form": "pledge", "n": n}, "boxed_form->pledge", []
 
