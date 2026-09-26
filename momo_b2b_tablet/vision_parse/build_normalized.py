@@ -28,7 +28,7 @@ from vision_parse import db as vdb  # noqa: E402
 from vision_parse.layout_map import layout_hint_to_form  # noqa: E402
 
 _PAGE_NUM_RE = re.compile(r"\d+")
-_LEADING_NUM_RE = re.compile(r"^\s*\d+[.\)]\s*")
+_LEADING_NUM_RE = re.compile(r"^\s*\d+(?:-\d+)?[.\)]\s*")
 
 
 def _strip_leading_number(text: str) -> str:
