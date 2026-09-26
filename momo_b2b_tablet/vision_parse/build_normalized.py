@@ -86,6 +86,10 @@ def _classify_label_row(row: list) -> tuple[str | None, str | None, str | None]:
     return None, None, None
 
 
+_WORD_IN_SENTENCE_TEMPLATE_RE = re.compile(r"^(.+?)(?:이)?라는\s*단어를\s*이용해\s*문장을\s*만들어")
+_WORD_DEF_PREFIX_TEMPLATE_RE = re.compile(r"^([^:：]{1,20})[:：]\s*(.+?)\s*[-–]?\s*이\s*단어를\s*이용해\s*문장을\s*만들어")
+
+
 def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab], list[Flag]]:
     """vocab 타입 vision_item 1건(표에 여러 단어를 묶어 옴) -> 단어별
     NormalizedVocab 여러 개.
@@ -116,10 +120,38 @@ def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab
        없이 번호표만 뽑아 온 경우, 52/305건 실측) - 번호표만 있으면 가짜
        "낱말"을 만들지 않고 통째로 버린다(야옹아 2쪽 "답란 3칸 중복" 신고
        원인). 진짜 단어 목록이면 기존처럼 정의 없음 sup 플래그로 채운다.
+    0. (위보다 먼저 확인) question_text가 "OO라는 단어를 이용해 문장을
+       만들어 보세요" 템플릿이면 단어는 question_text 안에, 뜻은
+       excerpt_text에 있다(표·blanks가 아예 없거나 blanks=["문장"] 같은
+       무의미한 라벨만 있음 - 2026-09-26 두근두근 한국사 2쪽 검수에서
+       발견, 305건 중 28건/7개 문서 실측). "문장"이라는 글자 자체가
+       가짜 낱말이 되던 버그를 고침.
     """
     table = _parse_json_field(item.get("table_json"), None)
     blanks = _parse_json_field(item.get("blanks_json"), [])
     out: list[NormalizedVocab] = []
+
+    qtext = item.get("question_text") or ""
+    word_def_m = _WORD_DEF_PREFIX_TEMPLATE_RE.match(qtext)
+    template_m = _WORD_IN_SENTENCE_TEMPLATE_RE.match(qtext)
+    if word_def_m:
+        # "단어: 뜻 - 이 단어를 이용해 문장을 만들어 보세요" - 단어·뜻이 둘 다
+        # question_text 한 줄에 들어 있는 경우(위 template_m보다 정보가 많아
+        # 우선). 실측: L3-Q4-W13.
+        word, _ = repair_text(word_def_m.group(1).strip())
+        definition, _ = repair_text(word_def_m.group(2).strip())
+        v = NormalizedVocab(order_no=order_start, word=word or "", definition=definition or None,
+                             example_sentence=None, book_page=_first_page_num(item.get("page_number")))
+        return [v], []
+    if template_m:
+        word, _ = repair_text(template_m.group(1).strip())
+        definition = (item.get("excerpt_text") or "").strip() or None
+        v = NormalizedVocab(order_no=order_start, word=word or "", definition=definition,
+                             example_sentence=None, book_page=_first_page_num(item.get("page_number")))
+        if not definition:
+            v.flags.append(Flag(kind="sup", order_no=v.order_no,
+                                 message=f"'{word}' 뜻풀이 누락(vision) - 초등 어휘 DB 조회 또는 LLM 보충 필요"))
+        return [v], []
     flags: list[Flag] = []
     rows = table["rows"] if table and table.get("rows") else None
 
@@ -214,6 +246,22 @@ def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab
             return [], [Flag(kind="sup",
                               message="빈칸채우기형 어휘 문항의 문장·보기 내용을 추출하지 못해 "
                                       "번호표만 남음(vision) - 재추출 또는 수동 입력 필요")]
+        if set(str(b).strip() for b in blanks) == {"문장"}:
+            # "이 단어를 이용해 문장을 만들어보세요"류 - 실제 낱말이 강조 표시
+            # (굵게/밑줄 등)로만 보여서 vision이 텍스트로 못 옮기고 "문장"이라는
+            # 안내 라벨만 남긴 경우(2026-09-26 두근두근 한국사 검수 확장 조사,
+            # 305건 중 96건/24개 문서 실측). "문장"을 가짜 낱말로 쓰지 않고
+            # 단어 미상으로 정직하게 남긴다(위 "뜻"/"문장" 라벨 처리와 같은 정신).
+            return [
+                NormalizedVocab(
+                    order_no=order_start + i, word="(단어 미상)", definition=None,
+                    example_sentence=None, book_page=None,
+                    flags=[Flag(kind="derived", order_no=order_start + i,
+                                 message="낱말 자체가 강조 표시로만 보여 vision이 텍스트로 옮기지 "
+                                         "못함(안내 문구 '문장'만 남음) - 원본 확인 후 수동 입력 필요")],
+                )
+                for i in range(len(blanks))
+            ], []
         for i, word in enumerate(blanks):
             word, _ = repair_text(str(word))
             v = NormalizedVocab(order_no=order_start + i, word=word or "", definition=None,
