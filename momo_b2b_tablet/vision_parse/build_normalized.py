@@ -47,56 +47,146 @@ def _first_page_num(raw: str | None) -> int | None:
 
 
 _BARE_NUMBER_RE = re.compile(r"^\(?\s*\d+\s*\)?$")
-_ROW_LABEL_VALUES = {"뜻", "문장"}
+_LABEL_RE = re.compile(r"^(뜻|문장)\s*[:：]?\s*(.*)$")
+_LABEL_SPLIT_RE = re.compile(r"/\s*(?:뜻|문장)\s*[:：]?")
+
+
+def _classify_label_row(row: list) -> tuple[str | None, str | None, str | None]:
+    """행 하나에서 "뜻"/"문장" 라벨 칸을 찾는다(2026-09-26 305건 전수조사로
+    확인된 3가지 실제 형태 - 예시는 실측 문서):
+    - 라벨과 내용이 각각 딴 칸: ["흥정하다","뜻","물건을..."] (L3-Q1-W05)
+    - 라벨+내용이 한 칸에: ["요람 (8페이지)","뜻: 사물의... / 문장: [빈칸]"] (L3-Q3-W03)
+    - 단어 칸 자체가 없음(라벨이 0번 칸): ["뜻","기쁨, 감격..."] (L3-Q1-W03 -
+      이 경우 원본 단어 자체가 vision 추출에서 빠진 것 - 복구 불가, 그대로 보고)
+    반환: (label, content, word) - 라벨을 못 찾으면 (None, None, None)."""
+    for idx, cell in enumerate(row):
+        cell_s = str(cell).strip() if cell is not None else ""
+        m = _LABEL_RE.match(cell_s)
+        if not m:
+            continue
+        label = m.group(1)
+        inline = _LABEL_SPLIT_RE.split(m.group(2).strip())[0].strip()
+        if inline:
+            content = inline
+        elif idx + 1 < len(row) and row[idx + 1]:
+            content = str(row[idx + 1]).strip()
+        else:
+            content = None
+        word = str(row[0]).strip() if idx > 0 and row[0] else None
+        return label, content, word
+    return None, None, None
 
 
 def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab], list[Flag]]:
     """vocab 타입 vision_item 1건(표에 여러 단어를 묶어 옴) -> 단어별
-    NormalizedVocab 여러 개. 표가 없으면(선잇기류로 정의 목록을 못 뽑은
-    경우 - VISION_LAYOUT_MAPPING_REPORT.md 5절) blanks(단어만)로 채우고
-    정의 없음으로 sup 플래그를 남긴다(기존 정규화와 같은 관례).
+    NormalizedVocab 여러 개.
 
-    2026-09-26 검수 발견 - 표 형태가 문서마다 다르다:
-    - "단어/뜻/문장" 3열(같은 단어가 "뜻" 행·"문장" 행 두 줄로 나뉘어 옴 -
-      실측: 긴긴밤) - 그대로 두면 같은 단어가 두 번, 정의 자리에 "뜻"/"문장"
-      이라는 라벨 글자만 들어가는 버그였다. "뜻" 행의 3번째 칸을 실제 정의로
-      쓰고 "문장"(학생이 채울 예문 빈칸) 행은 버린다.
-    - "각 문장에 들어갈 낱말을 <보기>에서 고르세요"류 빈칸채우기 문항을
-      vision이 문장/보기 내용 없이 "(1)","(2)","(3)" 번호표만 blanks로
-      뽑아 오는 경우(52/305건 실측) - 그대로 두면 번호표 자체가 가짜
-      "낱말"이 되어 답란만 3개 더 늘어나 보였다(야옹아 2쪽 "답란 3칸
-      중복" 신고 원인). 번호표만 있으면 가짜 단어를 만들지 않고 통째로
-      버린 뒤 flag만 남긴다.
+    2026-09-26 305건 전수조사로 확인된 표 형태(사용자 지시로 이번에 전부
+    정리) - vocab 항목의 table_json/blanks_json 조합이 문서마다 다르다:
+
+    1. 선잇기(매칭)형 - vision이 두 가지 형태로 뽑아 온다:
+       1a) blanks=단어 목록, table.rows=뜻 목록(헤더 없음, 한 칸짜리 행,
+           개수가 blanks와 같음) - 실측: L1-Q1-W03.
+       1b) 표 한 장 안에 "단어만 있는 행"과 "뜻만 있는 행"이 섞여 옴(표
+           전체가 단어 행 + 뜻 행으로 정확히 나뉨) - 실측: L2-Q1-W10.
+       화면에 보이는 순서일 뿐 실제 짝은 선으로 그어야 알 수 있어(사용자
+       지시 2026-09-24) 자동으로 짝짓지 않는다 - 단어마다 뜻풀이 "후보
+       목록"을 flag로 남긴다. (이전 코드는 1a를 table 우선으로 봐서
+       뜻풀이 텍스트 자체를 "단어"로 잘못 넣고 있었다 - 내용이 완전히
+       틀린 심각한 버그였다. 이 밖에 item_type='vocab'인데 layout_shape가
+       'reference_table'로 잘못 붙어 참고표 경로로 새는 경우도 있었다
+       - blanks_json이 함께 있으면 참고표가 아니라 이 매칭형으로 본다.)
+    2. "뜻"/"문장" 라벨 행 쌍 - 같은 단어가 두 행(뜻 내용 행 + 학생이 쓸
+       예문 빈칸 행)으로 나뉘어 온다(라벨이 딴 칸이든 한 칸에 붙어 오든).
+       "뜻" 행만 실제 정의로 쓰고 "문장" 행은 버린다. 아주 드물게 단어
+       칸 자체가 비어 있으면(원본 추출 실패) "(단어 미상)"으로 남기고
+       강한 flag를 단다 - 억지로 이름을 만들어 붙이지 않는다.
+    3. 위 둘 다 아니면 기존 단순 표(1행=1단어, 2번째 칸=정의)로 처리.
+    4. table이 아예 없고 blanks만 있는 경우("각 문장에 들어갈 낱말을
+       <보기>에서 고르세요"류 빈칸채우기 문항을 vision이 문장·보기 내용
+       없이 번호표만 뽑아 온 경우, 52/305건 실측) - 번호표만 있으면 가짜
+       "낱말"을 만들지 않고 통째로 버린다(야옹아 2쪽 "답란 3칸 중복" 신고
+       원인). 진짜 단어 목록이면 기존처럼 정의 없음 sup 플래그로 채운다.
     """
     table = _parse_json_field(item.get("table_json"), None)
     blanks = _parse_json_field(item.get("blanks_json"), [])
     out: list[NormalizedVocab] = []
+    flags: list[Flag] = []
+    rows = table["rows"] if table and table.get("rows") else None
 
-    if table and table.get("rows"):
-        rows = table["rows"]
-        if any(len(r) > 2 and str(r[1]).strip() in _ROW_LABEL_VALUES for r in rows if r):
-            # "단어/뜻|문장/내용" 패턴 - 단어별로 "뜻" 행만 취한다.
-            seen: dict[str, str | None] = {}
-            for r in rows:
-                if not r:
-                    continue
-                word = str(r[0]).strip()
-                label = str(r[1]).strip() if len(r) > 1 else ""
-                content = str(r[2]).strip() if len(r) > 2 and r[2] else ""
-                if label == "뜻":
-                    seen[word] = content or None
-                elif word not in seen:
-                    seen[word] = None  # "문장" 행만 있고 "뜻" 행이 아직 없으면 자리만 잡아둠
-            for i, (word, definition) in enumerate(seen.items()):
-                word, _ = repair_text(word)
-                v = NormalizedVocab(order_no=order_start + i, word=word or "", definition=definition,
-                                     example_sentence=None, book_page=_first_page_num(item.get("page_number")))
+    match_words: list[str] | None = None
+    match_defs: list[str] | None = None
+    if rows and blanks and not table.get("headers") and len(rows) == len(blanks) \
+            and all(len(r) <= 1 for r in rows if r):
+        # 1a) 선잇기형(blanks=단어, table=한 칸짜리 뜻 목록 - 실측: L1-Q1-W03).
+        match_words = [str(b) for b in blanks]
+        match_defs = [str(r[0]).strip() for r in rows if r]
+    elif rows and len(rows) >= 2:
+        word_only = [str(r[0]).strip() for r in rows if r and str(r[0]).strip()
+                     and not (len(r) > 1 and str(r[1]).strip())]
+        def_only = [str(r[1]).strip() for r in rows if r and len(r) > 1 and str(r[1]).strip()
+                    and not str(r[0]).strip()]
+        if word_only and def_only and len(word_only) + len(def_only) == len(rows):
+            # 1b) 선잇기형(표 한 장에 "단어만 있는 행"과 "뜻만 있는 행"이 섞여
+            # 옴 - 실측: L2-Q1-W10). 짝은 마찬가지로 자동으로 안 정한다.
+            match_words = word_only
+            match_defs = def_only
+
+    if match_words is not None:
+        # 1) 선잇기형 - 자동 짝짓기 금지, 후보만 기록.
+        cand_text = " / ".join(match_defs)
+        for i, word in enumerate(match_words):
+            word_r, _ = repair_text(str(word))
+            v = NormalizedVocab(order_no=order_start + i, word=word_r or "", definition=None,
+                                 example_sentence=None, book_page=_first_page_num(item.get("page_number")))
+            v.flags.append(Flag(kind="sup", order_no=v.order_no,
+                                 message=f"'{word_r}' 선잇기형 문항 - 뜻풀이 후보(순서 무관, 자동 매칭 안 함): "
+                                         f"{cand_text}"))
+            out.append(v)
+        return out, flags
+
+    if rows and any(_classify_label_row(r)[0] is not None for r in rows if r):
+        # 2) "뜻"/"문장" 라벨 행 쌍.
+        order: list[str] = []
+        seen: dict[str, str | None] = {}
+        no_word_n = 0
+        for r in rows:
+            if not r:
+                continue
+            label, content, word = _classify_label_row(r)
+            if label is None:
+                continue
+            if word is None:
+                no_word_n += 1
+                key = f"__noword_{no_word_n}__"
+            else:
+                key = word
+            if key not in seen:
+                order.append(key)
+                seen[key] = None
+            if label == "뜻" and content:
+                seen[key] = content
+        for i, key in enumerate(order):
+            definition = seen[key]
+            v = NormalizedVocab(order_no=order_start + i, word="", definition=definition,
+                                 example_sentence=None, book_page=_first_page_num(item.get("page_number")))
+            if key.startswith("__noword_"):
+                v.word = "(단어 미상)"
+                v.flags.append(Flag(kind="derived", order_no=v.order_no,
+                                     message=f"낱말 자체가 vision 추출에서 빠짐(뜻풀이만 있음: "
+                                             f"'{(definition or '')[:30]}') - 원본 확인 후 수동 입력 필요"))
+            else:
+                word_out, _ = repair_text(key)
+                v.word = word_out or ""
                 if not definition:
                     v.flags.append(Flag(kind="sup", order_no=v.order_no,
-                                         message=f"'{word}' 뜻풀이 누락(vision) - 초등 어휘 DB 조회 또는 LLM 보충 필요"))
-                out.append(v)
-            return out, []
+                                         message=f"'{word_out}' 뜻풀이 누락(vision) - 초등 어휘 DB 조회 또는 "
+                                                 f"LLM 보충 필요"))
+            out.append(v)
+        return out, flags
 
+    if rows:
+        # 3) 기존 단순 표(1행=1단어, 2번째 칸=정의).
         for i, row in enumerate(rows):
             word = str(row[0]) if row else ""
             definition = str(row[1]).strip() if len(row) > 1 and row[1] else None
@@ -107,10 +197,11 @@ def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab
                 v.flags.append(Flag(kind="sup", order_no=v.order_no,
                                      message=f"'{word}' 뜻풀이 누락(vision) - 초등 어휘 DB 조회 또는 LLM 보충 필요"))
             out.append(v)
-    elif blanks:
+        return out, flags
+
+    if blanks:
+        # 4) table 없이 blanks만.
         if all(_BARE_NUMBER_RE.match(str(b).strip()) for b in blanks):
-            # 번호표만 뽑혀 옴(빈칸채우기형 - 문장·보기 내용을 못 뽑음) - 가짜
-            # "낱말" 카드를 만드는 대신 통째로 버리고 문서 단위 flag만 남긴다.
             return [], [Flag(kind="sup",
                               message="빈칸채우기형 어휘 문항의 문장·보기 내용을 추출하지 못해 "
                                       "번호표만 남음(vision) - 재추출 또는 수동 입력 필요")]
@@ -122,7 +213,7 @@ def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab
                                  message=f"'{word}' 뜻풀이 누락(vision, 선잇기류 정의 목록 미추출) - "
                                          f"VISION_LAYOUT_MAPPING_REPORT.md 5절 대상"))
             out.append(v)
-    return out, []
+    return out, flags
 
 
 def _ox_from_item(item: dict, order_no: int) -> NormalizedOx:
@@ -220,10 +311,23 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
         # (discussion_qa/essay)면 답도 참고표도 아닌 소개 문구이므로 qa 페이지를
         # 만들지 않고 건너뛴다(원문 손실이 아니라 "질문이 없는 소개 문단"이라는
         # 뜻 - vision이 이미 그렇게 판정했다).
+        # 2026-09-26 추가 실측(L1-Q1-W03 등): shape='reference_table'인데
+        # blanks_json도 함께 채워진 item_type='vocab' 항목은 진짜 참고표가
+        # 아니라 "선으로 이어" 매칭 문항을 vision이 참고표로 오인한 것이다
+        # (한자 표 등 진짜 참고표는 blanks_json이 비어 있다 - matching 항목만
+        # extract.py 프롬프트 지시로 blanks+table을 같이 채운다). 이 경우는
+        # 아래 reference_table 분기로 보내지 않고 일반 vocab 처리로 내려보낸다.
+        is_mislabeled_vocab_match = (
+            shape == "reference_table" and item_type == "vocab"
+            and _parse_json_field(item.get("blanks_json"), [])
+        )
+
         if shape == "reference_table" and item_type != "vocab":
             continue
 
-        if item_type == "reference_table" or (shape == "reference_table" and item_type == "vocab"):
+        if not is_mislabeled_vocab_match and (
+            item_type == "reference_table" or (shape == "reference_table" and item_type == "vocab")
+        ):
             table = _parse_json_field(item.get("table_json"), None)
             rows_out = []
             if table and table.get("rows"):
