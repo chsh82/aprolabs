@@ -72,7 +72,7 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .q{display:flex;flex-direction:column;min-height:0;gap:1.8mm}
 .qhead{display:flex;gap:2.2mm;align-items:flex-start}
 .stamp{flex:0 0 auto;min-width:7.4mm;height:7.4mm;padding:0 1.2mm;border-radius:4mm;background:var(--main);color:#fff;font:700 11px/7.4mm var(--serif);text-align:center;transform:rotate(-2deg);margin-top:.2mm}
-.qtext{font:500 13.5px/1.55 var(--sans);color:var(--ink);word-break:keep-all;padding-top:.5mm}
+.qtext{font:500 16.5px/1.55 var(--sans);color:var(--ink);word-break:keep-all;padding-top:.5mm} /* 2026-09-26: 질문 폰트 전 학년대 공통 +3 */
 .blank{display:flex;flex-direction:column;gap:1mm;min-height:0}
 .blank .lab{align-self:flex-start;font:700 10px/1 var(--sans);color:var(--main-deep);background:var(--main-soft);padding:1.1mm 2mm;border-radius:1mm}
 
@@ -159,7 +159,7 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .excerpt.band .cite{margin-top:0}
 /* tone: middle school */
 .band-mid .excerpt{font-size:14px;line-height:1.75}
-.band-mid .qtext{font-size:13px}
+.band-mid .qtext{font-size:16px}
 .band-mid .stamp{transform:none}
 .cover .sub{font:400 16px/1.3 var(--cover);opacity:.92;margin:-.5mm 0 2.5mm}
 
@@ -212,7 +212,7 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .topic.long{font-size:21px;line-height:1.35;word-break:keep-all}
 /* tone: lower elementary */
 .band-lower .excerpt{font-size:16.5px;line-height:1.8}
-.band-lower .qtext{font-size:15px;line-height:1.5}
+.band-lower .qtext{font-size:18px;line-height:1.5}
 .band-lower .stamp{min-width:8.8mm;height:8.8mm;font-size:13px;line-height:8.8mm;transform:rotate(-3deg)}
 .band-lower .inst{font-size:13.5px}
 .band-lower .head .guide img{height:15.5mm;margin-bottom:-3mm}

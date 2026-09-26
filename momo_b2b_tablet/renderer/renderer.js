@@ -233,7 +233,12 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     } else if (p.type === "qa") {
       const contNote = p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : "";
       const ex = `${contNote}<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}<span class="cite">p.${p.excerpt.p}</span></div>`;
-      inner = `<div class="cols" style="grid-template-columns:${p.ratio}"><div class="col">${ex}</div><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}${question(p.q)}</div></div>`;
+      // 2026-09-26 좌우 배치 전환(사용자 지시, 전 교재 공통 A안) - 왼쪽: 이미지
+      // 자리+문항+답란, 오른쪽: 제시문. p.ratio는 "제시문 우선" 순서로 저장돼
+      // 있어(layout/rules.py) 칸 순서를 바꾸면 비율도 같이 뒤집어야 비율이
+      // 맞는다(3fr 2fr -> 2fr 3fr).
+      const gridCols = (p.ratio || "1fr 1fr").split(" ").reverse().join(" ");
+      inner = `<div class="cols" style="grid-template-columns:${gridCols}"><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}${question(p.q)}</div><div class="col">${ex}</div></div>`;
     } else if (p.type === "essay") {
       inner = `<div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col"><h3 class="topic${p.topic.length > 12 ? " long" : ""}">${esc(p.topic)}</h3>${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: "'나의 바다' 글쓰기 메모 3문항" })}</div></div>`;
     } else if (p.type === "bgline") {

@@ -28,6 +28,15 @@ from vision_parse import db as vdb  # noqa: E402
 from vision_parse.layout_map import layout_hint_to_form  # noqa: E402
 
 _PAGE_NUM_RE = re.compile(r"\d+")
+_LEADING_NUM_RE = re.compile(r"^\s*\d+[.\)]\s*")
+
+
+def _strip_leading_number(text: str) -> str:
+    """질문 맨 앞의 "1)"/"2." 같은 번호를 뗀다 - 렌더러가 이미 스탬프 배지로
+    번호를 보여주므로 question_text 안에도 있으면 중복 표시된다(2026-09-26
+    젊은 예술가의 초상 검수에서 발견, 305건 중 813건 실측). excerpt_text는
+    원문 그대로 둬야 하므로 건드리지 않는다."""
+    return _LEADING_NUM_RE.sub("", text, count=1)
 
 
 def _parse_json_field(raw, default):
@@ -367,7 +376,7 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
             # 중간에 있는 개방형 질문이다 - discussion_qa와 똑같이 qa 페이지로 만든다
             # (실제로 이 케이스가 없으면 discussion_qa 분기와 동일하게 동작).
             excerpt_text = item.get("excerpt_text")
-            question_text = item.get("question_text") or ""
+            question_text = _strip_leading_number(item.get("question_text") or "")
             repair_flags: list[Flag] = []
             if excerpt_text:
                 excerpt_text, ef = repair_text(excerpt_text, qa_counter)
