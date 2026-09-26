@@ -68,6 +68,15 @@ def _guide_for(doc: NormalizedDoc, qa: NormalizedQA) -> tuple[dict, list[Flag]]:
     return guide, flags
 
 
+def _original_image_for_qa(doc: NormalizedDoc, qa: NormalizedQA) -> str | None:
+    """qa.source_page와 같은 쪽의 원본 삽화 파일 경로(없으면 None) - wide 여부를
+    정하기 전에 먼저 확인해야 한다(바로 아래 주석 참고)."""
+    for img in doc.images:
+        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page:
+            return img.file_path
+    return None
+
+
 def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None) -> tuple[dict, Flag | None]:
     """SPEC §3.5.1 "원본 교재 이미지 우선": 문항의 source_page와 같은 쪽의 원본
     삽화가 있으면 그걸 슬롯에 쓴다. 없으면 생성 지시문 자리표시자를 flag와 함께 둔다.
@@ -160,10 +169,19 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
 
         # solo는 이미지 슬롯이 있어야 성립하는 레이아웃(좌 이미지/우 문항)이라 항상 슬롯을
         # 준다. qa/qaband/qaref는 table·compare처럼 답란이 넓게 필요한 form이면 이미지
-        # 자리 대신 wide로 전체 폭을 문항에 준다(골든 L9 문항7 사례).
-        if page["type"] != "solo" and q_fields.get("form") in _WIDE_FORMS:
+        # 자리 대신 wide로 전체 폭을 문항에 준다(골든 L9 문항7 사례) - 단, SPEC §3.5.1
+        # "원본 교재 이미지 우선"이 더 상위 원칙이라, 그 쪽에 원본 삽화가 실제로 있으면
+        # wide보다 이미지 슬롯을 우선한다(사용자 지시 2026-09-25 - 비전 초안에서 표/
+        # 서약형으로 매핑된 문항이 원본 삽화가 있는데도 wide 처리되어 이미지가 통째로
+        # 빠지는 회귀를 발견해 고침). L9 문항7처럼 애초에 그 쪽에 원본 삽화가 없는
+        # 경우는 여전히 wide로 빠지므로 기존 골든과도 어긋나지 않는다.
+        original_img = _original_image_for_qa(doc, qa)
+        if page["type"] != "solo" and q_fields.get("form") in _WIDE_FORMS and not original_img:
             page["wide"] = True
         else:
+            # original_img가 있으면 _slot_for_qa가 어차피 같은 걸 찾아 슬롯을 채운다
+            # (자리표시자 flag 없이) - 위에서 이미 확인한 값을 또 계산만 안 할 뿐,
+            # 로직은 이 함수 하나로 유지한다.
             slot, slot_flag = _slot_for_qa(doc, qa, form=q_fields.get("form"))
             page["slot"] = slot
             if slot_flag:
