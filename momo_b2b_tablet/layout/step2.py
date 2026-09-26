@@ -99,23 +99,33 @@ def _guide_for(doc: NormalizedDoc, qa: NormalizedQA) -> tuple[dict, list[Flag]]:
     return guide, flags
 
 
-def _original_image_for_qa(doc: NormalizedDoc, qa: NormalizedQA) -> str | None:
+def _original_image_for_qa(doc: NormalizedDoc, qa: NormalizedQA, claimed: set[str] = frozenset()) -> str | None:
     """qa.source_page와 같은 쪽의 원본 삽화 파일 경로(없으면 None) - wide 여부를
-    정하기 전에 먼저 확인해야 한다(바로 아래 주석 참고)."""
+    정하기 전에 먼저 확인해야 한다(바로 아래 주석 참고). claimed에 있는 파일은
+    이미 qaref(참고표)가 전용으로 쓴 것이라 건너뛴다(아래 _slot_for_qa 참고)."""
     for img in doc.images:
-        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page:
+        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page \
+                and img.file_path not in claimed:
             return img.file_path
     return None
 
 
-def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None) -> tuple[dict, Flag | None]:
+def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None,
+                  claimed: set[str] = frozenset()) -> tuple[dict, Flag | None]:
     """SPEC §3.5.1 "원본 교재 이미지 우선": 문항의 source_page와 같은 쪽의 원본
     삽화가 있으면 그걸 슬롯에 쓴다. 없으면 생성 지시문 자리표시자를 flag와 함께 둔다.
 
     choice/choiceList는 선택지 자체가 답이라(사용자 지시 2026-09-23) 일반적인
-    "답을 암시하지 않는다"보다 더 구체적으로 "선택지 중 정답 암시 금지"를 넣는다."""
+    "답을 암시하지 않는다"보다 더 구체적으로 "선택지 중 정답 암시 금지"를 넣는다.
+
+    claimed(2026-09-26 열하일기 검수에서 발견): qaref(한자 참고표 등)가 이미
+    쓴 이미지는 같은 source_page의 다른(관련 없는) 문항에 또 붙이지 않는다 -
+    한자 자원 변천 그림이 옆의 무관한 토론 문항에도 재사용돼 "이미지가 엉뚱한
+    쪽에 잘못 들어갔다"는 인상을 줬다. qaband끼리 같은 이미지를 공유하는 기존
+    동작(야옹아 등, 특별한 참고표가 아닌 경우)은 그대로 둔다."""
     for img in doc.images:
-        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page:
+        if img.image_type == "illustration" and img.source_page and img.source_page == qa.source_page \
+                and img.file_path not in claimed:
             return {"img": img.file_path, "src": f"원본 {img.source_page}쪽"}, None
     flag = Flag(order_no=qa.order_no, kind="derived", category="placeholder",
                 message=f"문항 {qa.order_label}: 원본 삽화가 없어 생성 이미지 지시문이 필요함 - "
@@ -129,6 +139,7 @@ def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None) 
 def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
     pages: list[dict] = []
     flags: list[Flag] = []
+    claimed_images: set[str] = set()  # qaref가 전용으로 쓴 이미지(아래 참고)
 
     ref_bearer = _ref_bearer_order_label(doc)
     if ref_bearer:
@@ -216,17 +227,21 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
         # 같은 기준) form이 table/compare가 아니어도 3층 구조를 위해 wide로 뺀다
         # (젊은 예술가의 초상 8·19쪽 - 긴 단답형 질문이 반쪽 칸에 눌려 있던 문제).
         is_long_question = len(qa.question_text or "") >= LONG_QUESTION_MIN
-        original_img = _original_image_for_qa(doc, qa)
+        original_img = _original_image_for_qa(doc, qa, claimed_images)
         if page["type"] != "solo" and (q_fields.get("form") in _WIDE_FORMS or is_long_question) and not original_img:
             page["wide"] = True
         else:
             # original_img가 있으면 _slot_for_qa가 어차피 같은 걸 찾아 슬롯을 채운다
             # (자리표시자 flag 없이) - 위에서 이미 확인한 값을 또 계산만 안 할 뿐,
             # 로직은 이 함수 하나로 유지한다.
-            slot, slot_flag = _slot_for_qa(doc, qa, form=q_fields.get("form"))
+            slot, slot_flag = _slot_for_qa(doc, qa, form=q_fields.get("form"), claimed=claimed_images)
             page["slot"] = slot
             if slot_flag:
                 flags.append(slot_flag)
+            if page["type"] == "qaref" and slot.get("img"):
+                # 참고표가 쓴 이미지는 같은 쪽의 다른 문항에 또 재사용하지 않는다
+                # (열하일기 검수에서 발견한 오배치 인상 - 클래스 docstring 참고).
+                claimed_images.add(slot["img"])
 
         if qa.excerpt_text and len(qa.excerpt_text) > _EXCERPT_SPLIT_THRESHOLD:
             chunks = _split_excerpt_into_pages(qa.excerpt_text, _EXCERPT_PAGE_BUDGET)
