@@ -281,7 +281,8 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       inner = `<div class="cols" style="grid-template-columns:${p.ratio || "1fr 1.25fr"}"><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}</div><div class="col">${qHead(p.q)}<div class="wcol">${w}</div></div></div>`;
     } else if (p.type === "memos") {
       const rows = p.qs.map(q => { QTEXT[q.id] = q.t; register(q, [{ id: q.id, label: "", prompt: "" }]); return `<div class="mrow"><div class="mq"><span class="num-sq">${esc(q.no)}</span><div class="qtext">${esc(q.t)}</div></div>${inkBox(q.id, "memo")}</div>`; }).join("");
-      inner = `<div class="mtop"><span class="mtopic">${esc(p.topic)}</span><span class="mlead">${esc(p.closing)}</span></div><div class="mrows">${rows}</div>`;
+      const mFig = p.slot && p.slot.img ? `<figure class="m-fig"><img src="${IMG[p.slot.img]}" alt=""></figure>` : "";
+      inner = `<div class="mtop"><span class="mtopic">${esc(p.topic)}</span><span class="mlead">${esc(p.closing)}</span>${mFig}</div><div class="mrows">${rows}</div>`;
     }
     return `<div class="frame">${spine(i, p)}<div class="body">${head(p)}${inner}</div></div>`;
   }

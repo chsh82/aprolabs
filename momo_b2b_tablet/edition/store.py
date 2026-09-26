@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -295,6 +296,10 @@ def _collect_image_keys(layout: dict) -> set[str]:
         q = p.get("q")
         if q and q.get("img"):
             keys.add(q["img"])
+        if q:
+            for card in q.get("cards") or []:
+                if isinstance(card, dict) and card.get("img"):
+                    keys.add(card["img"])
     keys.add("logo")
     keys.add("logoIvory")
     return keys
@@ -452,11 +457,30 @@ def source_text_by_page(doc_id: str, source_page: int) -> list[dict]:
         conn.close()
 
 
-def available_images(doc_id: str) -> list[dict]:
-    """검수 화면의 "이미지 자리 추가" 기능용 - 이 문서의 momo_book.db
-    document_image(원본 삽화·표지·배경) 전부를 후보로 준다(2026-09-26,
-    검수자가 직접 원본 이미지를 고르거나 생성 지시문을 쓸 수 있게 하라는
-    사용자 지시 [5순위])."""
+_V2_IMAGE_DB = REPO_ROOT / "momo_book_db" / "image_reextract_v2.db"
+
+
+def _hash_image(file_path: str) -> str | None:
+    try:
+        return hashlib.md5((EXTRACTED_DIR / file_path).read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def available_images(doc_id: str, used_keys: set[str] | None = None) -> list[dict]:
+    """검수 화면의 "이미지 자리 추가"/"원본 이미지로 바꾸기" 기능용 - 이 문서의
+    momo_book.db document_image(원본 삽화·표지·배경) 전부를 후보로 준다
+    (2026-09-26, 검수자가 직접 원본 이미지를 고르거나 생성 지시문을 쓸 수 있게
+    하라는 사용자 지시 [5순위]).
+
+    2026-09-27 사용자 지시 [3] - 이미지 재추출 v2(momo_book_db/image_reextract_v2.db,
+    normalize/run.py의 _load_v2_images와 같은 dedup 방식) 결과도 후보에 합친다.
+    자동 배치 규칙(layout/step1·2·3.py)이 다 쓰지 못한 이미지가 남는 게 정상이라
+    (문항/페이지보다 이미지가 많은 경우) 그 나머지를 검수자가 여기서 수동으로
+    원하는 자리에 붙일 수 있어야 "미사용 이미지"가 그냥 버려지지 않는다.
+    used_keys를 주면(현재 edition의 layout에서 실제 쓰인 이미지 키 - api.py가
+    edition/store._collect_image_keys로 계산) 각 항목에 used(bool)를 채워
+    검수 화면이 "미사용" 이미지를 먼저 보여줄 수 있게 한다."""
     import sys
     if str(REPO_ROOT) not in sys.path:
         sys.path.insert(0, str(REPO_ROOT))
@@ -468,15 +492,43 @@ def available_images(doc_id: str) -> list[dict]:
             "SELECT image_type, source_page, file_path FROM document_image "
             "WHERE doc_id = ? ORDER BY source_page", (doc_id,),
         ).fetchall()
-        return [
-            {
-                "image_type": r["image_type"], "source_page": r["source_page"],
-                "file_path": r["file_path"], "url": f"/static/extracted/{r['file_path']}",
-            }
+        items = [
+            {"image_type": r["image_type"], "source_page": r["source_page"], "file_path": r["file_path"]}
             for r in rows
         ]
     finally:
         conn.close()
+
+    existing_paths = {i["file_path"] for i in items}
+    existing_hashes = {h for h in (_hash_image(i["file_path"]) for i in items) if h is not None}
+
+    if _V2_IMAGE_DB.exists():
+        v2_conn = sqlite3.connect(f"file:{_V2_IMAGE_DB.as_posix()}?mode=ro", uri=True)
+        v2_conn.row_factory = sqlite3.Row
+        try:
+            v2_rows = v2_conn.execute(
+                "SELECT image_type, source_page, file_path FROM document_image_v2 "
+                "WHERE doc_id = ? ORDER BY source_page", (doc_id,),
+            ).fetchall()
+        finally:
+            v2_conn.close()
+        for r in v2_rows:
+            if r["file_path"] in existing_paths:
+                continue
+            h = _hash_image(r["file_path"])
+            if h is not None and h in existing_hashes:
+                continue
+            if h is not None:
+                existing_hashes.add(h)
+            existing_paths.add(r["file_path"])
+            items.append({"image_type": r["image_type"], "source_page": r["source_page"], "file_path": r["file_path"]})
+
+    items.sort(key=lambda i: (i["source_page"] if i["source_page"] is not None else 10**9))
+    for i in items:
+        i["url"] = f"/static/extracted/{i['file_path']}"
+        if used_keys is not None:
+            i["used"] = i["file_path"] in used_keys
+    return items
 
 
 def save_answer(edition_id: int, part_id: str, student_id: str,

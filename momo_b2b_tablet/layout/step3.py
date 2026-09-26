@@ -30,15 +30,28 @@ def build_step3_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
         flags.append(Flag(kind="missing", message="essay_prompt.closing_instruction이 비어 있음"))
         closing = _DEFAULT_CLOSING
 
-    essay_image = next((img for img in doc.images if img.image_type == "essay"), None)
+    # 2026-09-27 사용자 지시 [1] - 재추출 v2로 같은 쪽(source_page)에 essay
+    # 이미지가 2장 이상 나오는 경우가 있음(정렬은 source_page 순, 안정적인
+    # 순서를 위해). essay_prompt.image_path가 있으면 그게 1순위(기존 동작
+    # 유지), doc.images의 essay 이미지는 1장은 essay 주제 페이지, 2장째는
+    # memos(생각 모으기) 페이지에 배분한다 - 한 페이지 한 이미지 원칙을 STEP3
+    # 에도 그대로 적용(갤러리로 좁혀 넣지 않음). 3장째부터는 미사용 목록으로
+    # 남아 검수 화면에서 수동 배정 대상이 된다.
+    essay_images = sorted(
+        (img for img in doc.images if img.image_type == "essay"),
+        key=lambda img: img.source_page or 0,
+    )
 
     slot: dict
     if essay.image_path:
         slot = {"img": essay.image_path, "src": "원본 이미지"}
-    elif essay_image is not None:
-        slot = {"img": essay_image.file_path, "src": "원본 이미지"}
+        memos_image = essay_images[0] if essay_images else None
+    elif essay_images:
+        slot = {"img": essay_images[0].file_path, "src": "원본 이미지"}
+        memos_image = essay_images[1] if len(essay_images) > 1 else None
     else:
         slot = {"scene": "(LLM 생성 필요)", "avoid": "메모 질문의 답을 암시하는 요소를 넣지 않는다."}
+        memos_image = None
         flags.append(Flag(kind="derived", category="placeholder",
                            message="STEP3 이미지가 원본에 없어 생성 지시문이 필요함(자리표시자)"))
 
@@ -58,4 +71,6 @@ def build_step3_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
         "type": "memos", "step": "STEP 3", "title": "생각 모으기", "guide": _GUIDE,
         "topic": essay.main_topic, "closing": _MEMOS_CLOSING, "qs": memos_qs,
     }
+    if memos_image is not None:
+        memos_page["slot"] = {"img": memos_image.file_path, "src": f"원본 {memos_image.source_page}쪽"}
     return [essay_page, memos_page], flags

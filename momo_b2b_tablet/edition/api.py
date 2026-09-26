@@ -176,12 +176,16 @@ def edition_source_by_page(edition_id: int, page: int):
 
 @app.get("/api/editions/{edition_id}/available-images")
 def edition_available_images(edition_id: int):
-    """검수 화면의 "이미지 자리 추가" - 이 문서의 원본 이미지 후보 목록
-    (store.available_images 참고)."""
+    """검수 화면의 "이미지 자리 추가"/"원본 이미지로 바꾸기" - 이 문서의 원본
+    이미지 후보 목록(store.available_images 참고). 2026-09-27: 재추출 v2
+    이미지까지 합친 목록에 현재 layout에서 이미 쓰인 이미지는 used=true로
+    표시해 검수자가 "미사용" 이미지를 먼저 찾을 수 있게 한다."""
     row = store.get_edition_row(edition_id)
     if row is None:
         raise HTTPException(404, "edition not found")
-    return {"images": store.available_images(row["doc_id"])}
+    layout = json.loads(row["layout_json"])
+    used_keys = store._collect_image_keys(layout)
+    return {"images": store.available_images(row["doc_id"], used_keys=used_keys)}
 
 
 @app.get("/api/editions/{edition_id}/print-view")

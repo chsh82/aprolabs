@@ -79,6 +79,20 @@ def _background_image(doc: NormalizedDoc) -> str | None:
     return bg_img
 
 
+def _background_images_ordered(doc: NormalizedDoc) -> list[str]:
+    """배경지식이 여러 쪽(bgtext 여러 페이지)으로 나뉠 때 페이지마다 다른
+    원본 이미지를 순서대로 쓰기 위한 목록(2026-09-27 사용자 지시 [2] - 중등
+    배경지식은 대부분 프로즈형이라 여러 쪽으로 나뉘는데, 재추출 v2로 1단계
+    검사 범위가 여러 쪽으로 넓어지면서 페이지 수만큼 이미지도 여럿 나온다).
+    background 타입이 하나도 없으면(문서 대부분은 1장뿐) 표지로 1장만 대신한다
+    - 표지를 여러 bgtext 페이지에 나눠 배분할 이유는 없다(사용자 지시 [4])."""
+    bg_images = [img.file_path for img in doc.images if img.image_type == "background"]
+    if bg_images:
+        return bg_images
+    cover = next((img.file_path for img in doc.images if img.image_type == "cover"), None)
+    return [cover] if cover else []
+
+
 def _bgline_from_timeline(doc: NormalizedDoc) -> tuple[dict, list[Flag]]:
     text = doc.background_text
     rows = parse_timeline(text)
@@ -109,9 +123,12 @@ def _bgtext_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
     kind = classify_background(text)
     title = extract_title(text)
     chunks = paginate_paragraphs(extract_paragraphs(text))
-    bg_img = _background_image(doc)
-    slot = {"img": bg_img, "src": "원본 배경지식 이미지"} if bg_img else \
-        {"scene": "(LLM 생성 필요)", "avoid": "본문 내용과 어긋나는 장면을 넣지 않는다."}
+    bg_images = _background_images_ordered(doc)
+
+    def _slot_for(i: int) -> dict:
+        if i < len(bg_images):
+            return {"img": bg_images[i], "src": "원본 배경지식 이미지"}
+        return {"scene": "(LLM 생성 필요)", "avoid": "본문 내용과 어긋나는 장면을 넣지 않는다."}
 
     pages = []
     for i, chunk in enumerate(chunks):
@@ -119,16 +136,20 @@ def _bgtext_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
             "type": "bgtext", "step": "STEP 1", "title": title if i == 0 else f"{title} (계속)",
             "guide": {"rt": "배경지식"},
             "paragraphs": chunk,
-            "slot": dict(slot),
+            "slot": _slot_for(i),
         })
 
     note = "O·X 형식으로 보임 - 검수에서 상호작용형(oxp 등) 위젯으로 바꿀지 판단. " if kind == "ox" else ""
     flags = [Flag(kind="derived", category="structure",
                    message=f"{note}배경지식을 bgtext(본문+이미지)로 임시 배치함({len(pages)}쪽) - "
                            f"이 페이지 유형·분량이 적절한지, 더 나은 위젯(표 등)이 있는지 검수 필요")]
-    if not bg_img:
+    if not bg_images:
         flags.append(Flag(kind="derived", category="placeholder",
                            message="배경지식에 붙일 원본 이미지가 없어 생성 슬롯이 필요함"))
+    elif len(bg_images) < len(chunks):
+        flags.append(Flag(kind="derived", category="placeholder",
+                           message=f"배경지식 {len(chunks)}쪽 중 {len(chunks) - len(bg_images)}쪽은 배분할 "
+                                   f"원본 이미지가 모자라 생성 슬롯이 필요함"))
     return pages, flags
 
 

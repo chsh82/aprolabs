@@ -255,6 +255,8 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .mrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-between;gap:3mm}
 .mrow{display:grid;grid-template-columns:62mm 1fr;gap:5mm;align-items:start}
 .mq{display:flex;gap:2.2mm;align-items:flex-start;padding-top:.6mm}
+.m-fig{margin:0 0 0 auto;flex:0 0 auto}
+.m-fig img{max-width:26mm;max-height:18mm;object-fit:contain;border-radius:1mm;display:block}
 
 /* ---------- step 3 ---------- */
 /* 2026-09-26: STEP3 첫 페이지 - 단 구분 없이 중앙 상단, 큰 폰트(옛 .topic 대체) */

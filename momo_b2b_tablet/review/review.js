@@ -261,7 +261,7 @@ const TYPE_ABBR = {
   qa: "QA", qaband: "QAB", qaref: "QAR", solo: "SOL", essay: "ESS", memos: "MEM", excerpt: "EXC",
 };
 // 렌더러가 slot을 실제로 그리는 페이지 유형만 "이미지 자리" UI를 보여준다(2026-09-26 [5순위]).
-const SLOT_CAPABLE_TYPES = new Set(["qa", "qaband", "qaref", "solo", "oxp", "bgtext", "essay"]);
+const SLOT_CAPABLE_TYPES = new Set(["qa", "qaband", "qaref", "solo", "oxp", "bgtext", "essay", "memos"]);
 
 function renderPageList() {
   const list = $("#pageList");
@@ -707,12 +707,20 @@ function renderSlotInspector(body, page, idx, basePath) {
   }
 
   const pickHost = el("div", { class: "hint" }, "원본 이미지 목록 불러오는 중…");
-  body.append(field("원본 이미지로 바꾸기", pickHost));
+  body.append(field("원본 이미지로 바꾸기(미사용 이미지가 먼저 나옵니다)", pickHost));
   fetchAvailableImages().then(images => {
     pickHost.innerHTML = "";
     if (!images.length) { pickHost.textContent = "이 문서에 등록된 원본 이미지가 없습니다."; return; }
-    images.forEach(img => {
-      const btn = el("button", { class: "btn btn--small", style: "margin:2px" }, `${img.image_type} p.${img.source_page ?? "?"}`);
+    // 2026-09-27 사용자 지시 [3] - 자동 배치 규칙이 다 못 쓰고 남긴 이미지를
+    // 검수자가 여기서 직접 골라 붙일 수 있어야 한다. used=false(미사용)를
+    // 먼저 보여줘 검수자가 "남는 이미지"를 바로 찾게 한다.
+    const sorted = images.slice().sort((a, b) => (a.used === b.used) ? 0 : (a.used ? 1 : -1));
+    sorted.forEach(img => {
+      const label = `${img.used ? "" : "★ "}${img.image_type} p.${img.source_page ?? "?"}`;
+      const btn = el("button", {
+        class: "btn btn--small", style: `margin:2px${img.used ? ";opacity:.6" : ""}`,
+        title: img.used ? "이미 다른 자리에서 쓰인 이미지입니다" : "아직 어디에도 배치되지 않은 이미지입니다",
+      }, label);
       btn.onclick = () => patch([{
         op: "replace", path: slotPath,
         value: { img: img.file_path, src: `원본 ${img.source_page}쪽` },

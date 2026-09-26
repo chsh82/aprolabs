@@ -132,8 +132,19 @@ def _all_images_for_qa(doc: NormalizedDoc, qa: NormalizedQA, claimed: set[str] =
             and img.file_path not in claimed]
 
 
+def _page_original_counts(doc: NormalizedDoc) -> dict[int, int]:
+    """source_page별 원본 이미지 장수(재추출 v2 반영 전 기준 아님 - claimed와
+    무관하게 doc.images 전체를 정적으로 센다). qa당 슬롯을 "공유"할지
+    "문항 순서대로 한 장씩 배분"할지 가르는 기준(2026-09-27 사용자 지시)."""
+    counts: dict[int, int] = {}
+    for img in doc.images:
+        if img.image_type in _ORIGINAL_IMAGE_TYPES and img.source_page:
+            counts[img.source_page] = counts.get(img.source_page, 0) + 1
+    return counts
+
+
 def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None,
-                  claimed: set[str] = frozenset()) -> tuple[dict, Flag | None]:
+                  claimed: set[str] = frozenset(), distinct: bool = False) -> tuple[dict, Flag | None]:
     """SPEC §3.5.1 "원본 교재 이미지 우선": 문항의 source_page와 같은 쪽의 원본
     삽화가 있으면 그걸 슬롯에 쓴다. 없으면 생성 지시문 자리표시자를 flag와 함께 둔다.
 
@@ -144,10 +155,21 @@ def _slot_for_qa(doc: NormalizedDoc, qa: NormalizedQA, form: str | None = None,
     쓴 이미지는 같은 source_page의 다른(관련 없는) 문항에 또 붙이지 않는다 -
     한자 자원 변천 그림이 옆의 무관한 토론 문항에도 재사용돼 "이미지가 엉뚱한
     쪽에 잘못 들어갔다"는 인상을 줬다. qaband끼리 같은 이미지를 공유하는 기존
-    동작(야옹아 등, 특별한 참고표가 아닌 경우)은 그대로 둔다."""
+    동작(야옹아 등, 특별한 참고표가 아닌 경우)은 그대로 둔다(distinct=False일 때).
+
+    distinct(2026-09-27 사용자 지시 - 이미지 재추출 v2로 한 쪽에 이미지가 여러
+    장인 경우가 늘어남): 그 쪽 원본 이미지가 애초에 2장 이상이면(_page_original_counts
+    기준, claimed로 줄어들기 전 원래 장수) "공유"가 아니라 "문항마다 한 장씩,
+    순서대로, 쓰고 나면 claimed 처리"로 바뀐다 - 갤러리로 한 페이지에 여러 장을
+    작게 늘어놓는 대신(A5 가로 슬롯 폭 60~80mm가 더 좁아져 저해상도 문제가
+    악화됨) 문항 여러 개에 걸쳐 한 장씩 나눠 쓴다. 이미지가 문항 수보다 많으면
+    남는 건 미사용 목록으로(검수 화면 "원본 이미지로 바꾸기"에서 수동 배정),
+    적으면 뒤 문항은 자리표시자로 남는다."""
     for img in doc.images:
         if img.image_type in _ORIGINAL_IMAGE_TYPES and img.source_page and img.source_page == qa.source_page \
                 and img.file_path not in claimed:
+            if distinct:
+                claimed.add(img.file_path)
             return {"img": img.file_path, "src": f"원본 {img.source_page}쪽"}, None
     flag = Flag(order_no=qa.order_no, kind="derived", category="placeholder",
                 message=f"문항 {qa.order_label}: 원본 삽화가 없어 생성 이미지 지시문이 필요함 - "
@@ -162,6 +184,7 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
     pages: list[dict] = []
     flags: list[Flag] = []
     claimed_images: set[str] = set()  # qaref가 전용으로 쓴 이미지(아래 참고)
+    page_original_counts = _page_original_counts(doc)
 
     ref_bearer = _ref_bearer_order_label(doc)
     if ref_bearer:
@@ -267,7 +290,9 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
             # original_img가 있으면 _slot_for_qa가 어차피 같은 걸 찾아 슬롯을 채운다
             # (자리표시자 flag 없이) - 위에서 이미 확인한 값을 또 계산만 안 할 뿐,
             # 로직은 이 함수 하나로 유지한다.
-            slot, slot_flag = _slot_for_qa(doc, qa, form=q_fields.get("form"), claimed=claimed_images)
+            distinct = page_original_counts.get(qa.source_page, 0) >= 2
+            slot, slot_flag = _slot_for_qa(doc, qa, form=q_fields.get("form"), claimed=claimed_images,
+                                            distinct=distinct)
             page["slot"] = slot
             if slot_flag:
                 flags.append(slot_flag)
