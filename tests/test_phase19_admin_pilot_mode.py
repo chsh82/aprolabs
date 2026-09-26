@@ -140,12 +140,18 @@ def run() -> bool:
             conn.commit()
             conn.close()
 
+            # phase20 오염 방지 보강 이후: 3중 검증에서 제외된 문항이 생기면(원래 40건 중
+            # 일부가 빠짐) 조용히 부분 결과(38/40 등)를 반환하지 않고 PilotBatchIntegrityError로
+            # 출제 자체를 중단한다(reports/schema_reading_phase20_*.md) - 예전(phase19) 기대치인
+            # "그 문항만 제외되고 나머지는 정상 반환"은 더 이상 유효하지 않아 여기서 갱신한다.
             log_handler.records.clear()
             vdb.close()
             vdb = SessionLocal()
-            pilot_ids_after = mf._select_pilot_item_ids(vdb, None)
-            check(len(pilot_ids_after) == 40 - sibling_count,
-                  f"content_id is_active=0으로 만들면 그 문항({sibling_count}건)만 제외됨(실제 {len(pilot_ids_after)}/40)")
+            try:
+                pilot_ids_after = mf._select_pilot_item_ids(vdb, None)
+                check(False, f"content_id is_active=0 상태: 조용히 {len(pilot_ids_after)}건 반환됨(PilotBatchIntegrityError가 발생했어야 함)")
+            except mf.PilotBatchIntegrityError as exc:
+                check(True, f"content is_active=0 상태: PilotBatchIntegrityError로 출제 중단됨(missing={sorted(exc.missing)})")
             check(any("is_active" in r for r in log_handler.records),
                   f"content is_active=0 상태에 대해 경고 로그가 실제로 남음(레코드 {len(log_handler.records)}건)")
 
@@ -168,12 +174,16 @@ def run() -> bool:
             conn.commit()
             conn.close()
 
+            # phase20 오염 방지 보강 이후: 위와 동일한 이유로 level_status drift도 부분 반환이
+            # 아니라 PilotBatchIntegrityError로 출제를 중단한다.
             log_handler.records.clear()
             vdb.close()
             vdb = SessionLocal()
-            pilot_ids_level_broken = mf._select_pilot_item_ids(vdb, None)
-            check(len(pilot_ids_level_broken) == 40 - sibling_count,
-                  f"level_status가 REVIEW_BOUNDARY가 아니면 그 문항({sibling_count}건)만 제외됨(실제 {len(pilot_ids_level_broken)}/40)")
+            try:
+                pilot_ids_level_broken = mf._select_pilot_item_ids(vdb, None)
+                check(False, f"level_status drift 상태: 조용히 {len(pilot_ids_level_broken)}건 반환됨(PilotBatchIntegrityError가 발생했어야 함)")
+            except mf.PilotBatchIntegrityError as exc:
+                check(True, f"level_status drift 상태: PilotBatchIntegrityError로 출제 중단됨(missing={sorted(exc.missing)})")
             check(any("level_status" in r for r in log_handler.records),
                   f"level_status 불일치에 대해 경고 로그가 실제로 남음(레코드 {len(log_handler.records)}건)")
 

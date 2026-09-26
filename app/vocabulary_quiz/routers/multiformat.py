@@ -68,6 +68,7 @@ import random
 import unicodedata
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.templating import Jinja2Templates
@@ -118,6 +119,80 @@ LEVEL_MODE_ITEM_TYPES = tuple(t for t in ITEM_TYPES if t != "CROSSWORD")
 # 완전히 별도 경로 - 위의 SOURCE_VERSION("2.1.29") 일반 출제 경로는 이 상수/경로와
 # 절대 섞이지 않는다(격리 설계는 phase18 보고서 0절 4번 참고).
 PILOT_SOURCE_VERSION = "schema_reading_l4l5_pilot_dryrun_v1"
+
+# ---- phase20 오염 방지 보강 ----
+# 문제: source_version만으로 필터링하면, 나중에 다른 작업이 우연히/실수로 같은
+# PILOT_SOURCE_VERSION 값을 가진 새 문항을 만들 경우 그 문항도 자동으로 이
+# 파일럿 풀에 섞여 들어온다(로컬 DB 사본으로 실제 재현 확인 - phase20 보고서).
+# 대응: phase18이 실제로 적재한 정확한 40개 item_id를 별도 매니페스트에서 읽어
+# "고정 화이트리스트"로 삼고, 기존 3중 검증 결과를 이 화이트리스트와 교집합한다
+# (기존 검증은 그대로 유지 - 빼지 않고 위에 얹는다). 교집합 결과가 화이트리스트
+# 40개와 정확히 같지 않으면(오염으로 늘어났든, 콘텐츠 상태 변경으로 줄었든)
+# 조용히 일부만 내놓지 않고 즉시 에러로 출제를 중단한다.
+PILOT_MANIFEST_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "data" / "import" / "schema_reading_phase18_quiz_pilot_rows_20260926.json"
+)
+EXPECTED_PILOT_ITEM_COUNT = 40
+
+
+class PilotBatchIntegrityError(Exception):
+    """파일럿 배치가 기대한 40건과 정확히 일치하지 않을 때(오염/누락) 발생시키는
+    내부 예외 - 호출부(API 엔드포인트)에서 HTTPException(500)으로 변환한다."""
+
+    def __init__(self, message: str, *, missing: set[str], unexpected: set[str]):
+        super().__init__(message)
+        self.missing = missing
+        self.unexpected = unexpected
+
+
+_pilot_manifest_rows_cache: list[dict] | None = None
+
+
+def _load_pilot_manifest_rows() -> list[dict]:
+    """data/import/schema_reading_phase18_quiz_pilot_rows_20260926.json에서 phase18이
+    실제로 적재한 정확한 40행을 읽어 캐싱한다. 코드에 item_id를 직접 타이핑해 넣지
+    않고 phase18 산출물 파일 자체를 근거로 삼는다 - 매 프로세스당 한 번만 읽고
+    (재요청마다 파일 재파싱하지 않음), 파일이 없거나 형식이 예상과 다르면(40개가
+    아니거나 item_id 중복 등) 즉시 예외를 던져 호출부가 조용히 빈/일부 파일럿을
+    내놓지 않게 한다."""
+    global _pilot_manifest_rows_cache
+    if _pilot_manifest_rows_cache is not None:
+        return _pilot_manifest_rows_cache
+
+    if not PILOT_MANIFEST_PATH.exists():
+        raise PilotBatchIntegrityError(
+            f"파일럿 배치 매니페스트 파일이 없습니다: {PILOT_MANIFEST_PATH}",
+            missing=set(), unexpected=set(),
+        )
+    try:
+        rows = json.loads(PILOT_MANIFEST_PATH.read_text(encoding="utf-8"))
+        ids = [row["item_id"] for row in rows]
+    except Exception as exc:  # noqa: BLE001 - 어떤 파싱 실패든 즉시 큰 에러로 표면화
+        raise PilotBatchIntegrityError(
+            f"파일럿 배치 매니페스트 파일을 읽을 수 없습니다: {PILOT_MANIFEST_PATH} ({exc})",
+            missing=set(), unexpected=set(),
+        ) from exc
+
+    if len(ids) != EXPECTED_PILOT_ITEM_COUNT or len(set(ids)) != len(ids):
+        raise PilotBatchIntegrityError(
+            f"파일럿 배치 매니페스트가 예상({EXPECTED_PILOT_ITEM_COUNT}건, 중복 0)과 "
+            f"다릅니다(실제 {len(ids)}건, distinct {len(set(ids))}건): {PILOT_MANIFEST_PATH}",
+            missing=set(), unexpected=set(),
+        )
+
+    _pilot_manifest_rows_cache = rows
+    return _pilot_manifest_rows_cache
+
+
+def _expected_pilot_item_ids(item_types: list[str] | None) -> frozenset[str]:
+    """요청된 item_types에 맞춰 필터링한 "정확히 이 배치여야 하는" item_id
+    화이트리스트. item_types가 None이면 매니페스트 40건 전부."""
+    rows = _load_pilot_manifest_rows()
+    if item_types:
+        allowed_types = set(item_types)
+        rows = [r for r in rows if r["item_type"] in allowed_types]
+    return frozenset(r["item_id"] for r in rows)
 
 _CHOSEONG_LIST = list("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ")
 
@@ -281,7 +356,16 @@ def _select_pilot_item_ids(db: Session, item_types: list[str] | None) -> list[st
          일치 - reports/schema_reading_phase13_l4_core50_apply_20260925.md,
          schema_reading_phase14_l5_core_apply_20260925.md).
     2)/3) 중 하나라도 예상과 다르면 조용히 넘어가지 않고 경고 로그를 남긴 뒤 그
-    문항을 후보에서 제외한다."""
+    문항을 후보에서 제외한다.
+
+    phase20 오염 방지 보강(신규): 위 3중 검증만으로는 나중에 다른 작업이 같은
+    PILOT_SOURCE_VERSION 값을 가진 새 문항을 만들면 자동으로 이 풀에 섞여
+    들어온다(로컬 DB 사본으로 실제 재현됨). 그래서 3중 검증을 통과한 결과를
+    phase18 매니페스트(_expected_pilot_item_ids)의 고정 화이트리스트와 교집합해
+    오염원을 제거하고, 그 결과가 화이트리스트와 정확히 일치하지 않으면(오염이
+    남아있거나, 반대로 콘텐츠 상태 drift로 원래 40건 중 일부가 3중 검증에서
+    빠졌거나) PilotBatchIntegrityError를 던져 조용히 일부만 내놓지 않고 즉시
+    막는다."""
     query = db.query(VocabularyMultiformatItem).filter(
         VocabularyMultiformatItem.source_version == PILOT_SOURCE_VERSION,
         VocabularyMultiformatItem.is_active == 1,
@@ -335,7 +419,32 @@ def _select_pilot_item_ids(db: Session, item_types: list[str] | None) -> list[st
             continue
 
         valid_ids.append(item.item_id)
-    return valid_ids
+
+    # ---- phase20 오염 방지 보강: 고정 화이트리스트와 교집합 + 정확 일치 검증 ----
+    expected_ids = _expected_pilot_item_ids(item_types)
+    filtered_ids = [i for i in valid_ids if i in expected_ids]
+    contaminants = set(valid_ids) - expected_ids
+    if contaminants:
+        logger.warning(
+            "[pilot] 화이트리스트(phase18 매니페스트)에 없는 item_id %d건이 3중 검증을 "
+            "통과해 필터링됨(오염 의심): %s", len(contaminants), sorted(contaminants),
+        )
+
+    missing = expected_ids - set(filtered_ids)
+    if missing:
+        logger.error(
+            "[pilot] 화이트리스트 기준 기대 item_id %d건 중 %d건이 3중 검증을 통과하지 "
+            "못했습니다(콘텐츠 상태 drift 등으로 추정) - 출제를 중단합니다: %s",
+            len(expected_ids), len(missing), sorted(missing),
+        )
+        raise PilotBatchIntegrityError(
+            f"파일럿 배치 무결성 검증 실패 - 기대한 {len(expected_ids)}건 중 "
+            f"{len(missing)}건이 후보에서 빠졌습니다({sorted(missing)}). "
+            f"오염 의심 항목: {sorted(contaminants) if contaminants else '없음'}",
+            missing=missing, unexpected=contaminants,
+        )
+
+    return filtered_ids
 
 
 def _pilot_availability(db: Session, item_types: list[str] | None) -> dict:
@@ -485,6 +594,17 @@ def _apply_noindex(response: Response) -> None:
         response.headers[k] = v
 
 
+def _pilot_integrity_http_error(exc: "PilotBatchIntegrityError") -> HTTPException:
+    """PilotBatchIntegrityError를 API 응답용 500으로 변환 - 조용히 일부만
+    내놓지 않고 명확한 에러 코드/사유를 노출한다(phase20 오염 방지 보강)."""
+    return HTTPException(status_code=500, detail={
+        "code": "PILOT_BATCH_INTEGRITY_ERROR",
+        "message": str(exc),
+        "missing": sorted(exc.missing),
+        "unexpected": sorted(exc.unexpected),
+    })
+
+
 @api_router.get("/availability")
 def get_availability(
     response: Response,
@@ -541,7 +661,10 @@ def get_pilot_availability(
     if unknown:
         raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
     types = [t for t in item_type if t != "CROSSWORD"] or None
-    return _pilot_availability(db, types)
+    try:
+        return _pilot_availability(db, types)
+    except PilotBatchIntegrityError as exc:
+        raise _pilot_integrity_http_error(exc) from exc
 
 
 def _create_pilot_session(body: CreateSessionBody, db: Session, admin: str) -> dict:
@@ -560,7 +683,10 @@ def _create_pilot_session(body: CreateSessionBody, db: Session, admin: str) -> d
     if body.question_count < 1 or body.question_count > 50:
         raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
 
-    candidate_ids = _select_pilot_item_ids(db, item_types)
+    try:
+        candidate_ids = _select_pilot_item_ids(db, item_types)
+    except PilotBatchIntegrityError as exc:
+        raise _pilot_integrity_http_error(exc) from exc
     candidate_count = len(candidate_ids)
     if candidate_count < body.question_count:
         raise HTTPException(status_code=409, detail={
@@ -961,7 +1087,15 @@ def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), a
             level_disabled.append(lv)
     # L4·L5 파일럿(phase18) 체크박스를 비활성화할지 - 3중 검증 통과 후보가 0건이면
     # 비활성화한다(일반 출제 가용량 계산과는 완전히 별도 경로, _pilot_availability 재사용).
-    pilot_available = _pilot_availability(db, None)["available_items"] > 0
+    # phase20: 배치 무결성 오류(오염/누락)가 나도 화면 전체(일반 출제 포함)가 깨지면
+    # 안 되므로 여기서는 체크박스만 비활성화하고 넘어간다 - 실제 조회/세션 생성
+    # API(get_pilot_availability/_create_pilot_session)는 그대로 500으로 명확히 막는다.
+    try:
+        pilot_available = _pilot_availability(db, None)["available_items"] > 0
+    except PilotBatchIntegrityError as exc:
+        logger.error("[pilot] play_page 렌더링 중 배치 무결성 오류로 파일럿 체크박스를 "
+                     "비활성화합니다: %s", exc)
+        pilot_available = False
     return templates.TemplateResponse("vocabulary_quiz/multiformat_play.html", {
         "request": request, "item_types": ITEM_TYPES, "default_question_count": DEFAULT_QUESTION_COUNT,
         "level_grade_labels": GRADE_LABELS, "level_disabled": set(level_disabled),
