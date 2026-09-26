@@ -99,7 +99,12 @@ def layout_hint_to_form(item: dict) -> tuple[dict, str, list[str]]:
         return {"form": "pledge", "n": n}, "boxed_form->pledge", []
 
     if shape == "speech_bubble":
-        starter = item.get("excerpt_text") or ""
+        starter = (item.get("excerpt_text") or "").strip()
+        if not starter:
+            # 시작말이 없으면 말풍선만 빈 채로 붙는다(2026-09-26 야옹아 7쪽
+            # 검수에서 발견) - speech 위젯은 starter가 있을 때만 의미가 있어
+            # 없으면 single로 내린다(사용자 지시).
+            return {"form": "single", "kind": "long"}, "speech_bubble(시작말 없음)->single", []
         return {"form": "speech", "starter": starter}, "speech_bubble->speech", []
 
     if shape == "ruled_lines":
