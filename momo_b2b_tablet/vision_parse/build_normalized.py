@@ -46,17 +46,58 @@ def _first_page_num(raw: str | None) -> int | None:
     return int(m.group()) if m else None
 
 
+_BARE_NUMBER_RE = re.compile(r"^\(?\s*\d+\s*\)?$")
+_ROW_LABEL_VALUES = {"뜻", "문장"}
+
+
 def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab], list[Flag]]:
     """vocab 타입 vision_item 1건(표에 여러 단어를 묶어 옴) -> 단어별
     NormalizedVocab 여러 개. 표가 없으면(선잇기류로 정의 목록을 못 뽑은
     경우 - VISION_LAYOUT_MAPPING_REPORT.md 5절) blanks(단어만)로 채우고
-    정의 없음으로 sup 플래그를 남긴다(기존 정규화와 같은 관례)."""
+    정의 없음으로 sup 플래그를 남긴다(기존 정규화와 같은 관례).
+
+    2026-09-26 검수 발견 - 표 형태가 문서마다 다르다:
+    - "단어/뜻/문장" 3열(같은 단어가 "뜻" 행·"문장" 행 두 줄로 나뉘어 옴 -
+      실측: 긴긴밤) - 그대로 두면 같은 단어가 두 번, 정의 자리에 "뜻"/"문장"
+      이라는 라벨 글자만 들어가는 버그였다. "뜻" 행의 3번째 칸을 실제 정의로
+      쓰고 "문장"(학생이 채울 예문 빈칸) 행은 버린다.
+    - "각 문장에 들어갈 낱말을 <보기>에서 고르세요"류 빈칸채우기 문항을
+      vision이 문장/보기 내용 없이 "(1)","(2)","(3)" 번호표만 blanks로
+      뽑아 오는 경우(52/305건 실측) - 그대로 두면 번호표 자체가 가짜
+      "낱말"이 되어 답란만 3개 더 늘어나 보였다(야옹아 2쪽 "답란 3칸
+      중복" 신고 원인). 번호표만 있으면 가짜 단어를 만들지 않고 통째로
+      버린 뒤 flag만 남긴다.
+    """
     table = _parse_json_field(item.get("table_json"), None)
     blanks = _parse_json_field(item.get("blanks_json"), [])
     out: list[NormalizedVocab] = []
 
     if table and table.get("rows"):
-        for i, row in enumerate(table["rows"]):
+        rows = table["rows"]
+        if any(len(r) > 2 and str(r[1]).strip() in _ROW_LABEL_VALUES for r in rows if r):
+            # "단어/뜻|문장/내용" 패턴 - 단어별로 "뜻" 행만 취한다.
+            seen: dict[str, str | None] = {}
+            for r in rows:
+                if not r:
+                    continue
+                word = str(r[0]).strip()
+                label = str(r[1]).strip() if len(r) > 1 else ""
+                content = str(r[2]).strip() if len(r) > 2 and r[2] else ""
+                if label == "뜻":
+                    seen[word] = content or None
+                elif word not in seen:
+                    seen[word] = None  # "문장" 행만 있고 "뜻" 행이 아직 없으면 자리만 잡아둠
+            for i, (word, definition) in enumerate(seen.items()):
+                word, _ = repair_text(word)
+                v = NormalizedVocab(order_no=order_start + i, word=word or "", definition=definition,
+                                     example_sentence=None, book_page=_first_page_num(item.get("page_number")))
+                if not definition:
+                    v.flags.append(Flag(kind="sup", order_no=v.order_no,
+                                         message=f"'{word}' 뜻풀이 누락(vision) - 초등 어휘 DB 조회 또는 LLM 보충 필요"))
+                out.append(v)
+            return out, []
+
+        for i, row in enumerate(rows):
             word = str(row[0]) if row else ""
             definition = str(row[1]).strip() if len(row) > 1 and row[1] else None
             word, _ = repair_text(word)
@@ -67,6 +108,12 @@ def _vocab_from_item(item: dict, order_start: int) -> tuple[list[NormalizedVocab
                                      message=f"'{word}' 뜻풀이 누락(vision) - 초등 어휘 DB 조회 또는 LLM 보충 필요"))
             out.append(v)
     elif blanks:
+        if all(_BARE_NUMBER_RE.match(str(b).strip()) for b in blanks):
+            # 번호표만 뽑혀 옴(빈칸채우기형 - 문장·보기 내용을 못 뽑음) - 가짜
+            # "낱말" 카드를 만드는 대신 통째로 버리고 문서 단위 flag만 남긴다.
+            return [], [Flag(kind="sup",
+                              message="빈칸채우기형 어휘 문항의 문장·보기 내용을 추출하지 못해 "
+                                      "번호표만 남음(vision) - 재추출 또는 수동 입력 필요")]
         for i, word in enumerate(blanks):
             word, _ = repair_text(str(word))
             v = NormalizedVocab(order_no=order_start + i, word=word or "", definition=None,
@@ -191,9 +238,10 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
             continue
 
         if item_type == "vocab":
-            new_vocab, _ = _vocab_from_item(item, vocab_counter)
+            new_vocab, item_flags = _vocab_from_item(item, vocab_counter)
             vocab.extend(new_vocab)
             vocab_counter += len(new_vocab)
+            doc_flags.extend(item_flags)
             continue
 
         if item_type == "ox":
