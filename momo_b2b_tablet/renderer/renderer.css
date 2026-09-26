@@ -96,6 +96,8 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
   outline:.3mm dashed color-mix(in srgb,var(--main) 45%,transparent);outline-offset:-.3mm;padding:3mm 4mm;overflow:hidden;text-align:center}
 .review .slot{overflow-y:auto;justify-content:flex-start}
 .slot[hidden]{display:none}
+/* 2026-09-26: 원본 이미지 최소 높이 확보 후에도 칸이 넘치면 검수자에게 표시 */
+.alloc-overflow{outline:1.5px dashed #d33;outline-offset:-1.5px}
 .slot .sl-t{font:700 11px/1.3 var(--sans);color:var(--main-deep)}
 .slot .sl-r{font:500 9.5px/1 var(--sans);color:var(--point-text)}
 .slot .sl-p{font:400 8.5px/1.45 var(--sans);color:#4a4840;max-width:92%;word-break:keep-all;display:none;text-align:left;background:rgba(255,255,255,.8);padding:1.6mm 2mm;border-radius:.8mm}

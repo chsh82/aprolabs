@@ -478,12 +478,18 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
   /* ============ layout & paging ============ */
   let cur = 0, scale = 1;
   const stage = document.getElementById("stage"), scaler = document.getElementById("scaler");
-  const SLOT_MIN = 30 * MM, GAP = 2.6 * MM;
+  const SLOT_MIN = 30 * MM, IMG_SLOT_MIN = 25 * MM, GAP = 2.6 * MM;
   const RATIOS = [["1:1", 1], ["4:3", 4 / 3], ["3:4", 3 / 4], ["3:2", 3 / 2], ["2:1", 2]];
   function allocate() {
     document.querySelectorAll("[data-alloc]").forEach(col => {
       const inks = [...col.querySelectorAll(".ink[data-max]")].filter(el => el.parentElement.closest("[data-alloc]") === col), slot = [...col.children].find(c => c.classList.contains("slot"));
-      if (slot) slot.hidden = true;
+      // 2026-09-26 사용자 지시: 원본 교재 이미지(slot.img, class="slot img")는
+      // "남으면 넣는" 생성 자리와 달리 그 페이지 내용의 일부라 최소 높이를
+      // 먼저 확보한다 - 답란을 최대로 키운 뒤 남는 공간에서만 보여주다 보니
+      // 원본 이미지가 자주 숨겨지던 문제(야옹아 12쪽 동물등록증 등)를 고침.
+      // 생성 자리(scene/avoid만 있는 자리표시자)는 기존 그대로 "남으면 연다".
+      const isRealImage = slot && slot.classList.contains("img");
+      if (slot) { slot.hidden = !isRealImage; slot.style.minHeight = isRealImage ? IMG_SLOT_MIN + "px" : ""; }
       const shrink = col.classList.contains("atable"); if (shrink) col.style.flex = "";
       inks.forEach(el => { el._n = +el.dataset.min; el.style.height = (el._n * LINE_PX) + "px"; });
       const used = () => { const kids = [...col.children].filter(k => !k.hidden); const last = kids[kids.length - 1]; if (!last) return 0; return last.offsetTop + last.offsetHeight - col.offsetTop; };
@@ -500,11 +506,20 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
         c._n++; c.style.height = (c._n * LINE_PX) + "px"; free -= LINE_PX;
       }
       if (shrink) col.style.flex = "0 0 auto";
-      if (slot && free - GAP >= SLOT_MIN) {
+      if (slot && !isRealImage && free - GAP >= SLOT_MIN) {
         slot.hidden = false;
         const r = slot.offsetWidth / slot.offsetHeight;
         const best = RATIOS.reduce((a, b) => Math.abs(Math.log(b[1] / r)) < Math.abs(Math.log(a[1] / r)) ? b : a);
         if (slot.querySelector(".sl-r")) slot.querySelector(".sl-r").textContent = `${Math.round(slot.offsetWidth / MM)} × ${Math.round(slot.offsetHeight / MM)}mm, ${best[0]} 비율로 생성`;
+      }
+      // 원본 이미지 최소 높이 + 답란 최소 줄 수를 확보하고도 칸을 넘치면(페이지
+      // 분할까지는 이번 단계에서 자동화하지 않음) 검수자가 알아볼 수 있게
+      // 표시만 남긴다(사용자 지시 "그래도 안 되면 flag를 남기세요").
+      if (isRealImage && col.scrollHeight - col.clientHeight > 1) {
+        col.classList.add("alloc-overflow");
+        console.warn("[alloc] 원본 이미지 최소 높이를 확보하니 칸이 넘칩니다 - 페이지 분할 검토 필요", col);
+      } else {
+        col.classList.remove("alloc-overflow");
       }
     });
   }
