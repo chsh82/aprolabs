@@ -1102,14 +1102,25 @@ def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), a
     # phase20: 배치 무결성 오류(오염/누락)가 나도 화면 전체(일반 출제 포함)가 깨지면
     # 안 되므로 여기서는 체크박스만 비활성화하고 넘어간다 - 실제 조회/세션 생성
     # API(get_pilot_availability/_create_pilot_session)는 그대로 500으로 명확히 막는다.
+    # phase22: 화면에서도 "후보가 그냥 0건"(정상적인 데이터 상태)과 "배치 무결성 오류"
+    # (오염/누락 - 실제 조치가 필요한 배포·데이터 문제)를 구분해서 보여준다 - 이전엔
+    # 둘 다 똑같이 "체크박스 비활성화"로만 보여 관리자가 원인을 알 수 없었다.
+    pilot_unavailable_reason = None
     try:
         pilot_available = _pilot_availability(db, None)["available_items"] > 0
+        if not pilot_available:
+            pilot_unavailable_reason = "현재 조건을 만족하는 파일럿 문항이 없습니다."
     except PilotBatchIntegrityError as exc:
         logger.error("[pilot] play_page 렌더링 중 배치 무결성 오류로 파일럿 체크박스를 "
                      "비활성화합니다: %s", exc)
         pilot_available = False
+        pilot_unavailable_reason = (
+            "파일럿 배치 무결성 오류로 일시 중단되었습니다(매니페스트 파일 누락 또는 "
+            "예상 40건과 불일치). 관리자 작업 문제가 아니라 배포·데이터 점검이 필요한 "
+            "상태입니다 - 서버 로그의 [pilot] 태그를 확인하거나 개발 담당자에게 문의하세요."
+        )
     return templates.TemplateResponse("vocabulary_quiz/multiformat_play.html", {
         "request": request, "item_types": ITEM_TYPES, "default_question_count": DEFAULT_QUESTION_COUNT,
         "level_grade_labels": GRADE_LABELS, "level_disabled": set(level_disabled),
-        "pilot_available": pilot_available,
+        "pilot_available": pilot_available, "pilot_unavailable_reason": pilot_unavailable_reason,
     }, headers=NOINDEX_HEADERS)

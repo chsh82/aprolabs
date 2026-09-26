@@ -9,11 +9,18 @@
   </div>
 
   <div id="setup-screen">
-    <label class="flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer mb-4 bg-amber-50 border-amber-300"
-           {% if not pilot_available %}title="현재 파일럿 후보가 0건입니다"{% endif %}>
+    <label class="flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer mb-1 bg-amber-50 border-amber-300"
+           {% if pilot_unavailable_reason %}title="{{ pilot_unavailable_reason }}"{% endif %}>
       <input type="checkbox" id="pilot-mode-checkbox" {% if not pilot_available %}disabled{% endif %}>
-      <span>L4·L5 파일럿 문항만 출제 (phase18, 관리자 검토 전용{% if not pilot_available %} — 후보 없음{% endif %})</span>
+      <span>L4·L5 파일럿 문항만 출제 (phase18, 관리자 검토 전용{% if not pilot_available %} — 비활성{% endif %})</span>
     </label>
+    {% if pilot_unavailable_reason %}
+    <p class="text-xs {% if '무결성' in pilot_unavailable_reason %}text-red-600{% else %}text-gray-500{% endif %} mb-4">
+      {{ pilot_unavailable_reason }}
+    </p>
+    {% else %}
+    <div class="mb-4"></div>
+    {% endif %}
 
     <div id="level-scope-fields">
     <p class="text-sm font-semibold text-gray-700 mb-2">출제 범위 (관리자 전용)</p>
