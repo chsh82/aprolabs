@@ -129,9 +129,17 @@ PILOT_SOURCE_VERSION = "schema_reading_l4l5_pilot_dryrun_v1"
 # (기존 검증은 그대로 유지 - 빼지 않고 위에 얹는다). 교집합 결과가 화이트리스트
 # 40개와 정확히 같지 않으면(오염으로 늘어났든, 콘텐츠 상태 변경으로 줄었든)
 # 조용히 일부만 내놓지 않고 즉시 에러로 출제를 중단한다.
+#
+# phase21 보강: 이 매니페스트는 원래 data/import/(git으로 버전 관리되지 않는
+# 작업용 산출물 디렉터리)에만 있었다 - 서버에 우연히 남아있는 파일 하나에
+# 의존하던 상태라, 다음 배포에서 그 파일이 없으면 파일럿 기능 전체가 조용히
+# 깨질 위험이 있었다(phase21에서 실제로 로컬-서버 literacy.db가 동기화 안
+# 돼 있던 걸 발견하면서 같은 종류의 문제로 지적됨). data/vocab/(app 코드가
+# 참조하는 스키마 파일 등을 두는, 항상 git으로 버전 관리되는 디렉터리 -
+# vocabulary_quiz_schema.sql과 같은 자리)로 옮겨 git 커밋 대상으로 고정한다.
 PILOT_MANIFEST_PATH = (
     Path(__file__).resolve().parents[3]
-    / "data" / "import" / "schema_reading_phase18_quiz_pilot_rows_20260926.json"
+    / "data" / "vocab" / "pilot_l4l5_manifest_v1.json"
 )
 EXPECTED_PILOT_ITEM_COUNT = 40
 
@@ -150,19 +158,23 @@ _pilot_manifest_rows_cache: list[dict] | None = None
 
 
 def _load_pilot_manifest_rows() -> list[dict]:
-    """data/import/schema_reading_phase18_quiz_pilot_rows_20260926.json에서 phase18이
-    실제로 적재한 정확한 40행을 읽어 캐싱한다. 코드에 item_id를 직접 타이핑해 넣지
-    않고 phase18 산출물 파일 자체를 근거로 삼는다 - 매 프로세스당 한 번만 읽고
-    (재요청마다 파일 재파싱하지 않음), 파일이 없거나 형식이 예상과 다르면(40개가
-    아니거나 item_id 중복 등) 즉시 예외를 던져 호출부가 조용히 빈/일부 파일럿을
-    내놓지 않게 한다."""
+    """data/vocab/pilot_l4l5_manifest_v1.json(git 버전 관리 대상, phase21부터)에서
+    phase18이 실제로 적재한 정확한 40행을 읽어 캐싱한다. 코드에 item_id를 직접
+    타이핑해 넣지 않고 phase18 산출물 파일 자체를 근거로 삼는다 - 매 프로세스당
+    한 번만 읽고(재요청마다 파일 재파싱하지 않음), 파일이 없거나 형식이 예상과
+    다르면(40개가 아니거나 item_id 중복 등) 즉시 예외를 던져 호출부가 조용히
+    빈/일부 파일럿을 내놓지 않게 한다."""
     global _pilot_manifest_rows_cache
     if _pilot_manifest_rows_cache is not None:
         return _pilot_manifest_rows_cache
 
     if not PILOT_MANIFEST_PATH.exists():
         raise PilotBatchIntegrityError(
-            f"파일럿 배치 매니페스트 파일이 없습니다: {PILOT_MANIFEST_PATH}",
+            f"[배포 오류] 파일럿 배치 매니페스트 파일이 서버에 없습니다: {PILOT_MANIFEST_PATH} "
+            "- 이 파일은 git으로 버전 관리되므로(data/vocab/), 정상 배포됐다면 항상 "
+            "존재해야 합니다. 관리자 작업 문제가 아니라 배포 문제입니다 - 서버에서 "
+            "`git status`/`git log -- data/vocab/pilot_l4l5_manifest_v1.json`으로 이 파일이 "
+            "실제로 커밋·배포됐는지 확인하세요.",
             missing=set(), unexpected=set(),
         )
     try:
