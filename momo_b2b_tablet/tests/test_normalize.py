@@ -102,9 +102,19 @@ def run() -> bool:
     check(all(q.question_text.strip() for q in l9_o5), "L9: 5-1/5-2 둘 다 질문 텍스트가 실제로 채워짐")
     check(all(q.excerpt_text for q in l9_o5), "L9: 5-1/5-2 둘 다 원래 order_no=5의 제시문을 공유")
 
-    # ---------- L9: essay writing_guide에 STEP1이 섞인 것 split 플래그 ----------
-    check(l9.essay is not None and any("STEP1" in f.message for f in l9.essay.flags),
-          "L9: essay writing_guide의 STEP1 혼입이 split 플래그로 잡힘")
+    # ---------- L9: essay writing_guide에 섞였던 STEP1/STEP2 소질문이 분리·복원됨 ----------
+    # (2026-09-26 검수 지시로 "규칙으로 못 쪼갠다"던 기존 방침을 바꿔 실제로 분리하게 함 -
+    # 6건 실측 결과 전부 같은 패턴이라 안전하게 규칙화할 수 있었음)
+    check(l9.essay is not None and any(f.kind == "split" for f in l9.essay.flags),
+          "L9: essay writing_guide의 STEP 소질문 분리가 split 플래그로 기록됨")
+    check(l9.essay is not None and "STEP1" not in (l9.essay.lead or ""),
+          "L9: essay.lead에서 STEP1 질문이 실제로 떨어져 나감")
+    check(l9.essay is not None and len(l9.essay.outline) == 2
+          and "STEP1" not in l9.essay.outline[0].question_text
+          and "STEP2" not in l9.essay.outline[1].question_text,
+          f"L9: STEP1/STEP2 소질문 2건이 outline으로 복원됨(번호 접두어는 뗌, 실제 {len(l9.essay.outline)}건)")
+    check(l9.essay is not None and not l9.essay.main_topic.startswith("STEP"),
+          "L9: main_topic 앞의 STEP 번호가 떨어짐")
 
     # ---------- 이미지 저해상도 - SPEC §4가 명시한 정확한 사례(열하일기 204x299) ----------
     l9_lowres = [f for f in l9.all_flags() if f.kind == "lowres" and "204x299" in f.message]
