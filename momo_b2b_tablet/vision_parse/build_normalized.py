@@ -29,6 +29,7 @@ from vision_parse.layout_map import layout_hint_to_form  # noqa: E402
 
 _PAGE_NUM_RE = re.compile(r"\d+")
 _LEADING_NUM_RE = re.compile(r"^\s*\d+(?:-\d+)?[.\)]\s*")
+_SUBQ_MARKER_RE = re.compile(r"^\s*(\d+)\)")
 
 
 def _strip_leading_number(text: str) -> str:
@@ -346,6 +347,15 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
     # (자동화는 검증 가능한 초안까지만 - SPEC §1).
     held_excerpt_item: dict | None = None
 
+    # "1) ... / 2) ..." 하위 물음 묶기(2026-09-26 열하일기 5·6번 검수에서
+    # 발견): 원본이 한 문항 안에 번호 붙은 소질문 여러 개를 두는데(제시문·
+    # 참고표는 공유), vision은 페이지 항목 순서로 매기다 보니 이게 서로
+    # 다른 독립 문항(예: 5번/6번)처럼 갈라져 나온다. 같은 쪽에서 "N)" 다음에
+    # 바로 "N+1)"이 이어지면 소질문으로 보고 N-1/N-2로 묶는다(제시문은
+    # 첫 소질문 것을 공유, 참고표는 첫 소질문에만 - 기존 hanja glossary
+    # 첫 문항 부착 관례와 일치).
+    last_subq: dict | None = None
+
     def _drop_orphan_excerpt(reason: str) -> None:
         # category="page_split"(2026-09-26 사용자 지시) - placeholder와 구분해
         # 검수 화면 플래그 큐 상단에 별도로 모이게 한다(review.js FLAG_PRIORITY).
@@ -424,7 +434,8 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
             # 중간에 있는 개방형 질문이다 - discussion_qa와 똑같이 qa 페이지로 만든다
             # (실제로 이 케이스가 없으면 discussion_qa 분기와 동일하게 동작).
             excerpt_text = item.get("excerpt_text")
-            question_text = _strip_leading_number(item.get("question_text") or "")
+            raw_question_text = item.get("question_text") or ""
+            question_text = _strip_leading_number(raw_question_text)
             repair_flags: list[Flag] = []
             if excerpt_text:
                 excerpt_text, ef = repair_text(excerpt_text, qa_counter)
@@ -434,6 +445,7 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
                 repair_flags.extend(qf)
 
             if held_excerpt_item is not None:
+                last_subq = None  # 페이지 경계 병합 경로와는 서로 무관 - 섞이지 않게 초기화
                 if _is_blank(question_text) or not _is_blank(excerpt_text):
                     # 다음 항목도 이미 자기 excerpt가 있거나(안전하게 못 합침) 질문이
                     # 또 비어 있음 - 들고 있던 제시문은 버린다.
@@ -492,6 +504,36 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
                 ref_table = pending_ref
                 pending_ref = None
 
+            subq_m = _SUBQ_MARKER_RE.match(raw_question_text)
+            is_subq_continuation = (
+                last_subq is not None and subq_m is not None
+                and int(subq_m.group(1)) == last_subq["marker"] + 1
+                and item.get("page_no") == last_subq["page_no"]
+            )
+            if is_subq_continuation:
+                # "1) .../2) ..." 짝을 찾음 - 첫 소질문(last_subq["qa"])을 N-1로
+                # 바꾸고 이번 항목을 N-2로 붙인다. 같은 order_no를 재사용하므로
+                # qa_counter는 안 늘린다. excerpt가 비어 있으면(보통 그렇다 -
+                # 소질문끼리 제시문을 공유) 첫 소질문 것을 그대로 물려준다.
+                first_qa = last_subq["qa"]
+                base_no = first_qa.order_no
+                if first_qa.order_label == str(base_no):
+                    first_qa.order_label = f"{base_no}-1"
+                q = NormalizedQA(
+                    order_no=base_no, order_label=f"{base_no}-2", reading_type=item.get("reading_type"),
+                    ui_type="text_long",
+                    excerpt_text=excerpt_text if not _is_blank(excerpt_text) else first_qa.excerpt_text,
+                    excerpt_page=_first_page_num(item.get("page_number")) or first_qa.excerpt_page,
+                    question_text=question_text or "", model_answer=None, source_page=item.get("page_no"),
+                    ui_config={}, flags=flags, form_override=fields, ref_table=ref_table,
+                )
+                q.flags.append(Flag(kind="derived", order_no=base_no,
+                                     message=f"원본에서 번호 붙은 소질문({base_no}-1/{base_no}-2)이었던 것을 "
+                                             f"묶음 - 검수에서 확인 필요"))
+                qa.append(q)
+                last_subq = None
+                continue
+
             q = NormalizedQA(
                 order_no=qa_counter, order_label=str(qa_counter), reading_type=item.get("reading_type"),
                 ui_type="text_long", excerpt_text=excerpt_text, excerpt_page=_first_page_num(item.get("page_number")),
@@ -499,6 +541,8 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
                 ui_config={}, flags=flags, form_override=fields, ref_table=ref_table,
             )
             qa.append(q)
+            last_subq = ({"marker": int(subq_m.group(1)), "page_no": item.get("page_no"), "qa": q}
+                         if subq_m else None)
             qa_counter += 1
             continue
 
