@@ -50,17 +50,26 @@ def reading_type_label(reading_type: str | None) -> tuple[str, bool]:
 # ---------- 3.4 STEP2: 제시문 길이/구조에 따른 페이지 유형 ----------
 EXCERPT_BAND_MAX = 120   # 미만 -> qaband
 EXCERPT_WIDE_MIN = 250   # 이상 -> qa, ratio 3:2
+LONG_QUESTION_MIN = 80   # 2026-09-26: 질문이 이 이상이면 3층 구조(qaband+wide) 강제
 
 
-def excerpt_page_type(excerpt_text: str | None, has_ref_table: bool) -> tuple[str, dict]:
+def excerpt_page_type(excerpt_text: str | None, has_ref_table: bool, question_len: int = 0) -> tuple[str, dict]:
     """(page type, 추가 page 필드) - SPEC §3.4 "제시문 120자 미만 -> qaband(위 띠).
     긴 제시문(250자 이상) -> qa 3:2"를 그대로 규칙화하고, 중간 길이는 qa 1:1로 둔다.
     excerpt_text가 비어 있으면(중등 제시문이 질문 안에 아직 안 갈라진 경우, ①단계의
     문서화된 경계) 별도 excerpt 상자를 만들 수 없어 "solo"로 내려간다 - 이건 이
-    함수가 아니라 호출자가 판단한다(제시문 유무는 이 함수 책임 밖)."""
+    함수가 아니라 호출자가 판단한다(제시문 유무는 이 함수 책임 밖).
+
+    question_len(2026-09-26 사용자 지시 [3층 구조]): 질문 자체가 길면(80자 이상)
+    제시문 길이와 무관하게 qaband로 강제한다 - 질문+답란을 반쪽 칸에 욱여넣으면
+    답답해 보인다는 지적(젊은 예술가의 초상 8·19쪽) - 위에서 아래로 제시문(띠)->
+    질문(전체 폭)->답란(전체 폭) 3층 구조가 더 낫다. has_ref_table이 있으면 qaref가
+    더 우선(참고표가 있는 문항은 이 규칙보다 특수하다)."""
     n = len(excerpt_text or "")
     if has_ref_table:
         return "qaref", {}
+    if question_len >= LONG_QUESTION_MIN:
+        return "qaband", {}
     if n < EXCERPT_BAND_MAX:
         return "qaband", {}
     if n >= EXCERPT_WIDE_MIN:

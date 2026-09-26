@@ -239,7 +239,12 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       const ex = `${contNote}<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}<span class="cite">p.${p.excerpt.p}</span></div>`;
       inner = `<div class="cols" style="grid-template-columns:${p.ratio}"><div class="col">${ex}</div><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}${question(p.q)}</div></div>`;
     } else if (p.type === "essay") {
-      inner = `<div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col"><h3 class="topic${p.topic.length > 12 ? " long" : ""}">${esc(p.topic)}</h3>${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: "'나의 바다' 글쓰기 메모 3문항" })}</div></div>`;
+      // 2026-09-26 STEP3 첫 페이지 규칙(사용자 지시, 5종 공통) - 글쓰기 전체
+      // 질문(주제)은 단 구분 없이 페이지 중앙 상단에 큰 폰트로, 그 아래를
+      // 2단(도입·인용 / 이미지)으로 구성한다. slotHtml 두 번째 인자는 생성
+      // 지시문에 넣을 "질문 원문" 자리라 특정 책 제목을 박아 두면 안 되므로
+      // topic으로 일반화한다(예전엔 다른 책 제목이 하드코딩돼 있던 버그).
+      inner = `<h3 class="essay-topic">${esc(p.topic)}</h3><div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col">${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: p.topic })}</div></div>`;
     } else if (p.type === "bgline") {
       const rows = p.rows.map(row => `<div class="tl-row">${row.map((n, j) => `${j ? '<span class="tl-arr" aria-hidden="true"></span>' : ""}<div class="tl-n${n.hl ? " hl" : ""}${n.end ? " end" : ""}"><span class="y">${esc(n.y || "")}</span><span class="e">${esc(n.e)}</span>${n.nt ? `<span class="nt">${esc(n.nt)}</span>` : ""}</div>`).join("")}</div>`).join("");
       inner = `<p class="inst">${esc(p.inst)}</p><div class="tl">${rows}</div><div class="bg-bottom"><figure class="bg-fig"><img src="${IMG[p.image.key]}" alt="${esc(p.image.caption)}"><figcaption>${esc(p.image.caption)}</figcaption></figure><div class="term"><h4>${esc(p.term.title)}</h4><p>${esc(p.term.text)}</p></div></div>`;

@@ -10,6 +10,7 @@ from __future__ import annotations
 from normalize.models import Flag, NormalizedDoc, NormalizedQA
 
 from .rules import (
+    LONG_QUESTION_MIN,
     UNSUPPORTED_UI_TYPES,
     character_for_reading_type,
     excerpt_page_type,
@@ -186,7 +187,7 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
                                        f"분리되지 않음 - LLM 분리 후 qa/qaband/qaref로 전환 필요"))
             page = {"type": page_type, "step": "STEP 2", "title": "함께 들여다보기", "guide": guide, "q": q}
         else:
-            ptype, extra = excerpt_page_type(qa.excerpt_text, has_ref)
+            ptype, extra = excerpt_page_type(qa.excerpt_text, has_ref, question_len=len(qa.question_text or ""))
             page = {
                 "type": ptype, "step": "STEP 2", "title": "함께 들여다보기", "guide": guide, "q": q,
                 "excerpt": {"p": qa.excerpt_page, "text": [qa.excerpt_text]},
@@ -211,8 +212,12 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
         # 서약형으로 매핑된 문항이 원본 삽화가 있는데도 wide 처리되어 이미지가 통째로
         # 빠지는 회귀를 발견해 고침). L9 문항7처럼 애초에 그 쪽에 원본 삽화가 없는
         # 경우는 여전히 wide로 빠지므로 기존 골든과도 어긋나지 않는다.
+        # 2026-09-26: 질문 자체가 길면(LONG_QUESTION_MIN 이상, excerpt_page_type과
+        # 같은 기준) form이 table/compare가 아니어도 3층 구조를 위해 wide로 뺀다
+        # (젊은 예술가의 초상 8·19쪽 - 긴 단답형 질문이 반쪽 칸에 눌려 있던 문제).
+        is_long_question = len(qa.question_text or "") >= LONG_QUESTION_MIN
         original_img = _original_image_for_qa(doc, qa)
-        if page["type"] != "solo" and q_fields.get("form") in _WIDE_FORMS and not original_img:
+        if page["type"] != "solo" and (q_fields.get("form") in _WIDE_FORMS or is_long_question) and not original_img:
             page["wide"] = True
         else:
             # original_img가 있으면 _slot_for_qa가 어차피 같은 걸 찾아 슬롯을 채운다

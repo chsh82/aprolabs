@@ -209,7 +209,6 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .slot.img .sl-p{position:absolute;left:1.5mm;bottom:1.5mm;right:1.5mm}
 .vcard .sup{display:none;margin-left:1.4mm;font:700 8.5px/1 var(--sans);color:#7A5608;background:#F6E7C3;padding:.7mm 1.2mm;border-radius:.8mm;vertical-align:middle}
 .review .vcard .sup{display:inline-block}
-.topic.long{font-size:21px;line-height:1.35;word-break:keep-all}
 /* tone: lower elementary */
 .band-lower .excerpt{font-size:16.5px;line-height:1.8}
 .band-lower .qtext{font-size:18px;line-height:1.5}
@@ -254,7 +253,8 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .mq{display:flex;gap:2.2mm;align-items:flex-start;padding-top:.6mm}
 
 /* ---------- step 3 ---------- */
-.topic{font:700 30px/1.15 var(--cover);color:var(--main-deep);margin:1mm 0 0}
+/* 2026-09-26: STEP3 첫 페이지 - 단 구분 없이 중앙 상단, 큰 폰트(옛 .topic 대체) */
+.essay-topic{font:700 26px/1.3 var(--cover);color:var(--main-deep);text-align:center;word-break:keep-all;margin:1mm 0 4mm}
 .lead{font:400 11.5px/1.6 var(--sans);color:#3b3a33;word-break:keep-all;margin:0}
 .dialog{background:var(--paper);border-left:1.3mm solid var(--point);padding:3.4mm 4.2mm;font:500 13.5px/1.75 var(--serif);flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:1.6mm}
 .dialog p{margin:0}
