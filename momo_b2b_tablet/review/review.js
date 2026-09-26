@@ -374,6 +374,11 @@ async function fetchSourceText(orderNo) {
   catch (e) { return null; }
 }
 
+async function fetchSourceCandidates(page) {
+  try { return await api(`/api/editions/${editionId}/source-by-page/${page}`); }
+  catch (e) { return null; }
+}
+
 function renderInspector() {
   const body = $("#inspectorBody");
   const empty = $("#inspectorEmpty");
@@ -424,16 +429,35 @@ function renderQuestionInspector(body, page, idx, basePath) {
       patch([{ op: "replace", path: `${qPath}/t`, value: textArea.value }], { reason: "검수: 문항 텍스트 수정" });
     }
   });
-  fetchSourceText(orderNo).then(src => {
-    if (!src) { diffBox.textContent = "DB 원문을 찾을 수 없음(order_no 추정이 안 맞을 수 있음)."; return; }
-    diffBox.innerHTML = "";
-    diffBox.append(el("span", { class: "diff-label" }, "DB 원문(question_text)"));
-    diffBox.append(document.createTextNode(src.question_text || "(비어있음)"));
-    if (src.excerpt_text) {
-      diffBox.append(el("span", { class: "diff-label", style: "margin-top:6px" }, "DB 원문(excerpt_text)"));
-      diffBox.append(document.createTextNode(src.excerpt_text));
-    }
-  });
+  if (q.src_page != null) {
+    // 방식 B(비전) 문항 - q.id가 order_no와 대응하지 않으므로 페이지 단위
+    // 후보를 보여준다(2026-09-26, 야옹아 9쪽 오매칭 발견 후 수정).
+    fetchSourceCandidates(q.src_page).then(res => {
+      const candidates = res && res.candidates;
+      if (!candidates || !candidates.length) { diffBox.textContent = `DB 원문을 찾을 수 없음(원본 ${q.src_page}쪽에 해당 행 없음).`; return; }
+      diffBox.innerHTML = "";
+      diffBox.append(el("span", { class: "diff-label" }, `DB 원문 후보 - 원본 ${q.src_page}쪽 전체 행(${candidates.length}개, q.id는 이 번호들과 1:1 대응이 아님)`));
+      candidates.forEach(c => {
+        if (!c.question_text && !c.excerpt_text) return;
+        const row = el("div", { style: "margin-top:6px" });
+        row.append(el("span", { class: "diff-label" }, `order_no ${c.order_no}(${c.order_label || ""})`));
+        if (c.excerpt_text) row.append(document.createTextNode("제시문: " + c.excerpt_text));
+        if (c.question_text) { if (c.excerpt_text) row.append(el("br")); row.append(document.createTextNode("질문: " + c.question_text)); }
+        diffBox.append(row);
+      });
+    });
+  } else {
+    fetchSourceText(orderNo).then(src => {
+      if (!src) { diffBox.textContent = "DB 원문을 찾을 수 없음(order_no 추정이 안 맞을 수 있음)."; return; }
+      diffBox.innerHTML = "";
+      diffBox.append(el("span", { class: "diff-label" }, "DB 원문(question_text)"));
+      diffBox.append(document.createTextNode(src.question_text || "(비어있음)"));
+      if (src.excerpt_text) {
+        diffBox.append(el("span", { class: "diff-label", style: "margin-top:6px" }, "DB 원문(excerpt_text)"));
+        diffBox.append(document.createTextNode(src.excerpt_text));
+      }
+    });
+  }
 
   const formSelect = el("select", {}, [
     "single", "blanks", "table", "list", "compare", "pledge", "speech", "choice", "choiceList",

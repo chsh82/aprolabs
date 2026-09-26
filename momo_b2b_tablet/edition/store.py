@@ -422,6 +422,36 @@ def source_text(doc_id: str, order_no: int) -> dict | None:
         conn.close()
 
 
+def source_text_by_page(doc_id: str, source_page: int) -> list[dict]:
+    """비전(방식 B) 문항 전용 원문 대조 - q.id가 momo_book.db의 order_no와
+    1:1로 대응하지 않아(비전은 페이지 항목 순서로 새로 번호를 매김) source_text()의
+    order_no 직접 대조는 잘못된 행을 짚을 수 있다(2026-09-26 검수 중 발견 - 야옹아
+    9쪽에서 q.id=5를 order_no=5로 착각해 실제로는 order_no=4에 대응하는 문항인데
+    엉뚱한 다음 문항의 DB 원문을 보여준 사례). 대신 같은 source_page의 모든 행을
+    후보로 반환해 검수자가 직접 눈으로 대조하게 한다."""
+    import sys
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
+    from normalize.db import get_connection as get_source_connection
+
+    conn = get_source_connection()
+    try:
+        rows = conn.execute(
+            "SELECT order_no, order_label, question_text, excerpt_text FROM discussion_qa "
+            "WHERE doc_id = ? AND source_page = ? ORDER BY order_no",
+            (doc_id, source_page),
+        ).fetchall()
+        return [
+            {
+                "order_no": r["order_no"], "order_label": r["order_label"],
+                "question_text": r["question_text"], "excerpt_text": r["excerpt_text"],
+            }
+            for r in rows
+        ]
+    finally:
+        conn.close()
+
+
 def save_answer(edition_id: int, part_id: str, student_id: str,
                  ink: list | None = None, text: dict | None = None, ox: str | None = None,
                  choice: str | list[str] | None = None) -> None:

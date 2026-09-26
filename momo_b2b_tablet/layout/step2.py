@@ -135,6 +135,12 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
                                            f"없는 창작적 선택이라 검수 단계에서 결정"))
         flags.extend(form_flags)
         q = {"id": qa.order_label, "t": qa.question_text, **q_fields}
+        if qa.form_override is not None:
+            # 방식 B 문항은 q.id가 momo_book.db의 order_no와 대응하지 않으므로
+            # (2026-09-26 검수에서 발견) 검수 화면 원문 대조가 source_page로
+            # 찾도록 힌트를 남긴다 - OLD DB 파이프라인은 안 붙여 골든 비교에
+            # 영향이 없다.
+            q["src_page"] = qa.source_page
 
         guide, guide_flags = _guide_for(doc, qa)
         flags.extend(guide_flags)

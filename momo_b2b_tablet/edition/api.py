@@ -164,6 +164,16 @@ def edition_source_text(edition_id: int, order_no: int):
     return text
 
 
+@app.get("/api/editions/{edition_id}/source-by-page/{page}")
+def edition_source_by_page(edition_id: int, page: int):
+    """비전(방식 B) 문항 전용 원문 대조 - order_no 직접 대조 대신 같은
+    source_page의 DB 행 전부를 후보로 준다(store.source_text_by_page 참고)."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    return {"candidates": store.source_text_by_page(row["doc_id"], page)}
+
+
 @app.get("/api/editions/{edition_id}/print-view")
 def print_view(edition_id: int):
     """⑥단계 인쇄용 - included=false 페이지 제외 + 홀수 쪽수면 마지막에 빈 면(store.print_view)."""
