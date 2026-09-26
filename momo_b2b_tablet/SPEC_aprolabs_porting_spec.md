@@ -61,9 +61,10 @@
 | `oxp` | O·X 내용 확인 | `ox[{s, p}]`, `slot?` |
 | `draw` | 그림 칸(생각상자, 활동형 배경지식) | `id`, `inst`, `chip?` — 글자 인식 대상 아님 |
 | `bgline` | 배경지식 연표형 | `inst`, `rows[[{e, y?, nt?, hl?, end?}]]`, `image{key, caption}`, `term{title, text}` |
-| `qa` | 좌 제시문 / 우 (이미지 슬롯 → 문항 → 답란) | `ratio`, `excerpt{p, text[]}`, `q`, `slot?` |
-| `qaband` | 제시문 위 띠 + 아래 2단 | `excerpt`, `q`, `slot?`, `ratio?`, `wide?`(문항·답란을 전체 폭으로) |
-| `qaref` | 띠 제시문 + 좌 참고 표 / 우 문항 | `ref{title, img?, rows[{n, v} | {gap:true}], note?}`, `q` |
+| `excerpt` | 제시문 전용(긴 제시문 분리 시 앞쪽 페이지) | `excerpt{p?, text[]}`, `continues?`(다음 쪽에 이어짐) |
+| `qa` | 좌 제시문 / 우 (이미지 슬롯 → 문항 → 답란) | `ratio`, `excerpt{p, text[], continued?}`, `q`, `slot?` |
+| `qaband` | 제시문 위 띠 + 아래 2단 | `excerpt{p, text[], continued?}`, `q`, `slot?`, `ratio?`, `wide?`(문항·답란을 전체 폭으로) |
+| `qaref` | 띠 제시문 + 좌 참고 표 / 우 문항 | `excerpt{p, text[], continued?}`, `ref{title, img?, rows[{n, v} | {gap:true}], note?}`, `q` |
 | `solo` | 제시문 없는 문항 (좌 이미지 / 우 문항) | `q`, `slot?` |
 | `essay` | STEP 3 주제 페이지 (우측 큰 이미지) | `topic`, `lead?`, `dialog[]`, `closing`, `slot` |
 | `memos` | STEP 3 메모 1·2·3 | `topic`, `closing`, `qs[{id, no, t, kind:"memo"}]` |
@@ -139,6 +140,22 @@
   - 번호 목록형 칸은 **같이** 늘어난다(모든 칸에 한 줄씩 줄 공간이 있을 때만). 표는 마지막 괘선에서 끝난다.
   - 비교형 활동은 양쪽 형식을 대칭으로(예: 찬성·반대 모두 "3가지 이유").
 - **STEP 3**: 주제 페이지(좌 주제·도입·인용 / 우 큰 이미지) → 메모 페이지(사각 번호 1·2·3, 질문 | 답란 가로 행, 안내 문구는 주제 옆 한 줄).
+
+#### 3.4.1 긴 제시문 분리 (2026-09-26)
+
+제시문이 한 페이지에 다 들어가지 않으면 페이지를 나눈다(경험적 기준:
+500자 초과 - `layout/step2.py`의 `_EXCERPT_SPLIT_THRESHOLD`). 문단(줄바꿈)
+경계로만 나누고 문장 중간을 자르지 않는다.
+
+- **앞쪽 페이지(들)**: `excerpt` 타입 - 제시문만 전체 폭, 세로 여유 있게.
+  제시문이 더 길면 여러 장으로 계속 나눈다. 다음 쪽에 더 이어지면
+  `continues: true`(우측 하단에 "다음 쪽에 이어집니다 ▶" 표시).
+- **마지막 페이지**: 기존 `qa`/`qaband`/`qaref` 타입 그대로 - 남은 제시문 +
+  문항 + 답란. 앞쪽에서 이어진 것이면 `excerpt.continued: true`(제시문
+  상자 위에 "◀ 앞쪽에서 이어짐" 표시).
+- 자동 분리는 글자수 규칙일 뿐 실제 인쇄 폰트·여백 기준 줄바꿈이 아니므로,
+  분량이 실제로 맞는지는 인쇄 미리보기에서 검수자가 최종 확인한다(`split`
+  플래그로 안내).
 
 ### 3.5 이미지
 

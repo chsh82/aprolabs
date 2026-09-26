@@ -225,8 +225,14 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       inner = p.slot
         ? `<div class="cols" style="grid-template-columns:1.45fr 1fr"><div class="col">${oxList}</div><div class="col" data-alloc>${slotHtml(p.slot, { t: "O·X 내용 확인 5문항" })}</div></div>`
         : `<div class="col">${oxList}</div>`;
+    } else if (p.type === "excerpt") {
+      // 제시문 전용 페이지(2026-09-26, 긴 제시문 분리 - SPEC §3.5.3) - 문항 없이
+      // 제시문만 전체 폭으로 보여준다. 다음 쪽에 이어지면 안내 문구를 더한다.
+      const ex = `<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}${p.excerpt.p ? `<span class="cite">p.${p.excerpt.p}</span>` : ""}</div>`;
+      inner = `<div class="col">${ex}</div>${p.continues ? `<p class="excerpt-cont">다음 쪽에 이어집니다 ▶</p>` : ""}`;
     } else if (p.type === "qa") {
-      const ex = `<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}<span class="cite">p.${p.excerpt.p}</span></div>`;
+      const contNote = p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : "";
+      const ex = `${contNote}<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}<span class="cite">p.${p.excerpt.p}</span></div>`;
       inner = `<div class="cols" style="grid-template-columns:${p.ratio}"><div class="col">${ex}</div><div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}${question(p.q)}</div></div>`;
     } else if (p.type === "essay") {
       inner = `<div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col"><h3 class="topic${p.topic.length > 12 ? " long" : ""}">${esc(p.topic)}</h3>${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: "'나의 바다' 글쓰기 메모 3문항" })}</div></div>`;
@@ -244,7 +250,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       QTEXT[p.id] = p.inst;
       inner = `<div class="draw-top"><p class="inst">${esc(p.inst)}</p><span class="chip">${esc(p.chip || "그림 칸은 글자로 바꾸지 않아요")}</span></div>${drawBox(p.id)}`;
     } else if (p.type === "qaband") {
-      const band = `<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
+      const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
       if (p.wide) {
         inner = `${band}${qHead(p.q)}${widget(p.q)}`;
       } else {
@@ -252,7 +258,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
         inner = `${band}<div class="cols" style="grid-template-columns:${p.ratio || "1fr 1.15fr"}"><div class="col" data-alloc>${qHead(p.q)}${p.slot ? slotHtml(p.slot, p.q) : ""}</div><div class="col wcol">${w}</div></div>`;
       }
     } else if (p.type === "qaref") {
-      const band = `<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
+      const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
       const rows = p.ref.rows.map(r => r.gap ? `<tr class="gap"><td colspan="2">⋯</td></tr>` : `<tr><th>${esc(r.n)}</th><td>${esc(r.v)}</td></tr>`).join("");
       const ref = `<div class="ref"><h4>${esc(p.ref.title)}</h4><div class="ref-body"><table class="rt"><tbody>${rows}</tbody></table>${p.ref.img ? `<img src="${IMG[p.ref.img]}" alt="">` : ""}</div>${p.ref.note ? `<p class="note">${esc(p.ref.note)}</p>` : ""}</div>`;
       inner = `${band}<div class="cols" style="grid-template-columns:${p.ratio || "1fr 1fr"}"><div class="col">${ref}</div><div class="col">${qHead(p.q)}<div class="wcol">${widget(p.q)}</div></div></div>`;

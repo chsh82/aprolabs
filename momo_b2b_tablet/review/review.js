@@ -258,7 +258,7 @@ document.querySelector(".flag-queue").append(showResolvedToggle);
 /* ============ 페이지 목록 ============ */
 const TYPE_ABBR = {
   cover: "COV", vocab: "VOC", oxp: "OXP", draw: "DRW", bgline: "BGL", bgtext: "BGT",
-  qa: "QA", qaband: "QAB", qaref: "QAR", solo: "SOL", essay: "ESS", memos: "MEM",
+  qa: "QA", qaband: "QAB", qaref: "QAR", solo: "SOL", essay: "ESS", memos: "MEM", excerpt: "EXC",
 };
 
 function renderPageList() {

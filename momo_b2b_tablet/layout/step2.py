@@ -26,6 +26,36 @@ _STEP2_NM = {
 _WIDE_FORMS = {"table", "compare", "choice", "choiceList"}
 _LEAKY_FORMS = {"choice", "choiceList"}  # 선택지 자체가 답이라 이미지 지시문에서 답 유출을 따로 조심해야 함
 
+# 제시문 분리(2026-09-26 사용자 지시 [3순위]) - 실제 페이지 조판이 아니라
+# 글자수 기준 경험적 규칙이다(렌더러가 고정 크기 슬라이드라 텍스트가 흐르지
+# 않으므로, 실제 폰트/여백으로 넘치는지는 인쇄 미리보기에서 검수자가 최종
+# 확인해야 한다 - 젊은 예술가의 초상 4쪽처럼 1,000자가 넘는 전기적 배경
+# 설명이 한 페이지에 안 들어가는 사례가 실측 근거). 문단(줄바꿈) 경계로만
+# 나누고 문장 중간을 자르지 않는다.
+_EXCERPT_SPLIT_THRESHOLD = 500
+_EXCERPT_PAGE_BUDGET = 500
+
+
+def _split_excerpt_into_pages(excerpt_text: str, budget: int) -> list[str]:
+    """제시문을 문단 단위로 budget자 이내씩 묶어 여러 페이지 분량으로 나눈다.
+    문단 하나가 budget보다 길면 그 문단만으로 페이지 하나를 채운다(문장을
+    더 쪼개는 것보다 문단을 지키는 쪽이 자연스럽다)."""
+    paragraphs = [p for p in excerpt_text.split("\n") if p.strip()]
+    if not paragraphs:
+        return [excerpt_text]
+    chunks: list[str] = []
+    cur: list[str] = []
+    cur_len = 0
+    for p in paragraphs:
+        if cur and cur_len + len(p) > budget:
+            chunks.append("\n".join(cur))
+            cur, cur_len = [], 0
+        cur.append(p)
+        cur_len += len(p)
+    if cur:
+        chunks.append("\n".join(cur))
+    return chunks
+
 
 def _ref_bearer_order_label(doc: NormalizedDoc) -> str | None:
     """한자 참고표(ref)를 붙일 문항을 고른다. 골든(L9-Q3-W07)에서 확인한 패턴:
@@ -192,6 +222,21 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
             page["slot"] = slot
             if slot_flag:
                 flags.append(slot_flag)
+
+        if qa.excerpt_text and len(qa.excerpt_text) > _EXCERPT_SPLIT_THRESHOLD:
+            chunks = _split_excerpt_into_pages(qa.excerpt_text, _EXCERPT_PAGE_BUDGET)
+            if len(chunks) > 1:
+                for chunk in chunks[:-1]:
+                    pages.append({
+                        "type": "excerpt", "step": "STEP 2", "title": "함께 들여다보기", "guide": guide,
+                        "excerpt": {"p": qa.excerpt_page, "text": [chunk]}, "continues": True,
+                    })
+                page["excerpt"]["text"] = [chunks[-1]]
+                page["excerpt"]["continued"] = True
+                flags.append(Flag(order_no=qa.order_no, kind="split",
+                                   message=f"문항 {qa.order_label}: 제시문이 길어({len(qa.excerpt_text)}자) "
+                                           f"{len(chunks)}쪽으로 나눔 - 실제 인쇄 미리보기에서 분량이 "
+                                           f"맞는지 검수 필요"))
 
         pages.append(page)
 

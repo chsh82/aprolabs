@@ -66,6 +66,7 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .excerpt .cite{margin-top:auto;padding-top:1.5mm;align-self:flex-end;font:500 10px/1 var(--sans);color:var(--point-text)}
 .excerpt.fill{flex:1 1 auto;justify-content:center;position:relative;padding-bottom:7mm}
 .excerpt.fill .cite{position:absolute;right:4.4mm;bottom:3mm;margin:0;padding:0}
+.excerpt-cont{margin:0 0 2mm;font:600 11px/1 var(--sans);color:var(--point-text)}
 
 /* ---------- question ---------- */
 .q{display:flex;flex-direction:column;min-height:0;gap:1.8mm}
