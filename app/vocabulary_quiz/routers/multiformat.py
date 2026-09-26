@@ -63,6 +63,7 @@ selected_vocab_level이 None이면(전체 모드) 기존 동작과 100% 동일�
 from __future__ import annotations
 
 import json
+import logging
 import random
 import unicodedata
 import uuid
@@ -76,11 +77,14 @@ from sqlalchemy.orm import Session
 from app.vocabulary_quiz.auth import NOINDEX_HEADERS, require_admin
 from app.vocabulary_quiz.db import get_vocabulary_quiz_db
 from app.vocabulary_quiz.models import (
+    VocabularyContent,
     VocabularyContentLevel,
     VocabularyMultiformatItem,
     VocabularyMultiformatResponse,
     VocabularyMultiformatSession,
 )
+
+logger = logging.getLogger(__name__)
 
 api_router = APIRouter(prefix="/api/vocabulary-quiz")
 page_router = APIRouter(prefix="/vocabulary-quiz/multiformat")
@@ -108,6 +112,13 @@ GRADE_LABELS = {
 }
 LEVEL_MODE_ITEM_TYPES = tuple(t for t in ITEM_TYPES if t != "CROSSWORD")
 
+# ==================== L4·L5 파일럿(v1, phase18) 상수 ====================
+# phase18(reports/schema_reading_phase18_quiz_pilot_apply_20260926.md)에서 실제
+# 적재한 40건(MEANING_CHOICE 20 + CONTEXT_MEANING 20, 20개 content_id)만을 위한
+# 완전히 별도 경로 - 위의 SOURCE_VERSION("2.1.29") 일반 출제 경로는 이 상수/경로와
+# 절대 섞이지 않는다(격리 설계는 phase18 보고서 0절 4번 참고).
+PILOT_SOURCE_VERSION = "schema_reading_l4l5_pilot_dryrun_v1"
+
 _CHOSEONG_LIST = list("ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ")
 
 
@@ -130,6 +141,8 @@ class CreateSessionBody(BaseModel):
     question_count: int = DEFAULT_QUESTION_COUNT
     selected_vocab_level: int | None = None
     confidence_mode: str = "all_candidates"
+    pilot_mode: bool = False  # True면 L4·L5 파일럿(phase18) 전용 경로 - 기본값 False라
+    # 기존 요청(이 필드를 안 보내는 모든 기존 클라이언트)의 동작은 100% 그대로다.
 
 
 class AnswerBody(BaseModel):
@@ -246,6 +259,101 @@ def _level_availability(db: Session, level: int, confidence_mode: str, item_type
         "grade_label": GRADE_LABELS.get(level),
         "confidence_mode": confidence_mode,
         "level_version": LEVEL_VERSION,
+        "available_items": len(items),
+        "distinct_words": len(distinct_words),
+        "by_type": by_type,
+    }
+
+
+# ==================== L4·L5 파일럿(v1, phase18) 후보 선택 ====================
+# 기존 일반 출제(_select_question_items/_select_level_candidates)는 위에서 전혀
+# 수정하지 않았다 - 아래는 phase18 40건만을 위한 완전히 별도 경로다.
+
+def _select_pilot_item_ids(db: Session, item_types: list[str] | None) -> list[str]:
+    """L4·L5 파일럿(phase18) 후보 item_id 목록 - 매 요청마다 DB에서 새로 조회해
+    3중 검증을 거친다(하드코딩된 item_id 목록을 코드에 박아넣지 않는다):
+      1) source_version == PILOT_SOURCE_VERSION 마커(phase18이 실제로 적재한 배치)이고
+         is_active=1인지 - SQL 단계에서 필터.
+      2) 그 문항의 source_content_id가 vocabulary_contents에 실제로 존재하고
+         is_active=1인지.
+      3) 그 content_id의 vocabulary_content_levels(level_version=LEVEL_VERSION,
+         is_active=1) level_status가 정확히 'REVIEW_BOUNDARY'인지(phase13/14 설계와
+         일치 - reports/schema_reading_phase13_l4_core50_apply_20260925.md,
+         schema_reading_phase14_l5_core_apply_20260925.md).
+    2)/3) 중 하나라도 예상과 다르면 조용히 넘어가지 않고 경고 로그를 남긴 뒤 그
+    문항을 후보에서 제외한다."""
+    query = db.query(VocabularyMultiformatItem).filter(
+        VocabularyMultiformatItem.source_version == PILOT_SOURCE_VERSION,
+        VocabularyMultiformatItem.is_active == 1,
+    )
+    if item_types:
+        query = query.filter(VocabularyMultiformatItem.item_type.in_(item_types))
+    items = query.all()
+
+    valid_ids: list[str] = []
+    for item in items:
+        content_id = item.source_content_id
+        if not content_id:
+            logger.warning(
+                "[pilot] item_id=%s: source_content_id가 없어 파일럿 후보에서 제외합니다 "
+                "(단일 어휘형이 아닌 예상 밖 데이터 형태)", item.item_id,
+            )
+            continue
+
+        content = db.query(VocabularyContent).filter(
+            VocabularyContent.content_id == content_id
+        ).first()
+        if content is None:
+            logger.warning(
+                "[pilot] item_id=%s: content_id=%s가 vocabulary_contents에 존재하지 않아 "
+                "제외합니다(고아 참조)", item.item_id, content_id,
+            )
+            continue
+        if content.is_active != 1:
+            logger.warning(
+                "[pilot] item_id=%s: content_id=%s가 is_active=%s(예상 1)라 제외합니다",
+                item.item_id, content_id, content.is_active,
+            )
+            continue
+
+        level_row = db.query(VocabularyContentLevel).filter(
+            VocabularyContentLevel.content_id == content_id,
+            VocabularyContentLevel.level_version == LEVEL_VERSION,
+            VocabularyContentLevel.is_active == 1,
+        ).first()
+        if level_row is None:
+            logger.warning(
+                "[pilot] item_id=%s: content_id=%s의 vocabulary_content_levels(%s) 행이 "
+                "없어 제외합니다", item.item_id, content_id, LEVEL_VERSION,
+            )
+            continue
+        if level_row.level_status != "REVIEW_BOUNDARY":
+            logger.warning(
+                "[pilot] item_id=%s: content_id=%s의 level_status가 예상(REVIEW_BOUNDARY)과 "
+                "다른 %s라 제외합니다", item.item_id, content_id, level_row.level_status,
+            )
+            continue
+
+        valid_ids.append(item.item_id)
+    return valid_ids
+
+
+def _pilot_availability(db: Session, item_types: list[str] | None) -> dict:
+    candidate_ids = _select_pilot_item_ids(db, item_types)
+    items = (
+        db.query(VocabularyMultiformatItem)
+        .filter(VocabularyMultiformatItem.item_id.in_(candidate_ids)).all()
+        if candidate_ids else []
+    )
+    by_type: dict[str, int] = {}
+    distinct_words: set[str] = set()
+    for item in items:
+        by_type[item.item_type] = by_type.get(item.item_type, 0) + 1
+        if item.source_content_id:
+            distinct_words.add(item.source_content_id)
+    return {
+        "pilot_mode": True,
+        "pilot_source_version": PILOT_SOURCE_VERSION,
         "available_items": len(items),
         "distinct_words": len(distinct_words),
         "by_type": by_type,
@@ -419,10 +527,100 @@ def get_availability(
     return _level_availability(db, level, confidence_mode, types)
 
 
+@api_router.get("/pilot-availability")
+def get_pilot_availability(
+    response: Response,
+    item_type: list[str] = Query(default=[]),
+    db: Session = Depends(get_vocabulary_quiz_db),
+    admin: str = Depends(require_admin),
+):
+    """L4·L5 파일럿(phase18) 전용 가용량 조회 - 기존 /availability(SOURCE_VERSION=2.1.29
+    경로)는 전혀 건드리지 않는 완전히 별도 엔드포인트다. 표시 전용, 세션을 만들지 않는다."""
+    _apply_noindex(response)
+    unknown = set(item_type) - set(ITEM_TYPES)
+    if unknown:
+        raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
+    types = [t for t in item_type if t != "CROSSWORD"] or None
+    return _pilot_availability(db, types)
+
+
+def _create_pilot_session(body: CreateSessionBody, db: Session, admin: str) -> dict:
+    """L4·L5 파일럿(phase18) 전용 세션 생성 - 기존 create_session() 본문의 일반 출제
+    분기(SOURCE_VERSION="2.1.29")는 한 글자도 건드리지 않는다. 문항은 반드시
+    _select_pilot_item_ids()의 3중 검증을 통과한 후보 중에서만 뽑는다."""
+    item_types = None
+    if body.item_types:
+        unknown = set(body.item_types) - set(ITEM_TYPES)
+        if unknown:
+            raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
+        if "CROSSWORD" in body.item_types:
+            raise HTTPException(status_code=422, detail="파일럿 모드는 십자말(CROSSWORD)을 지원하지 않습니다")
+        item_types = body.item_types
+
+    if body.question_count < 1 or body.question_count > 50:
+        raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
+
+    candidate_ids = _select_pilot_item_ids(db, item_types)
+    candidate_count = len(candidate_ids)
+    if candidate_count < body.question_count:
+        raise HTTPException(status_code=409, detail={
+            "code": "INSUFFICIENT_PILOT_CANDIDATES",
+            "requested": body.question_count,
+            "available": candidate_count,
+        })
+    item_ids = random.sample(candidate_ids, body.question_count)
+    metadata = {
+        "audience": "ADMIN_ONLY",
+        "pilot_mode": True,
+        "pilot_source_version": PILOT_SOURCE_VERSION,
+        "requested_count": body.question_count,
+        "candidate_count": candidate_count,
+        "actual_count": len(item_ids),
+        "item_types": item_types,
+    }
+
+    items_by_id = {
+        row.item_id: row for row in
+        db.query(VocabularyMultiformatItem).filter(VocabularyMultiformatItem.item_id.in_(item_ids)).all()
+    }
+
+    now = datetime.now(timezone.utc).isoformat()
+    session_id = str(uuid.uuid4())
+    session = VocabularyMultiformatSession(
+        id=session_id, user_id=admin, source_version=PILOT_SOURCE_VERSION,
+        item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
+        question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
+        metadata_json=json.dumps(metadata, ensure_ascii=False),
+    )
+    db.add(session)
+    db.flush()  # session INSERT를 먼저 내보내지 않으면 responses의 session_id FK가 아직 없는
+    # 행을 가리켜 FOREIGN KEY constraint failed가 남(기존 일반 경로와 동일 이유로 동일 조치).
+
+    for idx, item_id in enumerate(item_ids, start=1):
+        item = items_by_id[item_id]
+        db.add(VocabularyMultiformatResponse(
+            session_id=session_id, item_id=item_id, order_index=idx, item_type=item.item_type,
+        ))
+    db.commit()
+
+    return {
+        "session_id": session_id,
+        "question_count": len(item_ids),
+        "item_types": item_types,
+        "source_version": PILOT_SOURCE_VERSION,
+        "level_info": None,
+        "pilot_info": metadata,
+    }
+
+
 @api_router.post("/sessions")
 def create_session(body: CreateSessionBody, response: Response, db: Session = Depends(get_vocabulary_quiz_db),
                     admin: str = Depends(require_admin)):
     _apply_noindex(response)
+    if body.pilot_mode:
+        # L4·L5 파일럿(phase18) 전용 경로 - 아래 일반 출제 분기(레벨모드/혼합모드/
+        # CROSSWORD, SOURCE_VERSION="2.1.29")는 이 반환 이후 전혀 실행되지 않는다.
+        return _create_pilot_session(body, db, admin)
     if body.confidence_mode not in CONFIDENCE_MODES:
         raise HTTPException(status_code=422, detail="지원하지 않는 신뢰도 필터입니다(all_candidates/auto_only만 허용)")
 
@@ -713,7 +911,19 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
     # 기존 세션(레벨별 출제 v1 이전에 생성됨)은 metadata_json이 NULL이다 - "레벨 미지정"으로 표시.
     metadata = json.loads(session.metadata_json) if session.metadata_json else None
     level_info = None
-    if metadata:
+    pilot_info = None
+    if metadata and metadata.get("pilot_mode"):
+        # L4·L5 파일럿(phase18) 세션 - level_info(레벨모드 전용 필드 구성)는 그대로
+        # None으로 두고, 별도 pilot_info로 노출한다(기존 level_info 소비 코드/테스트에
+        # 영향 없음).
+        pilot_info = {
+            "pilot_source_version": metadata.get("pilot_source_version"),
+            "requested_count": metadata.get("requested_count"),
+            "candidate_count": metadata.get("candidate_count"),
+            "actual_count": metadata.get("actual_count"),
+            "item_types": metadata.get("item_types"),
+        }
+    elif metadata:
         selected_level = metadata.get("selected_vocab_level")
         level_info = {
             "selected_vocab_level": selected_level,
@@ -733,7 +943,8 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
         "accuracy": accuracy,
         "by_type": by_type,
         "wrong_items": wrong_items,
-        "level_info": level_info,  # None = "레벨 미지정"(기존 세션 또는 전체 모드)
+        "level_info": level_info,  # None = "레벨 미지정"(기존 세션 또는 전체 모드) 또는 파일럿 세션
+        "pilot_info": pilot_info,  # 파일럿(phase18) 세션에서만 값이 들어감, 그 외는 None
     }
 
 
@@ -748,7 +959,11 @@ def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), a
         matching = _matching_level_content_ids(db, lv, "all_candidates")
         if not matching:
             level_disabled.append(lv)
+    # L4·L5 파일럿(phase18) 체크박스를 비활성화할지 - 3중 검증 통과 후보가 0건이면
+    # 비활성화한다(일반 출제 가용량 계산과는 완전히 별도 경로, _pilot_availability 재사용).
+    pilot_available = _pilot_availability(db, None)["available_items"] > 0
     return templates.TemplateResponse("vocabulary_quiz/multiformat_play.html", {
         "request": request, "item_types": ITEM_TYPES, "default_question_count": DEFAULT_QUESTION_COUNT,
         "level_grade_labels": GRADE_LABELS, "level_disabled": set(level_disabled),
+        "pilot_available": pilot_available,
     }, headers=NOINDEX_HEADERS)
