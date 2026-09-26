@@ -452,6 +452,33 @@ def source_text_by_page(doc_id: str, source_page: int) -> list[dict]:
         conn.close()
 
 
+def available_images(doc_id: str) -> list[dict]:
+    """검수 화면의 "이미지 자리 추가" 기능용 - 이 문서의 momo_book.db
+    document_image(원본 삽화·표지·배경) 전부를 후보로 준다(2026-09-26,
+    검수자가 직접 원본 이미지를 고르거나 생성 지시문을 쓸 수 있게 하라는
+    사용자 지시 [5순위])."""
+    import sys
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
+    from normalize.db import get_connection as get_source_connection
+
+    conn = get_source_connection()
+    try:
+        rows = conn.execute(
+            "SELECT image_type, source_page, file_path FROM document_image "
+            "WHERE doc_id = ? ORDER BY source_page", (doc_id,),
+        ).fetchall()
+        return [
+            {
+                "image_type": r["image_type"], "source_page": r["source_page"],
+                "file_path": r["file_path"], "url": f"/static/extracted/{r['file_path']}",
+            }
+            for r in rows
+        ]
+    finally:
+        conn.close()
+
+
 def save_answer(edition_id: int, part_id: str, student_id: str,
                  ink: list | None = None, text: dict | None = None, ox: str | None = None,
                  choice: str | list[str] | None = None) -> None:

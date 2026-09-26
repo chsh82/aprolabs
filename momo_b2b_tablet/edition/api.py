@@ -174,6 +174,16 @@ def edition_source_by_page(edition_id: int, page: int):
     return {"candidates": store.source_text_by_page(row["doc_id"], page)}
 
 
+@app.get("/api/editions/{edition_id}/available-images")
+def edition_available_images(edition_id: int):
+    """검수 화면의 "이미지 자리 추가" - 이 문서의 원본 이미지 후보 목록
+    (store.available_images 참고)."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    return {"images": store.available_images(row["doc_id"])}
+
+
 @app.get("/api/editions/{edition_id}/print-view")
 def print_view(edition_id: int):
     """⑥단계 인쇄용 - included=false 페이지 제외 + 홀수 쪽수면 마지막에 빈 면(store.print_view)."""

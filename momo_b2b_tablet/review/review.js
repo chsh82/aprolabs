@@ -260,6 +260,8 @@ const TYPE_ABBR = {
   cover: "COV", vocab: "VOC", oxp: "OXP", draw: "DRW", bgline: "BGL", bgtext: "BGT",
   qa: "QA", qaband: "QAB", qaref: "QAR", solo: "SOL", essay: "ESS", memos: "MEM", excerpt: "EXC",
 };
+// 렌더러가 slot을 실제로 그리는 페이지 유형만 "이미지 자리" UI를 보여준다(2026-09-26 [5순위]).
+const SLOT_CAPABLE_TYPES = new Set(["qa", "qaband", "qaref", "solo", "oxp", "bgtext", "essay"]);
 
 function renderPageList() {
   const list = $("#pageList");
@@ -407,11 +409,11 @@ function renderInspector() {
   }
 
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
-  if (page.slot) renderSlotInspector(body, page, idx, basePath);
+  if (SLOT_CAPABLE_TYPES.has(page.type)) renderSlotInspector(body, page, idx, basePath);
 
   body.append(el("hr", { class: "section-divider" }));
   body.append(el("div", { class: "todo-note" },
-    "답란 줄 수 조정·페이지 순서 이동은 다음 반복에서 연결 예정입니다(뼈대 우선순위 5번)."));
+    "페이지 순서 이동은 페이지 목록의 ▲▼ 버튼으로 할 수 있습니다."));
 }
 
 function field(labelText, inputEl, extra) {
@@ -668,21 +670,76 @@ function renderFormSubfields(host, q, qPath, form, justSwitched) {
   }
 }
 
+async function fetchAvailableImages() {
+  try { return (await api(`/api/editions/${editionId}/available-images`)).images; }
+  catch (e) { return []; }
+}
+
+// 2026-09-26 [5순위] 검수자가 이미지 자리를 직접 추가·삭제·변경(=이동)할 수
+// 있게 한다. 스키마는 페이지당 slot 하나뿐이라 "이동"은 "이 자리에 쓸 이미지를
+// 바꾼다"로 구현한다(다른 페이지로 옮기는 건 검수자가 삭제 후 그 페이지에서
+// 새로 추가하면 된다 - 페이지가 다르면 어차피 원본 삽화 후보도 달라진다).
 function renderSlotInspector(body, page, idx, basePath) {
   const slot = page.slot;
   const slotPath = `${basePath}/slot`;
   body.append(el("hr", { class: "section-divider" }));
-  if (slot.img) {
-    body.append(field("이미지 슬롯", el("div", { class: "hint" }, `원본 이미지 사용 중: ${slot.img}`)));
+
+  if (!slot) {
+    const addBtn = el("button", { class: "btn btn--small" }, "이미지 자리 추가");
+    body.append(field("이미지 슬롯", addBtn,
+      el("div", { class: "hint" }, "추가하면 자리가 부족해질 수 있습니다 - 추가 직후 미리보기에서 확인하세요.")));
+    addBtn.onclick = async () => {
+      const ok = await patch([{
+        op: "add", path: slotPath,
+        value: { scene: "", avoid: "질문이 요구하는 답을 암시하지 않는다." },
+      }], { reason: "검수: 이미지 자리 추가" });
+      if (ok) toast("이미지 자리를 추가했습니다. 자리가 좁으면 답란을 줄여야 할 수 있습니다.");
+    };
     return;
   }
+
+  const delBtn = el("button", { class: "btn btn--small" }, "이미지 자리 삭제");
+  delBtn.onclick = () => patch([{ op: "remove", path: slotPath }], { reason: "검수: 이미지 자리 삭제" });
+  body.append(field("이미지 슬롯", delBtn));
+
+  if (slot.img) {
+    body.append(field("현재 이미지", el("div", { class: "hint" }, `원본 이미지 사용 중: ${slot.img}`)));
+  }
+
+  const pickHost = el("div", { class: "hint" }, "원본 이미지 목록 불러오는 중…");
+  body.append(field("원본 이미지로 바꾸기", pickHost));
+  fetchAvailableImages().then(images => {
+    pickHost.innerHTML = "";
+    if (!images.length) { pickHost.textContent = "이 문서에 등록된 원본 이미지가 없습니다."; return; }
+    images.forEach(img => {
+      const btn = el("button", { class: "btn btn--small", style: "margin:2px" }, `${img.image_type} p.${img.source_page ?? "?"}`);
+      btn.onclick = () => patch([{
+        op: "replace", path: slotPath,
+        value: { img: img.file_path, src: `원본 ${img.source_page}쪽` },
+      }], { reason: "검수: 이미지 자리에 원본 이미지 지정" });
+      pickHost.append(btn);
+    });
+  });
+
   const sceneInput = el("textarea", { rows: "2" }, slot.scene || "");
   const avoidInput = el("textarea", { rows: "2" }, slot.avoid || "");
-  body.append(field("이미지 생성 지시문 - 장면(scene)", sceneInput));
-  body.append(field("이미지 생성 지시문 - 금지 요소(avoid)", avoidInput,
+  body.append(field("또는 생성 지시문 - 장면(scene)", sceneInput));
+  body.append(field("생성 지시문 - 금지 요소(avoid)", avoidInput,
     el("div", { class: "hint" }, "실제 이미지 생성 연동은 다음 단계에서 붙습니다.")));
-  sceneInput.onblur = () => { if (sceneInput.value !== (slot.scene || "")) patch([{ op: "replace", path: `${slotPath}/scene`, value: sceneInput.value }]); };
-  avoidInput.onblur = () => { if (avoidInput.value !== (slot.avoid || "")) patch([{ op: "replace", path: `${slotPath}/avoid`, value: avoidInput.value }]); };
+  const saveGen = () => patch([{
+    op: "replace", path: slotPath,
+    value: { scene: sceneInput.value, avoid: avoidInput.value },
+  }], { reason: "검수: 이미지 생성 지시문 수정" });
+  sceneInput.onblur = () => { if (sceneInput.value !== (slot.scene || "")) saveGen(); };
+  avoidInput.onblur = () => { if (avoidInput.value !== (slot.avoid || "")) saveGen(); };
+
+  const q = page.q;
+  if (q && q.form === "single" && q.kind === "long") {
+    const shrinkBtn = el("button", { class: "btn btn--small" }, "답란을 짧게(short)로 바꿔 공간 확보");
+    shrinkBtn.onclick = () => patch([{ op: "replace", path: `${basePath}/q/kind`, value: "short" }],
+      { reason: "검수: 이미지 자리 확보를 위해 답란을 짧게 변경" });
+    body.append(field("공간이 부족하면", shrinkBtn));
+  }
 }
 
 /* ============ 답란 줄 수(문서 전체, tone.lines) ============ */
