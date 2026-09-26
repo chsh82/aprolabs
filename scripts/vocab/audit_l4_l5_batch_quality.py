@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""읽기 전용 품질 감사 스크립트 (phase15, L4/L5 재실행 가능).
+"""읽기 전용 품질 감사 스크립트 (phase15 최초 작성, phase16에서 하드코딩 캐주션 제거).
 
 목적: schema_reading_phase13(L4)/phase14(L5) 결과표(`data/import/*_final_*.csv`)에
 실제로 적재된 행(`content_id`가 비어있지 않은 행 = HOLD 제외)을 `data/literacy.db`
@@ -15,6 +15,18 @@
 **절대 하지 않는 것**: literacy.db/vocabulary_quiz_research.db 어느 쪽도 쓰지 않는다
 (literacy.db는 `mode=ro`로만 연다). 자동검사 통과를 "전문가 검수 완료"로 표시하지
 않는다 - 특히 S(교과개념어)는 카드에 "전문가 검수 필요"를 항상 별도로 남긴다.
+
+**phase16 리팩터 (중요)**: phase15는 "결과표 caution 컬럼에는 없지만 보고서 본문에만
+서술된 캐주션"(유추/유사/사법권 3건)을 스크립트 내부 하드코딩 딕셔너리
+(`SUPPLEMENTARY_MEANING_REVIEW`)로 보충해서 MEANING_REVIEW로 판정했었다. 이는 "기계가
+읽는 필드"와 "사람이 읽는 문서"가 분리되는 문서화 간극이었다(phase15 보고서 1-2절/7-4절
+참고). phase16에서 그 3건의 캐주션 텍스트를 원천 결과표
+(`data/import/schema_reading_phase13_l4_core50_final_20260925.csv`)의 `caution` 컬럼에
+직접 기록했고, 이 스크립트에서 하드코딩 딕셔너리를 완전히 제거했다. 이제 MEANING_REVIEW
+판정은 **오직 결과표 `caution` 컬럼(`row["csv_caution"]`)과 literacy.db 재조회로 얻는
+구조적 신호(동형이의 복수 행, 사실 서술형 정의문 패턴)만으로** 이뤄진다. 향후 새 배치도
+캐주션을 반드시 결과표 `caution` 컬럼에 직접 기록해야 하며, 이 스크립트에 새 하드코딩
+딕셔너리를 추가하는 방식으로 되돌리지 않는다.
 
 사용법 (다음 배치가 추가돼도 그대로 재사용):
     python scripts/vocab/audit_l4_l5_batch_quality.py \\
@@ -137,23 +149,6 @@ SOURCE_LABEL_TO_DB = {
     "S": "schemareading-schema",
 }
 
-# ---------------------------------------------------------------------------
-# 결과표 `caution` 컬럼에는 기록되지 않았지만, phase13/14 보고서 본문(2-4절/3-4절)에
-# 이미 사람이 직접 발견해 서술로만 남긴 근접어/혼동 위험. caution 컬럼만 기계적으로
-# 읽으면 이 3건을 놓친다(phase15 감사에서 직접 재확인한 간극) - 그래서 이 감사
-# 스크립트는 caution 컬럼과 별개로 이 보충 목록도 함께 반영한다. 새로운 배치를
-# 감사할 때는 그 배치 보고서 본문을 사람이 다시 읽고 이 목록에 추가해야 한다
-# (완전 자동화 불가 - 이 스크립트가 대신 보고서 본문을 파싱하지 않는다).
-SUPPLEMENTARY_MEANING_REVIEW: dict[str, str] = {
-    "유추": "phase13 보고서 2-4절: '유사'와 어근 '유' 공유 + '비슷함' 개념 인접(유사=비슷함 자체, "
-            "유추=비슷함에 근거한 추론)이라 학생이 혼동할 수 있음 - caution 컬럼에는 기록되지 않고 "
-            "보고서 본문에만 서술돼 있던 것을 phase15가 재확인해 편입.",
-    "유사": "phase13 보고서 2-4절: '유추'와 근접(위 항목 참고) - caution 컬럼 누락분 phase15가 편입.",
-    "사법권": "phase13 보고서 2-4절: 기존 vocabulary_contents의 '사법부'(권한을 행사하는 기관)와 "
-             "권한(사법권) vs 기관(사법부)을 혼동할 수 있음(이번 97건과 무관한 기존 콘텐츠와의 "
-             "교차 위험) - caution 컬럼 누락분 phase15가 편입.",
-}
-
 
 def audit_row(con: sqlite3.Connection, row: dict) -> dict:
     term = fetch_term(con, row["literacy_term_id"])
@@ -235,13 +230,12 @@ def audit_row(con: sqlite3.Connection, row: dict) -> dict:
             if db_subject != csv_subject:
                 flags.append(f"subject_category 불일치: db={db_subject!r} vs csv={csv_subject!r}")
 
-    # 결과표 자체가 이미 남긴 caution(선행 phase13/14의 동형이의/근접어 캐주션)
-    if row["csv_caution"].strip():
-        flags.append(f"결과표 caution 필드 기존 표시: {row['csv_caution'].strip()}")
-
-    supplementary_reason = SUPPLEMENTARY_MEANING_REVIEW.get(row["lemma"])
-    if supplementary_reason:
-        flags.append(f"보고서 본문 전용 캐주션(phase15 편입): {supplementary_reason}")
+    # 결과표 자체가 이미 남긴 caution(선행 phase13/14/16의 동형이의/근접어 캐주션).
+    # phase16부터는 이 필드가 MEANING_REVIEW 판정의 유일한 "캐주션 출처"다 - 스크립트
+    # 내부 하드코딩 딕셔너리로 보충하지 않는다(위 모듈 docstring 참고).
+    csv_caution = row["csv_caution"].strip()
+    if csv_caution:
+        flags.append(f"결과표 caution 필드 기존 표시: {csv_caution}")
 
     # --- 3분류 판정 ---
     verdict = "AUTO_PASS"
@@ -253,20 +247,20 @@ def audit_row(con: sqlite3.Connection, row: dict) -> dict:
     )
     db_definition_missing = checks.get("definition_verbatim_match") == "DB_DEFINITION_MISSING"
 
+    fact_statement_flag = any("사실 서술형 어미" in f for f in flags)
+    homonym_flag = checks.get("literacy_db_homonym_row_count", "0") not in ("0", "1")
+
     if structural_fail or db_definition_missing:
         verdict = "SOURCE_EVIDENCE_WEAK"
         reason_parts.append("구조적 대조 실패(term_id/headword/source/level/정의 문자열 중 하나 이상 불일치 또는 원천 정의 부재)")
-    elif row["csv_caution"].strip() or checks.get("literacy_db_homonym_row_count", "0") not in ("0", "1") \
-            or any("사실 서술형 어미" in f for f in flags) or supplementary_reason:
+    elif csv_caution or homonym_flag or fact_statement_flag:
         verdict = "MEANING_REVIEW"
-        if row["csv_caution"].strip():
-            reason_parts.append(f"결과표 caution: {row['csv_caution'].strip()}")
-        if checks.get("literacy_db_homonym_row_count", "0") not in ("0", "1"):
+        if csv_caution:
+            reason_parts.append(f"결과표 caution: {csv_caution}")
+        if homonym_flag:
             reason_parts.append("literacy.db 동일 headword 복수 행 존재(동형이의 분리 저장 가능성)")
-        if any("사실 서술형 어미" in f for f in flags):
+        if fact_statement_flag:
             reason_parts.append("정의문이 표제어를 직접 정의하지 않는 서술형 패턴 의심")
-        if supplementary_reason:
-            reason_parts.append(f"보고서 본문 전용 캐주션(phase15 편입): {supplementary_reason}")
     else:
         reason_parts.append("구조 대조 전부 PASS, caution 없음, literacy.db 내 동형이의 분리 행 없음")
 
@@ -293,7 +287,7 @@ def audit_row(con: sqlite3.Connection, row: dict) -> dict:
 
 def build_s_cards(audited_rows: list[dict]) -> str:
     lines = [
-        "# S(교과개념어) 검수 카드 — phase15 감사",
+        "# S(교과개념어) 검수 카드",
         "",
         "**주의: 자동 검사 통과 ≠ 전문가 검수 완료.** 이 카드들은 literacy.db 원문과",
         "결과표 간의 구조적 일치(표제어/정의 문자열/교과·주차 메타데이터)만 자동으로",
