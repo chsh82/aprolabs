@@ -12,8 +12,10 @@ unknown 행 0". discussion_qa 재조립은 normalize/discussion_qa.py가 맡고
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
+import sqlite3
 import sys
 from dataclasses import asdict
 from pathlib import Path
@@ -36,7 +38,35 @@ from normalize.text_repair import repair_text  # noqa: E402
 from normalize.tone import level_to_band, quarter_to_key  # noqa: E402
 
 IMAGES_DIR = REPO_ROOT / "momo_book_db" / "extracted_images"
-_LOWRES_MIN_SIDE = 300  # SPEC §3.5.4 인쇄 300dpi 기준 + §4 "열하일기 표지 204×299" 예시
+# 2026-09-26 사용자 지시로 정정: 이미지가 실제로 놓이는 폭은 A5 가로 판형
+# 기준 60~80mm이지 인쇄 전면(300dpi)이 아니다 - 150dpi 기준으로 낮추면
+# 60mm≈354px/80mm≈472px인데, 더 관대한(오탐 적은) 쪽인 하한 350px을 쓴다
+# (기존 300dpi 기준은 723건 중 630건(87%)이 걸려 의미가 없었음).
+_LOWRES_MIN_SIDE = 350
+_V2_IMAGE_DB = REPO_ROOT / "momo_book_db" / "image_reextract_v2.db"
+
+
+def _load_v2_images(doc_id: str) -> list["NormalizedImage"]:
+    """이미지 재추출 v2(2026-09-26) 결과 - momo_book.db document_image와는
+    별도 DB(momo_book_db/reextract_images_v2.py 참고, 되돌릴 수 있게 분리
+    보관)에서 이 문서의 이미지를 읽어 온다. DB가 아직 없으면(재추출 전)
+    빈 목록을 반환해 기존 동작에 영향이 없다."""
+    if not _V2_IMAGE_DB.exists():
+        return []
+    conn = sqlite3.connect(f"file:{_V2_IMAGE_DB.as_posix()}?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = conn.execute(
+            "SELECT image_type, source_page, file_path FROM document_image_v2 WHERE doc_id = ?",
+            (doc_id,),
+        ).fetchall()
+    finally:
+        conn.close()
+    return [
+        NormalizedImage(image_type=r["image_type"], source_page=r["source_page"],
+                         file_path=r["file_path"], extraction_confidence=None)
+        for r in rows
+    ]
 
 
 def _normalize_vocab(rows) -> list[NormalizedVocab]:
@@ -139,6 +169,23 @@ def normalize_document(doc_id: str) -> NormalizedDoc:
     for r in image_rows:
         img = NormalizedImage(image_type=r["image_type"], source_page=r["source_page"],
                                file_path=r["file_path"], extraction_confidence=r["extraction_confidence"])
+        images.append(img)
+    def _hash(file_path: str) -> str | None:
+        try:
+            return hashlib.md5((IMAGES_DIR / file_path).read_bytes()).hexdigest()
+        except OSError:
+            return None
+
+    existing_paths = {img.file_path for img in images}
+    existing_hashes = {h for h in (_hash(img.file_path) for img in images) if h is not None}
+    for img in _load_v2_images(doc_id):
+        if img.file_path in existing_paths:
+            continue
+        h = _hash(img.file_path)
+        if h is not None and h in existing_hashes:
+            continue  # 같은 원본 이미지가 v1/v2 양쪽에서 추출됨 - 중복 집계 방지
+        if h is not None:
+            existing_hashes.add(h)
         images.append(img)
 
     image_flags: list[Flag] = []

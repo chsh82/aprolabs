@@ -30,9 +30,13 @@ def build_step3_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
         flags.append(Flag(kind="missing", message="essay_prompt.closing_instruction이 비어 있음"))
         closing = _DEFAULT_CLOSING
 
+    essay_image = next((img for img in doc.images if img.image_type == "essay"), None)
+
     slot: dict
     if essay.image_path:
         slot = {"img": essay.image_path, "src": "원본 이미지"}
+    elif essay_image is not None:
+        slot = {"img": essay_image.file_path, "src": "원본 이미지"}
     else:
         slot = {"scene": "(LLM 생성 필요)", "avoid": "메모 질문의 답을 암시하는 요소를 넣지 않는다."}
         flags.append(Flag(kind="derived", category="placeholder",
