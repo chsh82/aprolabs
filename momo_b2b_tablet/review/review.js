@@ -168,7 +168,9 @@ $("#btnPublish").addEventListener("click", async () => {
 });
 
 /* ============ 플래그 큐(1순위) ============ */
-const FLAG_PRIORITY = ["placeholder", "widget_unavailable"]; // 승인을 막는 것·품질에 영향 큰 것을 맨 위로
+// page_split(2026-09-26): 페이지 경계로 갈라져 버려진/합쳐진 문항 - 내용
+// 손실 가능성이 있어 placeholder보다도 먼저 확인해야 한다는 사용자 지시.
+const FLAG_PRIORITY = ["page_split", "placeholder", "widget_unavailable"]; // 승인을 막는 것·품질에 영향 큰 것을 맨 위로
 
 function flagKinds() {
   const ks = [...new Set(state.flags.map(f => f.kind))];

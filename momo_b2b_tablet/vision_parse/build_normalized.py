@@ -152,8 +152,10 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
     held_excerpt_item: dict | None = None
 
     def _drop_orphan_excerpt(reason: str) -> None:
+        # category="page_split"(2026-09-26 사용자 지시) - placeholder와 구분해
+        # 검수 화면 플래그 큐 상단에 별도로 모이게 한다(review.js FLAG_PRIORITY).
         doc_flags.append(Flag(
-            kind="derived", category="placeholder",
+            kind="derived", category="page_split",
             message=f"페이지 경계로 갈라진 제시문을 질문과 합치지 못해 버림({reason}) - "
                     f"원본: \"{(held_excerpt_item['excerpt_text'] or '')[:40]}...\" "
                     f"(원본 {held_excerpt_item['page_no']}쪽) - 검수에서 수동 확인 필요",
@@ -236,7 +238,7 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
                     flags = [Flag(kind="derived", order_no=qa_counter, message=n) for n in notes]
                     flags.extend(prev["repair_flags"])
                     flags.extend(repair_flags)
-                    flags.append(Flag(kind="derived", order_no=qa_counter,
+                    flags.append(Flag(kind="derived", category="page_split", order_no=qa_counter,
                                        message=f"페이지 경계로 갈라졌던 제시문({prev['page_no']}쪽)과 "
                                                f"질문({item.get('page_no')}쪽)을 합침 - 검수에서 확인 필요"))
                     ref_table = None
@@ -258,7 +260,7 @@ def build_vision_normalized_doc(doc_id: str) -> NormalizedDoc:
                 # 제시문도 질문도 없음 - 앞 항목의 답란이 다음 쪽 첫머리로 밀려나며
                 # 생긴 빈 항목(답란만 있는 페이지 경계 잔여물)으로 보고 버린다.
                 doc_flags.append(Flag(
-                    kind="derived", category="placeholder",
+                    kind="derived", category="page_split",
                     message=f"제시문·질문이 모두 빈 항목을 버림(원본 {item.get('page_no')}쪽) - "
                             f"앞 문항의 답란이 다음 쪽으로 밀려나며 생긴 잔여물로 추정 - 검수에서 확인 필요",
                 ))
