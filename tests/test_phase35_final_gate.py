@@ -82,9 +82,19 @@ def main() -> bool:
           "최종 DRAFT_READY 중 언론/개인사이트 단독 근거로 남은 항목 0건(전부 재분류 완료)",
           str(remaining_low_tier))
 
-    check(readiness["write_performed"] is False, "load_readiness.write_performed == false(쓰기 미실행 구조적 보장)")
-    check(readiness["gate_status"]["1_environment_app_env"].startswith("BLOCKED"),
-          "게이트1(환경/APP_ENV)이 BLOCKED로 정직하게 기록됨")
+    check(readiness["write_performed"] is True, "load_readiness.write_performed == true(재시도로 게이트1 통과 후 적재 완료)")
+    check(readiness["gate_status"]["1_environment_app_env"].startswith("PASS"),
+          "게이트1(환경/APP_ENV)이 재시도 시점에 PASS로 기록됨")
+    apply_result = readiness.get("apply_result", {})
+    check(apply_result.get("inserted_vocabulary_contents") == 48, "apply_result: vocabulary_contents 48건 삽입 기록")
+    check(apply_result.get("post_apply_vocabulary_contents_count") == 5950,
+          f"apply_result: 적재 후 총 5,950건(5902+48) 기록(실제 {apply_result.get('post_apply_vocabulary_contents_count')})")
+    check(apply_result.get("post_apply_vocabulary_multiformat_items_count") == 1369,
+          "apply_result: vocabulary_multiformat_items 1,369건 불변 기록")
+    check(apply_result.get("post_apply_student_exposure_or_public_ready_true_count") == 0,
+          "apply_result: 신규 포함 전체 student_exposure/public_ready=1 행 0건 기록")
+    check("SKIPPED=48" in apply_result.get("idempotency_rerun_result", ""),
+          "apply_result: 멱등성 재실행 결과가 기록됨(SKIPPED=48)")
     check(readiness["duplicate_target_check"]["existing_links_found_in_vocabulary_content_literacy_links"] == 0,
           "대상 중복 검사 결과 0건(연구 서버 SELECT 재확인)")
 

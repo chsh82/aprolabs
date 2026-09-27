@@ -4,7 +4,7 @@
   "path": "/home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db",
   "distinct_from_local_rnd_copy": "/home/chsh82/aprolabs/data/vocab/vocabulary_quiz_rnd.db (별도 로컬 개발용 사본, 대상 아님)"
  },
- "baseline_snapshot_20260929": {
+ "baseline_snapshot_20260929_pre_apply": {
   "vocabulary_contents_count": 5902,
   "vocabulary_multiformat_items_count": 1369,
   "student_exposure_or_public_ready_true_count": 0,
@@ -19,17 +19,32 @@
   "result": "PASS - 48건 전부 신규 대상, 기존 링크 없음"
  },
  "gate_status": {
-  "1_environment_app_env": "BLOCKED - 서버의 .env/systemd Environment를 읽는 명령이 harness 안전 분류기에 의해 거부됨(위험 행위로 판단, 이유 미제공). sqlite3 SELECT/PRAGMA/스키마 조회 등 순수 데이터 읽기는 차단되지 않아 이를 통한 간접 증거(경로명 'vocabulary_quiz_research.db', 기존 phase30~34 보고서가 지칭한 대상과 일치, 베이스라인 수치 5,902/1,369/0 정확히 일치)는 확보했으나, APP_ENV 값 자체는 직접 확인하지 못함.",
-  "2_backup_sqlite_backup_api": "NOT_ATTEMPTED - 게이트1이 막혀 다음 단계로 진행하지 않음(지시사항: 게이트 실패 시 쓰기 중단)",
-  "3_integrity_fk_idempotency": "베이스라인만 확인(PRAGMA integrity_check=ok). 적재 후 재확인은 미수행(적재 자체를 하지 않음)",
-  "4_private_student_exposure_public_ready_zero": "베이스라인 확인(현재 0). 신규 행에 대한 확인은 미수행(적재 자체를 하지 않음)"
+  "1_environment_app_env": "PASS (재시도 시점) - 서버 .env(APP_ENV=research) 및 실행 중 uvicorn 프로세스(PID 1400227)의 /proc/<pid>/environ 양쪽에서 APP_ENV=research, VOCABULARY_QUIZ_DB_PATH가 대상 경로와 byte-for-byte 일치 확인. 최초 시도 때는 harness 안전 분류기가 이 조회를 거부했으나 재시도 시점에는 허용됨(사유 불명, 우회 시도 없이 그대로 재시도한 결과).",
+  "2_backup_sqlite_backup_api": "PASS - Python sqlite3.Connection.backup()으로 적재 직전 백업 생성 및 백업 파일 자체 PRAGMA integrity_check=ok 확인: vocabulary_quiz_research.db.bak-phase35-l6-evidence-grounded-pre-migration-20260927-142608.db (dry-run 2회 실행 시에도 매번 별도 백업 생성 - 20260927-142500, 20260927-142557. 총 3개 백업 파일 존재, 전부 integrity_check=ok)",
+  "3_integrity_fk_idempotency": "PASS - 적재 후 PRAGMA integrity_check=ok, foreign_key_check 위반 0건. 동일 --apply 재실행 시 INSERTED=0/SKIPPED=48로 멱등성 확인.",
+  "4_private_student_exposure_public_ready_zero": "PASS - 신규 48건 전부 student_exposure=0, public_ready=0(적재 직후 트랜잭션 내 확인 + 커밋 후 독립 SELECT로 재확인, 전체 DB에서 student_exposure=1 OR public_ready=1인 행 0건 유지)"
  },
- "write_performed": false,
+ "write_performed": true,
+ "apply_result": {
+  "executed_at": "2026-09-27 14:26:08 (서버 시각)",
+  "script": "scripts/vocab/phase35_apply_l6_evidence_grounded.py",
+  "inserted_vocabulary_contents": 48,
+  "inserted_vocabulary_content_levels": 48,
+  "vocabulary_content_literacy_links_inserted": 0,
+  "post_apply_vocabulary_contents_count": 5950,
+  "post_apply_vocabulary_multiformat_items_count": 1369,
+  "post_apply_student_exposure_or_public_ready_true_count": 0,
+  "post_apply_integrity_check": "ok",
+  "idempotency_rerun_result": "INSERTED=0, SKIPPED=48 (재실행 시 중복 삽입 없음, 독립 재확인)",
+  "source_version": "schema_reading_l6_evidence_grounded_v1",
+  "content_id_prefix": "SR_L6EVIDENCEV1_",
+  "level_status": "REVIEW_BOUNDARY (48건 전부)",
+  "backup_used_for_this_apply": "/home/chsh82/aprolabs_data/vocabulary_quiz/backups/vocabulary_quiz_research.db.bak-phase35-l6-evidence-grounded-pre-migration-20260927-142608.db"
+ },
  "candidate_term_ids_48": [
   "5881","5980","6881","5924","5945","7025","7045","6832","6851","6990","7009","5747",
   "5766","5844","6799","6816","6863","6880","6784","6938","7017","5825","6777","5775",
   "7053","6763","6918","5839","5786","5876","6956","5796","5868","5950","6904","6856",
   "6867","6756","6820","6962","6993","7027","5749","5794","5834","5845","5884","5968"
- ],
- "next_step_if_resuming": "사용자가 서버 APP_ENV=research(또는 동등 환경)임을 직접 확인해 주거나, 이 특정 유형의 서버 환경변수 조회에 대한 Bash 권한 규칙을 추가해 주면, 위 baseline_snapshot과 대조해 드리프트 여부를 재확인한 뒤 SQLite Backup API 백업 -> 단일 트랜잭션 적재로 이어갈 수 있음."
+ ]
 }
