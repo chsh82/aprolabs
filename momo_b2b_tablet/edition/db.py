@@ -101,6 +101,38 @@ CREATE TABLE IF NOT EXISTS recognition_log (
   latency_ms INTEGER,
   created_at TEXT NOT NULL
 );
+
+-- 2026-09-27 사용자 지시 - 파트너 세션 인증(edition/auth.py). URL만 알면
+-- 누구나 학생 런타임에 접근할 수 있던 구멍을 막는다: 파트너 서버가
+-- api_key로 launch_token을 발급받아 학생 태블릿에 launch=토큰으로 전달하면,
+-- 태블릿이 그 토큰을 한 번만 세션으로 교환한다(session 테이블, httpOnly
+-- 쿠키). 학생 식별은 partner_student_id(파트너가 준 가명)만 쓴다.
+CREATE TABLE IF NOT EXISTS partner (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  api_key_hash TEXT NOT NULL UNIQUE,
+  created_at TEXT NOT NULL,
+  disabled_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS launch_token (
+  token TEXT PRIMARY KEY,
+  partner_id INTEGER NOT NULL REFERENCES partner(id),
+  partner_student_id TEXT NOT NULL,
+  edition_id INTEGER NOT NULL REFERENCES edition(id),
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  used_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS session (
+  id TEXT PRIMARY KEY,
+  partner_id INTEGER NOT NULL REFERENCES partner(id),
+  partner_student_id TEXT NOT NULL,
+  edition_id INTEGER NOT NULL REFERENCES edition(id),
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
 """
 
 # 2026-09-27 사용자 지시 - 인식 제공자(gemini/anthropic/openai)를 함께 남긴다.

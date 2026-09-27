@@ -1,14 +1,18 @@
 """④⑦ edition API - SPEC §6 중 4·7단계 완료 기준에 필요한 부분.
 
 의도적으로 안 만든 것(다음 단계 몫):
-  - 파트너 세션 교환(/api/partner/sessions) - 인증·API 키는 5단계 이후.
-    지금은 launch 토큰 없이 붙는 것만 지원(renderer/adapters/api.js도 launchToken이
-    없으면 세션 교환을 건너뛰게 이미 짜여 있다).
-  - /slots/{path}/candidates, /print.pdf, /export - 5·6단계.
+  - /slots/{path}/candidates, /export - 5·6단계.
 
 실행: uvicorn edition.api:app --port 8000  (momo_b2b_tablet/에서)
-/api/runtime/recognize는 RECOGNITION_PROVIDER(기본 gemini)에 맞는 API 키가
+/api/runtime/recognize는 RECOGNITION_PROVIDER(기본 anthropic)에 맞는 API 키가
 있어야 동작한다 - gemini는 GEMINI_API_KEY, anthropic은 ANTHROPIC_API_KEY.
+
+파트너 세션 인증(2026-09-27, edition/auth.py): 학생용 런타임(/api/runtime/*)은
+파트너 세션이 있어야 접근된다 - 파트너 서버가 API 키로 launch 토큰을 받아
+학생 태블릿에 launch=토큰으로 넘기면, 태블릿이 그 토큰을 한 번만 세션(httpOnly
+쿠키)으로 바꾼다. RUNTIME_AUTH_DISABLED=true면 이 검사를 건너뛴다(진행 중인
+손글씨 인식 검증용 임시 우회 - 실서비스 전 반드시 꺼야 함). 검수(/api/editions/*)와
+인쇄(/print.pdf, /answers)는 내부용이라 그대로 인증 없이 둔다.
 """
 from __future__ import annotations
 
@@ -16,15 +20,14 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import Response
+from fastapi import FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
 from fastapi.staticfiles import StaticFiles
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from pydantic import BaseModel
 
 import jsonpatch
 
-from . import db, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, store
+from . import auth, db, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, store
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -91,6 +94,16 @@ class AnswerBody(BaseModel):
     text: dict | None = None
     ox: str | None = None
     choice: str | list[str] | None = None  # choiceList가 single:false면 배열(복수 선택)
+
+
+class PartnerSessionRequest(BaseModel):
+    partner_student_id: str
+    edition_id: int
+
+
+class SessionExchangeRequest(BaseModel):
+    edition_id: int
+    launch: str
 
 
 @app.post("/api/editions/draft")
@@ -291,8 +304,56 @@ async def print_pdf(edition_id: int, request: Request, ink: bool = False, studen
                      headers={"Content-Disposition": f'inline; filename="{filename}"'})
 
 
+@app.post("/api/partner/sessions")
+def create_partner_session(req: PartnerSessionRequest, x_partner_key: str | None = Header(default=None)):
+    """파트너 서버가 부른다(태블릿 앱이 아니라) - API 키로 학생 1명·edition 1개
+    짜리 일회용 launch 토큰을 받는다. 토큰은 몇 분 안에 /exchange로 바꿔야 하고,
+    한 번 바꾸면 재사용 못 한다."""
+    partner_id = auth.verify_partner_key(x_partner_key or "")
+    if partner_id is None:
+        raise HTTPException(401, "invalid partner key")
+    if store.get_edition_row(req.edition_id) is None:
+        raise HTTPException(404, "edition not found")
+    token, expires_in = auth.create_launch_token(partner_id, req.partner_student_id, req.edition_id)
+    return {"launch_token": token, "expires_in": expires_in}
+
+
+@app.post("/api/partner/sessions/exchange")
+def exchange_partner_session(req: SessionExchangeRequest, response: Response):
+    """태블릿 웹뷰가 launch 토큰을 세션(httpOnly 쿠키)으로 바꾼다 - 성공하면
+    한 번만 성공하고, 재사용·만료·edition 불일치는 전부 401."""
+    try:
+        session_id, expires_in = auth.exchange_launch_token(req.launch, req.edition_id)
+    except auth.TokenError as e:
+        raise HTTPException(401, str(e)) from e
+    # secure=False: 지금은 LAN 안에서 http로 태블릿 테스트를 하므로 - 실제
+    # 배포에서 https 뒤에 서비스되면 secure=True로 바꿔야 한다.
+    response.set_cookie(auth.SESSION_COOKIE_NAME, session_id, max_age=expires_in,
+                         httponly=True, samesite="lax", secure=False)
+    return {"ok": True}
+
+
+def _require_session(request: Request, claimed_edition_id: int) -> str:
+    """학생 런타임 엔드포인트 공통 인증 - partner_student_id를 돌려주거나
+    401을 던진다. RUNTIME_AUTH_DISABLED=true면(진행 중인 손글씨 인식 검증용
+    임시 우회) 예전처럼 쿼리 파라미터 student_id(없으면 dev-anonymous)만 보고
+    통과시킨다 - 실서비스 전 반드시 꺼야 한다."""
+    if auth.dev_auth_disabled():
+        return request.query_params.get("student_id") or "dev-anonymous"
+    session_id = request.cookies.get(auth.SESSION_COOKIE_NAME)
+    if not session_id:
+        raise HTTPException(401, "no session")
+    info = auth.get_session(session_id)
+    if info is None:
+        raise HTTPException(401, "session invalid or expired")
+    if info["edition_id"] != claimed_edition_id:
+        raise HTTPException(401, "session not valid for this edition")
+    return info["partner_student_id"]
+
+
 @app.get("/api/runtime/{edition_id}")
-def runtime_view(edition_id: int):
+def runtime_view(edition_id: int, request: Request):
+    _require_session(request, edition_id)
     view = store.runtime_view(edition_id)
     if view is None:
         raise HTTPException(404, "edition not found")
@@ -300,10 +361,8 @@ def runtime_view(edition_id: int):
 
 
 @app.put("/api/runtime/{edition_id}/answers/{part_id}")
-def save_answer(edition_id: int, part_id: str, body: AnswerBody, student_id: str = "dev-anonymous"):
-    # student_id: 정식 파트너 세션(§호스팅·인증)이 아직 없어 쿼리 파라미터 기본값으로
-    # 임시 대체한다 - renderer/adapters/api.js는 이 파라미터를 보내지 않으므로 지금은
-    # 항상 "dev-anonymous" 한 명으로 저장된다(5단계 이후 세션 붙이면 교체).
+def save_answer(edition_id: int, part_id: str, body: AnswerBody, request: Request):
+    student_id = _require_session(request, edition_id)
     if store.get_edition_row(edition_id) is None:
         raise HTTPException(404, "edition not found")
     store.save_answer(edition_id, part_id, student_id, ink=body.ink, text=body.text, ox=body.ox, choice=body.choice)
@@ -312,17 +371,15 @@ def save_answer(edition_id: int, part_id: str, body: AnswerBody, student_id: str
 
 @app.post("/api/runtime/recognize")
 async def recognize_handwriting(
+    request: Request,
     image: UploadFile = File(...),
     prompt: str = Form(...),
     part_id: str = Form(...),
     edition_id: int = Form(...),
     model: str | None = Form(None),
     provider: str | None = Form(None),
-    student_id: str = "dev-anonymous",
 ):
-    # edition_id: SPEC §6대로라면 세션 쿠키로 알아내야 하지만(경로에 없음) 세션이
-    # 아직 없어서(§4단계 노트와 동일한 이유) renderer/adapters/api.js가 폼 필드로
-    # 같이 보낸다 - 5단계 이후 세션이 생기면 여기서만 바꾸면 된다.
+    student_id = _require_session(request, edition_id)
     if store.get_edition_row(edition_id) is None:
         raise HTTPException(404, "edition not found")
     image_bytes = await image.read()

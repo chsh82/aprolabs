@@ -262,7 +262,10 @@ edition_flag(id, edition_id, page_idx, path /*JSON pointer*/, kind /*sup|derived
 image_candidate(id, edition_id, slot_path, model, prompt, file_path, width, height, chosen, created_at)
 correction_log(id, doc_id, field_path, before, after, reason, editor, created_at, pushed_to_source_at)
 student_answer(id, student_id, edition_id, part_id, ink_json, text, confirmed, updated_at, rev)
-recognition_log(id, answer_id, model, prompt_hash, text, unclear_count, latency_ms, created_at)
+recognition_log(id, answer_id, provider, model, prompt_hash, text, unclear_count, latency_ms, created_at)
+partner(id, name, api_key_hash, created_at, disabled_at)
+launch_token(token, partner_id, partner_student_id, edition_id, created_at, expires_at, used_at)
+session(id, partner_id, partner_student_id, edition_id, created_at, expires_at)
 ```
 
 - 확정된 edition의 `layout_json`은 **수정 불가**. 고치면 새 version.
@@ -281,10 +284,22 @@ recognition_log(id, answer_id, model, prompt_hash, text, unclear_count, latency_
 | POST | `/api/editions/{id}/slots/{path}/choose` | 후보 선택 → layout JSON의 slot에 `img` 기록 |
 | POST | `/api/editions/{id}/approve` · `/publish` | 확정 · B2B 공개 |
 | GET | `/api/editions/{id}/print.pdf` | headless Chromium으로 A4 2-up PDF |
-| GET | `/api/runtime/{edition_id}` | 학생용 layout JSON + 이미지 URL |
-| PUT | `/api/runtime/{edition_id}/answers/{part_id}` | part 단위 저장(필기·글자) |
-| POST | `/api/runtime/recognize` | 필기 PNG + part 정보 → 인식 글자(서버에서 Claude API 비전 호출) |
+| POST | `/api/partner/sessions` | 파트너 서버 전용(태블릿 앱 아님) - API 키(`X-Partner-Key` 헤더) + `{partner_student_id, edition_id}` → 일회용 launch 토큰(5분) |
+| POST | `/api/partner/sessions/exchange` | 태블릿 웹뷰가 launch 토큰을 httpOnly 세션 쿠키(4시간)로 교환 - 재사용·만료·edition 불일치는 401 |
+| GET | `/api/runtime/{edition_id}` | 학생용 layout JSON + 이미지 URL - 파트너 세션 필요(아래 인증 참고) |
+| PUT | `/api/runtime/{edition_id}/answers/{part_id}` | part 단위 저장(필기·글자) - 파트너 세션 필요 |
+| POST | `/api/runtime/recognize` | 필기 PNG + part 정보 → 인식 글자(서버에서 비전 API 호출) - 파트너 세션 필요 |
 | GET | `/api/runtime/{edition_id}/export` | 평가용 JSON(문항 → parts → 답) |
+
+**파트너 세션 인증(2026-09-27, edition/auth.py)**: 위 학생용 `/api/runtime/*` 3개는
+httpOnly 세션 쿠키가 있어야 접근된다(URL만 알면 누구나 접근 가능했던 구멍을
+막음). `RUNTIME_AUTH_DISABLED=true`면 이 검사를 전부 건너뛴다(진행 중인
+손글씨 인식 검증용 임시 우회 - **실서비스 전 반드시 꺼야 함**). 파트너
+API 키는 `python -m edition.partner_admin create "학원이름"`으로 발급(평문
+키는 그때 한 번만 보임, DB엔 해시만 저장). 검수(`/api/editions/*`)·인쇄는
+내부용이라 인증 없이 그대로 둔다. 학생 식별은 파트너가 준 가명
+(`partner_student_id`)만 쓰고, 이 값이 `student_answer.student_id`/
+`recognition_log`에 그대로 남는다.
 
 ---
 
