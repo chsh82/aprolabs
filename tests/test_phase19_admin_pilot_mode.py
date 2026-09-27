@@ -89,15 +89,44 @@ def run() -> bool:
         t: conn0.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
         for t in ("vocabulary_contents", "vocabulary_content_levels", "vocabulary_multiformat_items")
     }
-    check(counts_before["vocabulary_multiformat_items"] == 1329,
-          f"사전조건: vocabulary_multiformat_items 1,329건(phase18 적재 상태, 실제 {counts_before['vocabulary_multiformat_items']})")
-    check(counts_before["vocabulary_contents"] == 5820 and counts_before["vocabulary_content_levels"] == 5820,
-          f"사전조건: vocabulary_contents/vocabulary_content_levels 각 5,820건(실제 "
-          f"{counts_before['vocabulary_contents']}/{counts_before['vocabulary_content_levels']})")
+    # 절대 총량(vocabulary_contents/vocabulary_multiformat_items 전체 행수)은 phase18
+    # 이후에도 다른 단계(L6 core/L6 pilot 등)가 각자 새 source_version으로 계속 행을
+    # 더해 왔으므로 여기서 특정 시점의 총량을 그대로 박아 두지 않는다(phase29 후속
+    # 검증에서 지적된 대로, 과거 값을 현재 값으로 단순 치환해도 다음 단계가 또 늘리면
+    # 다시 깨진다). 이 사전조건이 실제로 지키려는 불변은 "L4·L5 파일럿 40건이 다른
+    # 배치(일반 출제 2.1.29, L4/L5 콘텐츠 원본 배치)와 완전히 격리돼 있다"는 것 -
+    # 그래서 절대 총량 대신 source_version별 고정 값을 확인한다(이 값들은 한 번 적재된
+    # 뒤로 다른 단계가 손대지 않아 계속 고정이어야 한다).
     pilot_total = conn0.execute(
         "SELECT COUNT(*) FROM vocabulary_multiformat_items WHERE source_version=?", (PILOT_MARKER,)
     ).fetchone()[0]
-    check(pilot_total == 40, f"사전조건: 파일럿 marker 문항 정확히 40건(실제 {pilot_total})")
+    check(pilot_total == 40, f"사전조건: L4·L5 파일럿 marker 문항 정확히 40건(실제 {pilot_total})")
+
+    general_items_total = conn0.execute(
+        "SELECT COUNT(*) FROM vocabulary_multiformat_items WHERE source_version=?", (mf.SOURCE_VERSION,)
+    ).fetchone()[0]
+    check(general_items_total == 1289,
+          f"사전조건: 일반 출제(source_version={mf.SOURCE_VERSION!r}) 문항이 파일럿과 격리된 "
+          f"고정 값 1,289건 그대로(실제 {general_items_total}) - 파일럿 40건이 이 풀에 섞이지 않았음")
+
+    l4_content_total = conn0.execute(
+        "SELECT COUNT(*) FROM vocabulary_contents WHERE source_version='schema_reading_literacy_l4_manual_v1'"
+    ).fetchone()[0]
+    l5_content_total = conn0.execute(
+        "SELECT COUNT(*) FROM vocabulary_contents WHERE source_version='schema_reading_literacy_l5_manual_v1'"
+    ).fetchone()[0]
+    check(l4_content_total == 49 and l5_content_total == 48,
+          f"사전조건: 파일럿이 참조하는 L4/L5 콘텐츠 원본 배치가 각각 고정 값 49/48건 "
+          f"그대로(실제 {l4_content_total}/{l5_content_total}) - 다른 단계가 이 배치를 건드리지 않았음")
+
+    pilot_content_ids = {
+        r[0] for r in conn0.execute(
+            "SELECT DISTINCT source_content_id FROM vocabulary_multiformat_items WHERE source_version=?",
+            (PILOT_MARKER,),
+        ).fetchall()
+    }
+    check(len(pilot_content_ids) == 20,
+          f"사전조건: 파일럿 40건이 정확히 20개 고유 content_id를 참조(실제 {len(pilot_content_ids)})")
     conn0.close()
 
     test_uid = None
