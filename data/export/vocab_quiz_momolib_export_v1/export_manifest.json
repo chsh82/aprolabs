@@ -1,0 +1,27 @@
+{
+ "export_tool": "scripts/vocab/export_l6_content_for_momolib.py",
+ "baseline_full_db": {
+  "vocabulary_contents": 5950,
+  "vocabulary_multiformat_items": 1369,
+  "pilot_l4l5_items_in_db": 40,
+  "pilot_l6_items_in_db": 40,
+  "note": "연구 DB 전체 기준선(고정 검증값) - 이식 대상 전체가 아님, 아래 exported_payload만 실제 이식 대상"
+ },
+ "exported_payload": {
+  "contents_count": 227,
+  "contents_sha256": "db6cf8945c09cdb88e194bdd444908f2f68e4f204f8d3180c4bf1c6e273c792d",
+  "content_levels_count": 227,
+  "content_levels_sha256": "c64d39059e548249b6836f301a949193968a06aa0822fdb1f8dd4c75b9b8826b",
+  "pilot_l4l5_items_count": 40,
+  "pilot_l4l5_items_sha256": "929cd5b6850a71681c706601a348e058b1faa8dccc1a3fc12dc4b31f294aada4",
+  "pilot_l6_items_count": 40,
+  "pilot_l6_items_sha256": "89c325e8ba398b52a88ee5d5ee246144532085a3bec265745c953645d21a315b",
+  "source_versions_included": [
+   "schema_reading_literacy_l4_manual_v1",
+   "schema_reading_literacy_l5_manual_v1",
+   "schema_reading_literacy_l6_manual_v1",
+   "schema_reading_literacy_l6_manual_v2",
+   "schema_reading_l6_evidence_grounded_v1"
+  ]
+ }
+}
