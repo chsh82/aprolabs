@@ -8,7 +8,7 @@
  * 임시로 실어 보낸다 - edition/api.py 쪽에도 같은 메모가 있다. 세션이 생기면 이 파일만
  * 고치면 된다(§6 표의 엔드포인트 나머지 - 세션 교환, export 등 - 도 마찬가지).
  */
-export function createApiAdapters({ editionId, baseUrl, launchToken, recognizeModel }) {
+export function createApiAdapters({ editionId, baseUrl, launchToken, recognizeModel, recognizeProvider }) {
   let exchanged = !launchToken;
 
   async function ensureSession() {
@@ -109,6 +109,7 @@ export function createApiAdapters({ editionId, baseUrl, launchToken, recognizeMo
     form.append("part_id", partId);
     form.append("edition_id", String(editionId));
     if (recognizeModel) form.append("model", recognizeModel); // 사용자 지시: 모델 비교용 override
+    if (recognizeProvider) form.append("provider", recognizeProvider); // 2026-09-27: 제공자(gemini/anthropic) override
     const res = await fetch(`${baseUrl}/api/runtime/recognize`, {
       method: "POST", credentials: "include", body: form, signal,
     });

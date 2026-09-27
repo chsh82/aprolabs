@@ -303,16 +303,30 @@ recognition_log(id, answer_id, model, prompt_hash, text, unclear_count, latency_
 
 | 시안(claude.ai 아티팩트) | 이식 후 |
 |---|---|
-| `window.claude.use("sample")`로 인식 | `POST /api/runtime/recognize` (서버가 Claude API 호출) |
+| `window.claude.use("sample")`로 인식 | `POST /api/runtime/recognize` (서버가 비전 API 호출 - RECOGNITION_PROVIDER로 제공자 선택, 기본 gemini) |
 | `localStorage`에 필기·글자 저장 | part 단위 `PUT answers` + 오프라인 대기열(연결 복구 시 재전송) |
 | 데이터를 HTML에 내장 | `GET /api/runtime/{edition_id}`로 JSON 로드, 이미지는 URL |
 | "그림 자리 설명" 토글 | 학생 화면에서는 제거(검수 페이지 전용) |
 
 유지할 동작: 펜만 필기(손가락은 페이지 넘김, 펜 사용 직후 0.9초 손바닥 무시), 펜/지우개/되돌리기, 칸별 "글자로 확인" → 필기와 인식 글자 나란히 → 학생 수정 후 저장, 필기 수정 시 "다시 확인" 표시, 탭 선택형 O·X, 인쇄 시 학생 필기 포함.
 
-**인식 프롬프트(현행)**: "이미지는 {학년} 학생이 태블릿에 펜으로 쓴 한국어 손글씨 답안입니다. 전체 질문: … / 이 답란이 답하는 부분: … 이미지에 적힌 글자를 보이는 그대로 옮겨 적으세요. 맞춤법·띄어쓰기를 고치지 말고 내용을 보태지 마세요. 줄바꿈 유지. 알아볼 수 없는 글자는 [?]. JSON {"text", "unclear"}로만."
+**인식 프롬프트(현행)**: "이미지는 {학년} 학생이 태블릿에 펜으로 쓴 한국어 손글씨 답안입니다. 전체 질문: … / 이 답란이 답하는 부분: … 이미지에 적힌 글자를 보이는 그대로 옮겨 적으세요. 맞춤법·띄어쓰기를 고치지 말고 내용을 보태지 마세요. 줄바꿈 유지. 알아볼 수 없는 글자는 [?]. JSON {"text", "unclear"}로만." 제공자(gemini/anthropic/openai)와 무관하게 완전히 동일한 문자열을 그대로 넘긴다(`edition/recognize.py`).
 
-**개인정보**: 미성년자 필기 데이터. 보관 기간, 외부 모델 전송 범위, 삭제 요청 처리를 B2B 계약 조항과 맞출 것.
+**인식 제공자(2026-09-27)**: `RECOGNITION_PROVIDER`(기본 `gemini`, `GEMINI_API_KEY` 필요) /
+`RECOGNITION_MODEL`(제공자별 기본값은 `edition/recognize.py`의 `_DEFAULT_MODELS` -
+아직 실측 비교 전 잠정치, 우선 `gemini-3.1-flash-lite` 대 `gemini-3.8-flash`를
+`tests/compare_recognition_models.py`로 비교해 확정 예정). 기존 anthropic 경로는
+`RECOGNITION_PROVIDER=anthropic`으로 그대로 남아 있다(비교·장애 시 대체용).
+`recognition_log`에 provider/model을 함께 기록.
+
+**개인정보**: 미성년자 필기 데이터. 보관 기간, 외부 모델 전송 범위, 삭제 요청 처리를
+B2B 계약 조항과 맞출 것. **2026-09-27 조사 결과, Gemini Developer API 약관(Age
+Requirements 조항)은 "18세 미만이 이용하거나 이용할 가능성이 있는" API Client에서의
+사용 자체를 금지하고 있어(유료/무료 구분 없음, 교육용 예외 없음) 이 프로젝트(초·중등
+학생 대상)와 정면으로 충돌한다 - 결정 전 반드시 재확인 필요(아래 "제공자 결정 전
+확인 필요" 참고). Anthropic API 약관은 "미성년자 대상 서비스" 자체는 허용하되
+연령 확인·콘텐츠 모니터링·아동보호법 준수 등 안전조치 이행을 조건으로 한다(더 명확한
+경로).**
 
 ---
 

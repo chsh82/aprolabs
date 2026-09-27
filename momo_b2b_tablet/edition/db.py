@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS student_answer (
 CREATE TABLE IF NOT EXISTS recognition_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   answer_id INTEGER NOT NULL REFERENCES student_answer(id),
+  provider TEXT,
   model TEXT,
   prompt_hash TEXT,
   text TEXT,
@@ -101,6 +102,14 @@ CREATE TABLE IF NOT EXISTS recognition_log (
   created_at TEXT NOT NULL
 );
 """
+
+# 2026-09-27 사용자 지시 - 인식 제공자(gemini/anthropic/openai)를 함께 남긴다.
+# CREATE TABLE IF NOT EXISTS는 이미 만들어진 기존 edition_store.db엔 새 컬럼을
+# 추가해 주지 않으므로 ALTER TABLE로 마이그레이션한다(컬럼이 이미 있으면
+# "duplicate column" 예외가 나는데, 그건 이미 마이그레이션된 것이므로 무시).
+_MIGRATIONS = [
+    "ALTER TABLE recognition_log ADD COLUMN provider TEXT",
+]
 
 
 def get_connection() -> sqlite3.Connection:
@@ -114,6 +123,12 @@ def init_db() -> None:
     conn = get_connection()
     try:
         conn.executescript(SCHEMA)
+        for stmt in _MIGRATIONS:
+            try:
+                conn.execute(stmt)
+            except sqlite3.OperationalError as e:
+                if "duplicate column" not in str(e):
+                    raise
         conn.commit()
     finally:
         conn.close()

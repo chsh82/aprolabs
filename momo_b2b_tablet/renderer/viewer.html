@@ -30,6 +30,7 @@
           editionId, baseUrl,
           launchToken: qs.get("launch") || "",
           recognizeModel: qs.get("model") || "", // 손글씨 인식 모델 비교용(사용자 지시 7단계)
+          recognizeProvider: qs.get("provider") || "", // 2026-09-27: 인식 제공자(gemini/anthropic) override
         })
       : adapterName === "review"
       ? createReviewAdapters({ editionId, baseUrl })

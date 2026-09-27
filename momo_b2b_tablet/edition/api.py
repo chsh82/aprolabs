@@ -7,7 +7,8 @@
   - /slots/{path}/candidates, /print.pdf, /export - 5·6단계.
 
 실행: uvicorn edition.api:app --port 8000  (momo_b2b_tablet/에서)
-ANTHROPIC_API_KEY 환경변수가 있어야 /api/runtime/recognize가 동작한다.
+/api/runtime/recognize는 RECOGNITION_PROVIDER(기본 gemini)에 맞는 API 키가
+있어야 동작한다 - gemini는 GEMINI_API_KEY, anthropic은 ANTHROPIC_API_KEY.
 """
 from __future__ import annotations
 
@@ -316,6 +317,7 @@ async def recognize_handwriting(
     part_id: str = Form(...),
     edition_id: int = Form(...),
     model: str | None = Form(None),
+    provider: str | None = Form(None),
     student_id: str = "dev-anonymous",
 ):
     # edition_id: SPEC §6대로라면 세션 쿠키로 알아내야 하지만(경로에 없음) 세션이
@@ -325,23 +327,24 @@ async def recognize_handwriting(
         raise HTTPException(404, "edition not found")
     image_bytes = await image.read()
     try:
-        result = await recognize_mod.recognize_handwriting(image_bytes, prompt, model=model)
+        result = await recognize_mod.recognize_handwriting(image_bytes, prompt, model=model, provider=provider)
     except recognize_mod.RecognitionError as e:
         status = {"rate_limited": 429, "upstream_error": 502}.get(e.code, 422)
         raise HTTPException(status, detail=e.code) from e
-    store.log_recognition(edition_id, student_id, part_id, result["model"], prompt,
+    store.log_recognition(edition_id, student_id, part_id, result["provider"], result["model"], prompt,
                            result["text"], result["unclear"], result["latency_ms"])
-    _save_handwriting_sample(edition_id, part_id, student_id, result["model"], image_bytes)
+    _save_handwriting_sample(edition_id, part_id, student_id, result["provider"], result["model"], image_bytes)
     return {"text": result["text"], "unclear": result["unclear"]}
 
 
-def _save_handwriting_sample(edition_id: int, part_id: str, student_id: str, model: str, image_bytes: bytes) -> None:
+def _save_handwriting_sample(edition_id: int, part_id: str, student_id: str, provider: str, model: str,
+                              image_bytes: bytes) -> None:
     safe_part = part_id.replace("/", "_")
     safe_student = student_id.replace("/", "_")
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%f")
     out_dir = HANDWRITING_SAMPLES_DIR / str(edition_id)
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / f"{safe_student}_{safe_part}_{model}_{ts}.png").write_bytes(image_bytes)
+    (out_dir / f"{safe_student}_{safe_part}_{provider}-{model}_{ts}.png").write_bytes(image_bytes)
 
 
 @app.on_event("shutdown")

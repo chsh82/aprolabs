@@ -584,12 +584,14 @@ def save_answer(edition_id: int, part_id: str, student_id: str,
         conn.close()
 
 
-def log_recognition(edition_id: int, student_id: str, part_id: str, model: str, prompt: str,
-                     text: str, unclear: int, latency_ms: int) -> None:
-    """⑦단계: recognition_log에 모델·프롬프트 해시·결과·unclear 수·지연 시간을 남긴다
-    (사용자 지시 2026-09-23). recognition_log.answer_id는 student_answer를 참조하므로,
-    아직 그 part의 답안 행이 없으면(필기 저장 전에 인식부터 부른 경우) 먼저 빈 행을
-    만들어 둔다."""
+def log_recognition(edition_id: int, student_id: str, part_id: str, provider: str, model: str,
+                     prompt: str, text: str, unclear: int, latency_ms: int) -> None:
+    """⑦단계: recognition_log에 제공자·모델·프롬프트 해시·결과·unclear 수·지연
+    시간을 남긴다(사용자 지시 2026-09-23, provider는 2026-09-27 추가 - 기본
+    제공자를 Gemini로 바꾸면서 어느 제공자였는지도 같이 남겨야 나중에
+    haiku/sonnet/opus 대 Gemini 비교가 recognition_log만 보고도 가능하다).
+    recognition_log.answer_id는 student_answer를 참조하므로, 아직 그 part의
+    답안 행이 없으면(필기 저장 전에 인식부터 부른 경우) 먼저 빈 행을 만들어 둔다."""
     conn = db.get_connection()
     try:
         row = conn.execute(
@@ -607,9 +609,9 @@ def log_recognition(edition_id: int, student_id: str, part_id: str, model: str, 
             answer_id = row["id"]
         prompt_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         conn.execute(
-            "INSERT INTO recognition_log (answer_id, model, prompt_hash, text, unclear_count, "
-            "latency_ms, created_at) VALUES (?,?,?,?,?,?,?)",
-            (answer_id, model, prompt_hash, text, unclear, latency_ms, _now()),
+            "INSERT INTO recognition_log (answer_id, provider, model, prompt_hash, text, unclear_count, "
+            "latency_ms, created_at) VALUES (?,?,?,?,?,?,?,?)",
+            (answer_id, provider, model, prompt_hash, text, unclear, latency_ms, _now()),
         )
         conn.commit()
     finally:
