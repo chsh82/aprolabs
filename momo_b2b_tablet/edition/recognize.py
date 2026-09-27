@@ -6,11 +6,20 @@
 사용자 지시(2026-09-23) 7단계: 모델을 바꿔 호출할 수 있는 옵션을 남겨 둔다(정확도
 비교용) - model 인자/환경변수 둘 다로 override 가능.
 
-사용자 지시(2026-09-27): 기본 제공자를 Gemini로 바꾼다("아직 실제 필기로
-검증 전이라 모델 등급은 비교 후 확정" - 그래서 RECOGNITION_MODEL 기본값은
-잠정치다, 아래 _DEFAULT_MODELS 참고). 기존 Claude(anthropic) 경로는 비교와
-장애 시 대체용으로 그대로 남긴다 - RECOGNITION_PROVIDER=anthropic으로
-호출하면 이전과 동일하게 동작한다.
+사용자 지시(2026-09-27, 1차): 기본 제공자를 Gemini로. → (2차, 같은 날) 약관
+조사 결과 Gemini Developer API의 "Age Requirements" 조항이 18세 미만이
+이용하거나 이용할 가능성이 있는 API Client에서의 사용을 금지하고(유·무료
+구분 없음, 교육용 예외 없음) 있어 이 프로젝트(초·중등 학생 대상)와 충돌 -
+사용자가 기본값을 anthropic으로 되돌리라고 지시함("조항이 명확하고 교육용
+예외가 없다. 비용 차이가 위험을 감수할 이유가 안 된다. B2B 계약에서 약관
+위반 상태로는 답할 수 없다"). 자세한 근거·Anthropic이 요구하는 안전조치는
+SPEC_손글씨_인식_제공자_정책.md 참고.
+
+Gemini 경로는 코드에 남겨 둔다(GEMINI_API_KEY가 있고 RECOGNITION_PROVIDER=
+gemini나 provider="gemini" 인자를 명시적으로 줄 때만 호출됨 - 키가 없으면
+호출 자체가 RecognitionError로 막힌다. 나중에 계약 경로가 정리되면 기본값만
+다시 바꾸면 됨). RECOGNITION_MODEL 기본값(_DEFAULT_MODELS)은 아직 실제
+필기로 등급을 확정하기 전이라 잠정치다.
 """
 from __future__ import annotations
 
@@ -26,16 +35,16 @@ from google.genai import errors as genai_errors
 from google.genai import types as genai_types
 
 # 제공자별 기본 모델 - 아직 실제 필기로 등급을 확정하기 전이라 잠정치다.
-# 사용자 지시: 우선 Gemini 3.1 Flash-Lite와 3.8 Flash를 비교 대상에 넣을 것 -
-# 그중 더 싸고 빠른 3.1 Flash-Lite를 기본값으로 잡아 두고, 비교 결과가 나오면
-# 이 값을 바꾼다(RECOGNITION_MODEL 환경변수로 배포 단위 기본값을 바로 덮어쓸 수
-# 있으니 코드를 고치지 않고도 교체 가능).
+# gemini 쪽은 Gemini 3.1 Flash-Lite와 3.8 Flash를 비교 대상으로 넣어 뒀던
+# 값을 그대로 남겨 둔다(계약 경로 정리 후 다시 쓸 수 있게) - 기본 제공자가
+# anthropic이라 지금은 호출되지 않는다. RECOGNITION_MODEL 환경변수로 배포
+# 단위 기본값을 코드 수정 없이 덮어쓸 수 있다.
 _DEFAULT_MODELS = {
     "gemini": "gemini-3.1-flash-lite",
     "anthropic": "claude-sonnet-5",
 }
 
-DEFAULT_PROVIDER = os.environ.get("RECOGNITION_PROVIDER", "gemini").lower()
+DEFAULT_PROVIDER = os.environ.get("RECOGNITION_PROVIDER", "anthropic").lower()
 
 
 def _default_model(provider: str) -> str:

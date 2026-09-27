@@ -41,6 +41,7 @@ function shellHtml({ logoUrl, brand, mode }) {
 
 <section class="sheet" id="readSheet" aria-hidden="true" aria-labelledby="rsTitle">
   <h3 id="rsTitle">글자로 확인하기</h3>
+  <p class="ai-disclosure">인공지능(AI)이 손글씨를 읽어서 보여줘요. 다르게 읽었으면 옆에서 고쳐 쓸 수 있어요.</p>
   <p class="sq" id="rsQ"></p>
   <div class="pair">
     <div class="preview" id="rsPrev"></div>

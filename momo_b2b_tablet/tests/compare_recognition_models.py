@@ -3,15 +3,21 @@
 호출할 수 있는 옵션을 남겨 주세요").
 
 실제 태블릿에서 쓴 필기 PNG를 준비한 뒤 이 스크립트로 여러 모델 결과를 비교하면 됨.
---models는 "제공자:모델"을 콤마로 구분한다(제공자 생략 시 gemini로 간주).
-기본값은 사용자 지시(2026-09-27)로 Gemini 3.1 Flash-Lite 대 3.8 Flash 비교다.
-GEMINI_API_KEY(gemini)/ANTHROPIC_API_KEY(anthropic) 환경변수가 있어야 한다.
+--models는 "제공자:모델"을 콤마로 구분한다(제공자 생략 시 anthropic으로 간주 -
+기본 인식 제공자와 맞춤, edition/recognize.py 참고).
+
+기본 비교 대상은 Claude 3종(Haiku 4.5/Sonnet 5/Opus 5.5)이다 - 2026-09-27
+사용자 지시로 기본 인식 제공자를 Gemini에서 Anthropic으로 되돌리면서(약관
+조사 결과, SPEC_손글씨_인식_제공자_정책.md 참고) 등급 비교 대상도 Claude로
+바꿨다. Gemini는 --models로 여전히 비교 대상에 넣을 수 있다(GEMINI_API_KEY
+필요, 계약 경로 정리 전까지는 참고용).
+ANTHROPIC_API_KEY(anthropic)/GEMINI_API_KEY(gemini) 환경변수가 있어야 한다.
 
 실행:
     python tests/compare_recognition_models.py 필기.png
     python tests/compare_recognition_models.py 필기.png "학생이 답한 질문: ..."
     python tests/compare_recognition_models.py 필기.png "..." \
-        --models gemini:gemini-3.1-flash-lite,gemini:gemini-3.8-flash,anthropic:claude-sonnet-5
+        --models anthropic:claude-haiku-4-5-20251001,anthropic:claude-sonnet-5,gemini:gemini-3.1-flash-lite
 """
 from __future__ import annotations
 
@@ -29,16 +35,25 @@ if str(REPO_ROOT) not in sys.path:
 
 from edition.recognize import RecognitionError, recognize_handwriting  # noqa: E402
 
-# 사용자 지시(2026-09-27): "우선 Gemini 3.1 Flash-Lite와 3.8 Flash를 비교
-# 대상에 넣어 주세요" - 실제 필기로 등급을 확정하기 전까지의 기본 비교 대상.
-DEFAULT_TARGETS = ["gemini:gemini-3.1-flash-lite", "gemini:gemini-3.8-flash"]
+# 사용자 지시(2026-09-27, 2차): 기본 인식 제공자를 Anthropic으로 되돌리면서
+# 등급 비교 기본 대상도 Claude 3종으로. "Opus 5.5"의 정확한 API 모델 ID는
+# 이 저장소의 다른 곳(시스템 프롬프트 등)에서 확인된 적이 없어 기존 명명
+# 규칙(claude-haiku-4-5-20251001의 "4-5"가 "4.5")을 그대로 적용해 추정했다 -
+# 실제 실행 전에 정확한 ID인지 확인 필요.
+DEFAULT_TARGETS = [
+    "anthropic:claude-haiku-4-5-20251001",
+    "anthropic:claude-sonnet-5",
+    "anthropic:claude-opus-5-5",
+]
 
 
 def _parse_target(spec: str) -> tuple[str, str]:
     if ":" in spec:
         provider, model = spec.split(":", 1)
         return provider.strip(), model.strip()
-    return "gemini", spec.strip()
+    return "anthropic", spec.strip()
+
+
 DEFAULT_PROMPT = "\n".join([
     "이미지는 초등학교 5학년 학생이 태블릿에 펜으로 쓴 한국어 손글씨 답안입니다.",
     "학생이 답한 질문: (비교 테스트용 - 실제 질문 문맥 없음)",
