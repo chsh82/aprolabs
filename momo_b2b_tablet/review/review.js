@@ -373,10 +373,23 @@ const PRESET_DEFS = [
   { key: "split_page", label: "페이지 나누기" },
 ];
 
+const STEP_VALUES = ["STEP 1", "STEP 2", "STEP 3"];
+
 function renderPresetPanel(body, page, idx) {
   body.append(el("hr", { class: "section-divider" }));
   body.append(el("h3", {}, "프리셋 버튼"));
   body.append(el("p", { class: "hint" }, "LLM 없이 바로 적용되는 고정 패치입니다. 눌러도 바로 저장되지 않고 먼저 미리보기로 보여줍니다."));
+
+  if ("step" in page) {
+    // 2026-09-27 사용자 지시 [A] - 값이 셋뿐이라 드롭다운(버튼형 선택)이 적합.
+    const select = el("select", {}, STEP_VALUES.map(v =>
+      el("option", { value: v, selected: v === page.step ? "selected" : false }, v)));
+    body.append(field("STEP 단계 바꾸기", select));
+    select.onchange = () => {
+      if (select.value !== page.step) openPresetPreview(idx, "set_step", "STEP 단계 바꾸기", { step: select.value });
+    };
+  }
+
   const grid = el("div", { class: "preset-grid" });
   PRESET_DEFS.forEach(def => {
     if (def.types && !def.types.has(page.type)) return;
@@ -412,15 +425,15 @@ function renderPresetPreviewBar() {
   $("#presetPreviewToggle").textContent = pp.showingPreview ? "원래 화면 보기" : "미리보기 다시 보기";
 }
 
-async function openPresetPreview(pageIdx, presetKey, label) {
+async function openPresetPreview(pageIdx, presetKey, label, params) {
   try {
     const res = await api(`/api/editions/${editionId}/preset-preview`, {
       method: "POST",
-      body: JSON.stringify({ preset: presetKey, page_idx: pageIdx }),
+      body: JSON.stringify({ preset: presetKey, page_idx: pageIdx, params: params || null }),
     });
     const key = `preset-preview:${editionId}`;
     sessionStorage.setItem(key, JSON.stringify(res.layout));
-    state.presetPreview = { pageIdx, preset: presetKey, label, summary: res.summary, key, showingPreview: true };
+    state.presetPreview = { pageIdx, preset: presetKey, label, params, summary: res.summary, key, showingPreview: true };
     renderPresetPreviewBar();
     await loadFrameWithSrc(previewSrc(key), pageIdx);
   } catch (e) {
@@ -442,7 +455,7 @@ async function applyPresetPreview() {
   try {
     const data = await api(`/api/editions/${editionId}/preset-apply`, {
       method: "POST",
-      body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, editor: "reviewer", expected_rev: state.rev }),
+      body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, params: pp.params || null, editor: "reviewer", expected_rev: state.rev }),
     });
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     sessionStorage.removeItem(pp.key);
@@ -512,6 +525,101 @@ async function fetchSourceCandidates(page) {
   catch (e) { return null; }
 }
 
+// 2026-09-27 사용자 지시 [B] - 안내 문구도 사람이 직접 고치는 경로가
+// 원래 허용돼 있는데 입력창이 없었다. topic/inst/closing처럼 페이지 종류를
+// 안 가리는 단순 문자열 필드는 키 존재 여부만으로 공통 처리한다.
+const FREE_TEXT_FIELDS = [
+  ["topic", "주제(topic)"],
+  ["inst", "안내 문구(inst)"],
+  ["closing", "마무리 문구(closing)"],
+];
+
+function renderFreeTextFields(body, page, idx, basePath) {
+  FREE_TEXT_FIELDS.forEach(([key, label]) => {
+    if (!(key in page)) return;
+    const val = page[key] || "";
+    const ta = el("textarea", { rows: "2" }, val);
+    body.append(field(label, ta));
+    ta.addEventListener("blur", () => {
+      if (ta.value !== val) patch([{ op: "replace", path: `${basePath}/${key}`, value: ta.value }],
+        { reason: `검수: ${label} 수정` });
+    });
+  });
+}
+
+function excerptParagraphs(page) {
+  const text = (page.excerpt && page.excerpt.text && page.excerpt.text[0]) || "";
+  return text.split("\n").filter(p => p.trim());
+}
+
+// 2026-09-27 사용자 지시 [B]-1 - 제시문 전문 편집 + 문단 단위 앞/뒤 페이지
+// 이동(젊은 예술가 18·19쪽처럼 자동 반반 분할이 아니라 사람이 경계를 직접
+// 조정해야 하는 경우). excerpt.text는 항상 원소 1개짜리 리스트라 "\n"으로
+// 문단을 이어붙인다(edition/presets.py의 split/merge와 같은 데이터 모양).
+function renderExcerptInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("h3", {}, "제시문(excerpt)"));
+
+  const fullText = (page.excerpt.text && page.excerpt.text[0]) || "";
+  const ta = el("textarea", { rows: "6" }, fullText);
+  body.append(field("전문 편집", ta,
+    el("div", { class: "hint" }, "여러 문단이면 줄바꿈으로 구분됩니다.")));
+  ta.addEventListener("blur", () => {
+    if (ta.value !== fullText) {
+      patch([{ op: "replace", path: `${basePath}/excerpt/text`, value: [ta.value] }],
+        { reason: "검수: 제시문 전문 수정" });
+    }
+  });
+
+  const pages = state.layout.pages;
+  const prevPage = idx > 0 ? pages[idx - 1] : null;
+  const nextPage = idx < pages.length - 1 ? pages[idx + 1] : null;
+  const canSendPrev = !!(prevPage && prevPage.excerpt);
+  const canSendNext = !!(nextPage && nextPage.excerpt);
+  const paragraphs = excerptParagraphs(page);
+
+  if ((canSendPrev || canSendNext) && paragraphs.length) {
+    const moveHost = el("div", {});
+    paragraphs.forEach((para, pi) => {
+      const row = el("div", { class: "subfield-row", style: "align-items:flex-start" });
+      row.append(el("div", { style: "flex:1 1 auto;font-size:11.5px;color:var(--sub);word-break:break-all" },
+        para.length > 70 ? para.slice(0, 70) + "…" : para));
+      if (canSendPrev) {
+        const btn = el("button", { class: "btn btn--small" }, "◀ 앞 페이지로");
+        btn.onclick = () => moveParagraph(idx, pi, -1);
+        row.append(btn);
+      }
+      if (canSendNext) {
+        const btn = el("button", { class: "btn btn--small" }, "뒤 페이지로 ▶");
+        btn.onclick = () => moveParagraph(idx, pi, 1);
+        row.append(btn);
+      }
+      moveHost.append(row);
+    });
+    body.append(field("문단 이동(분할 경계 조정)", moveHost,
+      el("div", { class: "hint" }, "옮기면 두 페이지 미리보기가 함께 갱신됩니다.")));
+  }
+}
+
+async function moveParagraph(idx, paraIdx, direction) {
+  const pages = state.layout.pages;
+  const page = pages[idx];
+  const targetIdx = idx + direction;
+  const targetPage = pages[targetIdx];
+  if (!targetPage || !targetPage.excerpt) return;
+
+  const paragraphs = excerptParagraphs(page);
+  const [moved] = paragraphs.splice(paraIdx, 1);
+  const targetParagraphs = excerptParagraphs(targetPage);
+  if (direction < 0) targetParagraphs.push(moved);
+  else targetParagraphs.unshift(moved);
+
+  await patch([
+    { op: "replace", path: `/pages/${idx}/excerpt/text`, value: [paragraphs.join("\n")] },
+    { op: "replace", path: `/pages/${targetIdx}/excerpt/text`, value: [targetParagraphs.join("\n")] },
+  ], { reason: "검수: 제시문 문단 이동" });
+}
+
 function renderInspector() {
   const body = $("#inspectorBody");
   const empty = $("#inspectorEmpty");
@@ -537,6 +645,8 @@ function renderInspector() {
     })));
   }
 
+  renderFreeTextFields(body, page, idx, basePath);
+  if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (SLOT_CAPABLE_TYPES.has(page.type)) renderSlotInspector(body, page, idx, basePath);
   renderPresetPanel(body, page, idx);
@@ -652,9 +762,11 @@ function renderFormSubfields(host, q, qPath, form, justSwitched) {
       listHost.innerHTML = "";
       items.forEach((b, i) => {
         const labelInput = el("input", { type: "text", placeholder: "라벨", value: b.label });
+        const promptInput = el("input", { type: "text", placeholder: "안내 문구(prompt, 선택)", value: b.prompt });
         const removeBtn = el("button", { class: "btn btn--small btn--danger", onclick: () => { items.splice(i, 1); rerender(); save({ blanks: items }); } }, "삭제");
         labelInput.onblur = () => { items[i].label = labelInput.value; save({ blanks: items }); };
-        listHost.append(el("div", { class: "subfield-row" }, [labelInput, removeBtn]));
+        promptInput.onblur = () => { items[i].prompt = promptInput.value; save({ blanks: items }); };
+        listHost.append(el("div", { class: "subfield-row" }, [labelInput, promptInput, removeBtn]));
       });
     };
     rerender();
@@ -672,10 +784,12 @@ function renderFormSubfields(host, q, qPath, form, justSwitched) {
       rows.forEach((r, i) => {
         const labelInput = el("input", { type: "text", placeholder: "머리칸(label)", value: r.label });
         const hintInput = el("input", { type: "text", placeholder: "힌트(선택)", value: r.hint });
+        const promptInput = el("input", { type: "text", placeholder: "안내 문구(prompt, 선택)", value: r.prompt });
         const removeBtn = el("button", { class: "btn btn--small btn--danger", onclick: () => { rows.splice(i, 1); rerender(); save({ rows }); } }, "삭제");
         labelInput.onblur = () => { rows[i].label = labelInput.value; save({ rows }); };
         hintInput.onblur = () => { rows[i].hint = hintInput.value; save({ rows }); };
-        listHost.append(el("div", { class: "subfield-row" }, [labelInput, hintInput, removeBtn]));
+        promptInput.onblur = () => { rows[i].prompt = promptInput.value; save({ rows }); };
+        listHost.append(el("div", { class: "subfield-row" }, [labelInput, hintInput, promptInput, removeBtn]));
       });
     };
     rerender();
@@ -692,9 +806,11 @@ function renderFormSubfields(host, q, qPath, form, justSwitched) {
       listHost.innerHTML = "";
       items.forEach((it, i) => {
         const hintInput = el("input", { type: "text", placeholder: "힌트(선택, 쪽수 등)", value: it.hint });
+        const promptInput = el("input", { type: "text", placeholder: "안내 문구(prompt, 선택)", value: it.prompt });
         const removeBtn = el("button", { class: "btn btn--small btn--danger", onclick: () => { items.splice(i, 1); rerender(); save({ items }); } }, "삭제");
         hintInput.onblur = () => { items[i].hint = hintInput.value; save({ items }); };
-        listHost.append(el("div", { class: "subfield-row" }, [hintInput, removeBtn]));
+        promptInput.onblur = () => { items[i].prompt = promptInput.value; save({ items }); };
+        listHost.append(el("div", { class: "subfield-row" }, [hintInput, promptInput, removeBtn]));
       });
     };
     rerender();
@@ -711,16 +827,18 @@ function renderFormSubfields(host, q, qPath, form, justSwitched) {
       listHost.innerHTML = "";
       cards.forEach((c, i) => {
         const titleInput = el("input", { type: "text", placeholder: "카드 제목", value: c.title });
+        const promptInput = el("input", { type: "text", placeholder: "안내 문구(prompt, 선택)", value: c.prompt });
         const nInput = el("input", { type: "number", placeholder: "번호 칸(선택)", value: c.n || "", min: "0", style: "width:80px" });
         const removeBtn = el("button", { class: "btn btn--small btn--danger", onclick: () => { cards.splice(i, 1); rerender(); save({ cards: cards.map(cleanCard) }); } }, "삭제");
         titleInput.onblur = () => { cards[i].title = titleInput.value; save({ cards: cards.map(cleanCard) }); };
+        promptInput.onblur = () => { cards[i].prompt = promptInput.value; save({ cards: cards.map(cleanCard) }); };
         nInput.onblur = () => {
           cards[i].n = nInput.value ? parseInt(nInput.value, 10) : null;
           // 사용자 지시 2번: 한쪽에 번호 칸이 있으면 반대쪽도 같은 n으로 맞춘다(비교형 대칭 규칙)
           if (cards[i].n) cards.forEach(c => { c.n = cards[i].n; });
           rerender(); save({ cards: cards.map(cleanCard) });
         };
-        listHost.append(el("div", { class: "subfield-row" }, [titleInput, nInput, removeBtn]));
+        listHost.append(el("div", { class: "subfield-row" }, [titleInput, promptInput, nInput, removeBtn]));
       });
     };
     const cleanCard = c => c.n ? { title: c.title, prompt: c.prompt, n: c.n } : { title: c.title, prompt: c.prompt };

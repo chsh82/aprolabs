@@ -30,6 +30,24 @@ def _page(layout: dict, idx: int) -> dict:
     return pages[idx]
 
 
+# ---------- 0. STEP 단계 바꾸기(2026-09-27 사용자 지시 [A]) ----------
+_STEP_VALUES = {"STEP 1", "STEP 2", "STEP 3"}
+
+
+def preset_set_step(layout: dict, idx: int, params: dict) -> PresetResult:
+    p = _page(layout, idx)
+    if "step" not in p:
+        raise PresetNotApplicable(f"'{p.get('type')}' 페이지엔 STEP 표시가 없음")
+    new_step = (params or {}).get("step")
+    if new_step not in _STEP_VALUES:
+        raise PresetNotApplicable(f"step 값은 {sorted(_STEP_VALUES)} 중 하나여야 함")
+    cur = p.get("step")
+    if cur == new_step:
+        raise PresetNotApplicable(f"이미 {new_step}임")
+    ops = [{"op": "add", "path": f"/pages/{idx}/step", "value": new_step}]
+    return PresetResult(ops, f"이 페이지를 {cur} -> {new_step}로 옮깁니다")
+
+
 # ---------- 1. 좌우 바꾸기 ----------
 _MIRROR_TYPES = {"qa", "qaband", "qaref", "solo"}
 
@@ -205,6 +223,7 @@ def preset_split_page(layout: dict, idx: int, params: dict) -> PresetResult:
 
 
 PRESETS = {
+    "set_step": preset_set_step,
     "mirror": preset_mirror,
     "title_top": preset_title_top,
     "three_tier": preset_three_tier,
@@ -217,6 +236,7 @@ PRESETS = {
 }
 
 PRESET_LABELS = {
+    "set_step": "STEP 단계 바꾸기",
     "mirror": "좌우 바꾸기",
     "title_top": "제목 중앙 상단",
     "three_tier": "3층 구조",

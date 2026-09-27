@@ -88,8 +88,8 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
 .field-check{display:flex;align-items:center;gap:8px;margin-bottom:14px}
 .diff-box{border:1px solid var(--line);border-radius:6px;padding:8px 9px;font-size:12px;line-height:1.55;background:var(--bg);white-space:pre-wrap;word-break:break-word;max-height:140px;overflow-y:auto;margin-top:6px}
 .diff-box .diff-label{font:700 10px/1 "Noto Sans KR",sans-serif;color:var(--sub);text-transform:uppercase;display:block;margin-bottom:4px}
-.subfield-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
-.subfield-row input{flex:1 1 auto}
+.subfield-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.subfield-row input{flex:1 1 100px}
 .subfield-add{margin-top:2px}
 .section-divider{border:0;border-top:1px solid var(--line);margin:16px 0}
 .todo-note{font-size:11.5px;color:var(--sub);background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:8px 9px}
