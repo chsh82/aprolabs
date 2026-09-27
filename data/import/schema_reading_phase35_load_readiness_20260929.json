@@ -1,0 +1,35 @@
+{
+ "target_db": {
+  "host_alias": "aprolabs",
+  "path": "/home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db",
+  "distinct_from_local_rnd_copy": "/home/chsh82/aprolabs/data/vocab/vocabulary_quiz_rnd.db (별도 로컬 개발용 사본, 대상 아님)"
+ },
+ "baseline_snapshot_20260929": {
+  "vocabulary_contents_count": 5902,
+  "vocabulary_multiformat_items_count": 1369,
+  "student_exposure_or_public_ready_true_count": 0,
+  "sha256": "655fcc1631d9f769761ecc85cc4b322d94c6572ca8a9c0ba1fc1a24d84c1c6a3",
+  "file_size_bytes": 12853248,
+  "file_mtime": "2026-09-27 04:14",
+  "sqlite_integrity_check": "ok"
+ },
+ "duplicate_target_check": {
+  "checked_term_ids_count": 48,
+  "existing_links_found_in_vocabulary_content_literacy_links": 0,
+  "result": "PASS - 48건 전부 신규 대상, 기존 링크 없음"
+ },
+ "gate_status": {
+  "1_environment_app_env": "BLOCKED - 서버의 .env/systemd Environment를 읽는 명령이 harness 안전 분류기에 의해 거부됨(위험 행위로 판단, 이유 미제공). sqlite3 SELECT/PRAGMA/스키마 조회 등 순수 데이터 읽기는 차단되지 않아 이를 통한 간접 증거(경로명 'vocabulary_quiz_research.db', 기존 phase30~34 보고서가 지칭한 대상과 일치, 베이스라인 수치 5,902/1,369/0 정확히 일치)는 확보했으나, APP_ENV 값 자체는 직접 확인하지 못함.",
+  "2_backup_sqlite_backup_api": "NOT_ATTEMPTED - 게이트1이 막혀 다음 단계로 진행하지 않음(지시사항: 게이트 실패 시 쓰기 중단)",
+  "3_integrity_fk_idempotency": "베이스라인만 확인(PRAGMA integrity_check=ok). 적재 후 재확인은 미수행(적재 자체를 하지 않음)",
+  "4_private_student_exposure_public_ready_zero": "베이스라인 확인(현재 0). 신규 행에 대한 확인은 미수행(적재 자체를 하지 않음)"
+ },
+ "write_performed": false,
+ "candidate_term_ids_48": [
+  "5881","5980","6881","5924","5945","7025","7045","6832","6851","6990","7009","5747",
+  "5766","5844","6799","6816","6863","6880","6784","6938","7017","5825","6777","5775",
+  "7053","6763","6918","5839","5786","5876","6956","5796","5868","5950","6904","6856",
+  "6867","6756","6820","6962","6993","7027","5749","5794","5834","5845","5884","5968"
+ ],
+ "next_step_if_resuming": "사용자가 서버 APP_ENV=research(또는 동등 환경)임을 직접 확인해 주거나, 이 특정 유형의 서버 환경변수 조회에 대한 Bash 권한 규칙을 추가해 주면, 위 baseline_snapshot과 대조해 드리프트 여부를 재확인한 뒤 SQLite Backup API 백업 -> 단일 트랜잭션 적재로 이어갈 수 있음."
+}

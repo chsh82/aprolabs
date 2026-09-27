@@ -1,0 +1,55 @@
+﻿term_id,headword,batch,location,evidence_tier,access_status,quote_supports_target_meaning,final_status_after_reverify,hold_category_after_reverify,note
+5881,공권력,new_50,https://www.koreadaily.com/article/439053,사전,OK,YES,DRAFT_READY,,35단계: 언론(코리아데일리) 단독에서 표준국어대사전 직접 재확인으로 교체(언론/개인사이트 단독 배제 규칙)
+5954,정당정치,new_50,https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=83596 ; https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002164290,공공기관,OK,NO,HOLD,출처부족,"정당법 제2조는 '정당' 정의이지 '정당정치' 정의가 아님, KCI 논문도 다른 강조점 - HOLD로 재분류"
+5980,엽관제도,new_50,https://kbthink.com/dictionary/view.html?dictId=KED-00007717,학술_교재,OK,YES,DRAFT_READY,,"KB Think 금융용어사전, 재접속 확인"
+6881,생명의 기원과 종의 진화,new_50,https://horizon.kias.re.kr/24985/,학술_교재,OK,YES,DRAFT_READY,,"KIAS(고등과학원) HORIZON, 재접속 확인"
+5924,정치의 의미,new_50,https://dic.kumsung.co.kr/web/smart/detail.do?headwordId=9115&findCategory=B002002&findBookId=21,학술_교재,OK,YES,DRAFT_READY,,"금성출판사 스마트 教과서 사전, 재접속 확인"
+5945,탄핵소추,new_50,https://www.ccourt.go.kr/site/kor/03/10302030000002020100508.jsp,공공기관,OK,YES,DRAFT_READY,,"헌법재판소 공식 사이트, 재접속 확인"
+7025,전도성과 반도체,new_50,https://encykorea.aks.ac.kr/Article/E0021462 ; https://wordrow.kr/의미/전도성/,사전,OK,YES,DRAFT_READY,,"반도체=한국민족문화대백과사전(재접속 확인), 전도성=표준국어대사전(직접 재확인)"
+7045,강유전체,new_50,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=강유전체,사전,REPLACED,YES,DRAFT_READY,,원 URL(wordrow.kr) 403 -> 표준국어대사전 직접 재확인으로 교체
+6832,면역,new_50,https://www.amc.seoul.kr/asan/healthinfo/easymediterm/easyMediTermDetail.do?dictId=1183,학술_교재,OK,YES,DRAFT_READY,,"서울아산병원 의학정보, 재접속 확인"
+6851,백신,new_50,https://encykorea.aks.ac.kr/Article/E0080791,학술_교재,OK,YES,DRAFT_READY,,"한국민족문화대백과사전, 재접속 확인(집필자·수정일 확인됨)"
+6990,양자,new_50,https://www.webzineriks.or.kr/post/양자역학은-아는데-양자는-몰라---박성관,학술_교재,OK,YES,DRAFT_READY,,"한국연구원(RIKS) 웹진, 재접속 확인"
+7009,양자 컴퓨터,new_50,https://www.ibm.com/think/topics/quantum-computing,학술_교재,OK,PARTIAL,DRAFT_READY,,"IBM 공식 설명, 핵심은 지지하나 '고전컴퓨터로 불가능한 문제 해결'이라는 강조점 AI정의에 없음"
+5747,합리성,new_50,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=합리성,사전,REPLACED,YES,DRAFT_READY,,원 URL(wordrow.kr) 403 -> 표준국어대사전 직접 재확인으로 교체
+5766,소득탄력성,new_50,https://www.nongmin.com/article/20171123284578,사전,OK,YES,DRAFT_READY,,35단계: 언론(농민신문) 단독에서 표준국어대사전 직접 재확인으로 교체
+5844,환율의 경기자동조절기능,new_50,https://eiec.kdi.re.kr/material/clickView.do?click_yymm=201512&cidx=1634,공공기관,OK,PARTIAL,DRAFT_READY,,"KDI 자료, 재접속 확인하나 '중앙은행 개입으로 실제로는 완전 자동은 아님'이라는 반론도 포함 - 이론적 서술은 지지"
+5862,화이트스완,new_50,https://www.danbinews.com/news/articleView.html?idxno=1586,언론,OK,YES,HOLD,출처부족,"단비뉴스 시사용어, 재접속 확인 | 35단계: 언론/개인사이트 단독 근거 배제 규칙으로 HOLD 재하향"
+6799,항성,new_50,https://www.koreadaily.com/article/20220916150004218 ; https://ko.wikipedia.org/wiki/항성,사전,OK,YES,DRAFT_READY,,35단계: 언론+위키 단독에서 표준국어대사전 직접 재확인으로 교체
+6816,지구중심설(천동설),new_50,http://www.e-science.co.kr/news/articleView.html?idxno=82645,사전,OK,YES,DRAFT_READY,,35단계: 언론(이코노미사이언스) 단독에서 표준국어대사전 직접 재확인으로 교체
+5817,세이의 법칙,new_50,https://www.cfe.org/20171228_10790 ; 교차확인 https://sgsg.hankyung.com/article/2018110240801,학술_교재,OK,NO,HOLD,뜻충돌,"자유기업원 원문이 AI 정의의 통속적 서술을 명시적으로 반박 - CONFLICT로 재분류, HOLD"
+6863,줄기세포 연구,new_50,https://www.bioin.or.kr/collectView.do?collection_sn=17,공공기관,OK,YES,DRAFT_READY,,"국가생명공학정책연구센터(BioIN), 재접속 확인"
+6880,단일클론항체,new_50,https://www.nnpc.re.kr/bbs/board.php?bo_table=02_01_02&wr_id=200&sca=나노바이오,공공기관,OK,PARTIAL,DRAFT_READY,,"국가나노기술정책센터, 정확한 문구 대신 사례로 특이성 시사"
+6784,지구공전궤도의 이심률변화,new_50,https://scienceon.kisti.re.kr/srch/selectPORSrchTrend.do?cn=SCTM00228212,공공기관,OK,YES,DRAFT_READY,,"KISTI 사이언스온, 재접속 확인(주기 수치까지 일치)"
+6938,모세관 현상,new_50,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=모세관현상,사전,REPLACED,YES,DRAFT_READY,,원 URL(wordrow.kr) 403 -> 표준국어대사전 직접 재확인으로 교체
+7017,열적 평형,new_50,https://dic.kumsung.co.kr/web/smart/detail.do?headwordId=611&findCategory=B002004&findBookId=24,학술_교재,OK,YES,DRAFT_READY,,"금성출판사 티칭백과, 재접속 확인"
+5825,스놉효과,new_50,https://dic.hankyung.com/economy/view/?seq=14343,공공기관,OK,YES,DRAFT_READY,,35단계: 언론(한경 용어사전) 단독에서 기획재정부 시사경제용어사전(공공기관)으로 교체
+6777,연안쇄파,new_50,https://k-knowledge.kr/srch/read.jsp?id=268087364,공공기관,OK,YES,DRAFT_READY,,"디지털집현전(방위사업청), 재접속 확인 + 발행기관 직접 확정"
+5775,기펜재,new_50,https://eiec.kdi.re.kr/material/conceptList.do?depth01=00002000010000100004&idx=32,공공기관,OK,PARTIAL,DRAFT_READY,,"KDI, '소득 일정' 전제 조건이 AI 정의에 없음(표준 단순화 수준)"
+7053,형광 단백질,new_50,https://www.ibs.re.kr/cop/bbs/BBSMSTR_000000000901/selectBoardArticle.do?nttId=16567,공공기관,OK,YES,DRAFT_READY,,"기초과학연구원(IBS) 웹진, 재접속 확인"
+6763,포화수증기압,new_50,https://www.scienceall.com/brd/board/390/L/menu/317?brdType=R&thisPage=1&bbsSn=198257,학술_교재,OK,PARTIAL,DRAFT_READY,,"사이언스올, 동적평형 관점 vs AI의 '최대 포함' 관점 - 기존 PARTIAL_MATCH 유지"
+6825,겉보기등급과 절대등급,new_50,https://javalab.org/en/magnitude_en/,개인사이트,OK,YES,HOLD,출처부족,"Javalab(물리교사 운영), 재접속 확인 - 개인사이트 등급 명시 | 35단계: 언론/개인사이트 단독 근거 배제 규칙으로 HOLD 재하향"
+6945,열역학 제3법칙,new_50,https://www.kmecnews.co.kr/news/articleView.html?idxno=30480,언론,OK,YES,HOLD,출처부족,"전기신문(kmecnews), 재접속 확인 | 35단계: 언론/개인사이트 단독 근거 배제 규칙으로 HOLD 재하향"
+6968,반응 속도와 농도,new_50,https://serc.snu.ac.kr/wp-content/uploads/sites/80/2022/b/14_화학_반응속도에_영향을_주는_요인_유미형1.pdf,학술_교재,FAILED,NO,HOLD,출처부족,"SNU 교육청 연수자료 PDF는 실재하나 스캔형이라 텍스트 추출 불가 - 인용 안 함, HOLD"
+6918,이상 기체,new_50,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=이상기체,사전,REPLACED,YES,DRAFT_READY,,원 URL(gnu.ac.kr) ECONNREFUSED -> 표준국어대사전 직접 재확인으로 교체
+5839,파생통화,new_50,https://mofe.go.kr/sisa/dictionary/detail?idx=2719,공공기관,OK,PARTIAL,DRAFT_READY,,"기획재정부 시사경제용어사전, 재접속 확인"
+5786,직접세,new_50,https://mofe.go.kr/sisa/dictionary/detail?idx=2410,공공기관,OK,PARTIAL,DRAFT_READY,,"기획재정부 시사경제용어사전, 정확한 표현(부담자=의무자)까지는 명시 안 함 - 표준국어대사전이 더 정확했음(참고)"
+5876,실질적평등,new_50,https://dic.kumsung.co.kr/web/smart/detail.do?headwordId=9281&findCategory=B002002&findBookId=21,학술_교재,OK,YES,DRAFT_READY,,"금성출판사 스마트 사전, 재접속 확인"
+6956,가역 반응,new_50,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=가역반응,사전,REPLACED,YES,DRAFT_READY,,원 URL(dict.wordrow.kr) 403 -> 표준국어대사전 직접 재확인으로 교체
+5796,국민총소득,new_50,http://dic.kumsung.co.kr/web/smart/detail.do?headwordId=10122&findCategory=B002002&findBookId=27,학술_교재,OK,PARTIAL,DRAFT_READY,,"금성출판사 사전, '교역조건 반영' 뉘앙스가 AI 정의에 없음(표준 단순화 수준)"
+5868,도덕적 자율,new_50,https://stdict.korean.go.kr/ (검색어: 도덕),사전,OK,YES,DRAFT_READY,,"표준국어대사전 '도덕' 항목, 재접속 확인(정확한 문구 일치)"
+5950,형사재판,new_50,https://www.scourt.go.kr/kids/trial/trial_class/criminal_trial/index.html,공공기관,OK,YES,DRAFT_READY,,"대법원 어린이 법교육 사이트, 재접속 확인"
+6904,엑손,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=엑손,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+6856,유전자,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=유전자,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+6867,줄기세포,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=줄기세포,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+6756,고기압,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=고기압,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+6820,초신성,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=초신성,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+6962,활성화 에너지,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=활성화%20에너지,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+6993,광전효과,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=광전효과,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+7027,반도체,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=반도체,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+5749,상품,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=상품 (뜻풀이 「1」),사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+5794,국민소득,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=국민소득,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+5834,지급준비제도,reverify_15,https://opendict.korean.go.kr/search/searchResult?query=지급준비제도,사전,OK,YES,DRAFT_READY,,"우리말샘, 재접속 확인"
+5845,고정환율제도,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=고정환율제,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+5884,공화제,reverify_15,https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=공화제,사전,OK,YES,DRAFT_READY,,"표준국어대사전, 재접속 확인"
+5968,포퓰리즘,reverify_15,https://opendict.korean.go.kr/search/searchResult?query=포퓰리즘,사전,OK,YES,DRAFT_READY,,"우리말샘, 재접속 확인"
