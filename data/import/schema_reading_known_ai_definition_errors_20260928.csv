@@ -1,0 +1,2 @@
+term_id,headword,error_type,error_description,identified_phase,identified_date,exclude_from_auto_draft,exclude_from_load_candidate,resolution_status
+5800,명목GDP,DEFINITION_INVERSION,"AI 정의가 ""물가 변동을 반영하지 않고 당해 연도의 시장 가격을 기준으로 계산""이라고 서술하나, 이는 실질GDP의 특징이다. 명목GDP는 오히려 물가 변동(당해 연도 가격)을 그대로 반영한 지표다 - 명목/실질을 가르는 핵심 속성이 뒤바뀐 실제 오류(KDI 자료로 CONFLICT 확인, phase33).",phase33,2026-09-28,True,True,UNRESOLVED_AWAITING_DRY_RUN
