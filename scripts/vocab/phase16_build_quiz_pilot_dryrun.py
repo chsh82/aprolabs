@@ -87,6 +87,10 @@ def eul_reul(word: str) -> str:
     return "을" if _has_batchim(word) else "를"
 
 
+def ira_neun(word: str) -> str:
+    return "이라는" if _has_batchim(word) else "라는"
+
+
 def build_items(pool, level_label):
     items = []
     n = len(pool)
@@ -126,7 +130,7 @@ def build_items(pool, level_label):
             "options_json": json.dumps(options, ensure_ascii=False),
             "correct_option": correct_pos,
             "answer_payload_json": json.dumps({"correct_option": correct_pos}, ensure_ascii=False),
-            "explanation": f"'{lemma}'{eun_neun(lemma)} '{definition}'이라는 뜻입니다.",
+            "explanation": f"'{lemma}'{eun_neun(lemma)} '{definition}'{ira_neun(definition)} 뜻입니다.",
             "wrong_option_reasons_json": json.dumps(wrong_reasons, ensure_ascii=False),
             "source_version": "schema_reading_l4l5_pilot_dryrun_v1",
             "expert_review_status": "관리자 검토용 초안 (전문가 검수 완료 아님) - V항목, phase15 AUTO_PASS 기반",
