@@ -12,6 +12,7 @@ ANTHROPIC_API_KEY 환경변수가 있어야 /api/runtime/recognize가 동작한�
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
@@ -28,6 +29,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 EXTRACTED_DIR = REPO_ROOT / "momo_book_db" / "extracted_images"
 RENDERER_DIR = Path(__file__).resolve().parent.parent / "renderer"
+# 2026-09-27 사용자 지시 - 손글씨 인식 정확도 검증(실제 태블릿에서 여러 학년대
+# 학생이 쓴 필기를 모아 모델별로 비교) 준비. recognize 호출 시 인식 결과
+# 텍스트만 DB(recognition_log)에 남고 원본 PNG는 그냥 버려지고 있었는데,
+# tests/compare_recognition_models.py로 나중에 haiku/sonnet/opus를 나란히
+# 비교하려면 그 이미지 자체가 있어야 한다. 학생 콘텐츠라 git에는 안 올린다
+# (.gitignore에 추가).
+HANDWRITING_SAMPLES_DIR = Path(__file__).resolve().parent.parent / "handwriting_samples"
 
 db.init_db()
 
@@ -323,7 +331,17 @@ async def recognize_handwriting(
         raise HTTPException(status, detail=e.code) from e
     store.log_recognition(edition_id, student_id, part_id, result["model"], prompt,
                            result["text"], result["unclear"], result["latency_ms"])
+    _save_handwriting_sample(edition_id, part_id, student_id, result["model"], image_bytes)
     return {"text": result["text"], "unclear": result["unclear"]}
+
+
+def _save_handwriting_sample(edition_id: int, part_id: str, student_id: str, model: str, image_bytes: bytes) -> None:
+    safe_part = part_id.replace("/", "_")
+    safe_student = student_id.replace("/", "_")
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%f")
+    out_dir = HANDWRITING_SAMPLES_DIR / str(edition_id)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / f"{safe_student}_{safe_part}_{model}_{ts}.png").write_bytes(image_bytes)
 
 
 @app.on_event("shutdown")
