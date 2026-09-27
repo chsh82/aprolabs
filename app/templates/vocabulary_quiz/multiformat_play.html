@@ -15,8 +15,19 @@
       <span>L4·L5 파일럿 문항만 출제 (phase18, 관리자 검토 전용{% if not pilot_available %} — 비활성{% endif %})</span>
     </label>
     {% if pilot_unavailable_reason %}
-    <p class="text-xs {% if '무결성' in pilot_unavailable_reason %}text-red-600{% else %}text-gray-500{% endif %} mb-4">
+    <p class="text-xs {% if '무결성' in pilot_unavailable_reason %}text-red-600{% else %}text-gray-500{% endif %} mb-1">
       {{ pilot_unavailable_reason }}
+    </p>
+    {% endif %}
+
+    <label class="flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer mb-1 bg-sky-50 border-sky-300"
+           {% if l6_pilot_unavailable_reason %}title="{{ l6_pilot_unavailable_reason }}"{% endif %}>
+      <input type="checkbox" id="l6-pilot-mode-checkbox" {% if not l6_pilot_available %}disabled{% endif %}>
+      <span>L6 파일럿 문항만 출제 (phase28, 관리자 검토 전용{% if not l6_pilot_available %} — 비활성{% endif %})</span>
+    </label>
+    {% if l6_pilot_unavailable_reason %}
+    <p class="text-xs {% if '무결성' in l6_pilot_unavailable_reason %}text-red-600{% else %}text-gray-500{% endif %} mb-4">
+      {{ l6_pilot_unavailable_reason }}
     </p>
     {% else %}
     <div class="mb-4"></div>
@@ -168,6 +179,13 @@
     return !!(pilotModeCheckbox && pilotModeCheckbox.checked);
   }
 
+  // ---------- L6 파일럿(v1, phase28) - L4·L5 파일럿과도, 레벨별 출제와도 완전히 별도 경로 ----------
+  const l6PilotModeCheckbox = document.getElementById("l6-pilot-mode-checkbox");
+
+  function isL6PilotMode() {
+    return !!(l6PilotModeCheckbox && l6PilotModeCheckbox.checked);
+  }
+
   function selectedLevel() {
     return levelSelect.value === "" ? null : parseInt(levelSelect.value, 10);
   }
@@ -177,15 +195,17 @@
   }
 
   async function refreshAvailability() {
-    if (isPilotMode()) {
+    if (isPilotMode() || isL6PilotMode()) {
+      const endpoint = isL6PilotMode() ? "/l6-pilot-availability" : "/pilot-availability";
+      const label = isL6PilotMode() ? "L6 파일럿" : "파일럿";
       const types = Array.from(document.querySelectorAll(".type-checkbox:checked:not(:disabled)")).map(el => el.value);
       const params = new URLSearchParams();
       types.forEach(t => params.append("item_type", t));
       try {
-        const data = await api(`/pilot-availability?${params.toString()}`);
+        const data = await api(`${endpoint}?${params.toString()}`);
         lastAvailability = data;
         availabilityInfo.textContent =
-          `파일럿 가용 문항: ${data.available_items}개 · 고유 어휘: ${data.distinct_words}개`;
+          `${label} 가용 문항: ${data.available_items}개 · 고유 어휘: ${data.distinct_words}개`;
         levelWarningBadge.classList.add("hidden");
         document.querySelectorAll(".type-count").forEach(el => {
           const t = el.dataset.typeCount;
@@ -234,7 +254,7 @@
 
   function updateStartButton() {
     const questionCount = parseInt(document.getElementById("question-count").value, 10) || 0;
-    if ((isPilotMode() || selectedLevel() !== null) && lastAvailability) {
+    if ((isPilotMode() || isL6PilotMode() || selectedLevel() !== null) && lastAvailability) {
       startBtn.disabled = questionCount > lastAvailability.available_items || lastAvailability.available_items === 0;
       startBtn.classList.toggle("opacity-40", startBtn.disabled);
       startBtn.classList.toggle("cursor-not-allowed", startBtn.disabled);
@@ -244,25 +264,47 @@
     }
   }
 
+  function enterPilotUiState(noticeText) {
+    // 파일럿 모드(L4·L5든 L6이든)는 레벨/신뢰도 선택과 무관한 완전히 별도 경로 -
+    // 해당 필드는 숨기고 값도 서버에 보내지 않는다(start-btn 핸들러 참고).
+    levelScopeFields.classList.add("hidden");
+    confidenceField.classList.add("hidden");
+    levelWarningBadge.classList.add("hidden");
+    const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
+    if (crosswordCb) { crosswordCb.checked = false; crosswordCb.disabled = true; }
+    crosswordNotice.textContent = noticeText;
+    crosswordNotice.classList.remove("hidden");
+  }
+
+  function exitPilotUiState() {
+    levelScopeFields.classList.remove("hidden");
+    if (selectedLevel() === null) {
+      const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
+      if (crosswordCb) crosswordCb.disabled = false;
+      crosswordNotice.classList.add("hidden");
+    }
+  }
+
   if (pilotModeCheckbox) {
     pilotModeCheckbox.addEventListener("change", () => {
       if (isPilotMode()) {
-        // 파일럿 모드는 레벨/신뢰도 선택과 무관한 완전히 별도 경로 - 해당 필드는
-        // 숨기고 값도 서버에 보내지 않는다(start-btn 핸들러 참고).
-        levelScopeFields.classList.add("hidden");
-        confidenceField.classList.add("hidden");
-        levelWarningBadge.classList.add("hidden");
-        const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
-        if (crosswordCb) { crosswordCb.checked = false; crosswordCb.disabled = true; }
-        crosswordNotice.textContent = "파일럿 모드는 십자말을 지원하지 않습니다.";
-        crosswordNotice.classList.remove("hidden");
-      } else {
-        levelScopeFields.classList.remove("hidden");
-        if (selectedLevel() === null) {
-          const crosswordCb = typeCheckboxes.find(x => x.value === "CROSSWORD");
-          if (crosswordCb) crosswordCb.disabled = false;
-          crosswordNotice.classList.add("hidden");
-        }
+        if (l6PilotModeCheckbox) l6PilotModeCheckbox.checked = false;  // 두 파일럿 모드는 상호 배타적
+        enterPilotUiState("파일럿 모드는 십자말을 지원하지 않습니다.");
+      } else if (!isL6PilotMode()) {
+        exitPilotUiState();
+      }
+      questionCountField.classList.remove("hidden");
+      refreshAvailability();
+    });
+  }
+
+  if (l6PilotModeCheckbox) {
+    l6PilotModeCheckbox.addEventListener("change", () => {
+      if (isL6PilotMode()) {
+        if (pilotModeCheckbox) pilotModeCheckbox.checked = false;  // 두 파일럿 모드는 상호 배타적
+        enterPilotUiState("L6 파일럿 모드는 십자말을 지원하지 않습니다.");
+      } else if (!isPilotMode()) {
+        exitPilotUiState();
       }
       questionCountField.classList.remove("hidden");
       refreshAvailability();
@@ -327,11 +369,14 @@
     const types = Array.from(document.querySelectorAll(".type-checkbox:checked")).map(el => el.value);
     const questionCount = parseInt(document.getElementById("question-count").value, 10) || {{ default_question_count }};
     const pilotMode = isPilotMode();
-    const level = pilotMode ? null : selectedLevel();
+    const l6PilotMode = isL6PilotMode();
+    const level = (pilotMode || l6PilotMode) ? null : selectedLevel();
     try {
       const body = { item_types: types.length ? types : null, question_count: questionCount };
       if (pilotMode) {
         body.pilot_mode = true;
+      } else if (l6PilotMode) {
+        body.l6_pilot_mode = true;
       } else if (level !== null) {
         body.selected_vocab_level = level;
         body.confidence_mode = selectedConfidenceMode();
@@ -668,8 +713,11 @@
     const levelInfoEl = document.getElementById("result-level-info");
     const li = data.level_info;
     const pi = data.pilot_info;
+    const l6pi = data.l6_pilot_info;
     if (pi) {
       levelInfoEl.textContent = `L4·L5 파일럿(phase18) · 후보 ${pi.candidate_count}문항`;
+    } else if (l6pi) {
+      levelInfoEl.textContent = `L6 파일럿(phase28) · 후보 ${l6pi.candidate_count}문항`;
     } else {
       levelInfoEl.textContent = li
         ? `L${li.selected_vocab_level} ${li.grade_label} · ${li.confidence_mode === "auto_only" ? "고신뢰도만" : "전체 후보"} · ${li.level_version} · 후보 ${li.candidate_count}문항`
