@@ -1,0 +1,4 @@
+﻿term_id,headword,field,original_xlsx_value_note,current_db_value,proposed_value,proposed_basis,applied
+6817,별의 진화,definition,"원본 XLSX에 정의 없음(구조적, 대조 불가)",별이 가시구름에서 탄생하여 성장하고 변형하여 마침내 사멸하기까지의 과정.,가스구름,"일반 지구과학 지식 - '가시구름'은 표준 용어가 아니며 '가스구름'(성운)의 오기로 추정(원문 정의가 없어 100% 확정 불가, 사람 확인 필요)",False
+6960,르 샤를리에 원리,headword,원본 XLSX 표제어 = 현재 DB와 동일('르 샤를리에 원리') - AI가 표제어를 지어낸 것이 아님,르 샤를리에 원리,르샤틀리에,표준 교과서 표기 대조(화학) - '르샤틀리에'가 통용 표기,False
+5900,핌비,headword,원본 XLSX 표제어 = 현재 DB와 동일('핌비') - AI가 표제어를 지어낸 것이 아님,핌비,핌피,표준 교과서 표기 대조(사회) - '핌피'(PIMFY)가 통용 표기,False

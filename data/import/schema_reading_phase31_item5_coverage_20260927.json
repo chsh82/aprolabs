@@ -1,0 +1,17 @@
+{
+ "by_subject_xlsx_coverage": {
+  "사회": {
+   "total": 324,
+   "with_def": 34,
+   "with_subject_meta": 324
+  },
+  "과학": {
+   "total": 343,
+   "with_def": 0,
+   "with_subject_meta": 343
+  }
+ },
+ "ai_tagged_l6_schema_count": 576,
+ "individual_grade_evidence_count": 0,
+ "total_l6_vs_count": 693
+}
