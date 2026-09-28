@@ -11,8 +11,14 @@
 파트너 세션이 있어야 접근된다 - 파트너 서버가 API 키로 launch 토큰을 받아
 학생 태블릿에 launch=토큰으로 넘기면, 태블릿이 그 토큰을 한 번만 세션(httpOnly
 쿠키)으로 바꾼다. RUNTIME_AUTH_DISABLED=true면 이 검사를 건너뛴다(진행 중인
-손글씨 인식 검증용 임시 우회 - 실서비스 전 반드시 꺼야 함). 검수(/api/editions/*)와
-인쇄(/print.pdf, /answers)는 내부용이라 그대로 인증 없이 둔다.
+손글씨 인식 검증용 임시 우회 - 실서비스 전 반드시 꺼야 함).
+
+검수 로그인(2026-09-28, edition/review_auth.py, 사용자 지시 [5]): 검수 화면
+(/review/*)과 편집 API(/api/editions/* - 아래 review_router)는 인터넷에
+그대로 열려 있으면 안 되어서 HTTP Basic Auth로 막는다(REVIEW_ACCOUNTS
+환경변수). /api/editions/{id}/meta만 예외(momolib 등 파트너가 교재
+메타데이터만 조회하는 공개 엔드포인트 - 전문·정답·이미지 지시문 등 민감한
+내용은 없음). 인쇄(/print.pdf, /answers)는 review_router 안에 있어 같이 막힌다.
 """
 from __future__ import annotations
 
@@ -20,14 +26,15 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
+from fastapi import APIRouter, Depends, FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
+from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from pydantic import BaseModel
 
 import jsonpatch
 
-from . import auth, db, image_gen, notify, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, store
+from . import auth, db, image_gen, notify, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, review_auth, store
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -59,6 +66,43 @@ if RENDERER_DIR.exists():
 REVIEW_DIR = Path(__file__).resolve().parent.parent / "review"
 if REVIEW_DIR.exists():
     app.mount("/review", StaticFiles(directory=str(REVIEW_DIR), html=True), name="review")
+
+
+@app.middleware("http")
+async def _require_review_login(request: Request, call_next):
+    """2026-09-28 [5] - /review/*는 StaticFiles 마운트라 APIRouter의
+    dependencies=[Depends(...)]가 안 통한다(Starlette Mount는 의존성을 못
+    받음) - 그래서 여기서 경로로 직접 걸러 Basic Auth를 요구한다."""
+    if request.url.path.startswith("/review"):
+        if review_auth.check_basic_auth(request) is None:
+            return Response(status_code=401, headers={"WWW-Authenticate": "Basic"})
+    return await call_next(request)
+
+
+# 2026-09-28 [5] - 편집 API 전체에 로그인을 요구한다. /api/editions/{id}/meta는
+# router 밖(app에 직접)에 둬서 momolib 등 파트너의 공개 메타데이터 조회는
+# 그대로 인증 없이 열어둔다(전문·정답 등 민감한 내용은 안 들어있음).
+review_router = APIRouter(dependencies=[Depends(review_auth.get_current_editor)])
+
+
+@app.get("/api/editions/{edition_id}/meta")
+def get_edition_meta(edition_id: int):
+    """momolib 등 파트너용 공개 메타데이터 - review_router(로그인 필요)의
+    get_edition()과 달리 인증이 필요 없다."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    layout = json.loads(row["layout_json"])
+    book = layout.get("book", {})
+    tone = layout.get("tone", {})
+    return {"doc_id": row["doc_id"], "title": book.get("title", ""), "week": book.get("week", ""),
+            "band": tone.get("band", ""), "status": row["status"]}
+
+
+@app.get("/robots.txt", response_class=PlainTextResponse)
+def robots_txt():
+    """2026-09-28 [5] - 검색엔진 색인 차단(검수 중인 미공개 교재 내용이라)."""
+    return "User-agent: *\nDisallow: /\n"
 
 
 class DraftRequest(BaseModel):
@@ -123,16 +167,16 @@ class SessionExchangeRequest(BaseModel):
     launch: str
 
 
-@app.post("/api/editions/draft")
-def create_draft(req: DraftRequest):
+@review_router.post("/api/editions/draft")
+def create_draft(req: DraftRequest, editor_name: str = Depends(review_auth.get_current_editor)):
     try:
-        edition_id = store.create_draft(req.doc_id, created_by=req.created_by)
+        edition_id = store.create_draft(req.doc_id, created_by=editor_name)
     except store.NotFound as e:
         raise HTTPException(404, str(e)) from e
     return {"edition_id": edition_id}
 
 
-@app.get("/api/editions")
+@review_router.get("/api/editions")
 def list_editions(level: int | None = None, quarter: int | None = None, status: str | None = None,
                    search: str = "", sort: str = "default", page: int = 1, per_page: int = 50):
     """2026-09-28 - 검수 목록 화면(/review/index.html, edition 번호 없이 열면 목록)."""
@@ -140,13 +184,13 @@ def list_editions(level: int | None = None, quarter: int | None = None, status: 
                                            search=search, sort=sort, page=page, per_page=per_page)
 
 
-@app.get("/api/editions/{edition_id}/neighbors")
+@review_router.get("/api/editions/{edition_id}/neighbors")
 def edition_neighbors(edition_id: int):
     """2026-09-28 - 검수 화면의 "같은 레벨·분기 안에서 이전/다음 문서" 버튼용."""
     return store.find_neighbors(edition_id)
 
 
-@app.get("/api/editions/{edition_id}")
+@review_router.get("/api/editions/{edition_id}")
 def get_edition(edition_id: int):
     row = store.get_edition_row(edition_id)
     if row is None:
@@ -155,10 +199,10 @@ def get_edition(edition_id: int):
             "status": row["status"], "layout": json.loads(row["layout_json"])}
 
 
-@app.patch("/api/editions/{edition_id}")
-def patch_edition(edition_id: int, req: PatchRequest):
+@review_router.patch("/api/editions/{edition_id}")
+def patch_edition(edition_id: int, req: PatchRequest, editor_name: str = Depends(review_auth.get_current_editor)):
     try:
-        new_id = store.patch_edition(edition_id, req.patch, editor=req.editor, reason=req.reason,
+        new_id = store.patch_edition(edition_id, req.patch, editor=editor_name, reason=req.reason,
                                       expected_rev=req.expected_rev)
     except store.NotFound as e:
         raise HTTPException(404, str(e)) from e
@@ -171,7 +215,7 @@ def patch_edition(edition_id: int, req: PatchRequest):
             "status": row["status"], "layout": json.loads(row["layout_json"])}
 
 
-@app.post("/api/editions/{edition_id}/preset-preview")
+@review_router.post("/api/editions/{edition_id}/preset-preview")
 def edition_preset_preview(edition_id: int, req: PresetRequest):
     """SPEC_프롬프트_편집_기능.md 1단계 - 프리셋 버튼 미리보기. 실제로 저장하지
     않고, 지금 layout에 프리셋을 적용하면 어떤 모습이 되는지(layout)와 무엇이
@@ -192,8 +236,9 @@ def edition_preset_preview(edition_id: int, req: PresetRequest):
     return {"summary": result.summary, "layout": preview_layout}
 
 
-@app.post("/api/editions/{edition_id}/preset-apply")
-def edition_preset_apply(edition_id: int, req: PresetRequest):
+@review_router.post("/api/editions/{edition_id}/preset-apply")
+def edition_preset_apply(edition_id: int, req: PresetRequest,
+                          editor_name: str = Depends(review_auth.get_current_editor)):
     """프리셋을 실제로 적용한다 - 미리보기와 같은 계산을 지금 상태 기준으로
     다시 해서(그 사이 다른 수정이 있었을 수 있으니 미리보기 결과를 그대로
     믿지 않는다) store.patch_edition에 kind="prompt_edit"로 남긴다."""
@@ -207,7 +252,7 @@ def edition_preset_apply(edition_id: int, req: PresetRequest):
         raise HTTPException(422, str(e)) from e
     label = presets.PRESET_LABELS.get(req.preset, req.preset)
     try:
-        new_id = store.patch_edition(edition_id, result.ops, editor=req.editor, reason=f"검수 프리셋: {label}",
+        new_id = store.patch_edition(edition_id, result.ops, editor=editor_name, reason=f"검수 프리셋: {label}",
                                       expected_rev=req.expected_rev, kind="prompt_edit", summary=result.summary)
     except store.NotFound as e:
         raise HTTPException(404, str(e)) from e
@@ -220,7 +265,7 @@ def edition_preset_apply(edition_id: int, req: PresetRequest):
             "status": new_row["status"], "layout": json.loads(new_row["layout_json"]), "summary": result.summary}
 
 
-@app.get("/api/editions/{edition_id}/pages/{page_idx}/image-candidates")
+@review_router.get("/api/editions/{edition_id}/pages/{page_idx}/image-candidates")
 def list_image_candidates(edition_id: int, page_idx: int):
     """2026-09-28 [3] - 화면을 다시 열었을 때 이전에 만든 후보들을 보여준다."""
     slot_path = f"/pages/{page_idx}/slot"
@@ -228,7 +273,7 @@ def list_image_candidates(edition_id: int, page_idx: int):
             "usage": store.image_usage_summary()}
 
 
-@app.post("/api/editions/{edition_id}/pages/{page_idx}/generate-images")
+@review_router.post("/api/editions/{edition_id}/pages/{page_idx}/generate-images")
 async def generate_images(edition_id: int, page_idx: int, req: GenerateImagesRequest):
     """2026-09-28 [3] - "후보 만들기": scene+avoid+분기 하우스 스타일로 2~3장
     생성해서 미리보기용 후보로 저장한다(아직 슬롯에 반영 안 됨 - 선택은
@@ -251,11 +296,12 @@ async def generate_images(edition_id: int, page_idx: int, req: GenerateImagesReq
     return {"candidates": candidates, "usage": store.image_usage_summary()}
 
 
-@app.post("/api/editions/{edition_id}/choose-image")
-def choose_image(edition_id: int, req: ChooseImageRequest):
+@review_router.post("/api/editions/{edition_id}/choose-image")
+def choose_image(edition_id: int, req: ChooseImageRequest,
+                  editor_name: str = Depends(review_auth.get_current_editor)):
     """2026-09-28 [3] - 고른 후보를 실제 슬롯에 반영(PATCH 경로를 그대로 태움)."""
     try:
-        new_id = store.choose_image_candidate(edition_id, req.candidate_id, editor=req.editor)
+        new_id = store.choose_image_candidate(edition_id, req.candidate_id, editor=editor_name)
     except store.NotFound as e:
         raise HTTPException(404, str(e)) from e
     new_row = store.get_edition_row(new_id)
@@ -263,23 +309,25 @@ def choose_image(edition_id: int, req: ChooseImageRequest):
             "status": new_row["status"], "layout": json.loads(new_row["layout_json"])}
 
 
-@app.get("/api/editions/{edition_id}/flags")
+@review_router.get("/api/editions/{edition_id}/flags")
 def list_flags(edition_id: int):
     if store.get_edition_row(edition_id) is None:
         raise HTTPException(404, "edition not found")
     return {"flags": store.list_flags(edition_id)}
 
 
-@app.patch("/api/editions/{edition_id}/flags/{flag_id}")
-def resolve_flag(edition_id: int, flag_id: int, req: ResolveFlagRequest):
-    store.resolve_flag(flag_id, resolved_by=req.resolved_by)
+@review_router.patch("/api/editions/{edition_id}/flags/{flag_id}")
+def resolve_flag(edition_id: int, flag_id: int, req: ResolveFlagRequest,
+                  editor_name: str = Depends(review_auth.get_current_editor)):
+    store.resolve_flag(flag_id, resolved_by=editor_name)
     return {"ok": True}
 
 
-@app.post("/api/editions/{edition_id}/approve")
-def approve_edition(edition_id: int, req: ApproveRequest):
+@review_router.post("/api/editions/{edition_id}/approve")
+def approve_edition(edition_id: int, req: ApproveRequest,
+                     editor_name: str = Depends(review_auth.get_current_editor)):
     try:
-        store.approve(edition_id, approved_by=req.approved_by)
+        store.approve(edition_id, approved_by=editor_name)
     except store.ApprovalBlocked as e:
         raise HTTPException(409, str(e)) from e
     except store.NotFound as e:
@@ -287,7 +335,7 @@ def approve_edition(edition_id: int, req: ApproveRequest):
     return {"ok": True}
 
 
-@app.post("/api/editions/{edition_id}/publish")
+@review_router.post("/api/editions/{edition_id}/publish")
 def publish_edition(edition_id: int):
     try:
         store.publish(edition_id)
@@ -298,7 +346,7 @@ def publish_edition(edition_id: int):
     return {"ok": True}
 
 
-@app.get("/api/editions/{edition_id}/images")
+@review_router.get("/api/editions/{edition_id}/images")
 def edition_images(edition_id: int):
     """검수 미리보기 전용 - runtime과 달리 included=false 페이지 이미지도 필요하다."""
     images = store.review_images(edition_id)
@@ -307,7 +355,7 @@ def edition_images(edition_id: int):
     return {"images": images}
 
 
-@app.get("/api/editions/{edition_id}/source/{order_no}")
+@review_router.get("/api/editions/{edition_id}/source/{order_no}")
 def edition_source_text(edition_id: int, order_no: int):
     """검수 화면의 "원문 대조" - momo_book_db(읽기 전용) 원문 그대로."""
     row = store.get_edition_row(edition_id)
@@ -319,7 +367,7 @@ def edition_source_text(edition_id: int, order_no: int):
     return text
 
 
-@app.get("/api/editions/{edition_id}/source-by-page/{page}")
+@review_router.get("/api/editions/{edition_id}/source-by-page/{page}")
 def edition_source_by_page(edition_id: int, page: int):
     """비전(방식 B) 문항 전용 원문 대조 - order_no 직접 대조 대신 같은
     source_page의 DB 행 전부를 후보로 준다(store.source_text_by_page 참고)."""
@@ -329,7 +377,7 @@ def edition_source_by_page(edition_id: int, page: int):
     return {"candidates": store.source_text_by_page(row["doc_id"], page)}
 
 
-@app.get("/api/editions/{edition_id}/available-images")
+@review_router.get("/api/editions/{edition_id}/available-images")
 def edition_available_images(edition_id: int):
     """검수 화면의 "이미지 자리 추가"/"원본 이미지로 바꾸기" - 이 문서의 원본
     이미지 후보 목록(store.available_images 참고). 2026-09-27: 재추출 v2
@@ -343,7 +391,7 @@ def edition_available_images(edition_id: int):
     return {"images": store.available_images(row["doc_id"], used_keys=used_keys)}
 
 
-@app.get("/api/editions/{edition_id}/print-view")
+@review_router.get("/api/editions/{edition_id}/print-view")
 def print_view(edition_id: int):
     """⑥단계 인쇄용 - included=false 페이지 제외 + 홀수 쪽수면 마지막에 빈 면(store.print_view)."""
     view = store.print_view(edition_id)
@@ -352,7 +400,7 @@ def print_view(edition_id: int):
     return view
 
 
-@app.get("/api/editions/{edition_id}/answers")
+@review_router.get("/api/editions/{edition_id}/answers")
 def get_answers(edition_id: int, student_id: str = "dev-anonymous"):
     """⑥단계 "학생 필기 포함" 인쇄, renderer/adapters/print.js 전용."""
     if store.get_edition_row(edition_id) is None:
@@ -360,7 +408,7 @@ def get_answers(edition_id: int, student_id: str = "dev-anonymous"):
     return store.load_answers(edition_id, student_id)
 
 
-@app.get("/api/editions/{edition_id}/print.pdf")
+@review_router.get("/api/editions/{edition_id}/print.pdf")
 async def print_pdf(edition_id: int, request: Request, ink: bool = False, student_id: str = "dev-anonymous"):
     """⑥단계: A4 2-up PDF. ?ink=true&student_id=... 로 특정 학생 필기 포함/미포함 선택."""
     row = store.get_edition_row(edition_id)
@@ -376,6 +424,9 @@ async def print_pdf(edition_id: int, request: Request, ink: bool = False, studen
     filename = f"{row['doc_id']}-edition{edition_id}{'-with-ink' if ink else ''}.pdf"
     return Response(content=pdf_bytes, media_type="application/pdf",
                      headers={"Content-Disposition": f'inline; filename="{filename}"'})
+
+
+app.include_router(review_router)
 
 
 @app.get("/api/partner/editions")
