@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ content.lemma }} 공개검토{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-6 py-6">
+  <a href="/vocab-publish-review/" class="text-sm text-blue-600 hover:underline">← 공개검토 목록</a>
+
+  <div class="border border-gray-200 rounded-xl p-6 mt-3 mb-6 bg-white">
+    <h1 class="text-2xl font-bold mb-1">{{ content.lemma }}</h1>
+    <div class="text-xs text-gray-400 mb-4">{{ content.content_id }} · {{ content.pos or '' }} · {{ content.source_version }}</div>
+
+    <div class="mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">원천 뜻풀이(canonical_definition)</div>
+      <div class="text-gray-700">{{ content.canonical_definition or '-' }}</div>
+    </div>
+    <div class="mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">학생용 뜻풀이(student_definition)</div>
+      <div class="text-gray-700">{{ content.student_definition or '-' }}</div>
+    </div>
+    <div class="mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">예문</div>
+      <div class="text-gray-700">{{ content.example_sentence or '-' }}
+        {% if content.example_target_form %}<span class="text-xs text-gray-400">(목표어: {{ content.example_target_form }})</span>{% endif %}
+      </div>
+    </div>
+
+    <div class="border-t border-gray-100 pt-3 mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">레벨 근거</div>
+      {% if level %}
+      <div class="text-sm text-gray-600">
+        L{{ level.vocab_level }}({{ level.target_grade_band or '-' }}) -
+        <span class="{% if level.level_status == 'REVIEW_BOUNDARY' %}text-amber-600{% else %}text-gray-500{% endif %}">
+          {{ level.level_status }}
+        </span>
+        {% if level.boundary_flag %}<span class="text-amber-600 text-xs">boundary_flag=1</span>{% endif %}
+        <span class="text-xs text-gray-400">({{ level.level_source or '-' }} / {{ level.level_version }})</span>
+      </div>
+      {% else %}
+      <div class="text-sm text-red-500">연결된 레벨 정보 없음</div>
+      {% endif %}
+    </div>
+
+    <div class="border-t border-gray-100 pt-3 text-xs text-gray-400">
+      student_exposure={{ content.student_exposure }} · public_ready={{ content.public_ready }}
+      · hold_reason={{ content.hold_reason or '(없음)' }}
+    </div>
+
+    {% if cautions %}
+    <div class="border-t border-gray-100 mt-3 pt-3">
+      <div class="text-xs font-bold text-amber-700 mb-1">⚠ 주의 사항</div>
+      <ul class="text-xs text-amber-700 list-disc list-inside space-y-0.5">
+        {% for c in cautions %}
+        <li>{{ c }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+
+  <h2 class="text-sm font-bold text-gray-700 mb-2">연결 문항 ({{ items_with_options|length }}건)</h2>
+  {% for row in items_with_options %}
+  {% set it = row.item %}
+  <div class="border border-gray-200 rounded-xl p-5 mb-3 bg-white">
+    <div class="text-xs text-gray-400 mb-1">{{ it.item_id }} · {{ it.item_type }}</div>
+    <div class="text-gray-800 font-medium mb-3 whitespace-pre-line">{{ it.prompt }}</div>
+    {% for opt in row.options %}
+    <div class="text-sm px-3 py-1.5 rounded-lg mb-1
+        {% if loop.index == it.correct_option %}bg-green-50 text-green-700 font-medium{% else %}text-gray-500{% endif %}">
+      {{ loop.index }}. {{ opt }}
+      {% if loop.index == it.correct_option %}<span class="text-xs ml-1">(정답)</span>{% endif %}
+    </div>
+    {% endfor %}
+    {% if it.explanation %}
+    <div class="text-xs text-gray-400 mt-2 bg-gray-50 rounded-lg px-3 py-2">해설: {{ it.explanation }}</div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="border border-red-100 rounded-xl p-5 mb-3 text-red-500 text-sm bg-white">연결된 문항이 없습니다.</div>
+  {% endfor %}
+
+  <h2 class="text-sm font-bold text-gray-700 mb-2 mt-6">관리자 판정</h2>
+  <div class="border border-gray-200 rounded-xl p-5 mb-4 bg-white">
+    {% if latest %}
+    <div class="text-sm mb-3 {% if stale %}text-amber-600{% else %}text-gray-600{% endif %}">
+      현재 판정: <span class="font-bold">{{ verdict_labels[latest.verdict] }}</span>
+      ({{ latest.reviewer_email or latest.reviewer_user_id }}, {{ latest.reviewed_at }})
+      {% if stale %}
+      <div class="mt-1 text-xs">⚠ 이 판정 이후 콘텐츠 또는 연결 문항이 수정되어, 현재 버전에는 더 이상 유효하지 않습니다. 다시 검토해 주세요.</div>
+      {% endif %}
+    </div>
+    <div class="text-sm text-gray-500 mb-4">근거: {{ latest.rationale }}</div>
+    {% endif %}
+
+    <form method="POST" action="/vocab-publish-review/{{ content.content_id }}/verdict">
+      <div class="flex gap-2 mb-3 flex-wrap">
+        {% for v in verdict_choices %}
+        <label class="flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-1.5 cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+          <input type="radio" name="verdict" value="{{ v }}" required>
+          {{ verdict_labels[v] }}
+        </label>
+        {% endfor %}
+      </div>
+      <textarea name="rationale" rows="3" required placeholder="판정 근거를 입력하세요(필수)"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3"></textarea>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
+        판정 저장
+      </button>
+    </form>
+  </div>
+
+  {% if history|length > 1 %}
+  <h2 class="text-sm font-bold text-gray-700 mb-2">판정 이력</h2>
+  <div class="border border-gray-200 rounded-xl divide-y divide-gray-50 bg-white">
+    {% for h in history %}
+    <div class="px-4 py-2 text-xs text-gray-500">
+      {{ h.reviewed_at }} · {{ verdict_labels[h.verdict] }} · {{ h.reviewer_email or h.reviewer_user_id }} · {{ h.rationale }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

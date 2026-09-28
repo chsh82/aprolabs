@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}어휘 공개검토{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-6 py-6">
+  <h1 class="text-xl font-bold mb-1">어휘 공개검토 (1순위 40건)</h1>
+  <div class="text-sm text-gray-500 mb-6">
+    momolib에 이식된 파일럿 연결 콘텐츠 {{ rows|length }}건. 판정을 저장해도
+    student_exposure/public_ready/REVIEW_BOUNDARY는 바뀌지 않습니다.
+    실제 공개 전환 기능은 이 화면에 없습니다.
+  </div>
+
+  <div class="space-y-2">
+    {% for row in rows %}
+    <a href="/vocab-publish-review/{{ row.content.content_id }}"
+       class="block border border-gray-200 rounded-xl px-4 py-3 hover:border-blue-400 transition">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-gray-800">{{ row.content.lemma }}</span>
+          <span class="text-xs text-gray-400 ml-2">L{{ row.vocab_level or '?' }} · {{ row.content.content_id }}</span>
+        </div>
+        <div class="text-xs">
+          {% if row.review %}
+            {% if row.stale %}
+            <span class="text-amber-600 font-medium">판정 있음(신선도 만료)</span>
+            {% else %}
+            <span class="text-blue-600 font-medium">{{ verdict_labels[row.review.verdict] }}</span>
+            {% endif %}
+          {% else %}
+          <span class="text-gray-400">판정 없음</span>
+          {% endif %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
