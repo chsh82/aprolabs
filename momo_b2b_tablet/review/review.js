@@ -409,6 +409,27 @@ function renderPresetPanel(body, page, idx) {
     grid.append(btn);
   });
   body.append(grid);
+
+  // 2026-09-29 [3] 사용자 지시 - 프리셋으로 안 풀리는 편집을 자연어로 설명하면
+  // LLM(claude-sonnet-5)이 JSON Patch를 만든다. 프리셋과 같은 미리보기 흐름을 탄다.
+  body.append(el("h3", { style: "margin-top:14px" }, "자유 편집 요청"));
+  body.append(el("p", { class: "hint" }, "프리셋으로 안 되는 편집을 문장으로 설명해보세요. 미리보기로 먼저 보여줍니다."));
+  const freeInput = el("textarea", { rows: "2", placeholder: "예: 답란을 조금 더 넓게 써줘" });
+  const freeBtn = el("button", { class: "btn btn--small" }, "요청 반영해보기");
+  freeBtn.onclick = async () => {
+    const text = freeInput.value.trim();
+    if (!text) return;
+    freeBtn.disabled = true;
+    freeBtn.textContent = "생각하는 중…";
+    try {
+      await openFreeformPreview(idx, text);
+      freeInput.value = "";
+    } finally {
+      freeBtn.disabled = false;
+      freeBtn.textContent = "요청 반영해보기";
+    }
+  };
+  body.append(el("div", { class: "field" }, [freeInput, freeBtn]));
 }
 
 async function loadFrameWithSrc(src, pageIdx) {
@@ -444,7 +465,24 @@ async function openPresetPreview(pageIdx, presetKey, label, params) {
     });
     const key = `preset-preview:${editionId}`;
     sessionStorage.setItem(key, JSON.stringify(res.layout));
-    state.presetPreview = { pageIdx, preset: presetKey, label, params, summary: res.summary, key, showingPreview: true };
+    state.presetPreview = { kind: "preset", pageIdx, preset: presetKey, label, params, summary: res.summary, key, showingPreview: true };
+    renderPresetPreviewBar();
+    await loadFrameWithSrc(previewSrc(key), pageIdx);
+  } catch (e) {
+    toast(`적용 불가: ${e.message}`);
+  }
+}
+
+// 2026-09-29 [3] - 프리셋과 같은 미리보기 흐름을 자유 편집 요청(LLM)에도 그대로 쓴다.
+async function openFreeformPreview(pageIdx, requestText) {
+  try {
+    const res = await api(`/api/editions/${editionId}/freeform-preview`, {
+      method: "POST",
+      body: JSON.stringify({ page_idx: pageIdx, request_text: requestText }),
+    });
+    const key = `preset-preview:${editionId}`;
+    sessionStorage.setItem(key, JSON.stringify(res.layout));
+    state.presetPreview = { kind: "freeform", pageIdx, label: "자유 편집", ops: res.ops, summary: res.summary, key, showingPreview: true };
     renderPresetPreviewBar();
     await loadFrameWithSrc(previewSrc(key), pageIdx);
   } catch (e) {
@@ -464,10 +502,15 @@ async function applyPresetPreview() {
   const pp = state.presetPreview;
   if (!pp) return;
   try {
-    const data = await api(`/api/editions/${editionId}/preset-apply`, {
-      method: "POST",
-      body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, params: pp.params || null, editor: "reviewer", expected_rev: state.rev }),
-    });
+    const data = pp.kind === "freeform"
+      ? await api(`/api/editions/${editionId}/freeform-apply`, {
+          method: "POST",
+          body: JSON.stringify({ page_idx: pp.pageIdx, ops: pp.ops, summary: pp.summary, expected_rev: state.rev }),
+        })
+      : await api(`/api/editions/${editionId}/preset-apply`, {
+          method: "POST",
+          body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, params: pp.params || null, editor: "reviewer", expected_rev: state.rev }),
+        });
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     sessionStorage.removeItem(pp.key);
     state.presetPreview = null;

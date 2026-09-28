@@ -34,7 +34,7 @@ from pydantic import BaseModel
 
 import jsonpatch
 
-from . import auth, db, image_gen, notify, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, review_auth, store
+from . import auth, db, freeform_edit, image_gen, notify, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, review_auth, store
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -130,6 +130,18 @@ class PresetRequest(BaseModel):
     page_idx: int
     params: dict | None = None
     editor: str | None = None
+    expected_rev: int | None = None
+
+
+class FreeformPreviewRequest(BaseModel):
+    page_idx: int
+    request_text: str
+
+
+class FreeformApplyRequest(BaseModel):
+    page_idx: int
+    ops: list[dict]
+    summary: str
     expected_rev: int | None = None
 
 
@@ -263,6 +275,51 @@ def edition_preset_apply(edition_id: int, req: PresetRequest,
     new_row = store.get_edition_row(new_id)
     return {"id": new_id, "doc_id": new_row["doc_id"], "version": new_row["version"], "rev": new_row["rev"],
             "status": new_row["status"], "layout": json.loads(new_row["layout_json"]), "summary": result.summary}
+
+
+@review_router.post("/api/editions/{edition_id}/freeform-preview")
+async def edition_freeform_preview(edition_id: int, req: FreeformPreviewRequest):
+    """2026-09-29 [3] - 프리셋으로 안 풀리는 편집을 자연어로 설명하면 LLM이
+    JSON Patch를 만든다. preset-preview와 같은 모양(ops를 미리 계산해
+    layout까지 적용한 미리보기를 돌려줌 - 실제 저장은 안 함)."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    layout = json.loads(row["layout_json"])
+    try:
+        page = layout["pages"][req.page_idx]
+    except (IndexError, KeyError):
+        raise HTTPException(404, f"페이지 {req.page_idx}가 없음") from None
+    try:
+        result = await freeform_edit.generate_patch(page, req.request_text, req.page_idx)
+    except freeform_edit.FreeformEditError as e:
+        raise HTTPException(422, str(e)) from e
+    try:
+        preview_layout = jsonpatch.JsonPatch(result["ops"]).apply(layout)
+    except jsonpatch.JsonPatchException as e:
+        raise HTTPException(400, str(e)) from e
+    return {"ops": result["ops"], "summary": result["summary"], "layout": preview_layout}
+
+
+@review_router.post("/api/editions/{edition_id}/freeform-apply")
+def edition_freeform_apply(edition_id: int, req: FreeformApplyRequest,
+                            editor_name: str = Depends(review_auth.get_current_editor)):
+    """미리보기에서 이미 계산된 ops를 그대로 적용한다(재호출 시 LLM이 다른
+    답을 줄 수 있으니 preset-apply처럼 재계산하지 않고 클라이언트가 미리본
+    ops를 그대로 돌려받아 적용) - correction_log에 kind="prompt_edit"로 남음."""
+    try:
+        new_id = store.patch_edition(edition_id, req.ops, editor=editor_name,
+                                      reason=f"검수 자유 편집: {req.summary}",
+                                      expected_rev=req.expected_rev, kind="prompt_edit", summary=req.summary)
+    except store.NotFound as e:
+        raise HTTPException(404, str(e)) from e
+    except store.ConflictError as e:
+        raise HTTPException(409, str(e)) from e
+    except store.PatchError as e:
+        raise HTTPException(400, str(e)) from e
+    new_row = store.get_edition_row(new_id)
+    return {"id": new_id, "doc_id": new_row["doc_id"], "version": new_row["version"], "rev": new_row["rev"],
+            "status": new_row["status"], "layout": json.loads(new_row["layout_json"])}
 
 
 @review_router.get("/api/editions/{edition_id}/pages/{page_idx}/image-candidates")
