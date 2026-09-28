@@ -45,6 +45,30 @@ def tier1_content_ids(db: Session) -> list[str]:
     return sorted({r[0] for r in rows})
 
 
+def ordered_tier1_content_ids(db: Session) -> list[str]:
+    """목록 화면과 완전히 같은 순서(레벨 → 표제어 가나다순) - 판정 저장 후
+    '다음 항목'을 정할 때도 이 순서를 그대로 쓴다."""
+    ids = tier1_content_ids(db)
+    rows = []
+    for cid in ids:
+        content = db.query(VocabularyContent).filter(VocabularyContent.content_id == cid).first()
+        level = db.query(VocabularyContentLevel).filter(VocabularyContentLevel.content_id == cid).first()
+        rows.append((level.vocab_level if level else 99, content.lemma if content else "", cid))
+    rows.sort(key=lambda r: (r[0], r[1]))
+    return [r[2] for r in rows]
+
+
+def next_content_id(db: Session, content_id: str) -> str | None:
+    """이 콘텐츠 다음 순서의 content_id. 마지막이면 None(목록으로)."""
+    ordered = ordered_tier1_content_ids(db)
+    if content_id not in ordered:
+        return None
+    idx = ordered.index(content_id)
+    if idx + 1 < len(ordered):
+        return ordered[idx + 1]
+    return None
+
+
 def linked_items(db: Session, content_id: str) -> list[VocabularyMultiformatItem]:
     direct = (
         db.query(VocabularyMultiformatItem)

@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -99,7 +100,7 @@ def publish_review_save_verdict(
     content_id: str,
     request: Request,
     verdict: str = Form(...),
-    rationale: str = Form(...),
+    rationale: str = Form(""),
     db: Session = Depends(get_vocabulary_quiz_db),
     admin_user_id: str = Depends(require_admin),
 ):
@@ -108,9 +109,12 @@ def publish_review_save_verdict(
         raise HTTPException(status_code=404, detail="콘텐츠를 찾을 수 없습니다")
     if verdict not in VERDICT_CHOICES:
         raise HTTPException(status_code=400, detail="알 수 없는 판정 값입니다")
-    if not rationale or not rationale.strip():
-        raise HTTPException(status_code=400, detail="근거를 입력해야 합니다")
 
     pr.save_review(db, content_id, verdict, rationale.strip(), admin_user_id, _reviewer_email(admin_user_id))
 
-    return publish_review_detail(content_id, request, db, admin_user_id)
+    # 저장하면 같은 화면에 머무르지 않고 목록 순서상 다음 항목으로 자동 이동한다
+    # (40건을 순서대로 검토하는 작업 흐름 지원). 마지막 항목이면 목록으로.
+    next_id = pr.next_content_id(db, content_id)
+    if next_id:
+        return RedirectResponse(url=f"/vocab-publish-review/{next_id}", status_code=303)
+    return RedirectResponse(url="/vocab-publish-review/", status_code=303)
