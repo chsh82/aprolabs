@@ -31,6 +31,20 @@ _CHAR_NAME = {
 }
 
 
+def _vocab_shuffle_order(seed_key: str, n: int) -> list[int]:
+    """뜻 목록 순서를 원본(선 잇기 형식)처럼 뒤섞는다 - doc_id로 시드를 고정해
+    재생성해도 같은 순서가 나오게 한다(검수 중 매번 바뀌면 혼란스러움)."""
+    import random
+
+    order = list(range(n))
+    rng = random.Random(seed_key)
+    for _ in range(6):
+        rng.shuffle(order)
+        if n <= 1 or order != list(range(n)):
+            break
+    return order
+
+
 def _vocab_page(doc: NormalizedDoc) -> tuple[dict, list[Flag]]:
     character = LOWER_VOCAB_CHARACTER if doc.band == "lower" else VOCAB_CHARACTER
     items = []
@@ -39,11 +53,18 @@ def _vocab_page(doc: NormalizedDoc) -> tuple[dict, list[Flag]]:
         if any(f.kind == "sup" for f in v.flags):
             item["sup"] = True
         items.append(item)
+    # 2026-09-29 사용자 지시: 초1·2(band=lower) 원본은 "문장 만들기" 카드가
+    # 아니라 "낱말의 뜻을 찾아 선으로 이어 보세요" 형식이었다(edition 722
+    # 검수 중 원본 스캔으로 확인). 저학년만 별도 위젯(vocabMatch)으로 낸다 -
+    # 고학년은 원본이 이 형식이 아니라 그대로 vocab(카드+문장 만들기) 유지.
+    page_type = "vocabMatch" if doc.band == "lower" else "vocab"
     page = {
-        "type": "vocab", "step": "STEP 1", "title": "낱말 익히기",
+        "type": page_type, "step": "STEP 1", "title": "낱말 익히기",
         "guide": {"img": character, "rt": "어휘", "nm": f"{_CHAR_NAME[character]}와 단서 모으기"},
         "vocab": items,
     }
+    if page_type == "vocabMatch":
+        page["order"] = _vocab_shuffle_order(doc.doc_id, len(items))
     return page, []
 
 

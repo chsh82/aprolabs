@@ -269,7 +269,7 @@ document.querySelector(".flag-queue").append(showResolvedToggle);
 
 /* ============ 페이지 목록 ============ */
 const TYPE_ABBR = {
-  cover: "COV", vocab: "VOC", oxp: "OXP", draw: "DRW", bgline: "BGL", bgtext: "BGT",
+  cover: "COV", vocab: "VOC", vocabMatch: "VOM", oxp: "OXP", draw: "DRW", bgline: "BGL", bgtext: "BGT",
   qa: "QA", qaband: "QAB", qaref: "QAR", solo: "SOL", essay: "ESS", memos: "MEM", excerpt: "EXC",
 };
 // 렌더러가 slot을 실제로 그리는 페이지 유형만 "이미지 자리" UI를 보여준다(2026-09-26 [5순위]).

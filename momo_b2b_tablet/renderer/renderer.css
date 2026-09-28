@@ -136,6 +136,25 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .vcard .vlab{font:700 9.5px/1 var(--sans);color:var(--main-deep)}
 .oxp .oxitem .st{font-size:13px}
 
+/* ---------- vocabMatch(초1·2 "낱말의 뜻을 찾아 선으로 이어 보세요") ----------
+ * 2026-09-29: 저학년 원본은 문장 만들기 카드가 아니라 단어-뜻 선 잇기였다.
+ * 손으로 긋는 선은 잉크 캔버스가 답란 하나에 묶여있어 재현이 안 돼서, 단어를
+ * 탭하고 뜻을 탭하면 자동으로 선이 그려지는 방식으로 대신한다(renderer.js
+ * MATCH_GROUPS/drawLines). */
+.vmatch{flex:1 1 auto;min-height:0;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0 16mm}
+.vmatch .mcol{display:flex;flex-direction:column;gap:3mm;min-height:0}
+.vmatch .mlines{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.mword,.mdef{appearance:none;text-align:left;border:.4mm solid color-mix(in srgb,var(--main) 45%,transparent);border-radius:2mm;background:#fff;cursor:pointer;font-family:inherit;padding:2.4mm 3.6mm;display:flex;align-items:center;gap:2.2mm;color:var(--ink);flex:1 1 0;min-height:0;transition:background .12s,border-color .12s}
+.mword{justify-content:center;font:700 16px/1.3 var(--serif)}
+.mword .pg{font:500 9px/1 var(--sans);color:var(--point-text)}
+.mword[aria-pressed="true"]{background:var(--main);border-color:var(--main);color:#fff}
+.mword.matched{border-width:.55mm;border-color:var(--pair-color,var(--main))}
+.mdef .md-n{flex:0 0 auto;width:6mm;height:6mm;border-radius:50%;background:var(--main-soft);color:var(--main-deep);font:700 11px/6mm var(--sans);text-align:center}
+.mdef .md-d{font:400 12.5px/1.45 var(--sans);word-break:keep-all}
+.mdef.matched{border-width:.55mm;border-color:var(--pair-color,var(--main))}
+.mword .sup{margin-left:1.4mm;font:700 8.5px/1 var(--sans);color:#7A5608;background:#F6E7C3;padding:.7mm 1.2mm;border-radius:.8mm;display:none}
+.review .mword .sup{display:inline-block}
+
 /* ---------- background knowledge (middle school) ---------- */
 .tl{display:flex;flex-direction:column;gap:2.2mm;flex:0 0 auto}
 .tl-row{display:flex;align-items:stretch}
@@ -242,6 +261,8 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .band-lower .card h4{font-size:15.5px}
 .band-lower .blank .lab{font-size:11.5px}
 .band-lower .mrow{grid-template-columns:80mm 1fr}
+.band-lower .mword{font-size:18px}
+.band-lower .mdef .md-d{font-size:13.5px;line-height:1.5}
 
 /* ---------- tables ---------- */
 .atable{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;border:.35mm solid var(--main);border-radius:1mm;overflow:hidden;background:var(--paper)}

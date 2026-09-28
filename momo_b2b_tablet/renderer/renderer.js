@@ -251,6 +251,14 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     if (p.type === "vocab") {
       const v = p.vocab.map(x => { QTEXT["V-" + x.w] = `'${x.w}'(으)로 문장 만들기`; return `<div class="vcard" data-alloc><div class="vtop"><b>${esc(x.w)}</b>${x.p ? `<span class="pg">p.${x.p}</span>` : ""}${x.sup ? `<span class="sup">뜻 보충: 검수 필요</span>` : ""}</div><p class="df">${esc(x.d)}</p><span class="vlab">문장 만들기</span>${inkBox("V-" + x.w, "vocab")}</div>`; }).join("");
       inner = `<p class="inst">${esc(p.inst || "뜻을 읽고, 낱말을 넣어 나만의 문장을 만들어 봅시다.")}</p><div class="vgrid" style="grid-template-columns:repeat(${p.vocab.length > 4 ? 3 : 2},1fr)">${v}</div>`;
+    } else if (p.type === "vocabMatch") {
+      // 저학년(초1·2) 전용 - "낱말의 뜻을 찾아 선으로 이어 보세요" 원본 형식.
+      // p.order: 뜻을 보여줄 순서(원래 인덱스 배열, 섞여있음) - layout/step1.py에서
+      // doc_id로 시드를 고정해 만든다.
+      const order = Array.isArray(p.order) && p.order.length === p.vocab.length ? p.order : p.vocab.map((_, k) => k);
+      const words = p.vocab.map((x, k) => `<button type="button" class="mword" data-idx="${k}" aria-pressed="false"><span class="mw-w">${esc(x.w)}</span>${x.p ? `<span class="pg">p.${x.p}</span>` : ""}${x.sup ? `<span class="sup">뜻 보충: 검수 필요</span>` : ""}</button>`).join("");
+      const defs = order.map((realIdx, slot) => `<button type="button" class="mdef" data-idx="${realIdx}" aria-pressed="false"><span class="md-n">${slot + 1}</span><span class="md-d">${esc(p.vocab[realIdx].d)}</span></button>`).join("");
+      inner = `<p class="inst">${esc(p.inst || "낱말의 뜻을 찾아 선으로 이어 보세요.")}</p><div class="vmatch" data-id="vm-${i}"><div class="mcol mwords">${words}</div><svg class="mlines" aria-hidden="true"></svg><div class="mcol mdefs">${defs}</div></div>`;
     } else if (p.type === "oxp") {
       const o = p.ox.map((x, k) => `<div class="oxitem"><span class="n">${k + 1}</span><span class="st">${esc(x.s)}<span>p.${x.p}</span></span><span class="ox" data-ox="${k + 1}"><button type="button" aria-pressed="false" aria-label="${k + 1}번 O">O</button><button type="button" aria-pressed="false" aria-label="${k + 1}번 X">X</button></span></div>`).join("");
       const oxList = `<p class="inst">책의 내용과 맞으면 O, 틀리면 X를 누르세요.</p><div class="oxlist">${o}</div>`;
@@ -348,7 +356,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
   const pageEls = [...pagesEl.children];
 
   /* ============ state (adapter 주입) ============ */
-  let S = { ink: {}, text: {}, ox: {}, choice: {} };
+  let S = { ink: {}, text: {}, ox: {}, choice: {}, match: {} };
   if (adapters.state && adapters.state.load) {
     try { const loaded = await adapters.state.load(); if (loaded) S = Object.assign(S, loaded); } catch (e) {}
   }
@@ -619,6 +627,81 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     paint();
   });
 
+  /* ============ 낱말-뜻 잇기(vocabMatch) 탭 연결 ============
+   * 원본(초1·2)은 손으로 선을 긋는 형식이지만, 잉크 캔버스가 답란 하나에
+   * 갇혀 있어 다른 칸까지 넘어가는 선을 그릴 수 없다(2026-09-29 사용자 결정 -
+   * 탭으로 잇기: 단어 탭 -> 뜻 탭 하면 자동으로 선이 그려진다). 실제 획을
+   * 좌표로 계산해야 해서 fit()이 scale을 바꿀 때마다 다시 그려야 한다 -
+   * MATCH_GROUPS에 각자의 drawLines를 등록해 fit()에서 한 번에 호출한다.
+   */
+  const MATCH_GROUPS = [];
+  const MATCH_COLORS = ["#B5541E", "#2F6F4E", "#2A5B8C", "#8A3B7A", "#8A7A1E", "#3E7A6B"];
+  document.querySelectorAll(".vmatch").forEach(group => {
+    const id = group.dataset.id;
+    const svg = group.querySelector(".mlines");
+    const words = [...group.querySelectorAll(".mword")];
+    const defs = [...group.querySelectorAll(".mdef")];
+    let armed = null;
+    const pairs = () => S.match[id] || {};
+    const colorFor = wi => MATCH_COLORS[wi % MATCH_COLORS.length];
+    function drawLines() {
+      const rect = group.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const w = rect.width / scale, h = rect.height / scale;
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      const p = pairs();
+      svg.innerHTML = Object.keys(p).map(wi => {
+        const wEl = words.find(x => +x.dataset.idx === +wi), dEl = defs.find(x => +x.dataset.idx === p[wi]);
+        if (!wEl || !dEl) return "";
+        const wr = wEl.getBoundingClientRect(), dr = dEl.getBoundingClientRect();
+        const x1 = (wr.right - rect.left) / scale, y1 = (wr.top - rect.top + wr.height / 2) / scale;
+        const x2 = (dr.left - rect.left) / scale, y2 = (dr.top - rect.top + dr.height / 2) / scale;
+        const mx = (x1 + x2) / 2, c = colorFor(+wi);
+        return `<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" stroke="${c}" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="${x1}" cy="${y1}" r="2.2" fill="${c}"/><circle cx="${x2}" cy="${y2}" r="2.2" fill="${c}"/>`;
+      }).join("");
+    }
+    function paint() {
+      const p = pairs();
+      words.forEach(w => {
+        const wi = +w.dataset.idx, matched = p[wi] !== undefined;
+        w.setAttribute("aria-pressed", String(wi === armed));
+        w.classList.toggle("matched", matched);
+        w.style.setProperty("--pair-color", matched ? colorFor(wi) : "");
+      });
+      defs.forEach(d => {
+        const di = +d.dataset.idx, mw = Object.keys(p).find(k => p[k] === di);
+        d.classList.toggle("matched", mw !== undefined);
+        d.style.setProperty("--pair-color", mw !== undefined ? colorFor(+mw) : "");
+      });
+      drawLines();
+    }
+    words.forEach(w => w.addEventListener("click", () => {
+      const wi = +w.dataset.idx;
+      armed = armed === wi ? null : wi; // 같은 단어 다시 탭하면 선택 해제
+      paint();
+    }));
+    defs.forEach(d => d.addEventListener("click", () => {
+      const di = +d.dataset.idx;
+      if (armed === null) {
+        const already = Object.keys(pairs()).find(k => pairs()[k] === di);
+        if (already !== undefined) armed = +already; // 이미 이은 뜻을 탭하면 그 단어를 다시 고쳐 잇게
+        paint();
+        return;
+      }
+      const p = Object.assign({}, pairs());
+      if (p[armed] === di) {
+        delete p[armed]; // 같은 뜻을 다시 탭하면 이었던 선을 지운다
+      } else {
+        Object.keys(p).forEach(k => { if (p[k] === di) delete p[k]; }); // 뜻 하나엔 단어 하나만 이어진다
+        p[armed] = di;
+      }
+      S.match[id] = p; persist();
+      armed = null; paint();
+    }));
+    paint();
+    MATCH_GROUPS.push({ drawLines });
+  });
+
   /* ============ layout & paging ============ */
   let cur = 0, scale = 1;
   const stage = document.getElementById("stage"), scaler = document.getElementById("scaler");
@@ -713,6 +796,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     scaler.style.transform = `scale(${scale})`; scaler.style.width = pw * scale + "px"; scaler.style.height = ph * scale + "px";
     const k = scale * (window.devicePixelRatio || 1);
     boxes.forEach(b => b.size(k));
+    MATCH_GROUPS.forEach(g => g.drawLines());
   }
   function go(i) {
     cur = Math.max(0, Math.min(PAGES.length - 1, i));
