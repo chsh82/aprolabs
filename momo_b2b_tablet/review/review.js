@@ -74,6 +74,15 @@ async function refreshAll({ keepPreview = false } = {}) {
 }
 
 /* ============ PATCH ============ */
+// 2026-09-28 [6] 외부 작업 환경 - 필드가 blur될 때만 저장되는데, 그 순간
+// 연결이 끊기면 토스트만 뜨고 아무 경고 없이 화면을 닫으면 그 편집 내용이
+// 그대로 사라졌다. unsavedFailures가 0보다 크면(=저장 시도가 실패한 채
+// 남아있으면) 창을 닫거나 새로고침할 때 브라우저 기본 확인창으로 막는다.
+let unsavedFailures = 0;
+window.addEventListener("beforeunload", e => {
+  if (unsavedFailures > 0) { e.preventDefault(); e.returnValue = ""; }
+});
+
 async function patch(ops, { reason } = {}) {
   if (!ops.length) return;
   try {
@@ -84,6 +93,7 @@ async function patch(ops, { reason } = {}) {
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     await refreshAll();
     toast("저장했습니다.");
+    unsavedFailures = 0;
     return true;
   } catch (e) {
     if (e.status === 409) {
@@ -92,7 +102,8 @@ async function patch(ops, { reason } = {}) {
       setTimeout(() => { $("#conflictBanner").hidden = true; }, 4000);
       return false;
     }
-    toast(`저장 실패: ${e.message}`);
+    unsavedFailures++;
+    toast(`저장 실패: ${e.message} - 창을 닫지 말고 다시 시도하세요.`);
     throw e;
   }
 }
