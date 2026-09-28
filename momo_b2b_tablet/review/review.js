@@ -714,12 +714,33 @@ function renderInspector() {
   renderFreeTextFields(body, page, idx, basePath);
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
+  if (page.ox) renderOxInspector(body, page, idx, basePath);
   if (SLOT_CAPABLE_TYPES.has(page.type)) renderSlotInspector(body, page, idx, basePath);
   renderPresetPanel(body, page, idx);
 
   body.append(el("hr", { class: "section-divider" }));
   body.append(el("div", { class: "todo-note" },
     "페이지 순서 이동은 페이지 목록의 ▲▼ 버튼으로 할 수 있습니다."));
+}
+
+// 2026-09-29 사용자 피드백 - 자유 편집 요청으로 OX 문제 텍스트(ox[].s)를
+// 고치려 했는데 "허용된 필드(mirror/titleTop/wide/slot/q.kind)에 없어서
+// 처리할 수 없다"는 안내를 받았다. freeform_edit.py는 원래 그 필드들만
+// 다루도록 설계돼 있고(LLM이 아무 텍스트나 바꿔버리는 걸 막는 안전장치),
+// 텍스트 내용 수정은 q.t처럼 여기 인스펙터에서 직접 편집하는 경로로 둔다.
+function renderOxInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("h3", {}, "O·X 문항 텍스트"));
+  page.ox.forEach((item, k) => {
+    const ta = el("textarea", { rows: "2" }, item.s || "");
+    body.append(field(`${k + 1}번 문제`, ta));
+    ta.addEventListener("blur", () => {
+      if (ta.value !== (item.s || "")) {
+        patch([{ op: "replace", path: `${basePath}/ox/${k}/s`, value: ta.value }],
+          { reason: "검수: O·X 문항 텍스트 수정" });
+      }
+    });
+  });
 }
 
 function field(labelText, inputEl, extra) {
