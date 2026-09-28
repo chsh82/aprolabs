@@ -12,17 +12,26 @@ import re
 from normalize.models import Flag
 
 # ---------- 3.6 캐릭터 매핑 (저·고학년 전용 - 중학생은 라벨만) ----------
-# SPEC: 사실적->홈즈, 분석적->아로낙스, 추론적->지킬, 적용적->포그, 글쓰기·생각상자->앤,
-# 저학년 낱말->도로시. reading_type이 여러 개를 "/"로 묶고 있으면 이 순서로 하나만 고른다
-# (사실적을 가장 먼저 보는 것은 §3.6 나열 순서를 그대로 따른 것 - 골든에서 검증 가능한
-# 조합은 전부 이 순서와 일치했다. "비판적"은 §3.6 표에 없는 유형이라 매핑 대상이 아니다).
+# 2026-09-28 사용자 확정(최종) - 6종 전부: 사실적->홈즈, 분석적->아로낙스,
+# 추론적->지킬, 비판적->톰 소여(신규 추가 - 원래 매핑표에 있던 유형인데
+# 시안 3종에 해당 문항이 없어 빠져 있었을 뿐), 적용적->포그, 상상적->앨리스
+# (신규 유형 - 기존 4유형에 없던 것을 이번에 추가, 글쓰기의 앤과는 별개).
+# reading_type이 여러 개를 "/"로 묶고 있으면 이 순서로 하나만 고른다(사실적을
+# 가장 먼저 보는 것은 SPEC §3.6 나열 순서 그대로).
+#
+# 저학년(L1) 원문의 "OO하며/하는 읽기" 라벨(예: "추측하며 읽기")은
+# normalize/discussion_qa.py의 _GERUND_TO_CANONICAL이 이미 위 6종 중 하나의
+# 정식 이름으로 바꿔서 reading_type에 저장하므로, 여기서는 "OO하며 읽기"
+# 형태를 따로 취급하지 않는다(정규화 단계에서 이미 끝남).
 _CHARACTER_BY_READING_TYPE = [
     ("사실적", "holmes"),
     ("분석적", "aronnax"),
     ("추론적", "jekyll"),
+    ("비판적", "tom_sawyer"),
     ("적용적", "fogg"),
+    ("상상적", "alice"),
 ]
-DEFAULT_CHARACTER = "jekyll"  # reading_type이 없거나(예: "비판적"만) 매핑 대상이 아닐 때
+DEFAULT_CHARACTER = "jekyll"  # reading_type이 없을 때
 VOCAB_CHARACTER = "holmes"
 WRITING_CHARACTER = "anne"
 LOWER_VOCAB_CHARACTER = "dorothy"
@@ -41,7 +50,11 @@ def character_for_reading_type(reading_type: str | None) -> tuple[str, bool]:
 def reading_type_label(reading_type: str | None) -> tuple[str, bool]:
     """DB의 "추론적/비판적" -> 화면 표시용 "추론적 · 비판적 독해". reading_type이
     비어 있으면(중등 unknown-행 재조립으로 유실된 경우가 실제로 있다 - L9 order_no=3)
-    빈 라벨을 돌려주고 False로 표시한다(LLM/검수 보완 대상)."""
+    빈 라벨을 돌려주고 False로 표시한다(LLM/검수 보완 대상).
+
+    2026-09-28: 저학년 "OO하며 읽기" 라벨은 normalize 단계에서 이미 정식
+    이름(예: "상상적")으로 바뀌어 들어오므로 여기서는 특별 취급이 필요
+    없다(항상 "독해"를 붙인다)."""
     if reading_type:
         return reading_type.replace("/", " · ") + " 독해", True
     return "독해", False
@@ -98,7 +111,18 @@ def form_for_ui_type(ui_type: str, ui_config: dict, question_text: str) -> tuple
     if ui_type == "text_short_multi":
         labels = (ui_config or {}).get("blanks") or []
         blanks = [{"label": label, "prompt": question_text} for label in labels]
-        flags.append(Flag(kind="derived",
+        # 2026-09-28 사용자 지시 - 표본 검토 결과 이 플래그의 상당수는 칸
+        # 이름(label)이 이미 있어 학생이 보기엔 충분히 구분된다("공통점"/
+        # "차이점" 등) - 그럴 때는 급하지 않으니 검수 큐 하단으로 내린다
+        # (플래그는 남김, 지우지 않음).
+        # blanks 항목은 문자열이거나(대부분) {"label","suffix"} 딕셔너리(예:
+        # L1-Q4-W09#7)일 수 있다 - 실제 라벨 텍스트만 뽑아 확인한다.
+        def _label_text(label: object) -> str:
+            if isinstance(label, dict):
+                return str(label.get("label") or "")
+            return str(label or "")
+        priority = 1 if labels and all(_label_text(label).strip() for label in labels) else 0
+        flags.append(Flag(kind="derived", priority=priority,
                            message=f"blanks {len(labels)}개의 개별 prompt(하위 질문)를 "
                                    f"question_text 전체로 임시 채움 - LLM으로 쪼개야 함"))
         return {"kind": "multi", "blanks": blanks}, flags

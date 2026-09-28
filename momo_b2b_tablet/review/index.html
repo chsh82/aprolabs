@@ -10,8 +10,12 @@
 <link rel="stylesheet" href="review.css">
 </head>
 <body>
+<!-- 2026-09-28: edition 번호 없이 열면 목록(list.html/list.js), 있으면 기존
+     단일 문서 검수 화면(review.js) - URL 파라미터로만 분기한다 -->
+<div id="docView" hidden>
 <header class="topbar">
   <div class="topbar__title">
+    <a href="index.html" class="btn btn--small" id="btnBackToList" title="목록으로">← 목록</a>
     <span id="docTitle">불러오는 중…</span>
     <span class="badge" id="statusBadge">-</span>
     <span class="rev" id="revLabel"></span>
@@ -23,6 +27,8 @@
       <button class="tb sw" data-q="summer" title="여름 문학"><i style="background:#0A6E92"></i></button>
       <button class="tb sw" data-q="autumn" title="가을 인문"><i style="background:#836B5D"></i></button>
     </div>
+    <button class="btn" id="btnPrevDoc" title="같은 레벨·분기 안의 이전 문서">◀ 이전</button>
+    <button class="btn" id="btnNextDoc" title="같은 레벨·분기 안의 다음 문서">다음 ▶</button>
     <button class="btn" id="btnPrintPreview">인쇄 미리보기</button>
     <button class="btn btn--primary" id="btnApprove" disabled>승인</button>
     <button class="btn" id="btnPublish" disabled>공개</button>
@@ -72,7 +78,51 @@
 </main>
 
 <div class="toast" id="toast" role="status"></div>
+</div>
 
-<script type="module" src="review.js"></script>
+<div id="listView" hidden>
+  <header class="topbar">
+    <div class="topbar__title"><span>검수 목록</span></div>
+  </header>
+  <main class="list-main" id="listMain">
+    <div class="list-toolbar">
+      <input type="text" id="listSearch" placeholder="책 제목 또는 doc_id 검색...">
+      <select id="listLevel"><option value="">레벨 전체</option></select>
+      <select id="listQuarter"><option value="">분기 전체</option></select>
+      <select id="listStatus">
+        <option value="">상태 전체</option>
+        <option value="draft">draft</option>
+        <option value="review">review</option>
+        <option value="approved">approved</option>
+        <option value="published">published</option>
+      </select>
+      <select id="listSort">
+        <option value="default">레벨·분기·주차 순</option>
+        <option value="flags">남은 플래그 많은 순</option>
+      </select>
+    </div>
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th>doc_id</th><th>책 제목</th><th>레벨</th><th>분기</th><th>주차</th>
+          <th>상태</th><th>총 페이지</th><th>남은 플래그</th><th>마지막 수정</th>
+        </tr>
+      </thead>
+      <tbody id="listBody"></tbody>
+    </table>
+    <div class="list-pager" id="listPager"></div>
+  </main>
+</div>
+
+<script type="module">
+  const params = new URLSearchParams(location.search);
+  if (params.get('edition')) {
+    document.getElementById('docView').hidden = false;
+    import('./review.js');
+  } else {
+    document.getElementById('listView').hidden = false;
+    import('./list.js');
+  }
+</script>
 </body>
 </html>

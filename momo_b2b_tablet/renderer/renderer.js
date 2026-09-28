@@ -9,10 +9,13 @@
 
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
-function shellHtml({ logoUrl, brand, mode }) {
+function shellHtml({ logoUrl, brand, mode, returnUrl }) {
   return `
 <header class="toolbar" role="toolbar" aria-label="학습지 도구">
   <div class="brand"><img src="${esc(logoUrl || "")}" alt="모모의 책장"><span>${esc(brand)}</span></div>
+  ${returnUrl ? `<div class="grp" role="group" aria-label="학습 목록">
+    <button class="tb" id="tReturn" title="학습 목록으로 돌아가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span class="lbl">학습 목록으로</span></button>
+  </div>` : ""}
   <div class="grp" role="group" aria-label="쓰기 도구">
     <button class="tb" id="tPen" aria-pressed="true" title="펜"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20z"/><path d="M13.5 7.5l3 3"/></svg><span class="lbl">펜</span></button>
     <button class="tb" id="tEraser" aria-pressed="false" title="지우개"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h11"/><path d="M5.5 14.5l8-8a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8L12 18H8.5z"/><path d="M9.5 10.5l5 5"/></svg><span class="lbl">지우개</span></button>
@@ -71,7 +74,7 @@ function shellHtml({ logoUrl, brand, mode }) {
  * adapters.state: { load(): Promise<{ink,text,ox}>, save(state): void|Promise }
  * adapters.recognize: (({prompt, blob, partId, signal}) => Promise<{text, unclear}>) | undefined
  */
-export async function mountEdition({ edition, images, mode = "review", brand, adapters = {} }) {
+export async function mountEdition({ edition, images, mode = "review", brand, adapters = {}, returnUrl = null }) {
   const BOOK = edition.book, TONE = edition.tone, QUARTER = edition.quarter, PAGES = edition.pages;
   const IMG = images || {};
 
@@ -80,6 +83,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     logoUrl: IMG.logo || IMG.logoIvory,
     brand: brand || `${BOOK.title} · ${TONE.grade || ""}`.trim(),
     mode,
+    returnUrl,
   });
   document.body.dataset.mode = mode;
 
@@ -200,7 +204,9 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     register(q, parts);
     return h;
   }
-  function qHead(q) { QTEXT[q.id] = q.t; return `<div class="qhead"><span class="stamp">${esc(q.id)}</span><div class="qtext">${esc(q.t)}</div></div>`; }
+  // 2026-09-27: 질문이 너무 길어 layout/step2.py가 전용 페이지(앞)로 뺐으면
+  // q.continued가 true - STEP3 memo와 같은 문구로 "앞쪽에서 이어짐"을 알린다.
+  function qHead(q) { QTEXT[q.id] = q.t; return `<div class="qhead"><span class="stamp">${esc(q.id)}</span><div class="qtext">${q.continued ? `<span class="excerpt-cont" style="display:block;margin:0 0 .8mm">◀ 앞쪽에서 이어짐</span>` : ""}${esc(q.t)}</div></div>`; }
   // 2026-09-27 검수 프리셋 "제목 중앙 상단"(edition/presets.py preset_title_top) -
   // STEP3 essay 페이지의 중앙 상단 제목 처리를 qa/qaband/qaref/solo에도 쓸 수
   // 있게 뽑아낸 배너. 본문 안의 원래 qHead()는 CSS(.title-top .qhead)로
@@ -325,7 +331,10 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       const { html, ratio } = mirrorCols(p.ratio || "1fr 1.25fr", left, right, p.mirror);
       inner = `${topBanner}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
     } else if (p.type === "memos") {
-      const rows = p.qs.map(q => { QTEXT[q.id] = q.t; register(q, [{ id: q.id, label: "", prompt: "" }]); return `<div class="mrow"><div class="mq"><span class="num-sq">${esc(q.no)}</span><div class="qtext">${esc(q.t)}</div></div>${inkBox(q.id, "memo")}</div>`; }).join("");
+      // 2026-09-27: 문항이 너무 길면(layout/step3.py _split_long_memo_item) 앞에
+      // 전용 페이지(excerpt 타입 재사용)로 전문을 빼고 여기는 요약만 남는다 -
+      // q.continued면 그 사실을 표로 알려준다(qa/qaband의 "앞쪽에서 이어짐"과 같은 문구).
+      const rows = p.qs.map(q => { QTEXT[q.id] = q.t; register(q, [{ id: q.id, label: "", prompt: "" }]); return `<div class="mrow"><div class="mq"><span class="num-sq">${esc(q.no)}</span><div class="qtext">${q.continued ? `<span class="excerpt-cont" style="display:block;margin:0 0 .8mm">◀ 앞쪽에서 이어짐</span>` : ""}${esc(q.t)}</div></div>${inkBox(q.id, "memo")}</div>`; }).join("");
       const mFig = p.slot && p.slot.img ? `<figure class="m-fig"><img src="${IMG[p.slot.img]}" alt=""></figure>` : "";
       inner = `<div class="mtop"><span class="mtopic">${esc(p.topic)}</span><span class="mlead">${esc(p.closing)}</span>${mFig}</div><div class="mrows">${rows}</div>`;
     }
@@ -349,6 +358,13 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
 
   /* ============ ink engine ============ */
   const MM = 96 / 25.4, LINE_PX = TONE.line * MM;
+  // 2026-09-27 사용자 지시 - 필기 이미지에서 "은"의 ㅇ처럼 안쪽 구멍이 메워질
+  // 만큼 획이 두꺼웠던 문제. 고정값(2.1)이던 기본 획 두께를 답란 줄 높이
+  // (LINE_PX, 곧 TONE_LINE_MM)에 비례하도록 바꾼다 - 괘선 간격이 넓은
+  // 학년(lower)은 두껍게, 좁은 학년(mid)은 얇게. 비율 0.03은 잠정치(실측
+  // 없이 "기존 2.1이 14mm 기준으로도 두꺼웠다"는 관찰만으로 기존보다
+  // 얇게 잡은 값) - 실제 학생 필기 재수집 후 다시 조정할 것.
+  const INK_BASE_WIDTH = LINE_PX * 0.03;
   const RULE = getComputedStyle(document.documentElement).getPropertyValue("--rule").trim() || "#C9C0AB";
   const tools = { mode: "pen", finger: false };
   const history = [];
@@ -380,9 +396,27 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       if (!this.accepts(e)) return;
       e.preventDefault(); e.stopPropagation();
       if (e.pointerType === "pen") lastPenAt = Date.now();
+      const p0 = this.pt(e);
+      // 2026-09-27 사용자 지시 "두 번 두드리면 그 칸만 화면 가득 확대" - 브라우저
+      // 기본 dblclick을 쓰면 두 번의 tap이 각각 down/up으로 먼저 처리돼 점(dot)
+      // 스트로크 2개가 먼저 찍힌 뒤에야 dblclick이 온다 - 그래서 직접 두 번째
+      // tap을 down() 시점에 감지해서 스트로크 생성을 막고, 이미 찍힌 첫 tap의
+      // 점 스트로크도 지운다(eraser 모드에서는 tap이 지우개 동작이라 대상 아님).
+      if (tools.mode !== "eraser") {
+        const now = Date.now();
+        if (this._lastTap && now - this._lastTap.t < 350 &&
+            Math.hypot(p0[0] - this._lastTap.x, p0[1] - this._lastTap.y) < 12) {
+          this._lastTap = null;
+          if (this._pendingDotStroke && this.strokes[this.strokes.length - 1] === this._pendingDotStroke) {
+            this.strokes.pop(); this._pendingDotStroke = null; this.draw(); this.commit();
+          }
+          openZoom(this);
+          return;
+        }
+      }
       this.cv.setPointerCapture(e.pointerId);
-      if (tools.mode === "eraser") { this.erasing = { removed: [] }; this.eraseAt(this.pt(e)); return; }
-      this.cur = { w: 2.1, pts: [this.pt(e)] }; this.strokes.push(this.cur); this.drawStroke(this.cur);
+      if (tools.mode === "eraser") { this.erasing = { removed: [] }; this.eraseAt(p0); return; }
+      this.cur = { w: INK_BASE_WIDTH, pts: [p0] }; this.strokes.push(this.cur); this.drawStroke(this.cur);
     }
     move(e) {
       if (!this.cur && !this.erasing) return;
@@ -402,7 +436,12 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
         this.erasing = null; return;
       }
       if (!this.cur) return;
-      history.push({ box: this, type: "add", stroke: this.cur }); this.cur = null; this.commit();
+      const stroke = this.cur;
+      history.push({ box: this, type: "add", stroke }); this.cur = null; this.commit();
+      // 점(tap) 하나짜리 스트로크만 "두 번 탭" 후보로 기억한다 - 실제로 선을
+      // 그은 경우(점 2개 이상)는 그리기 의도가 분명하니 다음 tap과 묶지 않음.
+      if (stroke.pts.length === 1) { this._lastTap = { t: Date.now(), x: stroke.pts[0][0], y: stroke.pts[0][1] }; this._pendingDotStroke = stroke; }
+      else { this._lastTap = null; this._pendingDotStroke = null; }
     }
     eraseAt(p) {
       const R = 7;
@@ -448,8 +487,14 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       c.stroke();
     }
     toBlob() {
+      // 2026-09-27 사용자 지시로 k/pad/선두께 배수를 키워 실측 비교했으나(같은
+      // 필기, Haiku/Sonnet/Opus 3종) 정확도 개선이 없었고 일부는 더 나빠짐
+      // (파일 크기만 28KB->81KB로 3배) - 원래 값(k=2.4, pad=0, 배수 1.25)으로
+      // 되돌린다. 획 두께 자체는 이제 INK_BASE_WIDTH(답란 줄 높이에 비례)로
+      // 바뀌었으니 이 배수는 그 위에 곱해진다.
       const w = this.cv.offsetWidth, h = this.cv.offsetHeight, k = 2.4;
-      const cv = document.createElement("canvas"); cv.width = Math.round(w * k); cv.height = Math.round(h * k);
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(w * k); cv.height = Math.round(h * k);
       const c = cv.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, cv.width, cv.height);
       c.setTransform(k, 0, 0, k, 0, 0); c.strokeStyle = "#111"; c.fillStyle = "#111"; c.lineCap = "round"; c.lineJoin = "round";
       for (const s of this.strokes) {
@@ -461,6 +506,56 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     }
   }
   document.querySelectorAll(".ink").forEach(el => boxes.set(el.dataset.id, new InkBox(el)));
+
+  // 2026-09-27 사용자 지시 "답란 확대(두 번 두드리면 그 칸만 화면 가득 확대) -
+  // 크게 쓰면 획이 또렷해져 인식에도 도움". `.ink` 엘리먼트를 그대로(복제 아님)
+  // 전체화면 오버레이로 옮기고 CSS transform:scale만 입힌다 - InkBox.pt()가
+  // 이미 `this.cv.offsetWidth / rect.width`로 CSS transform 배율을 보정해서
+  // 좌표를 원래(작은) 칸 기준으로 되돌려 놓기 때문에(페이지 전체 축소
+  // 미리보기(scale)에서 이미 쓰던 방식과 같음), 좌표계를 별도로 다룰 필요가
+  // 없다 - down/move/up/draw 등 기존 코드를 그대로 재사용한다.
+  let zoomState = null;
+  function openZoom(box) {
+    if (zoomState) return;
+    const el = box.el;
+    // 반드시 offsetWidth/Height(고유 크기, 부모·페이지 전체의 CSS transform
+    // 영향을 안 받음)를 써야 한다 - getBoundingClientRect()는 fit()이 페이지
+    // 전체에 입히는 배율(scale)까지 곱해진 "현재 화면에 보이는" 크기라, 이걸
+    // 배율 계산과 너비 고정에 쓰면 두 배율이 겹쳐 실제보다 훨씨 크게 확대되고
+    // (Playwright로 실측: 페이지 배율이 섞여 el.style.width가 진짜 캔버스
+    // 크기보다 커짐), pt()의 좌표 보정 기준(offsetWidth)과도 어긋나서 확대
+    // 중 그린 필기가 축소 후 칸 밖으로 잘리는 버그가 났었다(실제 재현·확인함).
+    const iw = el.offsetWidth, ih = el.offsetHeight;
+    const factor = Math.max(1, Math.min((innerWidth * .9) / iw, (innerHeight * .85) / ih));
+    const backdrop = document.createElement("div");
+    backdrop.className = "ink-zoom-backdrop";
+    backdrop.addEventListener("pointerdown", e => { if (e.target === backdrop) closeZoom(); });
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button"; closeBtn.className = "ink-zoom-close"; closeBtn.textContent = "닫기";
+    closeBtn.addEventListener("click", closeZoom);
+    backdrop.appendChild(closeBtn);
+    document.body.appendChild(backdrop);
+    zoomState = { el, parent: el.parentNode, next: el.nextSibling, box, prevWidth: el.style.width };
+    backdrop.insertBefore(el, closeBtn);
+    // .ink는 원래 부모(flex 컬럼, align-items:stretch)가 너비를 정해 주던
+    // 요소라 자기 너비를 CSS로 갖고 있지 않다(캔버스도 position:absolute라
+    // 내용 기반 intrinsic width가 0) - backdrop(flex 중앙정렬)으로 옮기면
+    // 너비 기준이 없어져 캔버스가 폭 0으로 무너진다(Playwright로 실측 확인).
+    // 고유 너비(iw)를 그대로 인라인으로 박아 준다.
+    el.style.width = iw + "px";
+    el.classList.add("zoomed");
+    el.style.transform = `scale(${factor})`;
+    box.size(box.k * factor); // 확대 배율만큼 캔버스 실제 해상도도 올려서 또렷하게
+  }
+  function closeZoom() {
+    if (!zoomState) return;
+    const { el, parent, next, prevWidth } = zoomState;
+    el.classList.remove("zoomed"); el.style.transform = ""; el.style.width = prevWidth;
+    parent.insertBefore(el, next);
+    document.querySelector(".ink-zoom-backdrop")?.remove();
+    zoomState = null;
+    fit(); // 모든 답란의 해상도·배율을 한 번에 다시 정상화(개별 복원보다 안전)
+  }
 
   function updateUndo() { document.getElementById("tUndo").disabled = history.length === 0; }
   document.getElementById("tUndo").addEventListener("click", () => {
@@ -568,6 +663,45 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
         col.classList.remove("alloc-overflow");
       }
     });
+
+    // 2026-09-27: 305건 전체 스캔에서 어휘 카드(.vcard) 오버플로 발견(뜻풀이가
+    // 길면 고정 카드 높이를 넘음, 전부 L1-Q1 대역 8건) - 사용자 지시 우선순위대로
+    // 1) 글자 한 단계 축소 -> 2) (낱말 2개 이하일 때만 유효, 그 이상은 행이
+    // 모자라 오히려 나빠짐) 1열로 넓혀 줄바꿈 감소. 답란 줄 수는 손대지 않음
+    // (마지막 수단으로 남겨 두라는 지시).
+    document.querySelectorAll(".vgrid").forEach(grid => {
+      const cards = [...grid.querySelectorAll(".vcard")];
+      cards.forEach(c => c.classList.remove("tight", "alloc-overflow"));
+      grid.classList.remove("single-col");
+      const overflowsNow = c => c.scrollHeight - c.clientHeight > 1;
+      cards.filter(overflowsNow).forEach(c => c.classList.add("tight"));
+      if (cards.some(overflowsNow) && cards.length <= 2) grid.classList.add("single-col");
+      cards.filter(overflowsNow).forEach(c => {
+        c.classList.add("tight", "alloc-overflow");
+        console.warn("[alloc] 어휘 카드가 글자 축소·1열 확대로도 안 맞습니다 - 답란 줄 수 조정 필요", c);
+      });
+    });
+
+    // 2026-09-27: memo도 같은 방식 - 행간 조정(.mq .qtext line-height, renderer.css)
+    // + 문항 하나가 너무 길면 layout/step3.py가 이미 전용 페이지로 뺀다. 그래도
+    // 안 맞으면(실측: elem-upper/mid는 memo가 기본 3줄 고정이라, 짧은 요약
+    // 문항 2개+보통 길이 문항 1개만 남아도 여전히 넘치는 경우가 있었음) 마지막
+    // 수단으로 답란 줄 수를 3->2, 그래도 안 되면 2->1까지 줄인다(사용자 지시
+    // "답란 줄 수는 마지막에 줄일 것"). 그래도 안 맞으면 더 줄이지 않고 정직하게
+    // alloc-overflow로 표시해 검수자가 보게 한다.
+    document.querySelectorAll(".mrows").forEach(rows => {
+      const inks = [...rows.querySelectorAll(".ink[data-min]")];
+      inks.forEach(el => { el.dataset.min = el.dataset.max; el.style.height = `calc(var(--line) * ${el.dataset.max})`; });
+      for (let n = +((inks[0] && inks[0].dataset.max) || 1) - 1; n >= 1 && rows.scrollHeight - rows.clientHeight > 1; n--) {
+        inks.forEach(el => { el.dataset.min = n; el.style.height = `calc(var(--line) * ${n})`; });
+      }
+      if (rows.scrollHeight - rows.clientHeight > 1) {
+        rows.classList.add("alloc-overflow");
+        console.warn("[alloc] memo 페이지가 여백/줄간격 조정, 긴 문항 분리, 답란 1줄까지 줄여도 안 맞습니다 - 검수 필요", rows);
+      } else {
+        rows.classList.remove("alloc-overflow");
+      }
+    });
   }
   function fit() {
     allocate();
@@ -602,6 +736,18 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
   addEventListener("beforeprint", printPrep);
   addEventListener("afterprint", fit);
   document.getElementById("tPrint").addEventListener("click", () => { printPrep(); try { window.print(); } catch (e) { toast("이 화면에서는 인쇄를 열 수 없어요. 브라우저 메뉴의 인쇄를 이용하세요."); } });
+
+  // 2026-09-28: momolib 등에서 launch할 때만 버튼이 존재(shellHtml이
+  // returnUrl 없으면 안 그림) - 진행 요약을 서버 간으로 먼저 통지하고
+  // (실패해도 무시) return_url로 이동한다. 통지 자체가 브라우저→파트너
+  // 직접 호출이 아니라 이 서버(adapters.notifyProgress)를 거치므로 CORS/
+  // 파트너 비밀 노출 문제가 없다(설계 문서 참고).
+  const tReturn = document.getElementById("tReturn");
+  if (tReturn) tReturn.addEventListener("click", async () => {
+    tReturn.disabled = true;
+    if (adapters.notifyProgress) await adapters.notifyProgress();
+    location.href = returnUrl;
+  });
 
   /* ============ toast ============ */
   let tt = 0;
@@ -713,6 +859,25 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
 
   /* 외부(호스트 페이지·테스트)에 필요한 최소 API. printPrep/evalPayload/applyPalette는
    * 툴바 버튼이 내부적으로 쓰는 것과 같은 함수라 여기서도 그대로 노출한다 - 예: 웹뷰를 감싸는
-   * 네이티브 앱이 자체 인쇄 버튼에서 printPrep()을 먼저 부르고 싶을 수 있다. */
-  return { pageCount: PAGES.length, go, fit, printPrep, evalPayload, applyPalette };
+   * 네이티브 앱이 자체 인쇄 버튼에서 printPrep()을 먼저 부르고 싶을 수 있다.
+   * getBoxBlob(2026-09-27): 인식용 이미지 생성(toBlob) 품질을 헤드리스로 검증할 수
+   * 있게 - 실제 필기(ink_json)를 그대로 불러온 뒤 이걸로 이미지를 뽑아 여러 배율/
+   * 여백 설정을 비교한다(tests/ 쪽에서 Playwright로 호출). */
+  /* 2026-09-28: 검수 화면의 "후보 만들기"가 이미지 생성 요청에 넣을 실측
+   * 슬롯 크기·비율을 알아야 한다 - allocate()가 이미 계산해서 .sl-r 텍스트로
+   * 보여주는 것과 같은 값을, 페이지가 지금 화면에 보이지 않아도(.page는
+   * visibility:hidden이라 offsetWidth/Height는 항상 유효) 읽어서 돌려준다. */
+  function getSlotDims(pageIdx) {
+    const pageEl = pageEls[pageIdx];
+    const slot = pageEl && pageEl.querySelector(".slot");
+    if (!slot) return null;
+    const widthMm = slot.offsetWidth / MM, heightMm = slot.offsetHeight / MM;
+    const r = slot.offsetWidth / slot.offsetHeight;
+    const best = RATIOS.reduce((a, b) => Math.abs(Math.log(b[1] / r)) < Math.abs(Math.log(a[1] / r)) ? b : a);
+    return { widthMm, heightMm, ratio: best[0] };
+  }
+
+  return { pageCount: PAGES.length, go, fit, printPrep, evalPayload, applyPalette,
+           getSlotDims,
+           getBoxBlob: id => boxes.get(id) && boxes.get(id).toBlob() };
 }

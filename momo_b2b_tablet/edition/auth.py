@@ -91,17 +91,22 @@ def verify_partner_key(api_key: str) -> int | None:
     return None
 
 
-def create_launch_token(partner_id: int, partner_student_id: str, edition_id: int) -> tuple[str, int]:
-    """일회용 launch 토큰을 만든다. (token, 유효 시간(초))를 돌려준다."""
+def create_launch_token(partner_id: int, partner_student_id: str, edition_id: int,
+                         return_url: str | None = None) -> tuple[str, int]:
+    """일회용 launch 토큰을 만든다. (token, 유효 시간(초))를 돌려준다.
+
+    2026-09-28: return_url(선택) - 파트너(momolib 등)가 주면, 학생이 태블릿
+    화면에서 "학습 목록으로"를 눌렀을 때 돌아갈 주소로 세션까지 그대로
+    들고 간다(exchange_launch_token이 session 테이블에 복사)."""
     token = secrets.token_urlsafe(32)
     now = _now()
     conn = db.get_connection()
     try:
         conn.execute(
             "INSERT INTO launch_token (token, partner_id, partner_student_id, edition_id, "
-            "created_at, expires_at) VALUES (?,?,?,?,?,?)",
+            "created_at, expires_at, return_url) VALUES (?,?,?,?,?,?,?)",
             (token, partner_id, partner_student_id, edition_id, now.isoformat(),
-             (now + LAUNCH_TOKEN_TTL).isoformat()),
+             (now + LAUNCH_TOKEN_TTL).isoformat(), return_url),
         )
         conn.commit()
     finally:
@@ -142,10 +147,10 @@ def exchange_launch_token(token: str, edition_id: int) -> tuple[str, int]:
 
         session_id = secrets.token_urlsafe(32)
         conn.execute(
-            "INSERT INTO session (id, partner_id, partner_student_id, edition_id, created_at, expires_at) "
-            "VALUES (?,?,?,?,?,?)",
+            "INSERT INTO session (id, partner_id, partner_student_id, edition_id, created_at, "
+            "expires_at, return_url) VALUES (?,?,?,?,?,?,?)",
             (session_id, row["partner_id"], row["partner_student_id"], row["edition_id"],
-             now.isoformat(), (now + SESSION_TTL).isoformat()),
+             now.isoformat(), (now + SESSION_TTL).isoformat(), row["return_url"]),
         )
         conn.commit()
         return session_id, int(SESSION_TTL.total_seconds())
@@ -154,8 +159,8 @@ def exchange_launch_token(token: str, edition_id: int) -> tuple[str, int]:
 
 
 def get_session(session_id: str) -> dict | None:
-    """세션이 존재하고 만료 전이면 {partner_id, partner_student_id, edition_id},
-    아니면 None."""
+    """세션이 존재하고 만료 전이면 {partner_id, partner_student_id, edition_id,
+    return_url}, 아니면 None."""
     if not session_id:
         return None
     conn = db.get_connection()
@@ -168,4 +173,4 @@ def get_session(session_id: str) -> dict | None:
     if _parse_iso(row["expires_at"]) < _now():
         return None
     return {"partner_id": row["partner_id"], "partner_student_id": row["partner_student_id"],
-            "edition_id": row["edition_id"]}
+            "edition_id": row["edition_id"], "return_url": row["return_url"]}

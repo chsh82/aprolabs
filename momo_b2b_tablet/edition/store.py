@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -69,8 +70,8 @@ def _insert_flags(conn, edition_id: int, layout: dict, flags: list[Flag]) -> Non
         page_idx = _find_page_idx(layout, f.order_no)
         path = f"/pages/{page_idx}" if page_idx is not None else None
         conn.execute(
-            "INSERT INTO edition_flag (edition_id, page_idx, path, kind, message) VALUES (?,?,?,?,?)",
-            (edition_id, page_idx, path, _classify(f), f.message),
+            "INSERT INTO edition_flag (edition_id, page_idx, path, kind, message, priority) VALUES (?,?,?,?,?,?)",
+            (edition_id, page_idx, path, _classify(f), f.message, f.priority),
         )
 
 
@@ -115,6 +116,156 @@ def get_edition_row(edition_id: int):
         return conn.execute("SELECT * FROM edition WHERE id = ?", (edition_id,)).fetchone()
     finally:
         conn.close()
+
+
+def list_editions_by_status(statuses: list[str]) -> list[dict]:
+    """2026-09-28 - 파트너(momolib 등) 관리 화면의 "교재 고르기" 목록용.
+    doc_id당 최신 version만 남긴다(같은 문서를 여러 버전 만들었을 수 있어서 -
+    파트너에게는 "이 문서의 지금 쓸 버전" 하나씩만 보여주면 됨)."""
+    if not statuses:
+        return []
+    placeholders = ",".join("?" for _ in statuses)
+    conn = db.get_connection()
+    try:
+        rows = conn.execute(
+            f"SELECT id, doc_id, version, status, band, layout_json FROM edition "
+            f"WHERE status IN ({placeholders}) ORDER BY doc_id, version DESC",
+            statuses,
+        ).fetchall()
+    finally:
+        conn.close()
+    latest_by_doc: dict[str, dict] = {}
+    for r in rows:
+        if r["doc_id"] in latest_by_doc:
+            continue  # 이미 더 높은 version을 담음(ORDER BY version DESC)
+        layout = json.loads(r["layout_json"])
+        latest_by_doc[r["doc_id"]] = {
+            "edition_id": r["id"], "doc_id": r["doc_id"], "version": r["version"],
+            "status": r["status"], "band": r["band"],
+            "title": layout.get("book", {}).get("title", ""),
+            "week": layout.get("book", {}).get("week", ""),
+        }
+    return list(latest_by_doc.values())
+
+
+# 2026-09-28: 검수 목록 화면(/review/index.html, edition 번호 없이 열면 목록) -
+# doc_id 형식 "L{level}-Q{quarter}-W{week}"에서 레벨·분기·주차를 파싱한다.
+# layout_json 안에도 level/week가 있지만 doc_id가 더 안정적인 식별자라 이걸 기준으로 삼는다.
+_DOC_ID_RE = re.compile(r"^L(\d+)-Q(\d+)-W(\d+)$")
+
+
+def _parse_doc_id(doc_id: str) -> tuple[int | None, int | None, int | None]:
+    m = _DOC_ID_RE.match(doc_id)
+    if not m:
+        return None, None, None
+    return int(m.group(1)), int(m.group(2)), int(m.group(3))
+
+
+def _latest_editions_by_doc() -> list[sqlite3.Row]:
+    conn = db.get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT id, doc_id, version, status, band, layout_json, created_by, created_at "
+            "FROM edition ORDER BY doc_id, version DESC"
+        ).fetchall()
+    finally:
+        conn.close()
+    latest_by_doc: dict[str, sqlite3.Row] = {}
+    for r in rows:
+        if r["doc_id"] not in latest_by_doc:
+            latest_by_doc[r["doc_id"]] = r
+    return list(latest_by_doc.values())
+
+
+def list_editions_for_review(level: int | None = None, quarter: int | None = None,
+                              status: str | None = None, search: str = "",
+                              sort: str = "default", page: int = 1, per_page: int = 50) -> dict:
+    """검수 목록 화면용 - doc_id당 최신 version만, 레벨/분기/상태 필터 +
+    책제목·doc_id 검색 + 정렬(레벨·분기·주차 기본 / 남은 플래그 수)."""
+    rows = _latest_editions_by_doc()
+
+    docs = []
+    for r in rows:
+        lvl, qtr, wk = _parse_doc_id(r["doc_id"])
+        layout = json.loads(r["layout_json"])
+        book = layout.get("book", {})
+        docs.append({
+            "edition_id": r["id"], "doc_id": r["doc_id"], "version": r["version"],
+            "status": r["status"], "level": lvl, "quarter": qtr, "week": wk,
+            "title": book.get("title", ""),
+            "total_pages": len(layout.get("pages", [])),
+        })
+
+    edition_ids = [d["edition_id"] for d in docs]
+    flag_counts: dict[int, int] = {}
+    last_edit: dict[int, dict] = {}
+    if edition_ids:
+        conn = db.get_connection()
+        try:
+            placeholders = ",".join("?" for _ in edition_ids)
+            for r in conn.execute(
+                f"SELECT edition_id, COUNT(*) c FROM edition_flag "
+                f"WHERE edition_id IN ({placeholders}) AND resolved_at IS NULL "
+                f"GROUP BY edition_id", edition_ids,
+            ):
+                flag_counts[r["edition_id"]] = r["c"]
+            for r in conn.execute(
+                f"SELECT edition_id, editor, created_at FROM correction_log "
+                f"WHERE edition_id IN ({placeholders}) "
+                f"ORDER BY edition_id, created_at DESC", edition_ids,
+            ):
+                if r["edition_id"] not in last_edit:
+                    last_edit[r["edition_id"]] = {"editor": r["editor"], "at": r["created_at"]}
+        finally:
+            conn.close()
+
+    for d in docs:
+        d["flag_count"] = flag_counts.get(d["edition_id"], 0)
+        le = last_edit.get(d["edition_id"])
+        d["last_editor"] = le["editor"] if le else None
+        d["last_edited_at"] = le["at"] if le else None
+
+    if level is not None:
+        docs = [d for d in docs if d["level"] == level]
+    if quarter is not None:
+        docs = [d for d in docs if d["quarter"] == quarter]
+    if status:
+        docs = [d for d in docs if d["status"] == status]
+    if search:
+        s = search.strip().lower()
+        docs = [d for d in docs if s in d["doc_id"].lower() or s in d["title"].lower()]
+
+    if sort == "flags":
+        docs.sort(key=lambda d: d["flag_count"], reverse=True)
+    else:
+        docs.sort(key=lambda d: (d["level"] or 0, d["quarter"] or 0, d["week"] or 0))
+
+    total = len(docs)
+    start = (page - 1) * per_page
+    return {"docs": docs[start:start + per_page], "total": total, "page": page, "per_page": per_page}
+
+
+def find_neighbors(edition_id: int) -> dict:
+    """검수 화면의 이전·다음 버튼 - 같은 레벨·분기 안에서 주차 순으로 이웃 문서."""
+    row = get_edition_row(edition_id)
+    if row is None:
+        return {"prev": None, "next": None}
+    lvl, qtr, wk = _parse_doc_id(row["doc_id"])
+    if lvl is None:
+        return {"prev": None, "next": None}
+
+    siblings = [d for d in (
+        {"edition_id": r["id"], "doc_id": r["doc_id"], **dict(zip(("level", "quarter", "week"), _parse_doc_id(r["doc_id"])))}
+        for r in _latest_editions_by_doc()
+    ) if d["level"] == lvl and d["quarter"] == qtr and d["week"] is not None]
+    siblings.sort(key=lambda d: d["week"])
+
+    idx = next((i for i, d in enumerate(siblings) if d["edition_id"] == edition_id), None)
+    if idx is None:
+        return {"prev": None, "next": None}
+    prev = siblings[idx - 1] if idx > 0 else None
+    nxt = siblings[idx + 1] if idx < len(siblings) - 1 else None
+    return {"prev": prev, "next": nxt}
 
 
 def _form_change_before_after(before_layout: dict, op: dict):
@@ -235,7 +386,10 @@ def patch_edition(edition_id: int, patch_ops: list[dict], editor: str | None = N
 def list_flags(edition_id: int) -> list[dict]:
     conn = db.get_connection()
     try:
-        rows = conn.execute("SELECT * FROM edition_flag WHERE edition_id = ? ORDER BY id", (edition_id,)).fetchall()
+        # 2026-09-28: priority(0=보통, 1=낮음)로 먼저 정렬 - "낮음"은 큐 하단으로.
+        rows = conn.execute(
+            "SELECT * FROM edition_flag WHERE edition_id = ? ORDER BY priority ASC, id ASC", (edition_id,)
+        ).fetchall()
         return [dict(r) for r in rows]
     finally:
         conn.close()
@@ -334,13 +488,17 @@ def _asset_manifest() -> dict:
 
 
 def resolve_image_urls(layout: dict) -> dict[str, str]:
-    """자산 키 -> URL. "/"가 있으면 momo_book_db/extracted_images의 문서별 원본
+    """자산 키 -> URL. "generated/"로 시작하면 검수 화면에서 생성한 이미지
+    (assets/generated/ - ASSETS_DIR 밑, momo_book_db는 원본 읽기 전용이라
+    안 씀), 그 외 "/"가 있으면 momo_book_db/extracted_images의 문서별 원본
     이미지(Stage3가 NormalizedImage.file_path를 그대로 키로 쓴다), 없으면 시안용
     평면 자산(assets/manifest.json - 캐릭터·로고)로 본다."""
     images: dict[str, str] = {}
     manifest = _asset_manifest()
     for key in _collect_image_keys(layout):
-        if "/" in key:
+        if key.startswith("generated/"):
+            images[key] = f"/static/assets/{key}"
+        elif "/" in key:
             images[key] = f"/static/extracted/{key}"
         elif key in manifest:
             images[key] = f"/static/assets/{manifest[key]}"
@@ -420,6 +578,98 @@ def review_images(edition_id: int) -> dict[str, str] | None:
     if row is None:
         return None
     return resolve_image_urls(json.loads(row["layout_json"]))
+
+
+# ============ 페이지별 이미지 생성 (2026-09-28 사용자 지시 [3]) ============
+
+def _candidate_row_to_dict(r: sqlite3.Row) -> dict:
+    return {
+        "id": r["id"], "edition_id": r["edition_id"], "slot_path": r["slot_path"],
+        "provider": r["provider"], "model": r["model"], "prompt": r["prompt"],
+        "url": f"/static/assets/{r['file_path']}", "width": r["width"], "height": r["height"],
+        "chosen": bool(r["chosen"]), "cost_usd": r["cost_usd"], "elapsed_ms": r["elapsed_ms"],
+        "created_at": r["created_at"],
+    }
+
+
+def list_image_candidates(edition_id: int, slot_path: str) -> list[dict]:
+    """검수 화면을 다시 열었을 때도 이전에 만든 후보들을 볼 수 있게."""
+    conn = db.get_connection()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM image_candidate WHERE edition_id = ? AND slot_path = ? ORDER BY created_at DESC",
+            (edition_id, slot_path),
+        ).fetchall()
+    finally:
+        conn.close()
+    return [_candidate_row_to_dict(r) for r in rows]
+
+
+def save_image_candidates(edition_id: int, slot_path: str, results: list[dict]) -> list[dict]:
+    conn = db.get_connection()
+    try:
+        ids = []
+        for r in results:
+            cur = conn.execute(
+                "INSERT INTO image_candidate (edition_id, slot_path, model, prompt, file_path, "
+                "width, height, chosen, created_at, provider, cost_usd, elapsed_ms) "
+                "VALUES (?,?,?,?,?,?,?,0,?,?,?,?)",
+                (edition_id, slot_path, r["model"], r["prompt"], r["file_path"], r["width"], r["height"],
+                 _now(), r["provider"], r["cost_usd"], r["elapsed_ms"]),
+            )
+            ids.append(cur.lastrowid)
+        conn.commit()
+        rows = conn.execute(
+            f"SELECT * FROM image_candidate WHERE id IN ({','.join('?' for _ in ids)})", ids,
+        ).fetchall()
+    finally:
+        conn.close()
+    return [_candidate_row_to_dict(r) for r in rows]
+
+
+def choose_image_candidate(edition_id: int, candidate_id: int, editor: str | None = None) -> int:
+    """후보를 슬롯에 반영 - patch_edition을 그대로 태워 correction_log에도
+    남기고 rev/version 규칙(확정본이면 새 version)을 그대로 따르게 한다."""
+    conn = db.get_connection()
+    try:
+        cand = conn.execute(
+            "SELECT * FROM image_candidate WHERE id = ? AND edition_id = ?", (candidate_id, edition_id),
+        ).fetchone()
+    finally:
+        conn.close()
+    if cand is None:
+        raise NotFound(f"image candidate {candidate_id} not found")
+
+    new_id = patch_edition(
+        edition_id,
+        [{"op": "replace", "path": cand["slot_path"],
+          "value": {"img": cand["file_path"], "src": "생성 이미지", "generated": True}}],
+        editor=editor, reason="검수: 생성 이미지 후보 선택",
+    )
+
+    conn = db.get_connection()
+    try:
+        conn.execute(
+            "UPDATE image_candidate SET chosen = 0 WHERE edition_id = ? AND slot_path = ?",
+            (edition_id, cand["slot_path"]),
+        )
+        conn.execute("UPDATE image_candidate SET chosen = 1 WHERE id = ?", (candidate_id,))
+        conn.commit()
+    finally:
+        conn.close()
+    return new_id
+
+
+def image_usage_summary() -> dict:
+    """검수 화면에 누적 사용량(건수·추정 비용)을 보여주기 위함."""
+    conn = db.get_connection()
+    try:
+        row = conn.execute(
+            "SELECT COUNT(*) c, COALESCE(SUM(cost_usd), 0) cost FROM image_candidate",
+        ).fetchone()
+    finally:
+        conn.close()
+    return {"total_count": row["c"], "total_cost_usd": round(row["cost"], 4)}
 
 
 def source_text(doc_id: str, order_no: int) -> dict | None:

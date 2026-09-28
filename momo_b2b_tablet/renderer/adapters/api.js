@@ -25,8 +25,10 @@ export function createApiAdapters({ editionId, baseUrl, launchToken, recognizeMo
     await ensureSession();
     const res = await fetch(`${baseUrl}/api/runtime/${editionId}`, { credentials: "include" });
     if (!res.ok) throw new Error(`런타임 로드 실패: ${editionId} (${res.status})`);
-    const data = await res.json(); // { layout: {book,tone,quarter,pages}, images: {key:url} }
-    return { edition: data.layout, images: data.images || {} };
+    const data = await res.json(); // { layout: {book,tone,quarter,pages}, images: {key:url}, return_url }
+    // 2026-09-28: momolib 등 파트너가 launch 토큰 발급 시 준 return_url -
+    // mountEdition에 그대로 넘겨 "학습 목록으로" 버튼에 쓴다(없으면 버튼 숨김).
+    return { edition: data.layout, images: data.images || {}, returnUrl: data.return_url || null };
   }
 
   /* ============ 오프라인 대기열(사용자 지시 2026-09-23, 7단계) ============
@@ -123,5 +125,17 @@ export function createApiAdapters({ editionId, baseUrl, launchToken, recognizeMo
     return res.json(); // { text, unclear }
   }
 
-  return { loadEdition, state, recognize };
+  async function notifyProgress() {
+    // 2026-09-28: "학습 목록으로" 버튼이 부른다 - 실패해도 예외를 던지지
+    // 않는다(호출자가 어차피 return_url로 이동할 거라 통지 실패가 학생
+    // 흐름을 막으면 안 됨. 서버 쪽 notify_partner_progress도 같은 원칙).
+    try {
+      await ensureSession();
+      await fetch(`${baseUrl}/api/runtime/${editionId}/notify-progress`, {
+        method: "POST", credentials: "include",
+      });
+    } catch (e) { /* 무시 - return_url 이동은 그대로 진행 */ }
+  }
+
+  return { loadEdition, state, recognize, notifyProgress };
 }

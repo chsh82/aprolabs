@@ -85,6 +85,11 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .ink-read{position:absolute;right:1.2mm;bottom:1.2mm;appearance:none;border:0;border-radius:2mm;background:var(--main);color:#fff;font:700 9.5px/1 var(--sans);padding:1.6mm 2.4mm;cursor:pointer;display:none;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .ready .ink.has .ink-read{display:block}
 .ink .badge{position:absolute;right:1.2mm;top:1.2mm;font:700 8.5px/1 var(--sans);padding:1mm 1.6mm;border-radius:1mm;display:none;pointer-events:none}
+
+/* 2026-09-27: 답란 두 번 탭 확대 - .ink를 그대로 옮겨서 transform:scale만 입힌다 */
+.ink-zoom-backdrop{position:fixed;inset:0;background:rgba(20,22,28,.6);z-index:999;display:flex;align-items:center;justify-content:center}
+.ink-zoom-close{position:absolute;top:16px;right:16px;z-index:1000;appearance:none;border:0;border-radius:3mm;background:#fff;color:#111;font:700 14px/1 var(--sans);padding:10px 18px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.ink.zoomed{transform-origin:center center;box-shadow:0 10px 50px rgba(0,0,0,.45);z-index:1000}
 .ink.saved .badge{display:block;background:var(--main-soft);color:var(--main-deep)}
 .ink.stale .badge{display:block;background:#F6E7C3;color:#7A5608}
 .q,.blank{flex:0 0 auto}
@@ -225,6 +230,14 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .band-lower .vcard .df{font-size:12.5px;line-height:1.45}
 .band-lower .vcard{padding:2.4mm 3mm 2.6mm;gap:1.1mm}
 .band-lower .vgrid{gap:3mm 4mm}
+/* 2026-09-27: 305건 전체 스캔에서 어휘 카드(.vcard) 오버플로 8건 발견(전부
+   L1-Q1-W05~W12, 10~63px) - 뜻풀이(.df)가 카드 고정 높이보다 길 때 renderer.js
+   allocate()가 이 클래스를 붙인다(1단계: 글자 한 단계 축소). */
+.vcard.tight .df{font-size:11.5px;line-height:1.3}
+.band-lower .vcard.tight .df{font-size:11.5px;line-height:1.3}
+/* 2단계: 1단계로도 안 맞으면(낱말 수가 적어 grid 행이 낭비되는 경우에만
+   유효) 카드를 1열로 넓혀 줄바꿈을 줄인다. */
+.vgrid.single-col{grid-template-columns:1fr !important}
 .band-lower .ink .starter{font-size:14px;top:calc(var(--line) - 6.4mm)}
 .band-lower .card h4{font-size:15.5px}
 .band-lower .blank .lab{font-size:11.5px}
@@ -252,9 +265,18 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .mtop{display:flex;align-items:baseline;gap:3mm;flex:0 0 auto}
 .mtopic{font:700 20px/1.1 var(--cover);color:var(--main-deep)}
 .mlead{font:400 11px/1.4 var(--sans);color:var(--ash)}
-.mrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-between;gap:3mm}
+/* 2026-09-27: lower band을 15mm로 올린 뒤 재검증(node tests/_tmp_overflow_scan.js)
+   에서 이 memos 페이지(3문항)만 13px 넘침 - 답란 줄 수(memo=2줄)는 안 건드리고
+   행간 여백만 3mm->1mm로 줄여서 확보(실측으로 재확인함, 아래 gap 값 바뀌면 다시 확인할 것) */
+.mrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-between;gap:1mm}
 .mrow{display:grid;grid-template-columns:62mm 1fr;gap:5mm;align-items:start}
 .mq{display:flex;gap:2.2mm;align-items:flex-start;padding-top:.6mm}
+/* 2026-09-27: 305건 전체 스캔에서 memo 오버플로 131건 발견, 그중 100px 이하
+   66건은 여백 조정으로 해결 범위 - .qtext 전역(1.55)이 아니라 memo 문항
+   텍스트만(.mq 안) 줄간격을 줄인다(전역을 건드리면 다른 문항 유형에 영향).
+   실측(L6-Q3-W09, 100px 이하 중 최대인 97px 사례): 1.55->1.35로 97->45,
+   1.35->1.25로 45->20. 100px 초과분은 페이지 분리로 처리(아래 참고). */
+.mq .qtext{line-height:1.25}
 .m-fig{margin:0 0 0 auto;flex:0 0 auto}
 .m-fig img{max-width:26mm;max-height:18mm;object-fit:contain;border-radius:1mm;display:block}
 

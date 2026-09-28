@@ -27,7 +27,7 @@ from pydantic import BaseModel
 
 import jsonpatch
 
-from . import auth, db, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, store
+from . import auth, db, image_gen, notify, presets, print_pdf as print_pdf_mod, recognize as recognize_mod, store
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
@@ -89,6 +89,20 @@ class PresetRequest(BaseModel):
     expected_rev: int | None = None
 
 
+class GenerateImagesRequest(BaseModel):
+    page_idx: int
+    scene: str
+    avoid: str = ""
+    ratio: str = "1:1"
+    count: int = 3
+    editor: str | None = None
+
+
+class ChooseImageRequest(BaseModel):
+    candidate_id: int
+    editor: str | None = None
+
+
 class AnswerBody(BaseModel):
     ink: list | None = None
     text: dict | None = None
@@ -99,6 +113,9 @@ class AnswerBody(BaseModel):
 class PartnerSessionRequest(BaseModel):
     partner_student_id: str
     edition_id: int
+    # 2026-09-28: momolib 등 파트너가 "학습 목록으로" 버튼이 돌아갈 주소를
+    # 여기서 넘긴다 - 없으면(직접 개발용 접근 등) 버튼 자체를 안 보여준다.
+    return_url: str | None = None
 
 
 class SessionExchangeRequest(BaseModel):
@@ -113,6 +130,20 @@ def create_draft(req: DraftRequest):
     except store.NotFound as e:
         raise HTTPException(404, str(e)) from e
     return {"edition_id": edition_id}
+
+
+@app.get("/api/editions")
+def list_editions(level: int | None = None, quarter: int | None = None, status: str | None = None,
+                   search: str = "", sort: str = "default", page: int = 1, per_page: int = 50):
+    """2026-09-28 - 검수 목록 화면(/review/index.html, edition 번호 없이 열면 목록)."""
+    return store.list_editions_for_review(level=level, quarter=quarter, status=status,
+                                           search=search, sort=sort, page=page, per_page=per_page)
+
+
+@app.get("/api/editions/{edition_id}/neighbors")
+def edition_neighbors(edition_id: int):
+    """2026-09-28 - 검수 화면의 "같은 레벨·분기 안에서 이전/다음 문서" 버튼용."""
+    return store.find_neighbors(edition_id)
 
 
 @app.get("/api/editions/{edition_id}")
@@ -187,6 +218,49 @@ def edition_preset_apply(edition_id: int, req: PresetRequest):
     new_row = store.get_edition_row(new_id)
     return {"id": new_id, "doc_id": new_row["doc_id"], "version": new_row["version"], "rev": new_row["rev"],
             "status": new_row["status"], "layout": json.loads(new_row["layout_json"]), "summary": result.summary}
+
+
+@app.get("/api/editions/{edition_id}/pages/{page_idx}/image-candidates")
+def list_image_candidates(edition_id: int, page_idx: int):
+    """2026-09-28 [3] - 화면을 다시 열었을 때 이전에 만든 후보들을 보여준다."""
+    slot_path = f"/pages/{page_idx}/slot"
+    return {"candidates": store.list_image_candidates(edition_id, slot_path),
+            "usage": store.image_usage_summary()}
+
+
+@app.post("/api/editions/{edition_id}/pages/{page_idx}/generate-images")
+async def generate_images(edition_id: int, page_idx: int, req: GenerateImagesRequest):
+    """2026-09-28 [3] - "후보 만들기": scene+avoid+분기 하우스 스타일로 2~3장
+    생성해서 미리보기용 후보로 저장한다(아직 슬롯에 반영 안 됨 - 선택은
+    choose-image에서)."""
+    row = store.get_edition_row(edition_id)
+    if row is None:
+        raise HTTPException(404, "edition not found")
+    if not (1 <= req.count <= 3):
+        raise HTTPException(400, "count는 1~3")
+    if req.ratio not in image_gen.RATIO_TO_WH:
+        raise HTTPException(400, f"지원하지 않는 ratio: {req.ratio}")
+    try:
+        results = await image_gen.generate_candidates(req.scene, req.avoid, row["quarter"], req.ratio, req.count)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except RuntimeError as e:
+        raise HTTPException(502, str(e)) from e
+    slot_path = f"/pages/{page_idx}/slot"
+    candidates = store.save_image_candidates(edition_id, slot_path, results)
+    return {"candidates": candidates, "usage": store.image_usage_summary()}
+
+
+@app.post("/api/editions/{edition_id}/choose-image")
+def choose_image(edition_id: int, req: ChooseImageRequest):
+    """2026-09-28 [3] - 고른 후보를 실제 슬롯에 반영(PATCH 경로를 그대로 태움)."""
+    try:
+        new_id = store.choose_image_candidate(edition_id, req.candidate_id, editor=req.editor)
+    except store.NotFound as e:
+        raise HTTPException(404, str(e)) from e
+    new_row = store.get_edition_row(new_id)
+    return {"id": new_id, "doc_id": new_row["doc_id"], "version": new_row["version"], "rev": new_row["rev"],
+            "status": new_row["status"], "layout": json.loads(new_row["layout_json"])}
 
 
 @app.get("/api/editions/{edition_id}/flags")
@@ -304,6 +378,17 @@ async def print_pdf(edition_id: int, request: Request, ink: bool = False, studen
                      headers={"Content-Disposition": f'inline; filename="{filename}"'})
 
 
+@app.get("/api/partner/editions")
+def list_partner_editions(x_partner_key: str | None = Header(default=None)):
+    """2026-09-28 - momolib 등 파트너의 "교재 고르기" 관리 화면이 부른다.
+    승인(approved)·발행(published) 된 것만 노출(draft는 아직 검수 중이라
+    학생에게 배정할 대상이 아님)."""
+    partner_id = auth.verify_partner_key(x_partner_key or "")
+    if partner_id is None:
+        raise HTTPException(401, "invalid partner key")
+    return {"editions": store.list_editions_by_status(["approved", "published"])}
+
+
 @app.post("/api/partner/sessions")
 def create_partner_session(req: PartnerSessionRequest, x_partner_key: str | None = Header(default=None)):
     """파트너 서버가 부른다(태블릿 앱이 아니라) - API 키로 학생 1명·edition 1개
@@ -314,7 +399,8 @@ def create_partner_session(req: PartnerSessionRequest, x_partner_key: str | None
         raise HTTPException(401, "invalid partner key")
     if store.get_edition_row(req.edition_id) is None:
         raise HTTPException(404, "edition not found")
-    token, expires_in = auth.create_launch_token(partner_id, req.partner_student_id, req.edition_id)
+    token, expires_in = auth.create_launch_token(partner_id, req.partner_student_id, req.edition_id,
+                                                  return_url=req.return_url)
     return {"launch_token": token, "expires_in": expires_in}
 
 
@@ -351,12 +437,25 @@ def _require_session(request: Request, claimed_edition_id: int) -> str:
     return info["partner_student_id"]
 
 
+def _session_return_url(request: Request) -> str | None:
+    """2026-09-28 - "학습 목록으로" 버튼 주소. _require_session이 이미 세션
+    유효성(edition 일치 등)을 확인했으니 여기서는 return_url 필드만 더
+    조회한다. RUNTIME_AUTH_DISABLED(파트너 세션 자체가 없는 개발 경로)면
+    None - 버튼이 renderer.js에서 자동으로 숨겨진다."""
+    if auth.dev_auth_disabled():
+        return None
+    session_id = request.cookies.get(auth.SESSION_COOKIE_NAME)
+    info = auth.get_session(session_id) if session_id else None
+    return info["return_url"] if info else None
+
+
 @app.get("/api/runtime/{edition_id}")
 def runtime_view(edition_id: int, request: Request):
     _require_session(request, edition_id)
     view = store.runtime_view(edition_id)
     if view is None:
         raise HTTPException(404, "edition not found")
+    view["return_url"] = _session_return_url(request)
     return view
 
 
@@ -367,6 +466,25 @@ def save_answer(edition_id: int, part_id: str, body: AnswerBody, request: Reques
         raise HTTPException(404, "edition not found")
     store.save_answer(edition_id, part_id, student_id, ink=body.ink, text=body.text, ox=body.ox, choice=body.choice)
     return {"ok": True}
+
+
+@app.post("/api/runtime/{edition_id}/notify-progress")
+async def notify_progress_endpoint(edition_id: int, request: Request):
+    """2026-09-28 - 학생이 "학습 목록으로"를 누르는 순간 renderer.js가 부른다.
+    파트너(momolib 등)에게 진행 요약만 서버 간으로 보낸다(브라우저는 이
+    엔드포인트만 호출하고, 실제 파트너 웹훅 호출은 이 서버가 대신 함 -
+    파트너 쪽 notify_secret이 브라우저에 노출되지 않게). 통지 실패해도
+    학생은 그대로 return_url로 이동해야 하므로 항상 200을 준다(ok 필드로만
+    성공 여부 표시)."""
+    student_id = _require_session(request, edition_id)
+    if auth.dev_auth_disabled():
+        return {"ok": False, "reason": "dev_auth_disabled - 파트너 세션이 없어 통지 대상 없음"}
+    session_id = request.cookies.get(auth.SESSION_COOKIE_NAME)
+    info = auth.get_session(session_id)
+    if info is None:
+        raise HTTPException(401, "session invalid or expired")
+    ok = await notify.notify_partner_progress(info["partner_id"], student_id, edition_id)
+    return {"ok": ok}
 
 
 @app.post("/api/runtime/recognize")

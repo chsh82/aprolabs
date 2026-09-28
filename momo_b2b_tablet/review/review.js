@@ -923,6 +923,106 @@ async function fetchAvailableImages() {
   catch (e) { return []; }
 }
 
+// 2026-09-28 [3] 페이지별 이미지 생성 - 일괄 생성이 아니라 검수하다가 그
+// 페이지에서 바로 만든다. scene+avoid+분기 하우스 스타일로 2~3장 생성 후
+// 미리보기, 고르면 슬롯에 반영(아니면 지시문 고쳐 다시 생성).
+function candidateCard(cand, onChoose) {
+  const costLabel = cand.cost_usd != null ? `$${cand.cost_usd.toFixed(3)}` : "-";
+  const timeLabel = cand.elapsed_ms != null ? `${(cand.elapsed_ms / 1000).toFixed(1)}s` : "-";
+  const card = el("div", { class: `img-cand${cand.chosen ? " img-cand--chosen" : ""}` }, [
+    el("img", { src: cand.url, alt: "생성 이미지 후보" }),
+    el("div", { class: "img-cand__meta" }, `${cand.width}×${cand.height} · ${costLabel} · ${timeLabel}`),
+  ]);
+  if (cand.chosen) {
+    card.append(el("div", { class: "img-cand__badge" }, "사용 중"));
+  } else {
+    const btn = el("button", { class: "btn btn--small btn--primary" }, "이 이미지 쓰기");
+    btn.onclick = () => onChoose(cand.id);
+    card.append(btn);
+  }
+  return card;
+}
+
+async function renderImageGen(host, pageIdx, slotPath, sceneInput, avoidInput) {
+  host.append(el("h3", { style: "font-size:12px;margin:4px 0" }, "이미지 생성(후보 만들기)"));
+  const dimsHost = el("div", { class: "hint" }, "슬롯 크기 측정 중…");
+  host.append(dimsHost);
+
+  let ratio = "1:1";
+  try {
+    const frame = $("#previewFrame").contentWindow;
+    const dims = frame && frame.__viewer && frame.__viewer.getSlotDims(pageIdx);
+    if (dims) {
+      ratio = dims.ratio;
+      dimsHost.textContent = `실측 ${Math.round(dims.widthMm)}×${Math.round(dims.heightMm)}mm → ${dims.ratio} 비율로 생성`;
+    } else {
+      dimsHost.textContent = "슬롯 크기를 측정할 수 없습니다(1:1로 생성).";
+    }
+  } catch (e) {
+    dimsHost.textContent = "슬롯 크기를 측정할 수 없습니다(1:1로 생성).";
+  }
+
+  const countSel = el("select", {}, [new Option("2장", "2"), new Option("3장", "3", true, true)]);
+  const genBtn = el("button", { class: "btn btn--small btn--primary" }, "후보 만들기");
+  const usageLabel = el("span", { class: "hint", style: "margin-left:8px" }, "");
+  host.append(el("div", { class: "subfield-row" }, [genBtn, countSel, usageLabel]));
+
+  const gallery = el("div", { class: "img-cand-gallery" });
+  host.append(gallery);
+
+  const renderUsage = usage => {
+    usageLabel.textContent = `누적 ${usage.total_count}장 · 추정 $${usage.total_cost_usd.toFixed(2)}`;
+  };
+
+  const chooseImage = async candidateId => {
+    try {
+      await api(`/api/editions/${editionId}/choose-image`, {
+        method: "POST", body: JSON.stringify({ candidate_id: candidateId, editor: "reviewer" }),
+      });
+      toast("이미지를 슬롯에 반영했습니다.");
+      await refreshAll({ keepPreview: false });
+    } catch (e) {
+      toast(`반영 실패: ${e.message}`);
+    }
+  };
+
+  const renderGallery = candidates => {
+    gallery.innerHTML = "";
+    candidates.forEach(cand => gallery.append(candidateCard(cand, chooseImage)));
+  };
+  const appendGallery = candidates => {
+    candidates.forEach(cand => gallery.append(candidateCard(cand, chooseImage)));
+  };
+
+  try {
+    const data = await api(`/api/editions/${editionId}/pages/${pageIdx}/image-candidates`);
+    renderGallery(data.candidates);
+    renderUsage(data.usage);
+  } catch (e) { /* 목록 조회 실패는 조용히 무시 - 후보 만들기는 계속 가능해야 함 */ }
+
+  genBtn.onclick = async () => {
+    genBtn.disabled = true;
+    genBtn.textContent = "생성 중…";
+    try {
+      const data = await api(`/api/editions/${editionId}/pages/${pageIdx}/generate-images`, {
+        method: "POST",
+        body: JSON.stringify({
+          page_idx: pageIdx, scene: sceneInput.value, avoid: avoidInput.value,
+          ratio, count: parseInt(countSel.value, 10), editor: "reviewer",
+        }),
+      });
+      appendGallery(data.candidates);
+      renderUsage(data.usage);
+      toast(`${data.candidates.length}장 생성했습니다.`);
+    } catch (e) {
+      toast(`생성 실패: ${e.message}`);
+    } finally {
+      genBtn.disabled = false;
+      genBtn.textContent = "후보 만들기";
+    }
+  };
+}
+
 // 2026-09-26 [5순위] 검수자가 이미지 자리를 직접 추가·삭제·변경(=이동)할 수
 // 있게 한다. 스키마는 페이지당 slot 하나뿐이라 "이동"은 "이 자리에 쓸 이미지를
 // 바꾼다"로 구현한다(다른 페이지로 옮기는 건 검수자가 삭제 후 그 페이지에서
@@ -980,14 +1080,18 @@ function renderSlotInspector(body, page, idx, basePath) {
   const sceneInput = el("textarea", { rows: "2" }, slot.scene || "");
   const avoidInput = el("textarea", { rows: "2" }, slot.avoid || "");
   body.append(field("또는 생성 지시문 - 장면(scene)", sceneInput));
-  body.append(field("생성 지시문 - 금지 요소(avoid)", avoidInput,
-    el("div", { class: "hint" }, "실제 이미지 생성 연동은 다음 단계에서 붙습니다.")));
+  body.append(field("생성 지시문 - 금지 요소(avoid)", avoidInput));
   const saveGen = () => patch([{
     op: "replace", path: slotPath,
     value: { scene: sceneInput.value, avoid: avoidInput.value },
   }], { reason: "검수: 이미지 생성 지시문 수정" });
   sceneInput.onblur = () => { if (sceneInput.value !== (slot.scene || "")) saveGen(); };
   avoidInput.onblur = () => { if (avoidInput.value !== (slot.avoid || "")) saveGen(); };
+
+  body.append(el("hr", { class: "section-divider" }));
+  const genSection = el("div", { class: "image-gen" });
+  body.append(genSection);
+  renderImageGen(genSection, idx, slotPath, sceneInput, avoidInput);
 
   const q = page.q;
   if (q && q.form === "single" && q.kind === "long") {
@@ -1032,6 +1136,30 @@ function renderToneLines() {
   }
 }
 
+/* ============ 문서 간 이동(같은 레벨·분기 안 이전/다음) ============ */
+async function setupDocNav() {
+  try {
+    const nav = await api(`/api/editions/${editionId}/neighbors`);
+    const prevBtn = $("#btnPrevDoc"), nextBtn = $("#btnNextDoc");
+    if (nav.prev) {
+      prevBtn.disabled = false;
+      prevBtn.title = `이전: ${nav.prev.doc_id}`;
+      prevBtn.onclick = () => { location.href = `index.html?edition=${nav.prev.edition_id}`; };
+    } else {
+      prevBtn.disabled = true;
+    }
+    if (nav.next) {
+      nextBtn.disabled = false;
+      nextBtn.title = `다음: ${nav.next.doc_id}`;
+      nextBtn.onclick = () => { location.href = `index.html?edition=${nav.next.edition_id}`; };
+    } else {
+      nextBtn.disabled = true;
+    }
+  } catch (e) {
+    /* 네비게이션은 부가 기능 - 실패해도 검수 자체는 계속 가능해야 함 */
+  }
+}
+
 /* ============ 부팅 ============ */
 (async function boot() {
   if (!editionId) {
@@ -1040,6 +1168,7 @@ function renderToneLines() {
   }
   try {
     await refreshAll();
+    await setupDocNav();
   } catch (e) {
     toast(`불러오기 실패: ${e.message}`);
   }

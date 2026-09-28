@@ -23,6 +23,38 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
 .quarter-preview .tb.sw i{display:block;width:14px;height:14px;border-radius:50%}
 .quarter-preview .tb.sw[aria-pressed="true"]{outline:2px solid var(--accent)}
 
+/* ============ 검수 목록 화면 (2026-09-28) ============ */
+.list-main{padding:20px 24px;overflow:auto}
+.list-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.list-toolbar input,.list-toolbar select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:400 13px/1 "Noto Sans KR",sans-serif;background:var(--paper);color:var(--ink)}
+.list-toolbar input{flex:1;min-width:200px}
+.list-table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.list-table th,.list-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+.list-table th{background:var(--bg);color:var(--sub);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.02em}
+.list-table tbody tr{cursor:pointer}
+.list-table tbody tr:hover{background:var(--accent-soft)}
+.list-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.list-table .flag-count{font-weight:700}
+.list-table .flag-count[data-zero="true"]{color:var(--sub);font-weight:400}
+.list-table .flag-count[data-zero="false"]{color:var(--warn)}
+.list-pager{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.list-pager button{min-width:32px}
+.list-pager button[aria-current="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* ============ 검수 화면 - 이미지 생성 (2026-09-28) ============ */
+.image-gen .subfield-row{align-items:center;margin:6px 0}
+.img-cand-gallery{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.img-cand{width:112px;border:1px solid var(--line);border-radius:8px;padding:6px;font-size:11px;text-align:center;position:relative}
+.img-cand--chosen{border-color:var(--ok);background:var(--ok-soft)}
+.img-cand img{width:100%;border-radius:4px;display:block;margin-bottom:4px;background:var(--bg)}
+.img-cand__meta{color:var(--sub);font-size:10.5px;margin-bottom:4px}
+.img-cand__badge{color:var(--ok);font-weight:700;font-size:11px}
+.img-cand .btn{width:100%;padding:4px 6px;font-size:11px}
+
+@media (max-width:900px){
+  .list-table{font-size:12px}
+  .list-table th:nth-child(3),.list-table td:nth-child(3){display:none} /* 레벨은 doc_id에 이미 포함 */
+}
+
 .btn{appearance:none;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:500 13px/1 "Noto Sans KR",sans-serif;padding:9px 14px;border-radius:8px;cursor:pointer}
 .btn:hover{border-color:var(--accent)}
 .btn:disabled{opacity:.4;cursor:not-allowed}

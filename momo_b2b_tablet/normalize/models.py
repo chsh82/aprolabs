@@ -32,6 +32,11 @@ class Flag:
     # (자리표시자, approve 차단 대상)처럼 정규화 7종 분류와는 다른 축으로 다시 갈라야
     # 할 때만 채운다(layout/step*.py). 비워두면 edition/store.py가 kind를 그대로 쓴다.
     category: str | None = None
+    # 2026-09-28 사용자 지시 - "blanks 개별 prompt 미분리"처럼 이미 칸 이름이
+    # 있어 급하지 않은 경우 검수 큐 하단으로 내리기 위한 값(0=보통, 1=낮음).
+    # 플래그 자체는 그대로 남긴다(지우지 않음) - edition_flag.priority로 저장되고
+    # list_flags()가 이 값으로 먼저 정렬한다.
+    priority: int = 0
 
 
 @dataclass
@@ -59,6 +64,11 @@ class NormalizedQA:
     source_page: int | None
     ui_config: dict = field(default_factory=dict)
     flags: list[Flag] = field(default_factory=list)
+    # 2026-09-28 사용자 지시 - excerpt_text가 비었을 때 "제시문 미분리" split
+    # 플래그를 달지 말지 판단하려면 원문(raw_text)이 필요하다(question_text만
+    # 으로는 "애초에 제시문이 없는 질문"과 "진짜 안 갈린 것"을 못 구분함).
+    # layout/step2.py에서만 읽는다 - 렌더링에는 쓰지 않는다.
+    raw_text: str | None = None
     # ②단계 전용(선택, 사용자 지시 2026-09-24) - 방식 B(비전) 출처 문서에서만 채운다.
     # 채워져 있으면 layout/step2.py가 form_for_ui_type() 대신 이 값을 그대로 쓴다.
     # DB(momo_book.db) 기반 정규화는 이 필드를 절대 안 채우므로 기존 동작은 그대로다.

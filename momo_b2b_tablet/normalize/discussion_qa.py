@@ -35,6 +35,30 @@ from normalize.models import Flag, HanjaGloss, NormalizedQA
 from normalize.text_repair import normalize_cjk_compat, repair_text
 
 _LABEL_RE = re.compile(r"^\[?([가-힣]+(?:\s*/\s*[가-힣]+)*)\s*독해\]?\s*\n?")
+# 2026-09-28 사용자 지시 - 305건 전체 스캔에서 저학년(L1) 원문은 "OO독해"가
+# 아니라 "OO하며/하는 읽기" 형태를 쓴다는 걸 확인했다(예: "비판하며 읽기",
+# "추측하며 읽기", "[2. 상상하며 읽기]"). 앞에 붙는 번호("2.")·대괄호는
+# 있어도 없어도 된다. 이 라벨은 layout/rules.py의 정식 유형명(사실적/분석적/
+# 추론적/비판적/적용적/상상적)으로 바꿔서 reading_type에 저장한다(사용자
+# 최종 확정: 추측·추론하며 읽기->추론적, 적용하며 읽기->적용적, 비판하며
+# 읽기->비판적, 상상하며 읽기->상상적(신규 유형)) - 그래야 캐릭터 매핑과
+# 화면 표시("OO적 독해")가 다른 학년대와 똑같은 경로를 그대로 탄다.
+_GERUND_LABEL_RE = re.compile(r"^\[?\d*\.?\s*([가-힣]{1,4}(?:하며|하는)\s*읽기)\]?\s*\n?")
+_GERUND_TO_CANONICAL = {
+    "추측하며 읽기": "추론적",
+    "추론하며 읽기": "추론적",
+    "적용하며 읽기": "적용적",
+    "비판하며 읽기": "비판적",
+    "상상하며 읽기": "상상적",
+}
+# 2026-09-28 - 중학생(L9) 일부는 유형 두 개가 공백 없이 붙고 "독해" 앞에
+# "/"+여러 공백이 낀 변형이 있다("사실적추론적/    독해 ]") - 일반
+# [가-힣]+는 "사실적추론적"을 하나로 뭉쳐 잡아 그 뒤의 "독해"를 못 찾고
+# 실패한다. 알려진 유형 이름으로만 쪼갠다.
+_READING_TYPE_WORDS = ("사실적", "분석적", "추론적", "적용적", "비판적")
+_CONCAT_LABEL_RE = re.compile(
+    rf"^\[?((?:{'|'.join(_READING_TYPE_WORDS)}){{1,3}})\s*/\s*독해\s*\]?\s*\n?"
+)
 _HANJA_RE = re.compile(r"[一-鿿]")
 _PAGE_CITE_RE = re.compile(r"^\(\d+쪽\)$")
 
@@ -47,6 +71,15 @@ _NUMBERED_ITEM_RE = re.compile(r"(?:^|\n)\s*(\d+)\)\s*")
 
 
 def _split_reading_type_label(raw: str) -> tuple[str | None, str]:
+    m = _GERUND_LABEL_RE.match(raw)
+    if m:
+        gerund = re.sub(r"\s+", " ", m.group(1).strip())
+        canonical = _GERUND_TO_CANONICAL.get(gerund, gerund)
+        return canonical, raw[m.end():].strip()
+    m = _CONCAT_LABEL_RE.match(raw)
+    if m:
+        words = re.findall("|".join(_READING_TYPE_WORDS), m.group(1))
+        return " / ".join(words), raw[m.end():].strip()
     m = _LABEL_RE.match(raw)
     if not m:
         return None, raw
@@ -63,6 +96,11 @@ def _is_hanja_gloss(text: str) -> bool:
     if "\n" in text or len(text) > 25:
         return False
     if text.rstrip().endswith(("독해", "독해]")):
+        return False
+    # 2026-09-28: "상상하며 읽기"처럼 저학년 라벨(짧고 줄바꿈 없음)이 길이만
+    # 보는 이 fallback(len<=20)에 한자 뜻풀이로 오분류됐다 - "…읽기"/"…읽기]"도
+    # 독해 라벨과 같은 이유로 제외한다.
+    if text.rstrip().endswith(("읽기", "읽기]")):
         return False
     if _HANJA_RE.search(text):
         return True
@@ -181,7 +219,11 @@ def normalize_discussion_qa(rows: list[sqlite3.Row]) -> tuple[list[NormalizedQA]
                 hanja_out.append(HanjaGloss(order_no=order_no, term=normalize_cjk_compat(raw)))
                 continue
             label, body = _split_reading_type_label(raw)
-            if body:
+            # 2026-09-28: "상상하며 읽기"처럼 unknown 행 raw_text가 라벨
+            # 하나뿐이고 본문(body)이 없는 경우도 있다(실제 질문은 같은
+            # 그룹의 다른 진짜 행에 있음) - 예전엔 body가 없으면 후보 자체를
+            # 버려서 label도 같이 사라졌다. label만 있어도 후보로 남긴다.
+            if body or label:
                 excerpt_candidates.append((label, body, u))
 
         # 쓰레기 행(제시문도 질문도 없는) 제거
@@ -242,6 +284,24 @@ def normalize_discussion_qa(rows: list[sqlite3.Row]) -> tuple[list[NormalizedQA]
                                     f"(인용문·질문은 아직 안 갈라짐 - LLM 단계에서 분리 필요)",
                         ))
 
+                # 2026-09-28 사용자 지시 - 305건 전체 스캔에서 실측 확인: 고학년/
+                # 중등 다수 문서는 question_text에서 라벨이 이미 (이 정규화 코드가
+                # 아니라 그 이전 추출 단계에서) 떨어져 나가 있고 원본 raw_text에만
+                # 남아 있다(예: L7-Q3-W01#1 - question_text는 "주인공 백선규는..."
+                # 으로 바로 시작하는데 raw_text는 "[분석적 독해]\n주인공..."). 위
+                # question_text 기반 추출이 못 찾았을 때만 raw_text로 한 번 더
+                # 시도한다 - question_text 자체는 이미 깨끗하니 안 건드리고
+                # reading_type 값만 가져온다.
+                if not reading_type and r["raw_text"]:
+                    raw_label, _raw_body = _split_reading_type_label(r["raw_text"].strip())
+                    if raw_label:
+                        reading_type = raw_label
+                        merge_flags.append(Flag(
+                            kind="split", order_no=order_no,
+                            message=f"question_text에는 없지만 raw_text 맨 앞에서 독해유형 추출: "
+                                    f"{raw_label!r}",
+                        ))
+
                 for label, body, _u in excerpt_candidates:
                     if not reading_type and label:
                         reading_type = label
@@ -280,6 +340,7 @@ def normalize_discussion_qa(rows: list[sqlite3.Row]) -> tuple[list[NormalizedQA]
                     model_answer=r["model_answer"],
                     source_page=r["source_page"],
                     ui_config=_parse_ui_config(r["ui_config"]),
+                    raw_text=r["raw_text"],
                 )
                 qa.flags.extend(merge_flags)
                 qa.flags.extend(excerpt_flags)

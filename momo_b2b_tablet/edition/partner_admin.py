@@ -6,6 +6,7 @@ disable로 막고 새로 발급).
 실행(momo_b2b_tablet/에서):
     python -m edition.partner_admin create "학원이름"
     python -m edition.partner_admin disable <partner_id>
+    python -m edition.partner_admin set-notify <partner_id> <notify_url> <notify_secret>
 """
 from __future__ import annotations
 
@@ -26,6 +27,11 @@ def main() -> int:
     disable_p = sub.add_parser("disable", help="파트너 비활성화(그 파트너의 API 키를 못 쓰게 함)")
     disable_p.add_argument("partner_id", type=int)
 
+    notify_p = sub.add_parser("set-notify", help="진행 통지(서버 간) 수신 주소·공유 비밀 설정")
+    notify_p.add_argument("partner_id", type=int)
+    notify_p.add_argument("notify_url", help="파트너 서버가 진행 통지를 받을 주소(예: http://host/api/aprolabs/progress)")
+    notify_p.add_argument("notify_secret", help="파트너와 미리 맞춘 공유 비밀(둘 다 같은 값)")
+
     args = parser.parse_args()
     db.init_db()
 
@@ -33,6 +39,17 @@ def main() -> int:
         partner_id, api_key = auth.create_partner(args.name)
         print(f"파트너 등록됨: id={partner_id} name={args.name!r}")
         print(f"API 키(지금만 보임 - 안전한 곳에 옮겨 적으세요): {api_key}")
+        return 0
+
+    if args.cmd == "set-notify":
+        conn = db.get_connection()
+        try:
+            conn.execute("UPDATE partner SET notify_url = ?, notify_secret = ? WHERE id = ?",
+                         (args.notify_url, args.notify_secret, args.partner_id))
+            conn.commit()
+        finally:
+            conn.close()
+        print(f"파트너 {args.partner_id}의 진행 통지 주소 설정됨: {args.notify_url}")
         return 0
 
     if args.cmd == "disable":

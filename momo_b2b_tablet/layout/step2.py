@@ -7,6 +7,8 @@
 """
 from __future__ import annotations
 
+import re
+
 from normalize.models import Flag, NormalizedDoc, NormalizedQA
 
 from .rules import (
@@ -23,6 +25,10 @@ _STEP2_NM = {
     "aronnax": "아로낙스 박사와 나눠 보기",
     "jekyll": "지킬 박사와 숨은 뜻 찾기",
     "fogg": "필리어스 포그와 적용해 보기",
+    # 2026-09-28 사용자 확정 - 비판적->톰 소여(기존 매핑표에 있었으나 시안
+    # 3종에 해당 문항이 없어 빠짐), 상상적->앨리스(신규 유형).
+    "tom_sawyer": "톰 소여와 다르게 보기",
+    "alice": "앨리스와 상상해 보기",
 }
 _WIDE_FORMS = {"table", "compare", "choice", "choiceList"}
 _LEAKY_FORMS = {"choice", "choiceList"}  # 선택지 자체가 답이라 이미지 지시문에서 답 유출을 따로 조심해야 함
@@ -47,6 +53,55 @@ _ORIGINAL_IMAGE_TYPES = {"illustration", "reference", "excerpt"}
 # 2쪽(전용 1 + 결합 1)으로 줄도록 조정.
 _EXCERPT_SPLIT_THRESHOLD = 500
 _EXCERPT_PAGE_BUDGET = 800
+
+# 2026-09-27 사용자 지시 - STEP3 memo와 같은 규칙을 STEP2 "긴 문항"에도 적용.
+# LONG_QUESTION_MIN(80자, rules.py)은 반쪽 칸이 아니라 3층 구조(전체 폭)로
+# 바꿔 주는 것까지고, 그 전체 폭으로도 못 버틸 만큼 긴 경우를 위한 상위
+# 기준이 따로 필요하다 - qaband의 전체 폭 문항 영역은 제시문 전용 페이지
+# (_EXCERPT_SPLIT_THRESHOLD)와 규모가 비슷해 같은 500자를 그대로 재사용한다
+# (memo처럼 별도로 실측하지 않음 - STEP2는 이번 305건 스캔 대상이 아니었어서
+# 재확인 필요, 다음 오버플로 스캔에 .q/.excerpt도 포함시킬 것).
+_QUESTION_SPLIT_THRESHOLD = _EXCERPT_SPLIT_THRESHOLD
+_QUESTION_SUMMARY_LEN = 40
+
+# 2026-09-28 사용자 지시 - "제시문 미분리"(excerpt_text 없음) split 플래그가
+# 실제로는 애초에 뽑아낼 제시문 자체가 없는 질문(raw_text≈question_text,
+# 예: "나도 책을 읽고 소화불량에 걸린 적이 있나요?")에도 무조건 붙어서
+# 표본 20건 중 약 60%(8/14)가 오탐이었다. raw_text가 question_text보다
+# 의미 있게 길거나(+100자 - 제안하신 출발점을 표본 검증 결과 그대로 씀,
+# 아래 함수 docstring 참고) 인용부호가 있으면서 어느 정도 길이 차가 있을
+# 때만(+20자) "진짜 안 갈린 것"으로 본다. page_type(solo)은 그대로 - 플래그
+# 여부만 바꾼다.
+_EXCERPT_LIKELY_MISSING_MIN_EXTRA = 100
+_BLANK_RUN_RE = re.compile(r"[_\s]{8,}")  # 답란용 밑줄/공백 줄(예: "____...")은 길이에서 뺀다
+_QUOTE_SPAN_RE = re.compile(
+    r"[“‘「『]([^”’」』]{15,})[”’」』]"
+)
+
+
+def _looks_like_real_excerpt(raw_text: str | None, question_text: str) -> bool:
+    """raw_text가 question_text보다 이 정도 이상 길면(또는 15자 이상 이어지는
+    인용 구간이 있으면) 진짜 분리 안 된 제시문일 가능성이 높다고 본다.
+
+    표본 20건으로 확인·조정: +100자 기준 하나만으로는 L2-Q2-W01("'누워서 떡
+    먹기'였는데요" - 57자 차)·L8-Q1-W08("'노자'의 가르침" - 44자 차)처럼
+    짧은 관용구·인명을 인용부호로 감싼 것까지 오탐으로 잡혔다 - 인용
+    "구간 자체"가 15자 이상 이어질 때만 인정하도록 좁혔다(L5-Q1-W06의 실제
+    대화 인용 "주인은 담배를 쌌다..."는 남음). L1-Q3-W01처럼 빈칸용 밑줄이
+    raw_text 길이를 부풀려 오탐을 만드는 것도 밑줄/공백 연속 구간을 먼저
+    지워서 제외했다. 최종 확인: L1-Q3-W01/L1-Q2-W08/L5-Q1-W04/L5-Q1-W05/
+    L2-Q2-W01/L8-Q1-W08(오탐 6건) 전부 False, L6-Q1-W07/L2-Q1-W10/
+    L5-Q3-W01/L9-Q3-W10/L9-Q1-W03/L5-Q1-W06(진짜 6건) 전부 True."""
+    if not raw_text:
+        return False
+    clean_raw = _BLANK_RUN_RE.sub(" ", raw_text)
+    clean_q = _BLANK_RUN_RE.sub(" ", question_text or "")
+    extra = len(clean_raw) - len(clean_q)
+    if extra >= _EXCERPT_LIKELY_MISSING_MIN_EXTRA:
+        return True
+    if _QUOTE_SPAN_RE.search(raw_text):
+        return True
+    return False
 
 
 def _split_excerpt_into_pages(excerpt_text: str, budget: int) -> list[str]:
@@ -238,9 +293,10 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
             # 남겨 둔 경계(기존 골든 비교 테스트에서도 같은 경계를 확인했다). 여기서는
             # 별도 제시문 상자를 만들 수 없으니 solo로 내려간다.
             page_type = "solo"
-            flags.append(Flag(order_no=qa.order_no, kind="split",
-                               message=f"문항 {qa.order_label}: 제시문이 question_text 안에서 아직 "
-                                       f"분리되지 않음 - LLM 분리 후 qa/qaband/qaref로 전환 필요"))
+            if _looks_like_real_excerpt(qa.raw_text, qa.question_text):
+                flags.append(Flag(order_no=qa.order_no, kind="split",
+                                   message=f"문항 {qa.order_label}: 제시문이 question_text 안에서 아직 "
+                                           f"분리되지 않음 - LLM 분리 후 qa/qaband/qaref로 전환 필요"))
             page = {"type": page_type, "step": "STEP 2", "title": "함께 들여다보기", "guide": guide, "q": q}
         else:
             ptype, extra = excerpt_page_type(qa.excerpt_text, has_ref, question_len=len(qa.question_text or ""))
@@ -315,6 +371,22 @@ def build_step2_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
                                    message=f"문항 {qa.order_label}: 제시문이 길어({len(qa.excerpt_text)}자) "
                                            f"{len(chunks)}쪽으로 나눔 - 실제 인쇄 미리보기에서 분량이 "
                                            f"맞는지 검수 필요"))
+
+        # 2026-09-27: 질문 자체가 아주 길면(qaband 전체 폭으로도 못 버틸 만큼)
+        # STEP3 memo와 같은 방식으로 전용 페이지(앞)로 빼고 이 페이지엔 요약만
+        # 남긴다. LONG_QUESTION_MIN(80자, qaband 전환)과는 별개의 상위 기준.
+        question_len = len(qa.question_text or "")
+        if question_len > _QUESTION_SPLIT_THRESHOLD:
+            pages.append({
+                "type": "excerpt", "step": "STEP 2", "title": "함께 들여다보기", "guide": guide,
+                "excerpt": {"text": [qa.question_text]}, "continues": True,
+            })
+            q["t"] = qa.question_text[:_QUESTION_SUMMARY_LEN].rstrip() + "…"
+            q["continued"] = True
+            flags.append(Flag(order_no=qa.order_no, kind="split",
+                               message=f"문항 {qa.order_label}: 질문이 길어({question_len}자) 전용 "
+                                       f"페이지로 분리 - 요약(앞 {_QUESTION_SUMMARY_LEN}자 절삭)은 "
+                                       f"실제 요약으로 검수에서 다듬을 것"))
 
         pages.append(page)
 

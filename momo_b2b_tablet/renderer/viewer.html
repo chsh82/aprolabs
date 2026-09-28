@@ -38,8 +38,8 @@
       ? createPrintAdapters({ editionId, baseUrl, ink: qs.get("ink") === "true", studentId: qs.get("student") || "" })
       : createLocalAdapters({ docId });
 
-    const { edition, images } = await adapters.loadEdition();
-    window.__viewer = await mountEdition({ edition, images, mode, adapters });
+    const { edition, images, returnUrl } = await adapters.loadEdition();
+    window.__viewer = await mountEdition({ edition, images, mode, adapters, returnUrl });
     window.__viewerReady = true;
   }
 

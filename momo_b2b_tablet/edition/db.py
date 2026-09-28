@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS edition_flag (
   kind TEXT NOT NULL,
   message TEXT NOT NULL,
   resolved_by TEXT,
-  resolved_at TEXT
+  resolved_at TEXT,
+  priority INTEGER NOT NULL DEFAULT 0        -- 2026-09-28: 0=보통, 1=낮음(검수 큐 하단)
 );
 
 CREATE TABLE IF NOT EXISTS correction_log (
@@ -112,7 +113,12 @@ CREATE TABLE IF NOT EXISTS partner (
   name TEXT NOT NULL,
   api_key_hash TEXT NOT NULL UNIQUE,
   created_at TEXT NOT NULL,
-  disabled_at TEXT
+  disabled_at TEXT,
+  -- 2026-09-28: 진행 통지(aprolabs -> 파트너, 서버 간) 수신 주소·공유 비밀.
+  -- api_key_hash와 반대 방향이라 평문 저장(파트너가 보낸 요청을 검증하는 게
+  -- 아니라, 아프로랩스가 파트너에게 보낼 때 실어 보내는 값이라 해시로는 못 씀).
+  notify_url TEXT,
+  notify_secret TEXT
 );
 
 CREATE TABLE IF NOT EXISTS launch_token (
@@ -122,7 +128,8 @@ CREATE TABLE IF NOT EXISTS launch_token (
   edition_id INTEGER NOT NULL REFERENCES edition(id),
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL,
-  used_at TEXT
+  used_at TEXT,
+  return_url TEXT  -- 2026-09-28: 파트너(momolib 등)가 "학습 목록으로" 버튼용으로 줌
 );
 
 CREATE TABLE IF NOT EXISTS session (
@@ -131,7 +138,8 @@ CREATE TABLE IF NOT EXISTS session (
   partner_student_id TEXT NOT NULL,
   edition_id INTEGER NOT NULL REFERENCES edition(id),
   created_at TEXT NOT NULL,
-  expires_at TEXT NOT NULL
+  expires_at TEXT NOT NULL,
+  return_url TEXT  -- 2026-09-28: launch_token에서 그대로 복사
 );
 """
 
@@ -141,6 +149,22 @@ CREATE TABLE IF NOT EXISTS session (
 # "duplicate column" 예외가 나는데, 그건 이미 마이그레이션된 것이므로 무시).
 _MIGRATIONS = [
     "ALTER TABLE recognition_log ADD COLUMN provider TEXT",
+    # 2026-09-28 사용자 지시 - "blanks 개별 prompt 미분리"처럼 급하지 않은
+    # 플래그를 검수 큐 하단으로 내리기 위한 컬럼(0=보통, 1=낮음).
+    "ALTER TABLE edition_flag ADD COLUMN priority INTEGER NOT NULL DEFAULT 0",
+    # 2026-09-28 사용자 지시 - momolib 등 파트너 연동: "학습 목록으로" 버튼이
+    # 돌아갈 주소를 launch 토큰 발급 시점에 받아 세션까지 들고 간다.
+    "ALTER TABLE launch_token ADD COLUMN return_url TEXT",
+    "ALTER TABLE session ADD COLUMN return_url TEXT",
+    "ALTER TABLE partner ADD COLUMN notify_url TEXT",
+    "ALTER TABLE partner ADD COLUMN notify_secret TEXT",
+    # 2026-09-28 사용자 지시 - 검수 화면에서 페이지별 이미지 생성([3]).
+    # provider는 recognition_log와 같은 이유로 나중에 다른 제공자로 바꿀 수
+    # 있으니 기록해두고, cost_usd/elapsed_ms는 화면에 장당 비용·소요시간과
+    # 누적 사용량을 보여주기 위함.
+    "ALTER TABLE image_candidate ADD COLUMN provider TEXT",
+    "ALTER TABLE image_candidate ADD COLUMN cost_usd REAL",
+    "ALTER TABLE image_candidate ADD COLUMN elapsed_ms INTEGER",
 ]
 
 
