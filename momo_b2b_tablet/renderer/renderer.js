@@ -627,12 +627,16 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     paint();
   });
 
+  /* ============ layout & paging ============ */
+  let cur = 0, scale = 1;
+
   /* ============ 낱말-뜻 잇기(vocabMatch) 탭 연결 ============
    * 원본(초1·2)은 손으로 선을 긋는 형식이지만, 잉크 캔버스가 답란 하나에
    * 갇혀 있어 다른 칸까지 넘어가는 선을 그릴 수 없다(2026-09-29 사용자 결정 -
    * 탭으로 잇기: 단어 탭 -> 뜻 탭 하면 자동으로 선이 그려진다). 실제 획을
    * 좌표로 계산해야 해서 fit()이 scale을 바꿀 때마다 다시 그려야 한다 -
    * MATCH_GROUPS에 각자의 drawLines를 등록해 fit()에서 한 번에 호출한다.
+   * (scale을 쓰기 때문에 그 선언보다 뒤에 있어야 한다.)
    */
   const MATCH_GROUPS = [];
   const MATCH_COLORS = ["#B5541E", "#2F6F4E", "#2A5B8C", "#8A3B7A", "#8A7A1E", "#3E7A6B"];
@@ -701,9 +705,6 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
     paint();
     MATCH_GROUPS.push({ drawLines });
   });
-
-  /* ============ layout & paging ============ */
-  let cur = 0, scale = 1;
   const stage = document.getElementById("stage"), scaler = document.getElementById("scaler");
   const SLOT_MIN = 30 * MM, IMG_SLOT_MIN = 25 * MM, GAP = 2.6 * MM;
   const RATIOS = [["1:1", 1], ["4:3", 4 / 3], ["3:4", 3 / 4], ["3:2", 3 / 2], ["2:1", 2]];
