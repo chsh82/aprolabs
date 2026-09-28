@@ -218,6 +218,10 @@
                     {% if request.url.path.startswith('/vocabulary-quiz/multiformat') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
               🧩 어휘 퀴즈 (다유형 파일럿)
             </a>
+            <a href="/vocab-publish-review/" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/vocab-publish-review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              📋 어휘 공개검토
+            </a>
           </div>
         </details>
 

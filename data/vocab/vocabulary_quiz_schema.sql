@@ -339,3 +339,26 @@ CREATE TABLE vocabulary_content_levels (
 CREATE INDEX idx_vcl_content_id ON vocabulary_content_levels(content_id);
 CREATE INDEX idx_vcl_level_version ON vocabulary_content_levels(level_version);
 CREATE INDEX idx_vcl_vocab_level ON vocabulary_content_levels(vocab_level);
+
+-- ------------------------------------------------------------
+-- 13. momolib 이식 1순위(파일럿 연결) 콘텐츠 공개검토 판정 - append-only.
+--     vocabulary_review_samples(QA 표본 검수)와는 별개 화면/질문이다.
+--     이 테이블에 판정을 남기는 것만으로는 vocabulary_contents/
+--     vocabulary_content_levels의 공개 상태를 전혀 바꾸지 않는다(운영
+--     승격은 아직 이 저장소에 구현되지 않은 별도 절차).
+-- ------------------------------------------------------------
+CREATE TABLE vocabulary_publish_reviews (
+    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    content_id                  TEXT NOT NULL REFERENCES vocabulary_contents(content_id) ON DELETE CASCADE,
+    verdict                     TEXT NOT NULL CHECK (verdict IN ('APPROVED_CANDIDATE', 'NEEDS_FIX', 'HOLD')),
+    rationale                   TEXT NOT NULL,
+    reviewer_user_id            TEXT NOT NULL,
+    reviewer_email              TEXT,
+    reviewed_at                 TEXT NOT NULL DEFAULT (datetime('now')),
+    content_hash_at_review      TEXT NOT NULL,
+    item_hashes_at_review_json  TEXT NOT NULL,
+    created_at                  TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX idx_vpr_content_id ON vocabulary_publish_reviews(content_id);
+CREATE INDEX idx_vpr_reviewer ON vocabulary_publish_reviews(reviewer_user_id);
