@@ -242,6 +242,22 @@
           </div>
         </details>
 
+        <!-- 2026-09-28: momo_b2b_tablet 검수 화면(별도 앱, tablet.aprolabs.co.kr) -
+             app.main 세션 쿠키를 domain=.aprolabs.co.kr로 공유해서(SSO 옵션 B)
+             이미 로그인돼 있으면 다시 로그인할 필요 없이 바로 들어간다. -->
+        <details class="group">
+          <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
+            <span>📱 태블릿 교재</span>
+            <span class="transition-transform group-open:rotate-90">▶</span>
+          </summary>
+          <div class="mt-0.5 space-y-0.5">
+            <a href="https://tablet.aprolabs.co.kr/review/index.html" target="_blank" rel="noopener"
+               class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+              🖋️ 검수 목록
+            </a>
+          </div>
+        </details>
+
         <details class="group" {% if g_common %}open{% endif %}>
           <summary class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-400 uppercase tracking-wider cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:text-gray-600">
             <span>🛠️ 공용 도구</span>
