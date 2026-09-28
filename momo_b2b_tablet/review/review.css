@@ -9,6 +9,11 @@
 *,*::before,*::after{box-sizing:inherit}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans-serif;display:flex;flex-direction:column}
+/* 2026-09-29: index.html이 목록/문서 화면을 #docView·#listView로 감싸면서
+   .layout(원래 body의 직계 자식으로 flex:1 1 auto를 썼음)가 그냥 평범한
+   div 안에 갇혀 flex 높이 체인이 끊겼다 - #docView 자신이 flex 아이템(body의
+   자식)이자 동시에 자기 자식(.layout)에게 flex 컨테이너 역할을 해야 한다. */
+#docView,#listView{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 
 .topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--line)}
 .topbar__title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;min-width:0}
@@ -24,7 +29,7 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
 .quarter-preview .tb.sw[aria-pressed="true"]{outline:2px solid var(--accent)}
 
 /* ============ 검수 목록 화면 (2026-09-28) ============ */
-.list-main{padding:20px 24px;overflow:auto}
+.list-main{padding:20px 24px;overflow:auto;flex:1 1 auto;min-height:0}
 .list-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .list-toolbar input,.list-toolbar select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:400 13px/1 "Noto Sans KR",sans-serif;background:var(--paper);color:var(--ink)}
 .list-toolbar input{flex:1;min-width:200px}
