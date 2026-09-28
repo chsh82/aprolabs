@@ -30,12 +30,24 @@ const state = {
 };
 
 let toastTimer = 0;
-function toast(msg) {
+// sticky:true - 프리셋/자유 편집 실패 메시지처럼 LLM이 왜 안 되는지 한두 문장으로
+// 설명하는 긴 안내문은 기존 2.6초 자동 소멸로는 읽기도 전에 사라졌다(2026-09-29
+// 사용자 피드백) - 닫기 버튼으로 직접 닫을 때까지 남아있게 한다.
+function toast(msg, { sticky = false } = {}) {
   const t = $("#toast");
-  t.textContent = msg;
+  t.innerHTML = "";
+  t.append(document.createTextNode(msg));
+  t.classList.toggle("sticky", sticky);
+  if (sticky) {
+    const closeBtn = el("button", { class: "toast-close", type: "button", "aria-label": "닫기" }, "×");
+    closeBtn.onclick = () => t.classList.remove("show");
+    t.append(closeBtn);
+  }
   t.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+  if (!sticky) {
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+  }
 }
 
 async function api(path, opts = {}) {
@@ -469,7 +481,7 @@ async function openPresetPreview(pageIdx, presetKey, label, params) {
     renderPresetPreviewBar();
     await loadFrameWithSrc(previewSrc(key), pageIdx);
   } catch (e) {
-    toast(`적용 불가: ${e.message}`);
+    toast(`적용 불가: ${e.message}`, { sticky: true });
   }
 }
 
@@ -486,7 +498,7 @@ async function openFreeformPreview(pageIdx, requestText) {
     renderPresetPreviewBar();
     await loadFrameWithSrc(previewSrc(key), pageIdx);
   } catch (e) {
-    toast(`적용 불가: ${e.message}`);
+    toast(`적용 불가: ${e.message}`, { sticky: true });
   }
 }
 
@@ -527,7 +539,7 @@ async function applyPresetPreview() {
       setTimeout(() => { $("#conflictBanner").hidden = true; }, 4000);
       return;
     }
-    toast(`적용 실패: ${e.message}`);
+    toast(`적용 실패: ${e.message}`, { sticky: true });
   }
 }
 
