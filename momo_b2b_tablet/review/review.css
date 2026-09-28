@@ -13,7 +13,10 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
    .layout(원래 body의 직계 자식으로 flex:1 1 auto를 썼음)가 그냥 평범한
    div 안에 갇혀 flex 높이 체인이 끊겼다 - #docView 자신이 flex 아이템(body의
    자식)이자 동시에 자기 자식(.layout)에게 flex 컨테이너 역할을 해야 한다. */
-#docView,#listView{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+/* :not([hidden])로 안 걸어두면 이 ID 선택자(우선순위 1-0-0)가 브라우저
+   기본 [hidden]{display:none}(우선순위 0-1-0)을 이겨서 숨겨졌어야 할
+   쪽까지 같이 표시돼 버린다(실제로 겪은 버그) */
+#docView:not([hidden]),#listView:not([hidden]){display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 
 .topbar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--paper);border-bottom:1px solid var(--line)}
 .topbar__title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;min-width:0}
