@@ -68,6 +68,27 @@ def _vocab_page(doc: NormalizedDoc) -> tuple[dict, list[Flag]]:
     return page, []
 
 
+def _vocab_fill_page(doc: NormalizedDoc) -> tuple[dict, list[Flag]]:
+    """"각 문장에 들어갈 알맞은 낱말을 <보기>에서 골라 쓰세요" - 2026-09-29
+    사용자 지시 [2]. 원본에는 있지만 momo_book.db에 추출 컬럼이 없어 전혀
+    쓰이지 않던 문항 - vocab_fill 테이블(원본 PDF 학생용판의 숨은 정답
+    텍스트 레이어 직접 추출)이 있는 문서에만 STEP1에 1페이지 추가한다."""
+    character = LOWER_VOCAB_CHARACTER if doc.band == "lower" else VOCAB_CHARACTER
+    page = {
+        "type": "vocabFill", "step": "STEP 1", "title": "낱말 익히기",
+        "guide": {"img": character, "rt": "어휘", "nm": f"{_CHAR_NAME[character]}와 문장 완성하기"},
+        "bank": doc.vocab_fill_bank,
+        "items": [
+            {"no": it.order_no, "before": it.before, "answer": it.answer, "after": it.after}
+            for it in doc.vocab_fill
+        ],
+    }
+    flags = [Flag(kind="derived", category="placeholder",
+                  message='"보기에서 골라 쓰세요" - 원본 PDF 학생용판의 숨은 정답 텍스트 레이어를 '
+                          "자동 추출한 내용이라 문장이 깨졌거나 정답이 어긋날 수 있음(원본 대조 검수 필요)")]
+    return page, flags
+
+
 def _oxp_page(doc: NormalizedDoc, with_slot: bool) -> tuple[dict, list[Flag]]:
     flags = []
     ox_items = [{"s": o.question, "p": o.evidence_page} for o in doc.ox]
@@ -203,6 +224,9 @@ def build_step1_pages(doc: NormalizedDoc) -> tuple[list[dict], list[Flag]]:
     flags: list[Flag] = []
     vp, vf = _vocab_page(doc)
     pages.append(vp); flags.extend(vf)
+    if doc.vocab_fill:
+        fp, ff = _vocab_fill_page(doc)
+        pages.append(fp); flags.extend(ff)
 
     if doc.band == "lower":
         dp, df = _draw_page(doc)

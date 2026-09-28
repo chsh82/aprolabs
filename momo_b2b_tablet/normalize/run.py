@@ -33,7 +33,9 @@ if str(PKG_ROOT) not in sys.path:
 from normalize.db import get_connection  # noqa: E402
 from normalize.discussion_qa import normalize_discussion_qa  # noqa: E402
 from normalize.essay import normalize_essay  # noqa: E402
-from normalize.models import Flag, NormalizedDoc, NormalizedImage, NormalizedOx, NormalizedVocab  # noqa: E402
+from normalize.models import (  # noqa: E402
+    Flag, NormalizedDoc, NormalizedImage, NormalizedOx, NormalizedVocab, NormalizedVocabFillItem,
+)
 from normalize.text_repair import repair_text  # noqa: E402
 from normalize.tone import level_to_band, quarter_to_key  # noqa: E402
 
@@ -87,6 +89,22 @@ def _normalize_vocab(rows) -> list[NormalizedVocab]:
                                  message=f"'{word}' 뜻풀이 누락 - 초등 어휘 DB 조회 또는 LLM 보충 필요"))
         out.append(v)
     return out
+
+
+def _normalize_vocab_fill(row) -> tuple[list[str], list[NormalizedVocabFillItem]]:
+    """"각 문장에 들어갈 알맞은 낱말을 <보기>에서 골라 쓰세요" - vocab_fill
+    테이블(momo_book.db에 정규 추출 컬럼이 없어 원본 PDF 학생용판의 정답
+    숨은 텍스트 레이어를 직접 읽어 2026-09-29에 별도로 채운 테이블)에서
+    옮긴다. 해당 문서에 없으면(초1 1·2분기 등) 빈 리스트."""
+    if row is None:
+        return [], []
+    bank = json.loads(row["bank_json"])
+    items_raw = json.loads(row["items_json"])
+    items = [
+        NormalizedVocabFillItem(order_no=it["no"], before=it["before"], answer=it["answer"], after=it["after"])
+        for it in items_raw
+    ]
+    return bank, items
 
 
 def _normalize_ox(rows) -> list[NormalizedOx]:
@@ -156,11 +174,19 @@ def normalize_document(doc_id: str) -> NormalizedDoc:
         image_rows = conn.execute(
             "SELECT * FROM document_image WHERE doc_id = ?", (doc_id,)
         ).fetchall()
+        vocab_fill_row = None
+        if conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='vocab_fill'"
+        ).fetchone():
+            vocab_fill_row = conn.execute(
+                "SELECT * FROM vocab_fill WHERE doc_id = ?", (doc_id,)
+            ).fetchone()
     finally:
         conn.close()
 
     qa, hanja, qa_doc_flags = normalize_discussion_qa(qa_rows)
     vocab = _normalize_vocab(vocab_rows)
+    vocab_fill_bank, vocab_fill = _normalize_vocab_fill(vocab_fill_row)
     ox = _normalize_ox(ox_rows)
     if not ox:
         ox = _normalize_ox_from_background(doc_row["background_text"])
@@ -218,6 +244,8 @@ def normalize_document(doc_id: str) -> NormalizedDoc:
         background_text=doc_row["background_text"],
         qa=qa,
         vocab=vocab,
+        vocab_fill_bank=vocab_fill_bank,
+        vocab_fill=vocab_fill,
         ox=ox,
         hanja_glossary=hanja,
         essay=essay,

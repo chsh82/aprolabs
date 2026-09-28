@@ -141,7 +141,7 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
  * 손으로 긋는 선은 잉크 캔버스가 답란 하나에 묶여있어 재현이 안 돼서, 단어를
  * 탭하고 뜻을 탭하면 자동으로 선이 그려지는 방식으로 대신한다(renderer.js
  * MATCH_GROUPS/drawLines). */
-.vmatch{flex:1 1 auto;min-height:0;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0 16mm}
+.vmatch{flex:1 1 auto;min-height:0;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0 48mm}
 .vmatch .mcol{display:flex;flex-direction:column;gap:3mm;min-height:0}
 .vmatch .mlines{position:absolute;inset:0;pointer-events:none;overflow:visible}
 .mword,.mdef{appearance:none;text-align:left;border:.4mm solid color-mix(in srgb,var(--main) 45%,transparent);border-radius:2mm;background:#fff;cursor:pointer;font-family:inherit;padding:2.4mm 3.6mm;display:flex;align-items:center;gap:2.2mm;color:var(--ink);flex:1 1 0;min-height:0;transition:background .12s,border-color .12s}
@@ -154,6 +154,20 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 .mdef.matched{border-width:.55mm;border-color:var(--pair-color,var(--main))}
 .mword .sup{margin-left:1.4mm;font:700 8.5px/1 var(--sans);color:#7A5608;background:#F6E7C3;padding:.7mm 1.2mm;border-radius:.8mm;display:none}
 .review .mword .sup{display:inline-block}
+
+/* ---------- vocabFill("각 문장에 들어갈 알맞은 낱말을 <보기>에서 골라 쓰세요") ----------
+ * 2026-09-29: 원본에는 있었지만 momo_book.db 추출 컬럼이 없어 안 쓰이던
+ * STEP1 추가 문항 - 원본 PDF 학생용판의 숨은 정답 텍스트 레이어를 직접
+ * 읽어 만들었다. */
+.fill-bank{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:2mm;background:var(--paper);border:.35mm solid color-mix(in srgb,var(--main) 40%,transparent);border-radius:1.4mm;padding:2.6mm 3.4mm;margin:0 0 3mm}
+.fill-chip{font:700 12.5px/1 var(--sans);color:var(--main-deep);background:var(--main-soft);padding:1.3mm 2.6mm;border-radius:1mm;white-space:nowrap}
+.fill-list{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:2.6mm;overflow-y:auto}
+.fill-item{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:1.2mm}
+.fill-no{flex:0 0 auto;font:700 12px/1 var(--serif);color:var(--main-deep)}
+.fill-txt{font:400 12.5px/1.6 var(--sans);word-break:keep-all}
+.fill-item .ink{width:22mm;height:auto!important;min-height:6.5mm}
+.band-lower .fill-chip{font-size:14px}
+.band-lower .fill-txt{font-size:14px;line-height:1.6}
 
 /* ---------- background knowledge (middle school) ---------- */
 .tl{display:flex;flex-direction:column;gap:2.2mm;flex:0 0 auto}

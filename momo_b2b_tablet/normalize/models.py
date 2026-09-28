@@ -90,6 +90,14 @@ class NormalizedVocab:
 
 
 @dataclass
+class NormalizedVocabFillItem:
+    order_no: int
+    before: str
+    answer: str
+    after: str
+
+
+@dataclass
 class NormalizedOx:
     order_no: int
     question: str
@@ -138,6 +146,13 @@ class NormalizedDoc:
     background_text: str | None
     qa: list[NormalizedQA] = field(default_factory=list)
     vocab: list[NormalizedVocab] = field(default_factory=list)
+    # 2026-09-29: "각 문장에 들어갈 알맞은 낱말을 <보기>에서 골라 쓰세요" -
+    # momo_book.db에 정규 추출 컬럼이 없어(원본 PDF 학생용판의 정답 숨은
+    # 텍스트 레이어를 직접 읽어 만든) 별도 vocab_fill 테이블에서 옮겨온다.
+    # L1 3·4분기와 L2 전체 대부분에 있고 L1 1·2분기에는 없다(원본 자체가
+    # 다른 형식) - 없으면 빈 리스트.
+    vocab_fill_bank: list[str] = field(default_factory=list)
+    vocab_fill: list[NormalizedVocabFillItem] = field(default_factory=list)
     ox: list[NormalizedOx] = field(default_factory=list)
     hanja_glossary: list[HanjaGloss] = field(default_factory=list)
     essay: NormalizedEssay | None = None

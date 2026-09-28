@@ -259,8 +259,19 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       const words = p.vocab.map((x, k) => `<button type="button" class="mword" data-idx="${k}" aria-pressed="false"><span class="mw-w">${esc(x.w)}</span>${x.p ? `<span class="pg">p.${x.p}</span>` : ""}${x.sup ? `<span class="sup">뜻 보충: 검수 필요</span>` : ""}</button>`).join("");
       const defs = order.map((realIdx, slot) => `<button type="button" class="mdef" data-idx="${realIdx}" aria-pressed="false"><span class="md-n">${slot + 1}</span><span class="md-d">${esc(p.vocab[realIdx].d)}</span></button>`).join("");
       inner = `<p class="inst">${esc(p.inst || "낱말의 뜻을 찾아 선으로 이어 보세요.")}</p><div class="vmatch" data-id="vm-${i}"><div class="mcol mwords">${words}</div><svg class="mlines" aria-hidden="true"></svg><div class="mcol mdefs">${defs}</div></div>`;
+    } else if (p.type === "vocabFill") {
+      // "각 문장에 들어갈 알맞은 낱말을 <보기>에서 골라 쓰세요" - 원본에는
+      // 있었지만 momo_book.db 추출 컬럼이 없어 안 쓰이던 문항(2026-09-29
+      // 사용자 지시 [2]). 문장 중간 빈칸은 잉크박스(inline) 하나로 처리.
+      const bank = (p.bank || []).map(w => `<span class="fill-chip">${esc(w)}</span>`).join("");
+      const items = (p.items || []).map(it => {
+        const id = `F${i}-${it.no}`;
+        QTEXT[id] = `${it.before} ( ) ${it.after}`;
+        return `<div class="fill-item"><span class="fill-no">${esc(it.no)}</span><span class="fill-txt">${esc(it.before)}</span>${inkBox(id, "inline")}<span class="fill-txt">${esc(it.after)}</span></div>`;
+      }).join("");
+      inner = `<p class="inst">각 문장에 들어갈 알맞은 낱말을 &lt;보기&gt;에서 골라 쓰세요.</p><div class="fill-bank">${bank}</div><div class="fill-list">${items}</div>`;
     } else if (p.type === "oxp") {
-      const o = p.ox.map((x, k) => `<div class="oxitem"><span class="n">${k + 1}</span><span class="st">${esc(x.s)}<span>p.${x.p}</span></span><span class="ox" data-ox="${k + 1}"><button type="button" aria-pressed="false" aria-label="${k + 1}번 O">O</button><button type="button" aria-pressed="false" aria-label="${k + 1}번 X">X</button></span></div>`).join("");
+      const o = p.ox.map((x, k) => `<div class="oxitem"><span class="n">${k + 1}</span><span class="st">${esc(x.s)}${x.p ? `<span>p.${x.p}</span>` : ""}</span><span class="ox" data-ox="${k + 1}"><button type="button" aria-pressed="false" aria-label="${k + 1}번 O">O</button><button type="button" aria-pressed="false" aria-label="${k + 1}번 X">X</button></span></div>`).join("");
       const oxList = `<p class="inst">책의 내용과 맞으면 O, 틀리면 X를 누르세요.</p><div class="oxlist">${o}</div>`;
       // 저학년 STEP1(낱말->생각상자->OX)처럼 이미지 슬롯이 없는 OX 페이지도 있다(SPEC §3.4) -
       // 그때는 한 칸짜리로, 슬롯이 있으면 원래대로 두 칸으로 나눈다.
@@ -278,7 +289,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       // 판단으로 되돌림(사용자 지시, 야옹아·젊은 예술가·긴긴밤·열하일기·두근두근
       // 한국사 전부에서 동일하게 요청) - qa는 원래 형태로 복귀.
       const contNote = p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : "";
-      const ex = `${contNote}<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}<span class="cite">p.${p.excerpt.p}</span></div>`;
+      const ex = `${contNote}<div class="excerpt fill">${p.excerpt.text.map(t => `<p>${esc(t)}</p>`).join("")}${p.excerpt.p ? `<span class="cite">p.${p.excerpt.p}</span>` : ""}</div>`;
       const topBanner = p.titleTop ? qHeadTop(p.q) : "";
       if (p.wide) {
         inner = `${topBanner}${ex}${qHead(p.q)}${widget(p.q)}`;
@@ -308,7 +319,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       QTEXT[p.id] = p.inst;
       inner = `<div class="draw-top"><p class="inst">${esc(p.inst)}</p><span class="chip">${esc(p.chip || "그림 칸은 글자로 바꾸지 않아요")}</span></div>${drawBox(p.id)}`;
     } else if (p.type === "qaband") {
-      const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
+      const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}${p.excerpt.p ? `<span class="cite">p.${esc(p.excerpt.p)}</span>` : ""}</div>`;
       const topBanner = p.titleTop ? qHeadTop(p.q) : "";
       if (p.wide) {
         inner = `${topBanner}${band}${qHead(p.q)}${widget(p.q)}`;
@@ -323,7 +334,7 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
         inner = `${topBanner}${band}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
       }
     } else if (p.type === "qaref") {
-      const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}<span class="cite">p.${esc(p.excerpt.p)}</span></div>`;
+      const band = `${p.excerpt.continued ? `<p class="excerpt-cont">◀ 앞쪽에서 이어짐</p>` : ""}<div class="excerpt band">${p.excerpt.text.map(x => `<p>${esc(x)}</p>`).join("")}${p.excerpt.p ? `<span class="cite">p.${esc(p.excerpt.p)}</span>` : ""}</div>`;
       const rows = p.ref.rows.map(r => r.gap ? `<tr class="gap"><td colspan="2">⋯</td></tr>` : `<tr><th>${esc(r.n)}</th><td>${esc(r.v)}</td></tr>`).join("");
       const ref = `<div class="ref"><h4>${esc(p.ref.title)}</h4><div class="ref-body"><table class="rt"><tbody>${rows}</tbody></table>${p.ref.img ? `<img src="${IMG[p.ref.img]}" alt="">` : ""}</div>${p.ref.note ? `<p class="note">${esc(p.ref.note)}</p>` : ""}</div>`;
       const topBanner = p.titleTop ? qHeadTop(p.q) : "";
