@@ -305,9 +305,12 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       if (p.wide) {
         inner = `${topBanner}${band}${qHead(p.q)}${widget(p.q)}`;
       } else {
+        // 2026-09-29 사용자 지시 - 이전엔 [질문+이미지] | [답란]으로 묶여
+        // 있어서 "이미지가 답안 위치에 있다"는 검수 피드백이 나왔다. solo
+        // 타입과 같은 패턴([이미지 단독] | [질문+답란])으로 통일한다.
         const w = widget(p.q);
-        const left = `<div class="col" data-alloc>${qHead(p.q)}${p.slot ? slotHtml(p.slot, p.q) : ""}</div>`;
-        const right = `<div class="col wcol">${w}</div>`;
+        const left = `<div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}</div>`;
+        const right = `<div class="col">${qHead(p.q)}<div class="wcol">${w}</div></div>`;
         const { html, ratio } = mirrorCols(p.ratio || "1fr 1.15fr", left, right, p.mirror);
         inner = `${topBanner}${band}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
       }
