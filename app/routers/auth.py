@@ -44,12 +44,12 @@ def login_submit(
     max_age = COOKIE_MAX_AGE_LONG if remember == "on" else COOKIE_MAX_AGE
     response = RedirectResponse(next or "/", status_code=302)
     response.set_cookie(COOKIE_NAME, token, max_age=max_age,
-                        httponly=True, samesite="lax")
+                        httponly=True, samesite="lax", domain=".aprolabs.co.kr")
     return response
 
 
 @router.get("/logout")
 def logout():
     response = RedirectResponse("/login", status_code=302)
-    response.delete_cookie(COOKIE_NAME)
+    response.delete_cookie(COOKIE_NAME, domain=".aprolabs.co.kr")
     return response
