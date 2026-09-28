@@ -66,7 +66,14 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
 .approve-reason{padding:10px 16px;background:var(--warn-soft);color:#7a5608;font-size:12.5px;border-bottom:1px solid var(--line)}
 .conflict-banner{padding:10px 16px;background:var(--danger-soft);color:var(--danger);font-weight:700;font-size:12.5px;border-bottom:1px solid var(--line)}
 
-.layout{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:300px 1fr 320px}
+/* 2026-09-29: grid-template-rows가 없으면 행 높이가 "auto"라서 가장 내용이
+   긴 pane(플래그 26개 등)에 맞춰 .layout 전체가 늘어나 버렸다 - 그 결과
+   중앙 미리보기 iframe도 화면 높이를 훨씬 넘는 컨테이너 안에 들어가서,
+   실제 페이지가 그 중간 어딘가에 위치해 화면엔 빈 공간만 보이는 문제가
+   있었다(각 pane의 overflow-y:auto는 자기 높이가 실제로 제한돼 있어야만
+   스크롤이 생기는데, 행 자체가 늘어나버리니 제한이 걸리지 않았다).
+   minmax(0,1fr)로 뷰포트 높이에 고정하면 각 pane이 독립적으로 스크롤된다. */
+.layout{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:300px 1fr 320px;grid-template-rows:minmax(0,1fr)}
 .pane{min-height:0;overflow-y:auto;padding:14px}
 .pane h2{margin:0 0 8px;font:700 12px/1 "Noto Sans KR",sans-serif;color:var(--sub);text-transform:uppercase;letter-spacing:.04em}
 .pane--left{background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
@@ -140,7 +147,10 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
 .toast.show{opacity:.96;transform:translate(-50%,0)}
 
 @media (max-width:1100px){
-  .layout{grid-template-columns:1fr}
-  .pane--left,.pane--right{border:0;border-bottom:1px solid var(--line)}
+  /* 1단으로 쌓일 땐 각 pane이 원래 자기 내용 높이만큼 차지하고 페이지
+     전체가 스크롤되는 게 맞다 - 데스크톱 3단용 grid-template-rows는 여기선
+     되돌린다(minmax(0,1fr) 그대로 두면 3단이 한 줄에 눌려 겹친다). */
+  .layout{grid-template-columns:1fr;grid-template-rows:none}
+  .pane--left,.pane--right{border:0;border-bottom:1px solid var(--line);overflow-y:visible}
   .pane--center{min-height:60vh}
 }
