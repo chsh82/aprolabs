@@ -107,7 +107,10 @@ def _oxp_page(doc: NormalizedDoc, with_slot: bool) -> tuple[dict, list[Flag]]:
 def _draw_page(doc: NormalizedDoc) -> tuple[dict, list[Flag]]:
     page = {
         "type": "draw", "step": "STEP 1", "title": "생각 상자",
-        "guide": {"img": WRITING_CHARACTER, "rt": "생각 표현하기", "nm": f"{_CHAR_NAME[WRITING_CHARACTER]}와 생각 나누기"},
+        # 2026-09-29 사용자 지시 - "앤와"는 맞춤법 오류(앤은 받침 ㄴ으로
+        # 끝나 "과"를 써야 함) - 다른 캐릭터들은 다 모음으로 끝나 "와"가
+        # 맞아서 안 걸리던 문제.
+        "guide": {"img": WRITING_CHARACTER, "rt": "생각 표현하기", "nm": f"{_CHAR_NAME[WRITING_CHARACTER]}과 생각 나누기"},
         "id": "S1-draw",
         "inst": f"『{doc.book_title}』을 읽으며 떠올랐던 생각이나 기억에 남는 장면을 그려 보세요.",
     }
