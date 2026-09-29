@@ -112,6 +112,21 @@ window.addEventListener("beforeunload", e => {
   if (unsavedFailures > 0) { e.preventDefault(); e.returnValue = ""; }
 });
 
+// 2026-09-29 사용자 피드백 - 인용문 등 textarea에서 엔터를 쳐도 줄바꿈이
+// 안 된다는 신고(태블릿 화면 키보드는 <textarea>에서도 return이 "완료/다음"
+// 동작으로 오는 경우가 있다 - 기기별 가상 키보드 문제라 우리 쪽에서 원천
+// 차단하는 코드는 없었지만, 확실히 되게 하려고 엔터를 직접 가로채 커서
+// 위치에 줄바꿈을 강제로 넣는다). 모든 textarea에 한 번에 적용되도록
+// document에서 위임 처리.
+document.addEventListener("keydown", e => {
+  if (e.target.tagName !== "TEXTAREA" || e.key !== "Enter" || e.isComposing) return;
+  e.preventDefault();
+  const ta = e.target;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.setRangeText("\n", start, end, "end");
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
+});
+
 async function patch(ops, { reason } = {}) {
   if (!ops.length) return;
   try {
