@@ -762,7 +762,13 @@ function renderOxInspector(body, page, idx, basePath) {
   body.append(el("h3", {}, "O·X 문항 텍스트"));
   page.ox.forEach((item, k) => {
     const ta = el("textarea", { rows: "2" }, item.s || "");
-    body.append(field(`${k + 1}번 문제`, ta));
+    // 2026-09-29 사용자 피드백 - 불필요한/잘못 갈라진 OX 문항을 지울 방법이
+    // 없었다. 배열 인덱스로 remove하고, 성공하면 refreshAll()이 인스펙터를
+    // 통째로 다시 그려서 남은 항목들의 k도 자동으로 다시 맞춰진다.
+    const delBtn = el("button", { class: "btn btn--small" }, "이 문항 삭제");
+    delBtn.onclick = () => patch([{ op: "remove", path: `${basePath}/ox/${k}` }],
+      { reason: "검수: O·X 문항 삭제" });
+    body.append(field(`${k + 1}번 문제`, ta, delBtn));
     ta.addEventListener("blur", () => {
       if (ta.value !== (item.s || "")) {
         patch([{ op: "replace", path: `${basePath}/ox/${k}/s`, value: ta.value }],
