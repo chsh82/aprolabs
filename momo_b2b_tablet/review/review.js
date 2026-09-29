@@ -732,6 +732,7 @@ function renderInspector() {
 
   renderFreeTextFields(body, page, idx, basePath);
   if (page.type === "solo") renderSoloConvertInspector(body, page, idx, basePath);
+  if (page.type === "qa") renderQaRevertInspector(body, page, idx, basePath);
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
@@ -787,6 +788,25 @@ function renderSoloConvertInspector(body, page, idx, basePath) {
     ], { reason: "검수: solo를 qa로 전환(제시문 추가)" });
   };
   body.append(btn);
+}
+
+// 2026-09-29 사용자 피드백 - solo->qa 전환 버튼의 반대 방향. 제시문(인용문)
+// 자리가 필요 없어지면 지우고 solo로 되돌릴 수 있어야 한다는 요청 - excerpt
+// 텍스트는 그대로 없어지니(patch()가 correction_log에 before/after는 남긴다)
+// 버튼 문구로 미리 알린다.
+function renderQaRevertInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  const btn = el("button", { class: "btn btn--small" }, "제시문 삭제하기(solo로 되돌리기)");
+  body.append(field("제시문 없애기", btn,
+    el("div", { class: "hint" }, "지금 있는 제시문 내용이 사라지고 이미지+문항만 있는 solo 형식으로 바뀝니다.")));
+  btn.onclick = () => {
+    const ops = [
+      { op: "remove", path: `${basePath}/excerpt` },
+      { op: "replace", path: `${basePath}/type`, value: "solo" },
+    ];
+    if (page.ratio !== undefined) ops.splice(1, 0, { op: "remove", path: `${basePath}/ratio` });
+    patch(ops, { reason: "검수: qa를 solo로 전환(제시문 삭제)" });
+  };
 }
 
 // 2026-09-29 사용자 피드백 - vocabMatch 페이지에서 "'뜻 보충: 검수 필요'
