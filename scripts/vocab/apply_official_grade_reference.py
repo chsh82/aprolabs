@@ -50,7 +50,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from app.vocabulary_quiz.db import get_db_path  # noqa: E402
+from scripts.vocab.db_path_guard import DbPathGuardError, connect_rw, guard_db_path  # noqa: E402
 
 POLICY_CSV = REPO_ROOT / "data" / "import" / "nikl_base_level_policy_20260929.csv"
 MATCH_CSV = REPO_ROOT / "data" / "import" / "nikl_official_match_full_20260929.csv"
@@ -232,7 +232,7 @@ _COMPARE_COLS = [c for c in _INSERT_COLS if c not in ("computed_at",)]  # comput
 
 
 def apply_to_db(db_path: str, rows: list[dict], *, dry_run: bool) -> None:
-    con = sqlite3.connect(db_path)
+    con = connect_rw(db_path)
     con.execute("PRAGMA foreign_keys=ON")
     cur = con.cursor()
 
@@ -325,24 +325,23 @@ def apply_to_db(db_path: str, rows: list[dict], *, dry_run: bool) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--apply", action="store_true", help="실제 적용(기본은 dry-run)")
+    parser.add_argument("--database", default=None, help="VOCABULARY_QUIZ_DB_PATH와 반드시 일치해야 함(교차 확인용)")
     args = parser.parse_args()
 
-    if args.apply:
-        app_env = os.environ.get("APP_ENV", "")
-        if app_env != "research":
-            print(f"GATE 1 FAIL: APP_ENV={app_env!r} - 실제 적용은 research에서만 허용, 중단")
-            sys.exit(1)
-        print("GATE 1 PASS: APP_ENV=research")
-
-    db_path = str(get_db_path())
-    if os.path.basename(db_path) != "vocabulary_quiz_research.db" and args.apply:
-        print("GATE 2 FAIL: research DB 아님 - 중단:", db_path)
+    # GATE 1: APP_ENV=research + VOCABULARY_QUIZ_DB_PATH(파일 실존) + --database 일치를
+    # sqlite3.connect 호출 전에 전부 확인한다(dry-run 포함 - 이 스크립트는 dry-run에서도
+    # 실제 연구 DB를 읽으므로 대상을 잘못 잡으면 dry-run 결과도 의미가 없다).
+    try:
+        db_path = guard_db_path(args.database)
+    except DbPathGuardError as e:
+        print(f"GATE 1 FAIL: {e}")
         sys.exit(1)
-    print("GATE 2:", "실제 적용 대상" if args.apply else "[DRY-RUN] 대상", "DB 경로:", db_path)
+    print("GATE 1 PASS: 가드 통과(APP_ENV=research, VOCABULARY_QUIZ_DB_PATH 실존 확인)")
 
-    if not os.path.exists(db_path):
-        print("GATE 2 FAIL: DB 파일 없음:", db_path)
+    if os.path.basename(db_path) != "vocabulary_quiz_research.db":
+        print("GATE 2 FAIL: research DB 파일명이 아님 - 중단:", db_path)
         sys.exit(1)
+    print("GATE 2 PASS:", "실제 적용 대상" if args.apply else "[DRY-RUN] 대상", "DB 경로:", db_path)
 
     pre_apply_hash = sha256_of(Path(db_path))
     print("GATE 3: 적용 전 DB 파일 SHA-256:", pre_apply_hash)
@@ -356,7 +355,7 @@ def main() -> None:
     if args.apply:
         ts = datetime.now().strftime("%Y%m%d-%H%M%S")
         backup_path = f"{db_path}.bak_official_grade_ref_{ts}"
-        src = sqlite3.connect(db_path)
+        src = connect_rw(db_path)
         dst = sqlite3.connect(backup_path)
         with dst:
             src.backup(dst)

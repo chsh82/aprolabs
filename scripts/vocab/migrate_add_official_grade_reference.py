@@ -9,11 +9,20 @@ vocabulary_content_levels/vocabulary_multiformat_items 등은 전혀 건드리�
 읽기 전용 분석/참조 데이터다. 어떤 서빙 코드도 이 테이블을 아직 읽지
 않는다(이번 작업 범위 밖).
 
+2026-09-29 가드 강화: 이 스크립트는 이제 APP_ENV=research +
+VOCABULARY_QUIZ_DB_PATH(파일 실존) + (선택)--database 일치를 sqlite3.connect
+호출 전에 전부 통과해야만 실행된다(db_path_guard.py). 미설정/불일치/
+파일 없음 중 하나라도 있으면 연결 자체를 시도하지 않고 즉시 실패한다 -
+VOCABULARY_QUIZ_DB_PATH 누락 시 조용히 로컬 R&D DB로 폴백되던 이전 실수
+재발 방지.
+
 실행:
-    VOCABULARY_QUIZ_DB_PATH=<db경로> python scripts/vocab/migrate_add_official_grade_reference.py
+    APP_ENV=research VOCABULARY_QUIZ_DB_PATH=<연구DB경로> \\
+        python scripts/vocab/migrate_add_official_grade_reference.py [--database <같은경로>]
 """
 from __future__ import annotations
 
+import argparse
 import io
 import sqlite3
 import sys
@@ -29,7 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from app.vocabulary_quiz.db import get_db_path  # noqa: E402
+from scripts.vocab.db_path_guard import DbPathGuardError, connect_rw, guard_db_path  # noqa: E402
 
 _NEW_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS vocabulary_official_grade_reference (
@@ -64,12 +73,20 @@ _INDEX_SQL = (
 
 
 def main() -> None:
-    db_path = get_db_path()
-    print("대상 DB:", db_path)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--database", default=None, help="VOCABULARY_QUIZ_DB_PATH와 반드시 일치해야 함(교차 확인용)")
+    args = parser.parse_args()
+
+    try:
+        db_path = guard_db_path(args.database)
+    except DbPathGuardError as e:
+        print(str(e))
+        sys.exit(1)
+    print("가드 통과, 대상 DB:", db_path)
 
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_path = f"{db_path}.bak_migrate_official_grade_ref_{ts}"
-    src = sqlite3.connect(db_path)
+    src = connect_rw(db_path)
     dst = sqlite3.connect(backup_path)
     with dst:
         src.backup(dst)

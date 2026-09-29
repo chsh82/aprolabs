@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ content.lemma }} 공식 등급 검토{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-6 py-6">
+  <a href="/vocab-official-grade-review/" class="text-sm text-blue-600 hover:underline">← tier1 목록</a>
+
+  <div class="border border-gray-200 rounded-xl p-6 mt-3 mb-6 bg-white">
+    <h1 class="text-2xl font-bold mb-1">{{ content.lemma }}</h1>
+    <div class="text-xs text-gray-400 mb-4">{{ content.content_id }} · {{ content.pos or '' }}</div>
+
+    <div class="mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">짧은 용례</div>
+      <div class="text-gray-700">{{ short_example }}</div>
+    </div>
+
+    <div class="border-t border-gray-100 pt-3 mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">공식 등급 vs 현재 레벨</div>
+      <div class="text-sm text-gray-700">{{ diff_reason }}</div>
+      <div class="text-xs text-gray-400 mt-1">
+        match_type={{ ref.match_type }}
+        {% if ref.standard_homonym_number %} · 표준동형어번호={{ ref.standard_homonym_number }}{% endif %}
+        {% if ref.exception_reason %} · 예외사유={{ ref.exception_reason }}{% endif %}
+      </div>
+    </div>
+
+    {% if level %}
+    <div class="border-t border-gray-100 pt-3 mb-3">
+      <div class="text-xs font-medium text-gray-500 mb-1">현재 DB 레벨 상태</div>
+      <div class="text-sm text-gray-600">
+        L{{ level.vocab_level }} -
+        <span class="{% if level.level_status == 'REVIEW_BOUNDARY' %}text-amber-600{% else %}text-gray-500{% endif %}">
+          {{ level.level_status }}
+        </span>
+        {% if level.boundary_flag %}<span class="text-amber-600 text-xs">boundary_flag=1</span>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="border-t border-gray-100 pt-3 text-xs text-gray-400">
+      출처: {{ ref.source_version_label }}(report_seq={{ ref.source_report_seq }}) ·
+      SHA-256 {{ ref.source_file_sha256[:12] }}… · 산출 {{ ref.computed_at }}
+    </div>
+  </div>
+
+  <h2 class="text-sm font-bold text-gray-700 mb-2">관리자 판정</h2>
+  <div class="border border-gray-200 rounded-xl p-5 mb-4 bg-white">
+    {% if latest %}
+    <div class="text-sm mb-3 {% if stale %}text-amber-600{% else %}text-gray-600{% endif %}">
+      현재 판정: <span class="font-bold">{{ latest.judgment }}</span>
+      ({{ latest.reviewer_email or latest.reviewer_user_id }}, {{ latest.reviewed_at }})
+      {% if stale %}
+      <div class="mt-1 text-xs">⚠ 이 판정 이후 공식 등급 참조 데이터가 재계산되어, 현재 버전에는 더 이상 유효하지 않습니다. 다시 검토해 주세요.</div>
+      {% endif %}
+    </div>
+    <div class="text-sm text-gray-500 mb-4">근거: {{ latest.rationale if latest.rationale else '(입력 안 함)' }}</div>
+    {% endif %}
+
+    <form method="POST" action="/vocab-official-grade-review/{{ content.content_id }}/judgment">
+      <div class="flex gap-2 mb-3 flex-wrap">
+        {% for j in judgment_choices %}
+        <label class="flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-1.5 cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+          <input type="radio" name="judgment" value="{{ j }}" required>
+          {{ j }}
+        </label>
+        {% endfor %}
+      </div>
+      <textarea name="rationale" rows="3" placeholder="판정 근거를 입력하세요(선택)"
+                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3"></textarea>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
+        판정 저장 후 다음 항목
+      </button>
+    </form>
+  </div>
+
+  {% if history|length > 1 %}
+  <h2 class="text-sm font-bold text-gray-700 mb-2">판정 이력</h2>
+  <div class="border border-gray-200 rounded-xl divide-y divide-gray-50 bg-white">
+    {% for h in history %}
+    <div class="px-4 py-2 text-xs text-gray-500">
+      {{ h.reviewed_at }} · {{ h.judgment }} · {{ h.reviewer_email or h.reviewer_user_id }} · {{ h.rationale if h.rationale else '(근거 입력 안 함)' }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

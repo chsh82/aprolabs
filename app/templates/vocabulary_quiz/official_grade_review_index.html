@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}국립국어원 공식 등급 검토{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-6 py-6">
+  <h1 class="text-xl font-bold mb-1">국립국어원 공식 등급 검토 (tier1 {{ rows|length }}건)</h1>
+  <div class="text-sm text-gray-500 mb-6">
+    실제 출제 중이며 공식 등급 근거와 충돌하는 최우선 그룹입니다. 판정을 저장해도
+    vocab_level/문항/매니페스트/student_exposure/public_ready는 전혀 바뀌지 않습니다 -
+    이 화면은 사람 판정을 별도 테이블에 기록만 합니다.
+  </div>
+
+  <div class="space-y-2">
+    {% for row in rows %}
+    <a href="/vocab-official-grade-review/{{ row.content.content_id }}"
+       class="block border border-gray-200 rounded-xl px-4 py-3 hover:border-blue-400 transition">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-gray-800">{{ row.content.lemma }}</span>
+          <span class="text-xs text-gray-400 ml-2">{{ row.content.pos or '' }} · {{ row.content.content_id }}</span>
+          <div class="text-xs text-gray-500 mt-0.5">{{ row.diff_reason }}</div>
+        </div>
+        <div class="text-xs text-right shrink-0 ml-3">
+          {% if row.judgment %}
+            {% if row.stale %}
+            <span class="text-amber-600 font-medium">판정 있음(만료)</span>
+            {% else %}
+            <span class="text-blue-600 font-medium">{{ row.judgment.judgment }}</span>
+            {% endif %}
+          {% else %}
+          <span class="text-gray-400">판정 없음</span>
+          {% endif %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
