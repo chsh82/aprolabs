@@ -17,13 +17,14 @@ let editionId = qs.get("edition");
 // 새로 포크됐다 - 편집이 쌓이지 않고 매번 따로 버려지는 버전만 늘어났다. 응답의
 // id가 지금 쓰던 것과 다르면 그 새 id를 이어서 쓰게 전환한다.
 function adoptEditionId(newId) {
-  if (newId == null || String(newId) === String(editionId)) return;
+  if (newId == null || String(newId) === String(editionId)) return false;
   editionId = newId;
   state.editionId = newId;
   const url = new URL(location.href);
   url.searchParams.set("edition", String(editionId));
   history.replaceState(null, "", url);
   toast(`승인/공개된 버전이라 새 버전(edition ${editionId})을 만들어 이어서 편집합니다. 이 창을 계속 쓰세요.`, { sticky: true });
+  return true;
 }
 
 const $ = sel => document.querySelector(sel);
@@ -118,10 +119,10 @@ async function patch(ops, { reason } = {}) {
       method: "PATCH",
       body: JSON.stringify({ patch: ops, editor: "reviewer", reason, expected_rev: state.rev }),
     });
-    adoptEditionId(data.id);
+    const forked = adoptEditionId(data.id);
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     await refreshAll();
-    toast("저장했습니다.");
+    if (!forked) toast("저장했습니다.");
     unsavedFailures = 0;
     return true;
   } catch (e) {
@@ -540,13 +541,13 @@ async function applyPresetPreview() {
           method: "POST",
           body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, params: pp.params || null, editor: "reviewer", expected_rev: state.rev }),
         });
-    adoptEditionId(data.id);
+    const forked = adoptEditionId(data.id);
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     sessionStorage.removeItem(pp.key);
     state.presetPreview = null;
     renderPresetPreviewBar();
     await refreshAll();
-    toast(`적용했습니다: ${pp.label}`);
+    if (!forked) toast(`적용했습니다: ${pp.label}`);
   } catch (e) {
     if (e.status === 409) {
       sessionStorage.removeItem(pp.key);
