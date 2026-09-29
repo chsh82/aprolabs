@@ -1,0 +1,1242 @@
+{
+  "PASS": [
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_002",
+      "content_id": "SC_V191_B001_002",
+      "lemma": "긴급",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_002",
+      "content_id": "SC_V191_B001_002",
+      "lemma": "긴급",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_003",
+      "content_id": "SC_V191_B001_003",
+      "lemma": "낚시터",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_003",
+      "content_id": "SC_V191_B001_003",
+      "lemma": "낚시터",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_004",
+      "content_id": "SC_V191_B001_004",
+      "lemma": "뜻대로",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_004",
+      "content_id": "SC_V191_B001_004",
+      "lemma": "뜻대로",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_006",
+      "content_id": "SC_V191_B001_006",
+      "lemma": "밥솥",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_006",
+      "content_id": "SC_V191_B001_006",
+      "lemma": "밥솥",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_009",
+      "content_id": "SC_V191_B001_009",
+      "lemma": "비눗물",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_009",
+      "content_id": "SC_V191_B001_009",
+      "lemma": "비눗물",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_011",
+      "content_id": "SC_V191_B001_011",
+      "lemma": "수시로",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_011",
+      "content_id": "SC_V191_B001_011",
+      "lemma": "수시로",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_013",
+      "content_id": "SC_V191_B001_013",
+      "lemma": "양팔",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_013",
+      "content_id": "SC_V191_B001_013",
+      "lemma": "양팔",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_016",
+      "content_id": "SC_V191_B001_016",
+      "lemma": "은행잎",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_016",
+      "content_id": "SC_V191_B001_016",
+      "lemma": "은행잎",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_017",
+      "content_id": "SC_V191_B001_017",
+      "lemma": "이제껏",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_017",
+      "content_id": "SC_V191_B001_017",
+      "lemma": "이제껏",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_021",
+      "content_id": "SC_V191_B001_021",
+      "lemma": "감사히",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_021",
+      "content_id": "SC_V191_B001_021",
+      "lemma": "감사히",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_022",
+      "content_id": "SC_V191_B001_022",
+      "lemma": "국그릇",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_022",
+      "content_id": "SC_V191_B001_022",
+      "lemma": "국그릇",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_024",
+      "content_id": "SC_V191_B001_024",
+      "lemma": "무서움",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_024",
+      "content_id": "SC_V191_B001_024",
+      "lemma": "무서움",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_025",
+      "content_id": "SC_V191_B001_025",
+      "lemma": "바른말",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_025",
+      "content_id": "SC_V191_B001_025",
+      "lemma": "바른말",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_031",
+      "content_id": "SC_V191_B001_031",
+      "lemma": "유리병",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_031",
+      "content_id": "SC_V191_B001_031",
+      "lemma": "유리병",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_034",
+      "content_id": "SC_V191_B001_034",
+      "lemma": "짠맛",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_034",
+      "content_id": "SC_V191_B001_034",
+      "lemma": "짠맛",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_035",
+      "content_id": "SC_V191_B001_035",
+      "lemma": "취업",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_035",
+      "content_id": "SC_V191_B001_035",
+      "lemma": "취업",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_036",
+      "content_id": "SC_V191_B001_036",
+      "lemma": "파김치",
+      "level": 0
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_036",
+      "content_id": "SC_V191_B001_036",
+      "lemma": "파김치",
+      "level": 0
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_027",
+      "content_id": "SC_V1914_B014_027",
+      "lemma": "가계부",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_027",
+      "content_id": "SC_V1914_B014_027",
+      "lemma": "가계부",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_035",
+      "content_id": "SC_V1914_B014_035",
+      "lemma": "가뜩이나",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_035",
+      "content_id": "SC_V1914_B014_035",
+      "lemma": "가뜩이나",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_038",
+      "content_id": "SC_V1914_B014_038",
+      "lemma": "가래떡",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_038",
+      "content_id": "SC_V1914_B014_038",
+      "lemma": "가래떡",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_040",
+      "content_id": "SC_V1914_B014_040",
+      "lemma": "가로세로",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_040",
+      "content_id": "SC_V1914_B014_040",
+      "lemma": "가로세로",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_041",
+      "content_id": "SC_V1914_B014_041",
+      "lemma": "가로수",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_041",
+      "content_id": "SC_V1914_B014_041",
+      "lemma": "가로수",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_044",
+      "content_id": "SC_V1914_B014_044",
+      "lemma": "가르마",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_044",
+      "content_id": "SC_V1914_B014_044",
+      "lemma": "가르마",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_046",
+      "content_id": "SC_V1914_B014_046",
+      "lemma": "가마솥",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_046",
+      "content_id": "SC_V1914_B014_046",
+      "lemma": "가마솥",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_047",
+      "content_id": "SC_V1914_B014_047",
+      "lemma": "가만가만",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_047",
+      "content_id": "SC_V1914_B014_047",
+      "lemma": "가만가만",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_003",
+      "content_id": "SC_V1915_B015_003",
+      "lemma": "가뭄",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_003",
+      "content_id": "SC_V1915_B015_003",
+      "lemma": "가뭄",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_019",
+      "content_id": "SC_V1915_B015_019",
+      "lemma": "가을날",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_019",
+      "content_id": "SC_V1915_B015_019",
+      "lemma": "가을날",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_024",
+      "content_id": "SC_V1915_B015_024",
+      "lemma": "가을철",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_024",
+      "content_id": "SC_V1915_B015_024",
+      "lemma": "가을철",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_028",
+      "content_id": "SC_V1915_B015_028",
+      "lemma": "가장자리",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_028",
+      "content_id": "SC_V1915_B015_028",
+      "lemma": "가장자리",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_030",
+      "content_id": "SC_V1915_B015_030",
+      "lemma": "가정용",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_030",
+      "content_id": "SC_V1915_B015_030",
+      "lemma": "가정용",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_036",
+      "content_id": "SC_V1915_B015_036",
+      "lemma": "가지런히",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_036",
+      "content_id": "SC_V1915_B015_036",
+      "lemma": "가지런히",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_042",
+      "content_id": "SC_V1915_B015_042",
+      "lemma": "가훈",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_042",
+      "content_id": "SC_V1915_B015_042",
+      "lemma": "가훈",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_008",
+      "content_id": "SC_V1916_B016_008",
+      "lemma": "간장게장",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_008",
+      "content_id": "SC_V1916_B016_008",
+      "lemma": "간장게장",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_010",
+      "content_id": "SC_V1916_B016_010",
+      "lemma": "간지럼",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_010",
+      "content_id": "SC_V1916_B016_010",
+      "lemma": "간지럼",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_016",
+      "content_id": "SC_V1916_B016_016",
+      "lemma": "간편히",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_016",
+      "content_id": "SC_V1916_B016_016",
+      "lemma": "간편히",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_020",
+      "content_id": "SC_V1916_B016_020",
+      "lemma": "갈기갈기",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_020",
+      "content_id": "SC_V1916_B016_020",
+      "lemma": "갈기갈기",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_021",
+      "content_id": "SC_V1916_B016_021",
+      "lemma": "갈대밭",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_021",
+      "content_id": "SC_V1916_B016_021",
+      "lemma": "갈대밭",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_023",
+      "content_id": "SC_V1916_B016_023",
+      "lemma": "갈비구이",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_023",
+      "content_id": "SC_V1916_B016_023",
+      "lemma": "갈비구이",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_024",
+      "content_id": "SC_V1916_B016_024",
+      "lemma": "갈비탕",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_024",
+      "content_id": "SC_V1916_B016_024",
+      "lemma": "갈비탕",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_027",
+      "content_id": "SC_V1916_B016_027",
+      "lemma": "갈치조림",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_027",
+      "content_id": "SC_V1916_B016_027",
+      "lemma": "갈치조림",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_036",
+      "content_id": "SC_V1916_B016_036",
+      "lemma": "감명",
+      "level": 1
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_036",
+      "content_id": "SC_V1916_B016_036",
+      "lemma": "감명",
+      "level": 1
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1935_B035_038",
+      "content_id": "SC_V1935_B035_038",
+      "lemma": "노동력",
+      "level": 2
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1935_B035_038",
+      "content_id": "SC_V1935_B035_038",
+      "lemma": "노동력",
+      "level": 2
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1971_B071_036",
+      "content_id": "SC_V1971_B071_036",
+      "lemma": "상품권",
+      "level": 2
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1971_B071_036",
+      "content_id": "SC_V1971_B071_036",
+      "lemma": "상품권",
+      "level": 2
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19101_B101_016",
+      "content_id": "SC_V19101_B101_016",
+      "lemma": "인간관계",
+      "level": 2
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19101_B101_016",
+      "content_id": "SC_V19101_B101_016",
+      "lemma": "인간관계",
+      "level": 2
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19106_B106_012",
+      "content_id": "SC_V19106_B106_012",
+      "lemma": "적응력",
+      "level": 2
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19106_B106_012",
+      "content_id": "SC_V19106_B106_012",
+      "lemma": "적응력",
+      "level": 2
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19117_B117_007",
+      "content_id": "SC_V19117_B117_007",
+      "lemma": "청소년기",
+      "level": 2
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19117_B117_007",
+      "content_id": "SC_V19117_B117_007",
+      "lemma": "청소년기",
+      "level": 2
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_029",
+      "content_id": "SC_V1914_B014_029",
+      "lemma": "가공식품",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_029",
+      "content_id": "SC_V1914_B014_029",
+      "lemma": "가공식품",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_030",
+      "content_id": "SC_V1914_B014_030",
+      "lemma": "가공업",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_030",
+      "content_id": "SC_V1914_B014_030",
+      "lemma": "가공업",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_042",
+      "content_id": "SC_V1914_B014_042",
+      "lemma": "가루받이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_042",
+      "content_id": "SC_V1914_B014_042",
+      "lemma": "가루받이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_043",
+      "content_id": "SC_V1914_B014_043",
+      "lemma": "가루우유",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_043",
+      "content_id": "SC_V1914_B014_043",
+      "lemma": "가루우유",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_045",
+      "content_id": "SC_V1914_B014_045",
+      "lemma": "가리비",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_045",
+      "content_id": "SC_V1914_B014_045",
+      "lemma": "가리비",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_049",
+      "content_id": "SC_V1914_B014_049",
+      "lemma": "가면극",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_049",
+      "content_id": "SC_V1914_B014_049",
+      "lemma": "가면극",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_008",
+      "content_id": "SC_V1915_B015_008",
+      "lemma": "가스보일러",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_008",
+      "content_id": "SC_V1915_B015_008",
+      "lemma": "가스보일러",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_009",
+      "content_id": "SC_V1915_B015_009",
+      "lemma": "가스오븐레인지",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_009",
+      "content_id": "SC_V1915_B015_009",
+      "lemma": "가스오븐레인지",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_011",
+      "content_id": "SC_V1915_B015_011",
+      "lemma": "가슴뼈",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_011",
+      "content_id": "SC_V1915_B015_011",
+      "lemma": "가슴뼈",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_012",
+      "content_id": "SC_V1915_B015_012",
+      "lemma": "가시덩굴",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_012",
+      "content_id": "SC_V1915_B015_012",
+      "lemma": "가시덩굴",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_014",
+      "content_id": "SC_V1915_B015_014",
+      "lemma": "가엾이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_014",
+      "content_id": "SC_V1915_B015_014",
+      "lemma": "가엾이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_015",
+      "content_id": "SC_V1915_B015_015",
+      "lemma": "가오리연",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_015",
+      "content_id": "SC_V1915_B015_015",
+      "lemma": "가오리연",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_016",
+      "content_id": "SC_V1915_B015_016",
+      "lemma": "가요계",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_016",
+      "content_id": "SC_V1915_B015_016",
+      "lemma": "가요계",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_017",
+      "content_id": "SC_V1915_B015_017",
+      "lemma": "가운뎃손가락",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_017",
+      "content_id": "SC_V1915_B015_017",
+      "lemma": "가운뎃손가락",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_018",
+      "content_id": "SC_V1915_B015_018",
+      "lemma": "가을걷이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_018",
+      "content_id": "SC_V1915_B015_018",
+      "lemma": "가을걷이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_021",
+      "content_id": "SC_V1915_B015_021",
+      "lemma": "가을벌레",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_021",
+      "content_id": "SC_V1915_B015_021",
+      "lemma": "가을벌레",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_025",
+      "content_id": "SC_V1915_B015_025",
+      "lemma": "가이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_025",
+      "content_id": "SC_V1915_B015_025",
+      "lemma": "가이",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_026",
+      "content_id": "SC_V1915_B015_026",
+      "lemma": "가입자",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_026",
+      "content_id": "SC_V1915_B015_026",
+      "lemma": "가입자",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_027",
+      "content_id": "SC_V1915_B015_027",
+      "lemma": "가장무도회",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_027",
+      "content_id": "SC_V1915_B015_027",
+      "lemma": "가장무도회",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_029",
+      "content_id": "SC_V1915_B015_029",
+      "lemma": "가전제품",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_029",
+      "content_id": "SC_V1915_B015_029",
+      "lemma": "가전제품",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_037",
+      "content_id": "SC_V1915_B015_037",
+      "lemma": "가지치기",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_037",
+      "content_id": "SC_V1915_B015_037",
+      "lemma": "가지치기",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_040",
+      "content_id": "SC_V1915_B015_040",
+      "lemma": "가혹",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_040",
+      "content_id": "SC_V1915_B015_040",
+      "lemma": "가혹",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_043",
+      "content_id": "SC_V1915_B015_043",
+      "lemma": "각계각층",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_043",
+      "content_id": "SC_V1915_B015_043",
+      "lemma": "각계각층",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_045",
+      "content_id": "SC_V1915_B015_045",
+      "lemma": "각기둥",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_045",
+      "content_id": "SC_V1915_B015_045",
+      "lemma": "각기둥",
+      "level": 3
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_046",
+      "content_id": "SC_V1915_B015_046",
+      "lemma": "각도기",
+      "level": 3
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_046",
+      "content_id": "SC_V1915_B015_046",
+      "lemma": "각도기",
+      "level": 3
+    }
+  ],
+  "HOLD": [
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_007",
+      "content_id": "SC_V191_B001_007",
+      "lemma": "봄꽃",
+      "level": 0,
+      "issues": [
+        "정답 선택지 길이 이상치(정답 8자 vs 오답 평균 21자) - 눈대중 추측 위험"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_007",
+      "content_id": "SC_V191_B001_007",
+      "lemma": "봄꽃",
+      "level": 0,
+      "issues": [
+        "정답 선택지 길이 이상치(정답 8자 vs 오답 평균 21자) - 눈대중 추측 위험"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_008",
+      "content_id": "SC_V191_B001_008",
+      "lemma": "봉사자",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 27자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_008",
+      "content_id": "SC_V191_B001_008",
+      "lemma": "봉사자",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 27자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_015",
+      "content_id": "SC_V191_B001_015",
+      "lemma": "위주",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 25자) - 연령 적합성 재검토 필요",
+        "정답 선택지 길이 이상치(정답 25자 vs 오답 평균 11자) - 눈대중 추측 위험"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_015",
+      "content_id": "SC_V191_B001_015",
+      "lemma": "위주",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 25자) - 연령 적합성 재검토 필요",
+        "정답 선택지 길이 이상치(정답 25자 vs 오답 평균 11자) - 눈대중 추측 위험"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_018",
+      "content_id": "SC_V191_B001_018",
+      "lemma": "장터",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 22자) - 연령 적합성 재검토 필요",
+        "정답 선택지 길이 이상치(정답 22자 vs 오답 평균 9자) - 눈대중 추측 위험"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_018",
+      "content_id": "SC_V191_B001_018",
+      "lemma": "장터",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 22자) - 연령 적합성 재검토 필요",
+        "정답 선택지 길이 이상치(정답 22자 vs 오답 평균 9자) - 눈대중 추측 위험"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_020",
+      "content_id": "SC_V191_B001_020",
+      "lemma": "특히",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 21자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_020",
+      "content_id": "SC_V191_B001_020",
+      "lemma": "특히",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 21자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_028",
+      "content_id": "SC_V191_B001_028",
+      "lemma": "소방대원",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 23자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_028",
+      "content_id": "SC_V191_B001_028",
+      "lemma": "소방대원",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 23자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_029",
+      "content_id": "SC_V191_B001_029",
+      "lemma": "약초",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 24자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_029",
+      "content_id": "SC_V191_B001_029",
+      "lemma": "약초",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 24자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_033",
+      "content_id": "SC_V191_B001_033",
+      "lemma": "이런저런",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 22자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_033",
+      "content_id": "SC_V191_B001_033",
+      "lemma": "이런저런",
+      "level": 0,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L0 기준 20자, 실제 22자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L1_SC_V192_B002_030",
+      "content_id": "SC_V192_B002_030",
+      "lemma": "고등학교",
+      "level": 1,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L1 기준 26자, 실제 35자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L1_SC_V192_B002_030",
+      "content_id": "SC_V192_B002_030",
+      "lemma": "고등학교",
+      "level": 1,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L1 기준 26자, 실제 35자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1966_B066_037",
+      "content_id": "SC_V1966_B066_037",
+      "lemma": "브랜드",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 59자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1966_B066_037",
+      "content_id": "SC_V1966_B066_037",
+      "lemma": "브랜드",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 59자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1969_B069_034",
+      "content_id": "SC_V1969_B069_034",
+      "lemma": "사이트",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 52자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1969_B069_034",
+      "content_id": "SC_V1969_B069_034",
+      "lemma": "사이트",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 52자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1972_B072_019",
+      "content_id": "SC_V1972_B072_019",
+      "lemma": "샘플",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 53자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1972_B072_019",
+      "content_id": "SC_V1972_B072_019",
+      "lemma": "샘플",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 53자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1972_B072_033",
+      "content_id": "SC_V1972_B072_033",
+      "lemma": "생방송",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 53자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1972_B072_033",
+      "content_id": "SC_V1972_B072_033",
+      "lemma": "생방송",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 53자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1975_B075_032",
+      "content_id": "SC_V1975_B075_032",
+      "lemma": "센서",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 44자) - 연령 적합성 재검토 필요",
+        "학생용 뜻풀이에 한자 포함 - 저학년 적합성 의심"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1975_B075_032",
+      "content_id": "SC_V1975_B075_032",
+      "lemma": "센서",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 44자) - 연령 적합성 재검토 필요",
+        "학생용 뜻풀이에 한자 포함 - 저학년 적합성 의심"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1986_B086_018",
+      "content_id": "SC_V1986_B086_018",
+      "lemma": "알파벳",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 44자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1986_B086_018",
+      "content_id": "SC_V1986_B086_018",
+      "lemma": "알파벳",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 44자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1986_B086_048",
+      "content_id": "SC_V1986_B086_048",
+      "lemma": "애니메이션",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 43자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1986_B086_048",
+      "content_id": "SC_V1986_B086_048",
+      "lemma": "애니메이션",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 43자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V1989_B089_029",
+      "content_id": "SC_V1989_B089_029",
+      "lemma": "업그레이드",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 40자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V1989_B089_029",
+      "content_id": "SC_V1989_B089_029",
+      "lemma": "업그레이드",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 40자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19103_B103_013",
+      "content_id": "SC_V19103_B103_013",
+      "lemma": "자부심",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 55자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19103_B103_013",
+      "content_id": "SC_V19103_B103_013",
+      "lemma": "자부심",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 55자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19103_B103_016",
+      "content_id": "SC_V19103_B103_016",
+      "lemma": "자서전",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 40자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19103_B103_016",
+      "content_id": "SC_V19103_B103_016",
+      "lemma": "자서전",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 40자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19109_B109_020",
+      "content_id": "SC_V19109_B109_020",
+      "lemma": "조심성",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 35자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19109_B109_020",
+      "content_id": "SC_V19109_B109_020",
+      "lemma": "조심성",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이 길이 초과(L2 기준 34자, 실제 35자) - 연령 적합성 재검토 필요"
+      ]
+    },
+    {
+      "item_id": "MF_A_SC_EXCORE_L2_SC_V19134_B134_024",
+      "content_id": "SC_V19134_B134_024",
+      "lemma": "화물",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이에 한자 포함 - 저학년 적합성 의심"
+      ]
+    },
+    {
+      "item_id": "MF_C_SC_EXCORE_L2_SC_V19134_B134_024",
+      "content_id": "SC_V19134_B134_024",
+      "lemma": "화물",
+      "level": 2,
+      "issues": [
+        "학생용 뜻풀이에 한자 포함 - 저학년 적합성 의심"
+      ]
+    }
+  ]
+}
