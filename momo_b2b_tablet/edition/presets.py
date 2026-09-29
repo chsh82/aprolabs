@@ -49,7 +49,10 @@ def preset_set_step(layout: dict, idx: int, params: dict) -> PresetResult:
 
 
 # ---------- 1. 좌우 바꾸기 ----------
-_MIRROR_TYPES = {"qa", "qaband", "qaref", "solo"}
+# 2026-09-29 사용자 지시 - essay(STEP3)도 좌우(글/그림) 바꾸기 지원. essay는
+# 중앙 상단 제목이 .cols 바깥에 있어 mirror와 무관하게 안 움직인다
+# (renderer.js essay 분기 참고).
+_MIRROR_TYPES = {"qa", "qaband", "qaref", "solo", "essay"}
 
 
 def preset_mirror(layout: dict, idx: int, params: dict) -> PresetResult:

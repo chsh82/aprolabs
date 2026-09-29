@@ -311,7 +311,14 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       // 문구를 넣는 별도 박스. 자유 편집(LLM)은 이 필드를 못 건드리게 스키마
       // 밖이라 인스펙터에서 검수자가 직접 채운다(비어있으면 박스 자체를 안 그림).
       const note = p.note ? `<div class="essay-note"><p>${esc(p.note)}</p></div>` : "";
-      inner = `<h3 class="essay-topic">${esc(p.topic)}</h3><div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col">${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: p.topic })}${note}</div></div>`;
+      // 2026-09-29 사용자 지시 - 좌우(글/그림) 바꾸기 프리셋 추가. 중앙 상단
+      // 제목(essay-topic)은 .cols 바깥이라 mirror와 무관하게 그대로 둔다.
+      {
+        const left = `<div class="col">${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div>`;
+        const right = `<div class="col" data-alloc>${slotHtml(p.slot, { t: p.topic })}${note}</div>`;
+        const { html, ratio } = mirrorCols("1fr 1.15fr", left, right, p.mirror);
+        inner = `<h3 class="essay-topic">${esc(p.topic)}</h3><div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
+      }
     } else if (p.type === "bgline") {
       const rows = p.rows.map(row => `<div class="tl-row">${row.map((n, j) => `${j ? '<span class="tl-arr" aria-hidden="true"></span>' : ""}<div class="tl-n${n.hl ? " hl" : ""}${n.end ? " end" : ""}"><span class="y">${esc(n.y || "")}</span><span class="e">${esc(n.e)}</span>${n.nt ? `<span class="nt">${esc(n.nt)}</span>` : ""}</div>`).join("")}</div>`).join("");
       inner = `<p class="inst">${esc(p.inst)}</p><div class="tl">${rows}</div><div class="bg-bottom"><figure class="bg-fig"><img src="${IMG[p.image.key]}" alt="${esc(p.image.caption)}"><figcaption>${esc(p.image.caption)}</figcaption></figure><div class="term"><h4>${esc(p.term.title)}</h4><p>${esc(p.term.text)}</p></div></div>`;

@@ -403,7 +403,7 @@ async function goToPreviewPage(idx) {
  * (원래 화면과 토글 비교 가능) -> 적용(실제 저장, kind=prompt_edit) 또는 취소
  * (sessionStorage만 지우고 아무것도 저장 안 함). */
 const PRESET_DEFS = [
-  { key: "mirror", label: "좌우 바꾸기", types: new Set(["qa", "qaband", "qaref", "solo"]) },
+  { key: "mirror", label: "좌우 바꾸기", types: new Set(["qa", "qaband", "qaref", "solo", "essay"]) },
   { key: "title_top", label: "제목 중앙 상단", types: new Set(["qa", "qaband", "qaref", "solo"]) },
   { key: "three_tier", label: "3층 구조/전체 폭", types: new Set(["qa", "qaband", "qaref", "solo"]) },
   { key: "lines_more", label: "답란 늘리기" },
