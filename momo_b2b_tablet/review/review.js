@@ -738,6 +738,8 @@ function renderInspector() {
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
   if (page.vocab) renderVocabInspector(body, page, idx, basePath);
+  if (page.qs) renderMemosInspector(body, page, idx, basePath);
+  if (page.type === "cover") renderCoverInspector(body);
   if (page.type === "essay") {
     renderEssayDialogInspector(body, page, idx, basePath);
     renderEssayNoteInspector(body, page, idx, basePath);
@@ -767,6 +769,40 @@ function renderOxInspector(body, page, idx, basePath) {
           { reason: "검수: O·X 문항 텍스트 수정" });
       }
     });
+  });
+}
+
+// 2026-09-29 사용자 피드백 - memos(STEP3 소질문) 페이지의 문항 텍스트를 고칠
+// 방법이 없었다. ox와 같은 패턴(항목별 텍스트박스, blur 시 patch).
+function renderMemosInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("h3", {}, "소질문 텍스트"));
+  page.qs.forEach((item, k) => {
+    const ta = el("textarea", { rows: "3" }, item.t || "");
+    body.append(field(`${item.no}번`, ta));
+    ta.addEventListener("blur", () => {
+      if (ta.value !== (item.t || "")) {
+        patch([{ op: "replace", path: `${basePath}/qs/${k}/t`, value: ta.value }],
+          { reason: "검수: 소질문 텍스트 수정" });
+      }
+    });
+  });
+}
+
+// 2026-09-29 사용자 피드백 - 표지(cover) 페이지의 "책 속 한 문장"(book.quote)을
+// 고칠 방법이 없었다. book.*는 page가 아니라 layout 최상위(state.layout.book)
+// 필드라 basePath(/pages/{idx}) 기준이 아니라 /book/quote로 직접 patch한다.
+function renderCoverInspector(body) {
+  const book = state.layout.book || {};
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("h3", {}, "표지 - 책 속 한 문장(quote)"));
+  const ta = el("textarea", { rows: "3" }, book.quote || "");
+  body.append(field("인용문(quote)", ta));
+  ta.addEventListener("blur", () => {
+    if (ta.value !== (book.quote || "")) {
+      patch([{ op: "replace", path: "/book/quote", value: ta.value }],
+        { reason: "검수: 표지 인용문 수정" });
+    }
   });
 }
 
