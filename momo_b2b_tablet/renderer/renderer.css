@@ -318,6 +318,10 @@ body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-fo
 /* ---------- step 3 ---------- */
 /* 2026-09-26: STEP3 첫 페이지 - 단 구분 없이 중앙 상단, 큰 폰트(옛 .topic 대체) */
 .essay-topic{font:700 26px/1.3 var(--cover);color:var(--main-deep);text-align:center;word-break:keep-all;margin:1mm 0 4mm}
+/* 2026-09-29 사용자 지시 - 이미지 아래 요약/동기부여 문구 박스(essay.note,
+   검수자가 인스펙터에서 직접 입력. 비어있으면 렌더되지 않는다). */
+.essay-note{flex:0 0 auto;margin-top:3mm;background:var(--paper);border:.35mm solid color-mix(in srgb,var(--main) 40%,transparent);border-radius:1.4mm;padding:2.8mm 4mm}
+.essay-note p{margin:0;font:500 12.5px/1.6 var(--sans);color:var(--ink);text-align:center;word-break:keep-all}
 
 /* ---------- 검수 프리셋: 제목 중앙 상단(qa/qaband/qaref/solo, 2026-09-27) ---------- */
 .q-title-top{display:flex;align-items:center;justify-content:center;gap:3mm;margin:0 0 4mm;text-align:center}

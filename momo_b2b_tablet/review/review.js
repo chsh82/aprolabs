@@ -715,6 +715,7 @@ function renderInspector() {
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
+  if (page.type === "essay") renderEssayNoteInspector(body, page, idx, basePath);
   if (SLOT_CAPABLE_TYPES.has(page.type)) renderSlotInspector(body, page, idx, basePath);
   renderPresetPanel(body, page, idx);
 
@@ -740,6 +741,23 @@ function renderOxInspector(body, page, idx, basePath) {
           { reason: "검수: O·X 문항 텍스트 수정" });
       }
     });
+  });
+}
+
+// 2026-09-29 사용자 지시 - essay(STEP3) 페이지 이미지 아래에 요약/동기부여
+// 문구 박스를 추가했다(renderer.js .essay-note). 이것도 자유 편집(LLM)
+// 스키마 밖의 자유 텍스트라 인스펙터에서 검수자가 직접 채운다 - 빈 값이면
+// 렌더러가 박스 자체를 안 그린다.
+function renderEssayNoteInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  const ta = el("textarea", { rows: "3", placeholder: "이미지 아래에 보여줄 요약·동기부여 문구(비워두면 박스가 안 보입니다)" }, page.note || "");
+  body.append(field("이미지 아래 문구(note)", ta));
+  ta.addEventListener("blur", () => {
+    if (ta.value !== (page.note || "")) {
+      // note는 layout/step1.py 등에서 기본값을 안 넣는 새 필드라 처음엔 키가
+      // 없다 - "add"는 없을 때 새로 만들고 있을 때는 교체해서 두 경우 다 된다.
+      patch([{ op: "add", path: `${basePath}/note`, value: ta.value }], { reason: "검수: 이미지 아래 문구 수정" });
+    }
   });
 }
 

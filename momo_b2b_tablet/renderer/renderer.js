@@ -304,7 +304,11 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
       // 2단(도입·인용 / 이미지)으로 구성한다. slotHtml 두 번째 인자는 생성
       // 지시문에 넣을 "질문 원문" 자리라 특정 책 제목을 박아 두면 안 되므로
       // topic으로 일반화한다(예전엔 다른 책 제목이 하드코딩돼 있던 버그).
-      inner = `<h3 class="essay-topic">${esc(p.topic)}</h3><div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col">${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: p.topic })}</div></div>`;
+      // p.note(선택) - 2026-09-29 사용자 지시: 이미지 아래에 요약/동기부여
+      // 문구를 넣는 별도 박스. 자유 편집(LLM)은 이 필드를 못 건드리게 스키마
+      // 밖이라 인스펙터에서 검수자가 직접 채운다(비어있으면 박스 자체를 안 그림).
+      const note = p.note ? `<div class="essay-note"><p>${esc(p.note)}</p></div>` : "";
+      inner = `<h3 class="essay-topic">${esc(p.topic)}</h3><div class="cols" style="grid-template-columns:1fr 1.15fr"><div class="col">${p.lead ? `<p class="lead">${esc(p.lead)}</p>` : ""}<div class="dialog">${p.dialog.map(t => `<p>${esc(t)}</p>`).join("")}</div><p class="closing">${esc(p.closing)}</p></div><div class="col" data-alloc>${slotHtml(p.slot, { t: p.topic })}${note}</div></div>`;
     } else if (p.type === "bgline") {
       const rows = p.rows.map(row => `<div class="tl-row">${row.map((n, j) => `${j ? '<span class="tl-arr" aria-hidden="true"></span>' : ""}<div class="tl-n${n.hl ? " hl" : ""}${n.end ? " end" : ""}"><span class="y">${esc(n.y || "")}</span><span class="e">${esc(n.e)}</span>${n.nt ? `<span class="nt">${esc(n.nt)}</span>` : ""}</div>`).join("")}</div>`).join("");
       inner = `<p class="inst">${esc(p.inst)}</p><div class="tl">${rows}</div><div class="bg-bottom"><figure class="bg-fig"><img src="${IMG[p.image.key]}" alt="${esc(p.image.caption)}"><figcaption>${esc(p.image.caption)}</figcaption></figure><div class="term"><h4>${esc(p.term.title)}</h4><p>${esc(p.term.text)}</p></div></div>`;
