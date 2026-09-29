@@ -35,6 +35,14 @@ _CHARACTER_BY_READING_TYPE = [
     # 함). socrates.png/assets manifest 등록 전까지는 이미지가 안 뜬다.
     ("논리적", "socrates"),
 ]
+# 2026-09-29 - alice.png/tom_sawyer.png가 assets에 원래 없었던 걸(둘 다
+# manifest.json에는 있지만 실제 파일이 누락) 발견해서, 사용자가 준 새
+# 캐릭터 세트(모모 캐릭터 2차) 중 그림을 골라 그 자리에 채웠다 - 코드
+# 상 키 이름은 alice/tom_sawyer 그대로 두고(이미 만들어진 edition들의
+# layout_json이 이 문자열을 그대로 들고 있어서 이름을 바꾸면 다 깨짐)
+# 실제 그림만 바꿔치기했다: alice.png<-레오나르도 다빈치(상상적에 맞게
+# 상상력·발명), tom_sawyer.png<-파인만(비판적에 맞게 질문하고 검증하는
+# 태도).
 DEFAULT_CHARACTER = "jekyll"  # reading_type이 없을 때
 VOCAB_CHARACTER = "holmes"
 WRITING_CHARACTER = "anne"
