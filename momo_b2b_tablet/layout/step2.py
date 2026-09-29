@@ -29,6 +29,8 @@ _STEP2_NM = {
     # 3종에 해당 문항이 없어 빠짐), 상상적->앨리스(신규 유형).
     "tom_sawyer": "톰 소여와 다르게 보기",
     "alice": "앨리스와 상상해 보기",
+    # 2026-09-29 사용자 지시 - 논리적 읽기(7번째 유형, layout/rules.py 참고).
+    "socrates": "소크라테스와 논리 세우기",
 }
 _WIDE_FORMS = {"table", "compare", "choice", "choiceList"}
 _LEAKY_FORMS = {"choice", "choiceList"}  # 선택지 자체가 답이라 이미지 지시문에서 답 유출을 따로 조심해야 함

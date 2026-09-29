@@ -51,6 +51,12 @@ _GERUND_TO_CANONICAL = {
     "비판하며 읽기": "비판적",
     "상상하며 읽기": "상상적",
 }
+# 2026-09-29 사용자 지시 - 초1·2 원문 중 "논리적 읽기"처럼 "OO적 읽기"(제롱드
+# 아닌 형용사형 + 읽기) 형태도 있다. 끝이 "적"인 말만 잡아 "책 읽기"같은
+# 일반 문장을 독해유형으로 잘못 집지 않게 한다 - "적"으로 끝나면 이미
+# layout/rules.py 정식 유형명과 같은 모양(사실적/논리적 등)이라 여기서
+# 따로 변환 표가 필요 없다(그대로 label로 쓴다).
+_ADJ_READING_LABEL_RE = re.compile(r"^\[?\d*\.?\s*(([가-힣]+적)(?:\s*/\s*[가-힣]+적)*)\s*읽기\]?\s*\n?")
 # 2026-09-28 - 중학생(L9) 일부는 유형 두 개가 공백 없이 붙고 "독해" 앞에
 # "/"+여러 공백이 낀 변형이 있다("사실적추론적/    독해 ]") - 일반
 # [가-힣]+는 "사실적추론적"을 하나로 뭉쳐 잡아 그 뒤의 "독해"를 못 찾고
@@ -80,6 +86,10 @@ def _split_reading_type_label(raw: str) -> tuple[str | None, str]:
     if m:
         words = re.findall("|".join(_READING_TYPE_WORDS), m.group(1))
         return " / ".join(words), raw[m.end():].strip()
+    m = _ADJ_READING_LABEL_RE.match(raw)
+    if m:
+        label = re.sub(r"\s+", " ", m.group(1).strip())
+        return label, raw[m.end():].strip()
     m = _LABEL_RE.match(raw)
     if not m:
         return None, raw

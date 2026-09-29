@@ -805,6 +805,10 @@ const READING_TYPES = [
   { key: "비판적", img: "tom_sawyer", nm: "톰 소여와 다르게 보기" },
   { key: "적용적", img: "fogg", nm: "필리어스 포그와 적용해 보기" },
   { key: "상상적", img: "alice", nm: "앨리스와 상상해 보기" },
+  // 2026-09-29 사용자 지시 - 초1·2 원문 "논리적 읽기" 대응(7번째 유형).
+  // 캐릭터 이미지(socrates)는 아직 assets에 없음(사용자가 나중에 지정
+  // 예정) - 지정 전까지는 화면에 이미지가 안 뜨고 자리만 비어 보인다.
+  { key: "논리적", img: "socrates", nm: "소크라테스와 논리 세우기" },
 ];
 
 function renderReadingTypeInspector(body, page, idx, basePath) {

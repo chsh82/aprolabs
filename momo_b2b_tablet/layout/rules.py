@@ -30,6 +30,10 @@ _CHARACTER_BY_READING_TYPE = [
     ("비판적", "tom_sawyer"),
     ("적용적", "fogg"),
     ("상상적", "alice"),
+    # 2026-09-29 사용자 지시 - 초1·2 원문에 "논리적 읽기" 라벨이 있어 7번째
+    # 유형으로 추가(신규 캐릭터 - 사용자가 이미지 파일은 나중에 지정하기로
+    # 함). socrates.png/assets manifest 등록 전까지는 이미지가 안 뜬다.
+    ("논리적", "socrates"),
 ]
 DEFAULT_CHARACTER = "jekyll"  # reading_type이 없을 때
 VOCAB_CHARACTER = "holmes"
