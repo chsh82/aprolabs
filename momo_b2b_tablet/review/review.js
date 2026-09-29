@@ -715,6 +715,7 @@ function renderInspector() {
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
+  if (page.vocab) renderVocabInspector(body, page, idx, basePath);
   if (page.type === "essay") {
     renderEssayDialogInspector(body, page, idx, basePath);
     renderEssayNoteInspector(body, page, idx, basePath);
@@ -744,6 +745,41 @@ function renderOxInspector(body, page, idx, basePath) {
           { reason: "검수: O·X 문항 텍스트 수정" });
       }
     });
+  });
+}
+
+// 2026-09-29 사용자 피드백 - vocabMatch 페이지에서 "'뜻 보충: 검수 필요'
+// 배지를 지워줘"를 자유 편집으로 요청했다가 거부당함(맞는 거부다 - 그 배지는
+// 고정 텍스트가 아니라 vocab[k].sup === true일 때만 뜨는 표시라 LLM 패치
+// 대상이 아니다). sup는 B단계 LLM 자동 보충 스크립트가 "검수자가 확인하기
+// 전엔 켜 둔다"는 방침으로 일부러 안 지운 값(project 기억 참고) - 여기서
+// 검수자가 뜻을 보고 확인하면 배지를 끌 수 있게 한다. resolveFlag는 위에서
+// 이미 정의됨(호이스팅) - sup flag 메시지에 낱말이 들어있어 텍스트로 찾는다.
+function renderVocabInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("h3", {}, "낱말 뜻(vocab)"));
+  page.vocab.forEach((item, k) => {
+    const ta = el("textarea", { rows: "2" }, item.d || "");
+    body.append(field(item.w, ta));
+    ta.addEventListener("blur", () => {
+      if (ta.value !== (item.d || "")) {
+        patch([{ op: "replace", path: `${basePath}/vocab/${k}/d`, value: ta.value }], { reason: "검수: 낱말 뜻 수정" });
+      }
+    });
+    if (item.sup) {
+      const row = el("div", { class: "field" });
+      row.append(el("span", { class: "hint" }, "뜻 보충: 검수 필요(자동 보충된 값 - 검수 전까지 표시)"));
+      const confirmBtn = el("button", { class: "btn btn--small" }, "뜻 확인 완료(배지 끄기)");
+      confirmBtn.onclick = async () => {
+        const ok = await patch([{ op: "replace", path: `${basePath}/vocab/${k}/sup`, value: false }],
+          { reason: "검수: 뜻풀이 확인 완료" });
+        if (ok === false) return; // 409 충돌 - patch()가 이미 안내함
+        const flag = state.flags.find(f => f.kind === "sup" && !f.resolved_at && f.message.includes(item.w));
+        if (flag) await resolveFlag(flag.id);
+      };
+      row.append(confirmBtn);
+      body.append(row);
+    }
   });
 }
 
