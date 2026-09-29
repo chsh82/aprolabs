@@ -1,0 +1,17 @@
+{
+  "job1_5946_candidate_sum": 5946,
+  "job1_missing4_content_ids": [
+    "SR_L4CORE_4754",
+    "SR_L4CORE_4786",
+    "SR_L4CORE_4801",
+    "SR_L5CORE_4838"
+  ],
+  "job2_conflict_1997": 1997,
+  "job2_exceptions_823": 823,
+  "job2_rules_1408": 1408,
+  "job2_exc_and_conflict": 589,
+  "job2_exc_not_conflict": 234,
+  "job2_residual_conflict_uncovered": 0,
+  "job2_residual_ids": [],
+  "job2_rules_not_conflict": 0
+}
