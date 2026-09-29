@@ -715,7 +715,10 @@ function renderInspector() {
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
-  if (page.type === "essay") renderEssayNoteInspector(body, page, idx, basePath);
+  if (page.type === "essay") {
+    renderEssayDialogInspector(body, page, idx, basePath);
+    renderEssayNoteInspector(body, page, idx, basePath);
+  }
   if (SLOT_CAPABLE_TYPES.has(page.type)) renderSlotInspector(body, page, idx, basePath);
   renderPresetPanel(body, page, idx);
 
@@ -741,6 +744,25 @@ function renderOxInspector(body, page, idx, basePath) {
           { reason: "검수: O·X 문항 텍스트 수정" });
       }
     });
+  });
+}
+
+// 2026-09-29 사용자 지시 - "이미지 왼쪽에 이미 텍스트 박스(.dialog)가 있는데
+// 글을 쓸 수가 없다"는 피드백. dialog는 STEP3 도입 인용문을 원문에서 못
+// 뽑았을 때 빈 배열로 남아(layout/step3.py 참고, split_dialog_lines가
+// 못 찾으면 []) 그 박스가 그냥 빈 채로 나간다 - 검수자가 직접 채울 수 있게
+// 인스펙터에 추가한다. 줄바꿈 하나가 배열 원소 하나(문단 하나)다.
+function renderEssayDialogInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  const fullText = (page.dialog || []).join("\n");
+  const ta = el("textarea", { rows: "4", placeholder: "이미지 왼쪽 인용문 박스에 넣을 문장(줄바꿈 = 문단 구분)" }, fullText);
+  body.append(field("이미지 왼쪽 인용문(dialog)", ta,
+    el("div", { class: "hint" }, "지금 이 박스가 비어 있으면 화면에 빈 박스만 나갑니다 - 원문에서 도입 인용문을 못 찾은 경우입니다.")));
+  ta.addEventListener("blur", () => {
+    if (ta.value !== fullText) {
+      const lines = ta.value.split("\n").map(s => s.trim()).filter(Boolean);
+      patch([{ op: "replace", path: `${basePath}/dialog`, value: lines }], { reason: "검수: 이미지 왼쪽 인용문(dialog) 수정" });
+    }
   });
 }
 
