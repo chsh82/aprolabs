@@ -1,0 +1,22 @@
+{
+  "rules": [
+    {
+      "rule_id": "RULE_A_grade4_to_L2_from_L3",
+      "condition": "official_grade == 4 AND current_vocab_level == 3",
+      "proposed_base_level": "L2",
+      "count": 1368,
+      "sample_evidence_summary": "표본 15건(랜덤시드42) 실사 결과 해지다/낙담하다/거짓말투성이/불균형하다/백분율/물장난하다/달그락달그락/짜개다/금메달리스트/탈퇴하다/예술제/겨를/게시되다/기세등등하다 등 - 전부 초등 5~6학년(L2) 수준으로 보기에 무리가 없음. 현재DB(L3=중1~2)와 1레벨 차이로, DB_OVERCONFIDENT_BOUNDARY 가설과 부합. 일괄 적용 후보로 안전하다고 판단."
+    },
+    {
+      "rule_id": "RULE_B_grade3_to_L1_from_L2",
+      "condition": "official_grade == 3 AND current_vocab_level == 2",
+      "proposed_base_level": "L1",
+      "count": 40,
+      "sample_evidence_summary": "표본 15건 실사 결과 아지랑이/안전띠/케첩/몰라주다/하기야/실망스럽다/제작되다/후덥지근하다/중얼중얼/요만하다/빨래집게/적응력/조심성/거칠어지다/자유스럽다 등 - 전부 초등 3~4학년(L1) 수준으로 보기에 무리가 없음. 1레벨 차이로 Rule A와 같은 성격. 일괄 적용 후보로 안전하다고 판단."
+    }
+  ],
+  "bulk_rule_covered_count": 1408,
+  "bulk_pool_before_residual_check": 1408,
+  "residual_no_rule_count": 0,
+  "residual_note": "현재DB레벨과 proposed_base_level 차이가 2단계 이상인 항목(예: 공식4등급이면서 현재DB가 L4~L6인 경우)은 별도 exception_reason='레벨격차과대(2단계이상)'로 재분류해 이 규칙 풀 자체에서 제외했다(아래 표본 참고) - 따라서 RESIDUAL_NO_RULE은 이론상 0에 가까워야 하며, 남은 값은 위 2개 패턴 조건에 정확히 들지 않는 경계선 케이스만 포함한다."
+}

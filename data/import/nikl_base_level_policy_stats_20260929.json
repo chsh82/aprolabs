@@ -1,0 +1,25 @@
+{
+  "base_level_counter": {
+    "L0": 627,
+    "L2": 3421,
+    "L1": 1732,
+    "경계(L3~L4)": 49,
+    "미확정": 121
+  },
+  "reason_counter": {
+    "교과_전문_의미": 645,
+    "(예외아님)": 5127,
+    "뜻이_다를_가능성(뜻풀이위험78)": 78,
+    "레벨격차과대(2단계이상, 표본검수 결과 학술어휘 다수)": 35,
+    "동형이의어": 65
+  },
+  "status_counter": {
+    "INDIVIDUAL_REVIEW_REQUIRED": 823,
+    "NO_ACTION_MATCH": 3593,
+    "RULE_PROPOSED_PENDING_APPROVAL": 1408,
+    "INSUFFICIENT_EVIDENCE": 109,
+    "BOUNDARY_SIGNAL_ONLY": 17
+  },
+  "total": 5950,
+  "exception_total": 823
+}

@@ -1,0 +1,23 @@
+proposed_base_level 분포:
+  L2: 3421
+  L1: 1732
+  L0: 627
+  미확정: 121
+  경계(L3~L4): 49
+합계: 5950
+
+exception_reason 분포(1차 사유만, 중복 제외):
+  (예외아님): 5127
+  교과_전문_의미: 645
+  뜻이_다를_가능성(뜻풀이위험78): 78
+  동형이의어: 65
+  레벨격차과대(2단계이상, 표본검수 결과 학술어휘 다수): 35
+합계: 5950
+
+review_status 분포:
+  NO_ACTION_MATCH: 3593
+  RULE_PROPOSED_PENDING_APPROVAL: 1408
+  INDIVIDUAL_REVIEW_REQUIRED: 823
+  INSUFFICIENT_EVIDENCE: 109
+  BOUNDARY_SIGNAL_ONLY: 17
+합계: 5950
