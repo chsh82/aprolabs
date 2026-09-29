@@ -1,0 +1,6978 @@
+[
+  {
+    "item_id": "MF_A_SC_V19100_B100_018",
+    "content_id": "SC_V19100_B100_018",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "이를테면",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19100_B100_018",
+    "content_id": "SC_V19100_B100_018",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "이를테면",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19100_B100_029",
+    "content_id": "SC_V19100_B100_029",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "이민자",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19100_B100_029",
+    "content_id": "SC_V19100_B100_029",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "이민자",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19100_B100_039",
+    "content_id": "SC_V19100_B100_039",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "이야기꽃",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19100_B100_039",
+    "content_id": "SC_V19100_B100_039",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "이야기꽃",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19101_B101_022",
+    "content_id": "SC_V19101_B101_022",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "인기척",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19101_B101_022",
+    "content_id": "SC_V19101_B101_022",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "인기척",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19102_B102_018",
+    "content_id": "SC_V19102_B102_018",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "읽을거리",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19102_B102_018",
+    "content_id": "SC_V19102_B102_018",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "읽을거리",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19103_B103_046",
+    "content_id": "SC_V19103_B103_046",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "작업복",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19103_B103_046",
+    "content_id": "SC_V19103_B103_046",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "작업복",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19104_B104_019",
+    "content_id": "SC_V19104_B104_019",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "잘록하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19104_B104_035",
+    "content_id": "SC_V19104_B104_035",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "장가가다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19105_B105_027",
+    "content_id": "SC_V19105_B105_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "재앙",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19105_B105_027",
+    "content_id": "SC_V19105_B105_027",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "재앙",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19105_B105_032",
+    "content_id": "SC_V19105_B105_032",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "재택근무",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 53자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19105_B105_032",
+    "content_id": "SC_V19105_B105_032",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "재택근무",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 53자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19105_B105_039",
+    "content_id": "SC_V19105_B105_039",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "쟁반",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L1 기준 26자, 실제 27자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19105_B105_039",
+    "content_id": "SC_V19105_B105_039",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "쟁반",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L1 기준 26자, 실제 27자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19106_B106_043",
+    "content_id": "SC_V19106_B106_043",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "전신주",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19106_B106_043",
+    "content_id": "SC_V19106_B106_043",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "전신주",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19107_B107_024",
+    "content_id": "SC_V19107_B107_024",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "절약되다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19107_B107_041",
+    "content_id": "SC_V19107_B107_041",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "정다각형",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19107_B107_041",
+    "content_id": "SC_V19107_B107_041",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "정다각형",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19109_B109_004",
+    "content_id": "SC_V19109_B109_004",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "조난",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19109_B109_004",
+    "content_id": "SC_V19109_B109_004",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "조난",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19109_B109_015",
+    "content_id": "SC_V19109_B109_015",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "조사단",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19109_B109_015",
+    "content_id": "SC_V19109_B109_015",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "조사단",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19109_B109_022",
+    "content_id": "SC_V19109_B109_022",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "조약돌",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19109_B109_022",
+    "content_id": "SC_V19109_B109_022",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "조약돌",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19109_B109_026",
+    "content_id": "SC_V19109_B109_026",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "조청",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19109_B109_026",
+    "content_id": "SC_V19109_B109_026",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "조청",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19109_B109_029",
+    "content_id": "SC_V19109_B109_029",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "조형물",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19109_B109_029",
+    "content_id": "SC_V19109_B109_029",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "조형물",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19111_B111_027",
+    "content_id": "SC_V19111_B111_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "중금속",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19111_B111_027",
+    "content_id": "SC_V19111_B111_027",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "중금속",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19111_B111_045",
+    "content_id": "SC_V19111_B111_045",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "즉흥",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19111_B111_045",
+    "content_id": "SC_V19111_B111_045",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "즉흥",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19114_B114_023",
+    "content_id": "SC_V19114_B114_023",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "짹짹거리다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19115_B115_031",
+    "content_id": "SC_V19115_B115_031",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "창시자",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19115_B115_031",
+    "content_id": "SC_V19115_B115_031",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "창시자",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19115_B115_036",
+    "content_id": "SC_V19115_B115_036",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "찾아뵈다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19119_B119_028",
+    "content_id": "SC_V19119_B119_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "충효",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19119_B119_028",
+    "content_id": "SC_V19119_B119_028",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "충효",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19120_B120_006",
+    "content_id": "SC_V19120_B120_006",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "친밀하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19122_B122_028",
+    "content_id": "SC_V19122_B122_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "킬킬거리다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19122_B122_030",
+    "content_id": "SC_V19122_B122_030",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "타다닥",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19122_B122_030",
+    "content_id": "SC_V19122_B122_030",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "타다닥",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19123_B123_023",
+    "content_id": "SC_V19123_B123_023",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "탐험하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L1 기준 26자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19124_B124_029",
+    "content_id": "SC_V19124_B124_029",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "통신문",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19124_B124_029",
+    "content_id": "SC_V19124_B124_029",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "통신문",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19124_B124_047",
+    "content_id": "SC_V19124_B124_047",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "투두둑",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19124_B124_047",
+    "content_id": "SC_V19124_B124_047",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "투두둑",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19127_B127_021",
+    "content_id": "SC_V19127_B127_021",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "포유동물",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19127_B127_021",
+    "content_id": "SC_V19127_B127_021",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "포유동물",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19127_B127_050",
+    "content_id": "SC_V19127_B127_050",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "푯말",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19127_B127_050",
+    "content_id": "SC_V19127_B127_050",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "푯말",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19129_B129_039",
+    "content_id": "SC_V19129_B129_039",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "하소연",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19129_B129_039",
+    "content_id": "SC_V19129_B129_039",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "하소연",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1912_B012_002",
+    "content_id": "SC_V1912_B012_002",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "첫인상",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1912_B012_002",
+    "content_id": "SC_V1912_B012_002",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "첫인상",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1912_B012_020",
+    "content_id": "SC_V1912_B012_020",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "취직",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1912_B012_020",
+    "content_id": "SC_V1912_B012_020",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "취직",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1912_B012_036",
+    "content_id": "SC_V1912_B012_036",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "탓하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 23자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1912_B012_036",
+    "content_id": "SC_V1912_B012_036",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "탓하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 23자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1912_B012_041",
+    "content_id": "SC_V1912_B012_041",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "테스트",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1912_B012_041",
+    "content_id": "SC_V1912_B012_041",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "테스트",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19130_B130_009",
+    "content_id": "SC_V19130_B130_009",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "학수고대하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19131_B131_040",
+    "content_id": "SC_V19131_B131_040",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "햅쌀",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19131_B131_040",
+    "content_id": "SC_V19131_B131_040",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "햅쌀",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19132_B132_023",
+    "content_id": "SC_V19132_B132_023",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "허파",
+    "level": 2,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L2 기준 34자, 실제 42자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19132_B132_023",
+    "content_id": "SC_V19132_B132_023",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "허파",
+    "level": 2,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L2 기준 34자, 실제 42자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19133_B133_032",
+    "content_id": "SC_V19133_B133_032",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "호감",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19133_B133_032",
+    "content_id": "SC_V19133_B133_032",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "호감",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19134_B134_018",
+    "content_id": "SC_V19134_B134_018",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "화기애애하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19134_B134_020",
+    "content_id": "SC_V19134_B134_020",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "화들짝",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19134_B134_020",
+    "content_id": "SC_V19134_B134_020",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "화들짝",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19135_B135_020",
+    "content_id": "SC_V19135_B135_020",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "회색빛",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19135_B135_020",
+    "content_id": "SC_V19135_B135_020",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "회색빛",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19135_B135_027",
+    "content_id": "SC_V19135_B135_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "회전문",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19135_B135_027",
+    "content_id": "SC_V19135_B135_027",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "회전문",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19135_B135_028",
+    "content_id": "SC_V19135_B135_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "회전수",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19135_B135_028",
+    "content_id": "SC_V19135_B135_028",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "회전수",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19135_B135_034",
+    "content_id": "SC_V19135_B135_034",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "효과음",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19135_B135_034",
+    "content_id": "SC_V19135_B135_034",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "효과음",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19136_B136_013",
+    "content_id": "SC_V19136_B136_013",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "휘둘러보다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V19136_B136_036",
+    "content_id": "SC_V19136_B136_036",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "흑설탕",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이에 한자 포함"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V19136_B136_036",
+    "content_id": "SC_V19136_B136_036",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "흑설탕",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이에 한자 포함"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1913_B013_027",
+    "content_id": "SC_V1913_B013_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "하나같이",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1913_B013_027",
+    "content_id": "SC_V1913_B013_027",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "하나같이",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1914_B014_009",
+    "content_id": "SC_V1914_B014_009",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "휘파람",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 24자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1914_B014_009",
+    "content_id": "SC_V1914_B014_009",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "휘파람",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 24자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1914_B014_028",
+    "content_id": "SC_V1914_B014_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "가곡집",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1914_B014_028",
+    "content_id": "SC_V1914_B014_028",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "가곡집",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1914_B014_037",
+    "content_id": "SC_V1914_B014_037",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "가랑비",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1914_B014_037",
+    "content_id": "SC_V1914_B014_037",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "가랑비",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1916_B016_028",
+    "content_id": "SC_V1916_B016_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "갈퀴",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1916_B016_028",
+    "content_id": "SC_V1916_B016_028",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "갈퀴",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1916_B016_045",
+    "content_id": "SC_V1916_B016_045",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "감쪽같다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1916_B016_045",
+    "content_id": "SC_V1916_B016_045",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "감쪽같다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1917_B017_022",
+    "content_id": "SC_V1917_B017_022",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "개관식",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1917_B017_022",
+    "content_id": "SC_V1917_B017_022",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "개관식",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1917_B017_044",
+    "content_id": "SC_V1917_B017_044",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "객석",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1917_B017_044",
+    "content_id": "SC_V1917_B017_044",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "객석",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1918_B018_015",
+    "content_id": "SC_V1918_B018_015",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "거무스름하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1918_B018_015",
+    "content_id": "SC_V1918_B018_015",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "거무스름하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1918_B018_048",
+    "content_id": "SC_V1918_B018_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "건너다니다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1919_B019_002",
+    "content_id": "SC_V1919_B019_002",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "건네받다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1919_B019_002",
+    "content_id": "SC_V1919_B019_002",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "건네받다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V191_B001_026",
+    "content_id": "SC_V191_B001_026",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "사무소",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V191_B001_026",
+    "content_id": "SC_V191_B001_026",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "사무소",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V191_B001_039",
+    "content_id": "SC_V191_B001_039",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "공놀이하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V191_B001_039",
+    "content_id": "SC_V191_B001_039",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "공놀이하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1920_B020_009",
+    "content_id": "SC_V1920_B020_009",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "겨를",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1920_B020_009",
+    "content_id": "SC_V1920_B020_009",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "겨를",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1920_B020_024",
+    "content_id": "SC_V1920_B020_024",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "견학하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1920_B020_024",
+    "content_id": "SC_V1920_B020_024",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "견학하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1920_B020_025",
+    "content_id": "SC_V1920_B020_025",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "결과물",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1920_B020_025",
+    "content_id": "SC_V1920_B020_025",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "결과물",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1921_B021_013",
+    "content_id": "SC_V1921_B021_013",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "경쟁하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1921_B021_013",
+    "content_id": "SC_V1921_B021_013",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "경쟁하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1921_B021_024",
+    "content_id": "SC_V1921_B021_024",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "계란말이",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1921_B021_024",
+    "content_id": "SC_V1921_B021_024",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "계란말이",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1922_B022_013",
+    "content_id": "SC_V1922_B022_013",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "고랭지",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1922_B022_013",
+    "content_id": "SC_V1922_B022_013",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "고랭지",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1922_B022_043",
+    "content_id": "SC_V1922_B022_043",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "고종사촌",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1922_B022_043",
+    "content_id": "SC_V1922_B022_043",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "고종사촌",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1923_B023_036",
+    "content_id": "SC_V1923_B023_036",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "공교롭다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1923_B023_045",
+    "content_id": "SC_V1923_B023_045",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "공배수",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1923_B023_045",
+    "content_id": "SC_V1923_B023_045",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "공배수",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1924_B024_023",
+    "content_id": "SC_V1924_B024_023",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "공회전",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1924_B024_023",
+    "content_id": "SC_V1924_B024_023",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "공회전",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1924_B024_046",
+    "content_id": "SC_V1924_B024_046",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "관광버스",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1924_B024_046",
+    "content_id": "SC_V1924_B024_046",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "관광버스",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1925_B025_012",
+    "content_id": "SC_V1925_B025_012",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "관중석",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1925_B025_012",
+    "content_id": "SC_V1925_B025_012",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "관중석",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1927_B027_002",
+    "content_id": "SC_V1927_B027_002",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "국제공항",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1927_B027_002",
+    "content_id": "SC_V1927_B027_002",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "국제공항",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1928_B028_008",
+    "content_id": "SC_V1928_B028_008",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "귓밥",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1928_B028_008",
+    "content_id": "SC_V1928_B028_008",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "귓밥",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1928_B028_014",
+    "content_id": "SC_V1928_B028_014",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "그깟",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1928_B028_014",
+    "content_id": "SC_V1928_B028_014",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "그깟",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1928_B028_047",
+    "content_id": "SC_V1928_B028_047",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "근면성",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1928_B028_047",
+    "content_id": "SC_V1928_B028_047",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "근면성",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V192_B002_018",
+    "content_id": "SC_V192_B002_018",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "겉보기",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V192_B002_018",
+    "content_id": "SC_V192_B002_018",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "겉보기",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V192_B002_019",
+    "content_id": "SC_V192_B002_019",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "겨울날",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V192_B002_019",
+    "content_id": "SC_V192_B002_019",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "겨울날",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V192_B002_037",
+    "content_id": "SC_V192_B002_037",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "곤란하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V192_B002_037",
+    "content_id": "SC_V192_B002_037",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "곤란하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1930_B030_011",
+    "content_id": "SC_V1930_B030_011",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "기본예절",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1930_B030_011",
+    "content_id": "SC_V1930_B030_011",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "기본예절",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1930_B030_020",
+    "content_id": "SC_V1930_B030_020",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "기와지붕",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1930_B030_020",
+    "content_id": "SC_V1930_B030_020",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "기와지붕",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1930_B030_047",
+    "content_id": "SC_V1930_B030_047",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "긴팔",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1930_B030_047",
+    "content_id": "SC_V1930_B030_047",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "긴팔",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1931_B031_048",
+    "content_id": "SC_V1931_B031_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "꼼지락꼼지락",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1931_B031_048",
+    "content_id": "SC_V1931_B031_048",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "꼼지락꼼지락",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1933_B033_003",
+    "content_id": "SC_V1933_B033_003",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "나노",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1933_B033_003",
+    "content_id": "SC_V1933_B033_003",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "나노",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1934_B034_004",
+    "content_id": "SC_V1934_B034_004",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "남모르다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1934_B034_004",
+    "content_id": "SC_V1934_B034_004",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "남모르다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1934_B034_042",
+    "content_id": "SC_V1934_B034_042",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "내로라하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1935_B035_021",
+    "content_id": "SC_V1935_B035_021",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "너와집",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1935_B035_021",
+    "content_id": "SC_V1935_B035_021",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "너와집",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1936_B036_008",
+    "content_id": "SC_V1936_B036_008",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "녹말풀",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1936_B036_008",
+    "content_id": "SC_V1936_B036_008",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "녹말풀",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1936_B036_021",
+    "content_id": "SC_V1936_B036_021",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "놀이동산",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1936_B036_021",
+    "content_id": "SC_V1936_B036_021",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "놀이동산",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1936_B036_047",
+    "content_id": "SC_V1936_B036_047",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "농작물",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1936_B036_047",
+    "content_id": "SC_V1936_B036_047",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "농작물",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1937_B037_034",
+    "content_id": "SC_V1937_B037_034",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "눈썰미",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1937_B037_034",
+    "content_id": "SC_V1937_B037_034",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "눈썰미",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1939_B039_009",
+    "content_id": "SC_V1939_B039_009",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "단옷날",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1939_B039_009",
+    "content_id": "SC_V1939_B039_009",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "단옷날",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1939_B039_022",
+    "content_id": "SC_V1939_B039_022",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "단호하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1939_B039_022",
+    "content_id": "SC_V1939_B039_022",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "단호하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1939_B039_044",
+    "content_id": "SC_V1939_B039_044",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "닭튀김",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1939_B039_044",
+    "content_id": "SC_V1939_B039_044",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "닭튀김",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V193_B003_016",
+    "content_id": "SC_V193_B003_016",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "그리워지다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V193_B003_025",
+    "content_id": "SC_V193_B003_025",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "기념관",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V193_B003_025",
+    "content_id": "SC_V193_B003_025",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "기념관",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V193_B003_027",
+    "content_id": "SC_V193_B003_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "기억력",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 21자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V193_B003_027",
+    "content_id": "SC_V193_B003_027",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "기억력",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 21자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V193_B003_043",
+    "content_id": "SC_V193_B003_043",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "나무젓가락",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V193_B003_043",
+    "content_id": "SC_V193_B003_043",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "나무젓가락",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1940_B040_004",
+    "content_id": "SC_V1940_B040_004",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "답례",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1940_B040_004",
+    "content_id": "SC_V1940_B040_004",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "답례",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1940_B040_037",
+    "content_id": "SC_V1940_B040_037",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "대보다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1940_B040_043",
+    "content_id": "SC_V1940_B040_043",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "대소변",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1940_B040_043",
+    "content_id": "SC_V1940_B040_043",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "대소변",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1941_B041_019",
+    "content_id": "SC_V1941_B041_019",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "대피령",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1941_B041_019",
+    "content_id": "SC_V1941_B041_019",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "대피령",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1941_B041_049",
+    "content_id": "SC_V1941_B041_049",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "덩실덩실",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1941_B041_049",
+    "content_id": "SC_V1941_B041_049",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "덩실덩실",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1942_B042_014",
+    "content_id": "SC_V1942_B042_014",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "도리어",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1942_B042_014",
+    "content_id": "SC_V1942_B042_014",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "도리어",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1943_B043_031",
+    "content_id": "SC_V1943_B043_031",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "동식물",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1943_B043_031",
+    "content_id": "SC_V1943_B043_031",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "동식물",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1944_B044_042",
+    "content_id": "SC_V1944_B044_042",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "뒤잇다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1944_B044_043",
+    "content_id": "SC_V1944_B044_043",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "뒤주",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1944_B044_043",
+    "content_id": "SC_V1944_B044_043",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "뒤주",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1948_B048_006",
+    "content_id": "SC_V1948_B048_006",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "리더십",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1948_B048_006",
+    "content_id": "SC_V1948_B048_006",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "리더십",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1948_B048_017",
+    "content_id": "SC_V1948_B048_017",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "마늘장아찌",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1948_B048_017",
+    "content_id": "SC_V1948_B048_017",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "마늘장아찌",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1949_B049_006",
+    "content_id": "SC_V1949_B049_006",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "만두소",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1949_B049_006",
+    "content_id": "SC_V1949_B049_006",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "만두소",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1949_B049_013",
+    "content_id": "SC_V1949_B049_013",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "만족도",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1949_B049_013",
+    "content_id": "SC_V1949_B049_013",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "만족도",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V194_B004_002",
+    "content_id": "SC_V194_B004_002",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "넓이",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V194_B004_002",
+    "content_id": "SC_V194_B004_002",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "넓이",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V194_B004_036",
+    "content_id": "SC_V194_B004_036",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "두어",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V194_B004_036",
+    "content_id": "SC_V194_B004_036",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "두어",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1951_B051_023",
+    "content_id": "SC_V1951_B051_023",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "메아리치다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1952_B052_032",
+    "content_id": "SC_V1952_B052_032",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "모름지기",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1952_B052_032",
+    "content_id": "SC_V1952_B052_032",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "모름지기",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1955_B055_025",
+    "content_id": "SC_V1955_B055_025",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "물냉면",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1955_B055_025",
+    "content_id": "SC_V1955_B055_025",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "물냉면",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1955_B055_045",
+    "content_id": "SC_V1955_B055_045",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "물장수",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1955_B055_045",
+    "content_id": "SC_V1955_B055_045",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "물장수",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1959_B059_001",
+    "content_id": "SC_V1959_B059_001",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "밤바다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1959_B059_001",
+    "content_id": "SC_V1959_B059_001",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "밤바다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1959_B059_026",
+    "content_id": "SC_V1959_B059_026",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "방송극",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1959_B059_026",
+    "content_id": "SC_V1959_B059_026",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "방송극",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V195_B005_010",
+    "content_id": "SC_V195_B005_010",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "롤러코스터",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 22자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V195_B005_010",
+    "content_id": "SC_V195_B005_010",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "롤러코스터",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 22자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1961_B061_006",
+    "content_id": "SC_V1961_B061_006",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "번역하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1961_B061_014",
+    "content_id": "SC_V1961_B061_014",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "벌겋다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1961_B061_048",
+    "content_id": "SC_V1961_B061_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "벽시계",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1961_B061_048",
+    "content_id": "SC_V1961_B061_048",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "벽시계",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1964_B064_026",
+    "content_id": "SC_V1964_B064_026",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "부리부리하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1965_B065_050",
+    "content_id": "SC_V1965_B065_050",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "불그레하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1967_B067_004",
+    "content_id": "SC_V1967_B067_004",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "비디오카메라",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1967_B067_004",
+    "content_id": "SC_V1967_B067_004",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "비디오카메라",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1967_B067_036",
+    "content_id": "SC_V1967_B067_036",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "비탈지다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1968_B068_025",
+    "content_id": "SC_V1968_B068_025",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "뻐꾹",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1968_B068_025",
+    "content_id": "SC_V1968_B068_025",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "뻐꾹",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1968_B068_029",
+    "content_id": "SC_V1968_B068_029",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "뻘겋다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1968_B068_040",
+    "content_id": "SC_V1968_B068_040",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "뿜어내다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1968_B068_048",
+    "content_id": "SC_V1968_B068_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "사고팔다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V196_B006_011",
+    "content_id": "SC_V196_B006_011",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "방울토마토",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 23자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V196_B006_011",
+    "content_id": "SC_V196_B006_011",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "방울토마토",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 23자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V196_B006_012",
+    "content_id": "SC_V196_B006_012",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "방해되다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 24자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V196_B006_012",
+    "content_id": "SC_V196_B006_012",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "방해되다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 24자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1971_B071_024",
+    "content_id": "SC_V1971_B071_024",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "상부상조하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1971_B071_042",
+    "content_id": "SC_V1971_B071_042",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "샅샅이",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1971_B071_042",
+    "content_id": "SC_V1971_B071_042",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "샅샅이",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1974_B074_008",
+    "content_id": "SC_V1974_B074_008",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "선임되다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1975_B075_020",
+    "content_id": "SC_V1975_B075_020",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "세배하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1976_B076_011",
+    "content_id": "SC_V1976_B076_011",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "소속되다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1977_B077_032",
+    "content_id": "SC_V1977_B077_032",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "송구스럽다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1978_B078_003",
+    "content_id": "SC_V1978_B078_003",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "쇠퇴하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1978_B078_017",
+    "content_id": "SC_V1978_B078_017",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "수도관",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1978_B078_017",
+    "content_id": "SC_V1978_B078_017",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "수도관",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1978_B078_028",
+    "content_id": "SC_V1978_B078_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "수리비",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1978_B078_028",
+    "content_id": "SC_V1978_B078_028",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "수리비",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1979_B079_027",
+    "content_id": "SC_V1979_B079_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "수치스럽다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1979_B079_033",
+    "content_id": "SC_V1979_B079_033",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "수험생",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1979_B079_033",
+    "content_id": "SC_V1979_B079_033",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "수험생",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V197_B007_021",
+    "content_id": "SC_V197_B007_021",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "속임수",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 22자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V197_B007_021",
+    "content_id": "SC_V197_B007_021",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "속임수",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 22자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V197_B007_031",
+    "content_id": "SC_V197_B007_031",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "수제비",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 26자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V197_B007_031",
+    "content_id": "SC_V197_B007_031",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "수제비",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 26자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V197_B007_045",
+    "content_id": "SC_V197_B007_045",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "시무룩하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 24자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V197_B007_045",
+    "content_id": "SC_V197_B007_045",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "시무룩하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 24자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1980_B080_026",
+    "content_id": "SC_V1980_B080_026",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "스크랩북",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 44자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1980_B080_026",
+    "content_id": "SC_V1980_B080_026",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "스크랩북",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 44자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1980_B080_028",
+    "content_id": "SC_V1980_B080_028",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "스테인리스",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1980_B080_028",
+    "content_id": "SC_V1980_B080_028",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "스테인리스",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1983_B083_001",
+    "content_id": "SC_V1983_B083_001",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "실선",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1983_B083_001",
+    "content_id": "SC_V1983_B083_001",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "실선",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1983_B083_003",
+    "content_id": "SC_V1983_B083_003",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "실습생",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1983_B083_003",
+    "content_id": "SC_V1983_B083_003",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "실습생",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1985_B085_004",
+    "content_id": "SC_V1985_B085_004",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "아랫배",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1985_B085_004",
+    "content_id": "SC_V1985_B085_004",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "아랫배",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1985_B085_010",
+    "content_id": "SC_V1985_B085_010",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "아바마마",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1985_B085_010",
+    "content_id": "SC_V1985_B085_010",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "아바마마",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1985_B085_048",
+    "content_id": "SC_V1985_B085_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "안락의자",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 41자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1985_B085_048",
+    "content_id": "SC_V1985_B085_048",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "안락의자",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 41자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1987_B087_032",
+    "content_id": "SC_V1987_B087_032",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "약분하다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1988_B088_001",
+    "content_id": "SC_V1988_B088_001",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "양수장",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1988_B088_001",
+    "content_id": "SC_V1988_B088_001",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "양수장",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1988_B088_042",
+    "content_id": "SC_V1988_B088_042",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "어울림",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1988_B088_042",
+    "content_id": "SC_V1988_B088_042",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "어울림",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1988_B088_044",
+    "content_id": "SC_V1988_B088_044",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "어지르다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L1 기준 26자, 실제 28자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1989_B089_037",
+    "content_id": "SC_V1989_B089_037",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "엎치락뒤치락",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1989_B089_037",
+    "content_id": "SC_V1989_B089_037",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "엎치락뒤치락",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1989_B089_045",
+    "content_id": "SC_V1989_B089_045",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "여객기",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1989_B089_045",
+    "content_id": "SC_V1989_B089_045",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "여객기",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V198_B008_003",
+    "content_id": "SC_V198_B008_003",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "신발주머니",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V198_B008_003",
+    "content_id": "SC_V198_B008_003",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "신발주머니",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1990_B090_027",
+    "content_id": "SC_V1990_B090_027",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "역무원",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1990_B090_027",
+    "content_id": "SC_V1990_B090_027",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "역무원",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1990_B090_031",
+    "content_id": "SC_V1990_B090_031",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "역사책",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1990_B090_031",
+    "content_id": "SC_V1990_B090_031",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "역사책",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1990_B090_038",
+    "content_id": "SC_V1990_B090_038",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "연구회",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1990_B090_038",
+    "content_id": "SC_V1990_B090_038",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "연구회",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1990_B090_048",
+    "content_id": "SC_V1990_B090_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "연상되다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1991_B091_033",
+    "content_id": "SC_V1991_B091_033",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "염려스럽다",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1992_B092_042",
+    "content_id": "SC_V1992_B092_042",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "오로지",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1992_B092_042",
+    "content_id": "SC_V1992_B092_042",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "오로지",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1994_B094_006",
+    "content_id": "SC_V1994_B094_006",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "완공되다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1995_B095_040",
+    "content_id": "SC_V1995_B095_040",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "우월하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1995_B095_040",
+    "content_id": "SC_V1995_B095_040",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "우월하다",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1997_B097_008",
+    "content_id": "SC_V1997_B097_008",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "위문",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1997_B097_008",
+    "content_id": "SC_V1997_B097_008",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "위문",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1997_B097_015",
+    "content_id": "SC_V1997_B097_015",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "위원단",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1997_B097_015",
+    "content_id": "SC_V1997_B097_015",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "위원단",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1997_B097_029",
+    "content_id": "SC_V1997_B097_029",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "윗옷",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1997_B097_029",
+    "content_id": "SC_V1997_B097_029",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "윗옷",
+    "level": 1,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1998_B098_037",
+    "content_id": "SC_V1998_B098_037",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "으허허",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1998_B098_037",
+    "content_id": "SC_V1998_B098_037",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "으허허",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V1999_B099_026",
+    "content_id": "SC_V1999_B099_026",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "응원가",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 42자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V1999_B099_026",
+    "content_id": "SC_V1999_B099_026",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "응원가",
+    "level": 3,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L3 기준 40자, 실제 42자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V199_B009_005",
+    "content_id": "SC_V199_B009_005",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "여태껏",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V199_B009_005",
+    "content_id": "SC_V199_B009_005",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "여태껏",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V199_B009_008",
+    "content_id": "SC_V199_B009_008",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "연예인",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V199_B009_008",
+    "content_id": "SC_V199_B009_008",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "연예인",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V199_B009_018",
+    "content_id": "SC_V199_B009_018",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "영하",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V199_B009_018",
+    "content_id": "SC_V199_B009_018",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "영하",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V199_B009_032",
+    "content_id": "SC_V199_B009_032",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "요술쟁이",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 21자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V199_B009_032",
+    "content_id": "SC_V199_B009_032",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "요술쟁이",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 21자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V199_B009_035",
+    "content_id": "SC_V199_B009_035",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "우아하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V199_B009_035",
+    "content_id": "SC_V199_B009_035",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "우아하다",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "PASS",
+      "조사표기": "PASS"
+    },
+    "issues": [],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "PASS",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_A_SC_V199_B009_048",
+    "content_id": "SC_V199_B009_048",
+    "item_type": "MEANING_CHOICE",
+    "lemma": "위생",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  },
+  {
+    "item_id": "MF_C_SC_V199_B009_048",
+    "content_id": "SC_V199_B009_048",
+    "item_type": "CONTEXT_MEANING",
+    "lemma": "위생",
+    "level": 0,
+    "auto_checks": {
+      "콘텐츠연결": "PASS",
+      "뜻풀이일치": "PASS",
+      "선택지중복_정답유일성": "PASS",
+      "문맥자연스러움": "PASS",
+      "연령적합성": "FAIL",
+      "조사표기": "PASS"
+    },
+    "issues": [
+      "뜻풀이 길이 초과(L0 기준 20자, 실제 29자)"
+    ],
+    "level_status": "PROVISIONAL_AUTO",
+    "boundary_flag": false,
+    "level_confirmed": true,
+    "auto_verdict": "HOLD",
+    "human_review_status": "NOT_PERFORMED(자동 감사만 완료, 최종 공개 전 사람 확인 필요)"
+  }
+]

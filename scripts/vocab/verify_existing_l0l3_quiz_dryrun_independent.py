@@ -87,13 +87,12 @@ for cid, items in by_content.items():
                 "level_confidence": c["level_confidence"],
             })
 
-        # 2) 연령 적합성(레벨별 임계값 - 독립적으로 새로 설정한 기준)
-        sd = (c["student_definition"] or "").strip()
-        maxlen = LEVEL_MAXLEN.get(c["vocab_level"], 40)
-        if len(sd) > maxlen:
-            hold_reasons.append(f"학생용 뜻풀이 길이 초과(L{c['vocab_level']} 기준 {maxlen}자, 실제 {len(sd)}자) - 연령 적합성 재검토 필요")
-        if re.search(r"[一-鿿]", sd):
-            hold_reasons.append("학생용 뜻풀이에 한자 포함 - 저학년 적합성 의심")
+        # 2) 연령 적합성은 DB content.student_definition이 아니라 "문항에 실제로
+        #    쓰인 정답 텍스트"를 기준으로 판단한다(아래 문항별 루프에서 처리) -
+        #    2026-09-29 개정판은 사람이 다듬은 대체 정의를 문항에만 반영하고
+        #    DB 원본은 건드리지 않으므로, content 필드만 보면 이미 해결된
+        #    문항도 계속 HOLD로 잘못 판정하게 된다(실제로 학생에게 보이는
+        #    텍스트를 검사해야 독립 검증의 의미가 있다).
 
     for it in items:
         issues = list(hold_reasons)
@@ -126,6 +125,19 @@ for cid, items in by_content.items():
             avg_other = sum(other_lens) / len(other_lens) if other_lens else 0
             if avg_other > 0 and (lens[correct_idx] > avg_other * 2.2 or lens[correct_idx] < avg_other * 0.45):
                 issues.append(f"정답 선택지 길이 이상치(정답 {lens[correct_idx]}자 vs 오답 평균 {avg_other:.0f}자) - 눈대중 추측 위험")
+
+            # 연령 적합성 - 문항에 실제로 노출되는 선택지 4개 전부 기준(DB content
+            # 필드가 아니라 학생이 실제로 읽는 텍스트) - 오답도 학생이 읽으므로 포함
+            level = c["vocab_level"] if c else None
+            maxlen = LEVEL_MAXLEN.get(level, 40)
+            for j, o in enumerate(options):
+                ot = o.strip()
+                if len(ot) > maxlen:
+                    tag = "정답" if j == correct_idx else f"오답{j+1}"
+                    issues.append(f"{tag} 선택지 길이 초과(L{level} 기준 {maxlen}자, 실제 {len(ot)}자) - 연령 적합성 재검토 필요")
+                if re.search(r"[一-鿿]", ot):
+                    tag = "정답" if j == correct_idx else f"오답{j+1}"
+                    issues.append(f"{tag} 선택지에 한자 포함 - 저학년 적합성 의심")
 
         # 조사 재계산(완전히 새 구현)
         perr = check_particle(it["explanation"])
