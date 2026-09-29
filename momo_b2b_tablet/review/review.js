@@ -712,6 +712,7 @@ function renderInspector() {
   }
 
   renderFreeTextFields(body, page, idx, basePath);
+  if (page.type === "solo") renderSoloConvertInspector(body, page, idx, basePath);
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
@@ -746,6 +747,27 @@ function renderOxInspector(body, page, idx, basePath) {
       }
     });
   });
+}
+
+// 2026-09-29 사용자 피드백 - solo 페이지(원본에 제시문이 없어 layout/step2.py가
+// 만든 타입, qHead+widget만 있고 excerpt가 없음)에 인용문을 넣고 싶다는 요청.
+// excerpt 칸 자체가 없어서 renderExcerptInspector가 안 뜬다 - type을 qa로
+// 바꾸고 빈 excerpt를 추가해주면(ratio도 solo 기본값 그대로 넣어줌 - qa
+// 렌더러는 solo와 달리 폴백이 없어서 안 넣으면 레이아웃이 깨짐) 그 아래
+// 일반 excerpt 인스펙터가 그대로 뜬다.
+function renderSoloConvertInspector(body, page, idx, basePath) {
+  body.append(el("hr", { class: "section-divider" }));
+  body.append(el("p", { class: "hint" },
+    "이 페이지는 원본에 제시문이 없어 solo 형식으로 만들어졌습니다. 인용문(제시문)을 넣으려면 qa 형식으로 바꿀 수 있습니다."));
+  const btn = el("button", { class: "btn btn--small" }, "제시문 추가하기(qa로 전환)");
+  btn.onclick = () => {
+    patch([
+      { op: "add", path: `${basePath}/excerpt`, value: { p: null, text: [""] } },
+      { op: "add", path: `${basePath}/ratio`, value: page.ratio || "1fr 1.25fr" },
+      { op: "replace", path: `${basePath}/type`, value: "qa" },
+    ], { reason: "검수: solo를 qa로 전환(제시문 추가)" });
+  };
+  body.append(btn);
 }
 
 // 2026-09-29 사용자 피드백 - vocabMatch 페이지에서 "'뜻 보충: 검수 필요'
