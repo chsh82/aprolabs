@@ -222,6 +222,10 @@
                     {% if request.url.path.startswith('/vocab-publish-review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
               📋 어휘 공개검토
             </a>
+            <a href="/vocab-official-grade-review/" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm
+                    {% if request.url.path.startswith('/vocab-official-grade-review') %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-600 hover:bg-gray-50{% endif %} transition">
+              🏛️ 국립국어원 등급 검수(tier1)
+            </a>
           </div>
         </details>
 
@@ -278,6 +282,12 @@
           </div>
         </details>
 
+      </div>
+
+      <div class="pt-3 mt-2 border-t border-gray-100">
+        <a href="/logout" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-red-50 hover:text-red-600 transition">
+          🚪 로그아웃
+        </a>
       </div>
 
     </nav>
