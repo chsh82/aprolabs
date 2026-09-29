@@ -733,6 +733,7 @@ function renderInspector() {
   renderFreeTextFields(body, page, idx, basePath);
   if (page.type === "solo") renderSoloConvertInspector(body, page, idx, basePath);
   if (page.type === "qa") renderQaRevertInspector(body, page, idx, basePath);
+  if (["qa", "qaband", "qaref", "solo"].includes(page.type)) renderReadingTypeInspector(body, page, idx, basePath);
   if (page.excerpt) renderExcerptInspector(body, page, idx, basePath);
   if (page.q) renderQuestionInspector(body, page, idx, basePath);
   if (page.ox) renderOxInspector(body, page, idx, basePath);
@@ -788,6 +789,57 @@ function renderSoloConvertInspector(body, page, idx, basePath) {
     ], { reason: "검수: solo를 qa로 전환(제시문 추가)" });
   };
   body.append(btn);
+}
+
+// 2026-09-29 사용자 피드백 - "독해 종류 선택 기능이 필요함. 어떤 독해인지
+// 설명이 제대로 표시되지 않고 있음". layout/rules.py의 reading_type_label/
+// character_for_reading_type과 layout/step2.py의 _STEP2_NM을 그대로 옮긴
+// 목록이다(원본에 코드가 있으면 항상 이 표대로 정해지므로, 값이 바뀌면
+// 여기도 같이 고쳐야 함). qa.reading_type이 원문에 없던 문항은 guide.rt가
+// 그냥 "독해"로만 나가고(어떤 종류인지 안 보임) derived 플래그로만 표시돼
+// 있었는데, 정작 검수자가 고를 UI가 없었다.
+const READING_TYPES = [
+  { key: "사실적", img: "holmes", nm: "셜록 홈즈와 근거 찾기" },
+  { key: "분석적", img: "aronnax", nm: "아로낙스 박사와 나눠 보기" },
+  { key: "추론적", img: "jekyll", nm: "지킬 박사와 숨은 뜻 찾기" },
+  { key: "비판적", img: "tom_sawyer", nm: "톰 소여와 다르게 보기" },
+  { key: "적용적", img: "fogg", nm: "필리어스 포그와 적용해 보기" },
+  { key: "상상적", img: "alice", nm: "앨리스와 상상해 보기" },
+];
+
+function renderReadingTypeInspector(body, page, idx, basePath) {
+  const guide = page.guide || {};
+  const current = READING_TYPES.find(t => (guide.rt || "").includes(t.key));
+  body.append(el("hr", { class: "section-divider" }));
+  const select = el("select", {}, [
+    el("option", { value: "", selected: !current ? "selected" : false }, "(선택 안 됨 - 독해)"),
+    ...READING_TYPES.map(t => el("option", {
+      value: t.key, selected: current === t ? "selected" : false,
+    }, `${t.key} 독해`)),
+  ]);
+  body.append(field("독해 종류", select,
+    el("div", { class: "hint" }, !current
+      ? "원문에 독해유형이 없어 지금은 그냥 \"독해\"로만 표시되고 있습니다 - 실제 내용을 보고 골라주세요."
+      : "")));
+  select.onchange = async () => {
+    const picked = READING_TYPES.find(t => t.key === select.value);
+    // 중학생(band=mid)은 캐릭터가 없는 라벨만 쓴다(layout/step2.py _guide_for
+    // 참고) - guide.img/nm을 새로 만들어 붙이면 안 된다.
+    const isMid = (state.layout.tone || {}).band === "mid";
+    const newGuide = !picked ? { ...guide, rt: "독해" }
+      : isMid ? { ...guide, rt: `${picked.key} 독해` }
+      : { ...guide, img: picked.img, rt: `${picked.key} 독해`, nm: picked.nm };
+    const ok = await patch([{ op: "replace", path: `${basePath}/guide`, value: newGuide }],
+      { reason: "검수: 독해 종류 선택" });
+    if (ok === false) return;
+    const orderLabel = page.q && page.q.id;
+    if (orderLabel != null) {
+      state.flags
+        .filter(f => !f.resolved_at && f.kind === "derived"
+          && f.message.startsWith(`문항 ${orderLabel}:`) && f.message.includes("독해유형"))
+        .forEach(f => resolveFlag(f.id));
+    }
+  };
 }
 
 // 2026-09-29 사용자 피드백 - solo->qa 전환 버튼의 반대 방향. 제시문(인용문)
