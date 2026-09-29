@@ -405,7 +405,7 @@ async function goToPreviewPage(idx) {
 const PRESET_DEFS = [
   { key: "mirror", label: "좌우 바꾸기", types: new Set(["qa", "qaband", "qaref", "solo"]) },
   { key: "title_top", label: "제목 중앙 상단", types: new Set(["qa", "qaband", "qaref", "solo"]) },
-  { key: "three_tier", label: "3층 구조", types: new Set(["qa", "qaband", "qaref"]) },
+  { key: "three_tier", label: "3층 구조/전체 폭", types: new Set(["qa", "qaband", "qaref", "solo"]) },
   { key: "lines_more", label: "답란 늘리기" },
   { key: "lines_less", label: "답란 줄이기" },
   { key: "add_image_slot", label: "이미지 자리 추가" },

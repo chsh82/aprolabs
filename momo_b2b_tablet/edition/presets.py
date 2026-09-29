@@ -78,18 +78,28 @@ def preset_title_top(layout: dict, idx: int, params: dict) -> PresetResult:
     return PresetResult(ops, summary)
 
 
-# ---------- 3. 3층 구조 ----------
+# ---------- 3. 3층 구조(wide) ----------
 _THREE_TIER_TYPES = {"qa", "qaband", "qaref"}
+# 2026-09-29 사용자 지시 - solo(제시문 없는 형태)에도 wide 편집이 필요함.
+# solo는 제시문이 없어 진짜 "3층"은 아니고 이미지 자리를 접어 문항+답란만
+# 전체 폭으로 주는 것(renderer.js solo wide 분기 참고) - 같은 preset 키를
+# 그대로 재사용한다.
+_WIDE_TYPES = _THREE_TIER_TYPES | {"solo"}
 
 
 def preset_three_tier(layout: dict, idx: int, params: dict) -> PresetResult:
     p = _page(layout, idx)
-    if p.get("type") not in _THREE_TIER_TYPES:
-        raise PresetNotApplicable(f"'{p.get('type')}' 페이지는 3층 구조를 지원하지 않음")
+    ptype = p.get("type")
+    if ptype not in _WIDE_TYPES:
+        raise PresetNotApplicable(f"'{ptype}' 페이지는 3층 구조를 지원하지 않음")
     cur = bool(p.get("wide"))
     ops = [{"op": "add", "path": f"/pages/{idx}/wide", "value": not cur}]
-    summary = ("제시문 -> 문항 -> 답란 3층 구조(전체 폭)로 바꿉니다" if not cur
-               else "3층 구조를 해제하고 2단 배치로 되돌립니다")
+    if ptype == "solo":
+        summary = ("이미지 자리를 접고 문항+답란을 전체 폭으로 바꿉니다" if not cur
+                   else "전체 폭을 해제하고 이미지+답란 2단 배치로 되돌립니다")
+    else:
+        summary = ("제시문 -> 문항 -> 답란 3층 구조(전체 폭)로 바꿉니다" if not cur
+                   else "3층 구조를 해제하고 2단 배치로 되돌립니다")
     return PresetResult(ops, summary)
 
 

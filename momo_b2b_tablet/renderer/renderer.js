@@ -353,12 +353,20 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
         inner = `${topBanner}${band}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
       }
     } else if (p.type === "solo") {
-      const w = widget(p.q);
       const topBanner = p.titleTop ? qHeadTop(p.q) : "";
-      const left = `<div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}</div>`;
-      const right = `<div class="col">${qHead(p.q)}<div class="wcol">${w}</div></div>`;
-      const { html, ratio } = mirrorCols(p.ratio || "1fr 1.25fr", left, right, p.mirror);
-      inner = `${topBanner}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
+      // 2026-09-29 사용자 지시 - solo(제시문 없는 형태)에 wide(3층 구조 프리셋)가
+      // 안 먹혔다. qa/qaband/qaref처럼 wide면 이미지 자리를 접고 문항+답란을
+      // 전체 폭으로 준다(solo는 제시문이 없어 "3층"은 아니지만 같은 preset 키를
+      // 그대로 쓴다 - edition/presets.py preset_three_tier 참고).
+      if (p.wide) {
+        inner = `${topBanner}${qHead(p.q)}${widget(p.q)}`;
+      } else {
+        const w = widget(p.q);
+        const left = `<div class="col" data-alloc>${p.slot ? slotHtml(p.slot, p.q) : ""}</div>`;
+        const right = `<div class="col">${qHead(p.q)}<div class="wcol">${w}</div></div>`;
+        const { html, ratio } = mirrorCols(p.ratio || "1fr 1.25fr", left, right, p.mirror);
+        inner = `${topBanner}<div class="cols" style="grid-template-columns:${ratio}">${html}</div>`;
+      }
     } else if (p.type === "memos") {
       // 2026-09-27: 문항이 너무 길면(layout/step3.py _split_long_memo_item) 앞에
       // 전용 페이지(excerpt 타입 재사용)로 전문을 빼고 여기는 요약만 남는다 -
