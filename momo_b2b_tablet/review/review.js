@@ -1216,8 +1216,20 @@ function candidateCard(cand, onChoose) {
   if (cand.chosen) {
     card.append(el("div", { class: "img-cand__badge" }, "사용 중"));
   } else {
+    // 2026-09-29 사용자 피드백 - 처리 중에도 버튼이 그대로 눌려 있어서
+    // 헷갈려 두 번 누르는 일이 있었다("후보 만들기" 버튼은 이미 이렇게
+    // 돼 있었는데 여기는 빠져 있었음).
     const btn = el("button", { class: "btn btn--small btn--primary" }, "이 이미지 쓰기");
-    btn.onclick = () => onChoose(cand.id);
+    btn.onclick = async () => {
+      btn.disabled = true;
+      btn.textContent = "적용 중…";
+      try {
+        await onChoose(cand.id);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "이 이미지 쓰기";
+      }
+    };
     card.append(btn);
   }
   return card;
@@ -1349,10 +1361,20 @@ function renderSlotInspector(body, page, idx, basePath) {
         class: "btn btn--small", style: `margin:2px${img.used ? ";opacity:.6" : ""}`,
         title: img.used ? "이미 다른 자리에서 쓰인 이미지입니다" : "아직 어디에도 배치되지 않은 이미지입니다",
       }, label);
-      btn.onclick = () => patch([{
-        op: "replace", path: slotPath,
-        value: { img: img.file_path, src: `원본 ${img.source_page}쪽` },
-      }], { reason: "검수: 이미지 자리에 원본 이미지 지정" });
+      const btnLabel = btn.textContent;
+      btn.onclick = async () => {
+        btn.disabled = true;
+        btn.textContent = "적용 중…";
+        try {
+          await patch([{
+            op: "replace", path: slotPath,
+            value: { img: img.file_path, src: `원본 ${img.source_page}쪽` },
+          }], { reason: "검수: 이미지 자리에 원본 이미지 지정" });
+        } finally {
+          btn.disabled = false;
+          btn.textContent = btnLabel;
+        }
+      };
       pickHost.append(btn);
     });
   });
@@ -1367,6 +1389,7 @@ function renderSlotInspector(body, page, idx, basePath) {
   uploadInput.onchange = async () => {
     const file = uploadInput.files[0];
     if (!file) return;
+    uploadInput.disabled = true;
     uploadStatus.textContent = "업로드 중…";
     try {
       const fd = new FormData();
@@ -1386,6 +1409,7 @@ function renderSlotInspector(body, page, idx, basePath) {
       toast(`업로드 실패: ${e.message}`, { sticky: true });
     } finally {
       uploadInput.value = "";
+      uploadInput.disabled = false;
     }
   };
 
