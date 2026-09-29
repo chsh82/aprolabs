@@ -1,0 +1,3082 @@
+[
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_002",
+    "lemma": "긴급",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "마음먹거나 바라는 것과 같이",
+      "다른 사람이나 사회를 돕는 일을 스스로 하는 사람",
+      "왼팔과 오른팔을 함께 이르는 말"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "마음먹거나 바라는 것과 같이",
+      "스스로 나서서 남을 돕는 사람",
+      "왼팔과 오른팔을 함께 이르는 말"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(27>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_003",
+    "lemma": "낚시터",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "물에 비누를 풀어서 만든 물",
+      "여러 것 가운데 어떤 것을 가장 중요하게 삼음"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "물에 비누를 풀어서 만든 물",
+      "여럿 중 하나를 중심으로 삼음"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션4 길이초과(25>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_004",
+    "lemma": "뜻대로",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주",
+      "마음먹거나 바라는 것과 같이",
+      "은행나무에 달리는 부채꼴 모양의 잎"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주",
+      "마음먹거나 바라는 것과 같이",
+      "은행나무에 달리는 부채꼴 모양의 잎"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_006",
+    "lemma": "밥솥",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "다른 사람이나 사회를 돕는 일을 스스로 하는 사람",
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "스스로 나서서 남을 돕는 사람",
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(27>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_009",
+    "lemma": "비눗물",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "물에 비누를 풀어서 만든 물",
+      "고마운 마음으로"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "물에 비누를 풀어서 만든 물",
+      "고마운 마음으로"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_011",
+    "lemma": "수시로",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "여러 것 가운데 어떤 것을 가장 중요하게 삼음",
+      "정해진 날에 사람들이 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "정해진 때 없이 자주"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "여럿 중 하나를 중심으로 삼음",
+      "정해진 날 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "정해진 때 없이 자주"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(25>20)",
+      "옵션2 길이초과(22>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_013",
+    "lemma": "양팔",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "여럿 가운데 어느 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "여럿 가운데 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(21>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_016",
+    "lemma": "은행잎",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "정해진 날에 사람들이 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "불을 끄고 사람을 구조하는 소방대의 구성원"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "정해진 날 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "불을 끄고 사람을 구하는 사람"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(22>20)",
+      "옵션4 길이초과(23>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_017",
+    "lemma": "이제껏",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "여럿 가운데 어느 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음",
+      "병을 치료하거나 건강을 돕는 약으로 쓰는 풀",
+      "지금에 이르기까지 계속"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "여럿 가운데 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음",
+      "병을 치료하는 약으로 쓰는 풀",
+      "지금에 이르기까지 계속"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(21>20)",
+      "옵션3 길이초과(24>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_021",
+    "lemma": "감사히",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "무섭다고 느끼는 마음",
+      "병을 치료하거나 건강을 돕는 약으로 쓰는 풀",
+      "고마운 마음으로",
+      "소금처럼 짜게 느껴지는 맛"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "무섭다고 느끼는 마음",
+      "병을 치료하는 약으로 쓰는 풀",
+      "고마운 마음으로",
+      "소금처럼 짜게 느껴지는 맛"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션2 길이초과(24>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_022",
+    "lemma": "국그릇",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "도리에 맞고 올바른 말",
+      "유리로 만든 병",
+      "일할 직장을 얻음",
+      "국을 담아 먹는 그릇"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "도리에 맞고 올바른 말",
+      "유리로 만든 병",
+      "일할 직장을 얻음",
+      "국을 담아 먹는 그릇"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_024",
+    "lemma": "무서움",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "무섭다고 느끼는 마음",
+      "불을 끄고 사람을 구조하는 소방대의 구성원",
+      "이러하기도 하고 저러하기도 한 여러 가지",
+      "파를 주재료로 하여 담근 김치"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "무섭다고 느끼는 마음",
+      "불을 끄고 사람을 구하는 사람",
+      "이러하고 저러한 여러 가지",
+      "파를 주재료로 하여 담근 김치"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션2 길이초과(23>20)",
+      "옵션3 길이초과(22>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_025",
+    "lemma": "바른말",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "병을 치료하거나 건강을 돕는 약으로 쓰는 풀",
+      "도리에 맞고 올바른 말",
+      "소금처럼 짜게 느껴지는 맛",
+      "일이 매우 중요하고 몹시 급한 상태"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "병을 치료하는 약으로 쓰는 풀",
+      "도리에 맞고 올바른 말",
+      "소금처럼 짜게 느껴지는 맛",
+      "일이 매우 중요하고 몹시 급한 상태"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(24>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_031",
+    "lemma": "유리병",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "유리로 만든 병",
+      "소금처럼 짜게 느껴지는 맛",
+      "일이 매우 중요하고 몹시 급한 상태",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "유리로 만든 병",
+      "소금처럼 짜게 느껴지는 맛",
+      "봄철에 피는 꽃",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_034",
+    "lemma": "짠맛",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "파를 주재료로 하여 담근 김치",
+      "마음먹거나 바라는 것과 같이",
+      "소금처럼 짜게 느껴지는 맛",
+      "다른 사람이나 사회를 돕는 일을 스스로 하는 사람"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "파를 주재료로 하여 담근 김치",
+      "마음먹거나 바라는 것과 같이",
+      "소금처럼 짜게 느껴지는 맛",
+      "스스로 나서서 남을 돕는 사람"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션4 길이초과(27>20)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_035",
+    "lemma": "취업",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물에 비누를 풀어서 만든 물",
+      "일할 직장을 얻음"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물에 비누를 풀어서 만든 물",
+      "일할 직장을 얻음"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L0_SC_V191_B001_036",
+    "lemma": "파김치",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "파를 주재료로 하여 담근 김치",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "파를 주재료로 하여 담근 김치",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_027",
+    "lemma": "가계부",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_035",
+    "lemma": "가뜩이나",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "그렇지 않아도 이미 매우",
+      "가을철의 어느 날이나 그날의 날씨"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "그렇지 않아도 이미 매우",
+      "가을철의 어느 날이나 그날의 날씨"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_038",
+    "lemma": "가래떡",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "길을 따라 줄지어 심어 놓은 나무",
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "길을 따라 줄지어 심어 놓은 나무",
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_040",
+    "lemma": "가로세로",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_041",
+    "lemma": "가로수",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "길을 따라 줄지어 심어 놓은 나무",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "길을 따라 줄지어 심어 놓은 나무",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_044",
+    "lemma": "가르마",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "여러 물건이 고르고 반듯하게"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "여러 물건이 고르고 반듯하게"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_046",
+    "lemma": "가마솥",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1914_B014_047",
+    "lemma": "가만가만",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_003",
+    "lemma": "가뭄",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "한 해의 계절 가운데 가을인 때",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "한 해의 계절 가운데 가을인 때",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_019",
+    "lemma": "가을날",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "가을철의 어느 날이나 그날의 날씨",
+      "복잡하지 않고 편리하게"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "가을철의 어느 날이나 그날의 날씨",
+      "복잡하지 않고 편리하게"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_024",
+    "lemma": "가을철",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "한 해의 계절 가운데 가을인 때"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "한 해의 계절 가운데 가을인 때"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_028",
+    "lemma": "가장자리",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_030",
+    "lemma": "가정용",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "일반 가정에서 사용하도록 만든 것",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "일반 가정에서 사용하도록 만든 것",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_036",
+    "lemma": "가지런히",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "여러 물건이 고르고 반듯하게",
+      "소갈비를 물에 오래 끓여 만든 국"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "여러 물건이 고르고 반듯하게",
+      "소갈비를 물에 오래 끓여 만든 국"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1915_B015_042",
+    "lemma": "가훈",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "한 가족이 중요하게 여기며 지키는 가르침"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "한 가족이 중요하게 여기며 지키는 가르침"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_008",
+    "lemma": "간장게장",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_010",
+    "lemma": "간지럼",
+    "level": 1,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 더 높은 단계의 교육을 받는 3년 과정의 학교"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 다니는 3년 과정의 학교"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션4 길이초과(35>26)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_016",
+    "lemma": "간편히",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "복잡하지 않고 편리하게",
+      "가정의 수입과 지출을 날짜별로 적는 장부"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "복잡하지 않고 편리하게",
+      "가정의 수입과 지출을 날짜별로 적는 장부"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_020",
+    "lemma": "갈기갈기",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_021",
+    "lemma": "갈대밭",
+    "level": 1,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 더 높은 단계의 교육을 받는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 다니는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(35>26)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_023",
+    "lemma": "갈비구이",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_024",
+    "lemma": "갈비탕",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "길을 따라 줄지어 심어 놓은 나무"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "길을 따라 줄지어 심어 놓은 나무"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_027",
+    "lemma": "갈치조림",
+    "level": 1,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "중학교를 마친 뒤 더 높은 단계의 교육을 받는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "토막 낸 갈치를 양념과 함께 조린 반찬"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "중학교를 마친 뒤 다니는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "토막 낸 갈치를 양념과 함께 조린 반찬"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(35>26)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L1_SC_V1916_B016_036",
+    "lemma": "감명",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L2_SC_V19101_B101_016",
+    "lemma": "인간관계",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "작자 자신의 일생을 소재로 스스로 짓거나, 남에게 구술하여 쓰게 한 전기",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "인간과 인간, 또는 인간과 집단과의 관계를 통틀어 이르는 말",
+      "사업자가 자기 상품에 대하여, 경쟁업체의 것과 구별하기 위하여 사용하는 기호ㆍ문자ㆍ도형 따위의 일정한 표지"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "자기 일생을 스스로 짓거나 남에게 말해 쓰게 한 전기",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "인간과 인간, 또는 인간과 집단과의 관계를 통틀어 이르는 말",
+      "다른 상품과 구별하려고 사용하는 상표나 이름"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(40>34)",
+      "옵션4 길이초과(59>34)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L2_SC_V19106_B106_012",
+    "lemma": "적응력",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "일정한 조건이나 환경 따위에 맞추어 응하거나 알맞게 되는 능력",
+      "사업자가 자기 상품에 대하여, 경쟁업체의 것과 구별하기 위하여 사용하는 기호ㆍ문자ㆍ도형 따위의 일정한 표지",
+      "전체 물건의 품질이나 상태 따위를 알아볼 수 있도록 그 일부를 뽑아 놓거나, 미리 선보이는 물건"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "일정한 조건이나 환경 따위에 맞추어 응하거나 알맞게 되는 능력",
+      "다른 상품과 구별하려고 사용하는 상표나 이름",
+      "전체를 알아보도록 미리 보여 주는 물건의 일부"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(59>34)",
+      "옵션4 길이초과(53>34)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L2_SC_V19117_B117_007",
+    "lemma": "청소년기",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표",
+      "여러 가지 물리량(物理量), 곧 소리ㆍ빛ㆍ온도ㆍ압력 따위를 검출하는 소자(素子)",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표",
+      "소리·빛·온도·압력 같은 것을 알아내는 장치",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(44>34)",
+      "옵션3 한자포함"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L2_SC_V1935_B035_038",
+    "lemma": "노동력",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "인터넷에서 사용자들이 정보가 필요할 때 언제든지 그것을 볼 수 있도록 웹 서버에 저장된 집합체",
+      "미리 녹음하거나 녹화한 것을 재생하지 아니하고, 프로그램의 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형을 이용하여 그것이 마치 살아 있는 것처럼 생동감 있게 촬영한 영화"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "인터넷에서 정보를 볼 수 있게 모아 둔 곳",
+      "녹화하지 않고 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형이 살아 움직이는 것처럼 찍은 영화"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션2 길이초과(52>34)",
+      "옵션3 길이초과(53>34)",
+      "옵션4 길이초과(43>34)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L2_SC_V1971_B071_036",
+    "lemma": "상품권",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "미리 녹음하거나 녹화한 것을 재생하지 아니하고, 프로그램의 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형을 이용하여 그것이 마치 살아 있는 것처럼 생동감 있게 촬영한 영화",
+      "자기 자신 또는 자기와 관련되어 있는 것에 대하여 스스로 그 가치나 능력을 믿고 당당히 여기는 마음",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "녹화하지 않고 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형이 살아 움직이는 것처럼 찍은 영화",
+      "자신이나 자신과 관련된 것을 스스로 자랑스럽게 여기는 마음",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(53>34)",
+      "옵션2 길이초과(43>34)",
+      "옵션3 길이초과(55>34)"
+    ]
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_029",
+    "lemma": "가공식품",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_030",
+    "lemma": "가공업",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "우유의 물기를 없애 가루로 만든 식품",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "우유의 물기를 없애 가루로 만든 식품",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_042",
+    "lemma": "가루받이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_043",
+    "lemma": "가루우유",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_045",
+    "lemma": "가리비",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1914_B014_049",
+    "lemma": "가면극",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_008",
+    "lemma": "가스보일러",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가을에 익은 곡식을 거두어들이는 일"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가을에 익은 곡식을 거두어들이는 일"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_009",
+    "lemma": "가스오븐레인지",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_011",
+    "lemma": "가슴뼈",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_012",
+    "lemma": "가시덩굴",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_014",
+    "lemma": "가엾이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_015",
+    "lemma": "가오리연",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_016",
+    "lemma": "가요계",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_017",
+    "lemma": "가운뎃손가락",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가을철에 주로 나타나거나 우는 벌레",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가을철에 주로 나타나거나 우는 벌레",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_018",
+    "lemma": "가을걷이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_021",
+    "lemma": "가을벌레",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "가을철에 주로 나타나거나 우는 벌레"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "가을철에 주로 나타나거나 우는 벌레"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_025",
+    "lemma": "가이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_026",
+    "lemma": "가입자",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "단체나 서비스에 가입한 사람",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "단체나 서비스에 가입한 사람",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_027",
+    "lemma": "가장무도회",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "재료를 처리해 새로운 제품을 만드는 산업"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "재료를 처리해 새로운 제품을 만드는 산업"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_029",
+    "lemma": "가전제품",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "가정에서 전기를 사용해 작동하는 기계 제품"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "가정에서 전기를 사용해 작동하는 기계 제품"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_037",
+    "lemma": "가지치기",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_040",
+    "lemma": "가혹",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_043",
+    "lemma": "각계각층",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_045",
+    "lemma": "각기둥",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_A_SC_EXCORE_L3_SC_V1915_B015_046",
+    "lemma": "각도기",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_002",
+    "lemma": "긴급",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "마음먹거나 바라는 것과 같이",
+      "다른 사람이나 사회를 돕는 일을 스스로 하는 사람",
+      "왼팔과 오른팔을 함께 이르는 말"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "마음먹거나 바라는 것과 같이",
+      "스스로 나서서 남을 돕는 사람",
+      "왼팔과 오른팔을 함께 이르는 말"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(27>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_003",
+    "lemma": "낚시터",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "물에 비누를 풀어서 만든 물",
+      "여러 것 가운데 어떤 것을 가장 중요하게 삼음"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "물에 비누를 풀어서 만든 물",
+      "여럿 중 하나를 중심으로 삼음"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션4 길이초과(25>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_004",
+    "lemma": "뜻대로",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주",
+      "마음먹거나 바라는 것과 같이",
+      "은행나무에 달리는 부채꼴 모양의 잎"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주",
+      "마음먹거나 바라는 것과 같이",
+      "은행나무에 달리는 부채꼴 모양의 잎"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_006",
+    "lemma": "밥솥",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "다른 사람이나 사회를 돕는 일을 스스로 하는 사람",
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "스스로 나서서 남을 돕는 사람",
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(27>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_009",
+    "lemma": "비눗물",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "물에 비누를 풀어서 만든 물",
+      "고마운 마음으로"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "지금에 이르기까지 계속",
+      "물에 비누를 풀어서 만든 물",
+      "고마운 마음으로"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_011",
+    "lemma": "수시로",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "여러 것 가운데 어떤 것을 가장 중요하게 삼음",
+      "정해진 날에 사람들이 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "정해진 때 없이 자주"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "여럿 중 하나를 중심으로 삼음",
+      "정해진 날 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "정해진 때 없이 자주"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(25>20)",
+      "옵션2 길이초과(22>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_013",
+    "lemma": "양팔",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "여럿 가운데 어느 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "왼팔과 오른팔을 함께 이르는 말",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "여럿 가운데 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(21>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_016",
+    "lemma": "은행잎",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "정해진 날에 사람들이 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "불을 끄고 사람을 구조하는 소방대의 구성원"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "정해진 날 물건을 사고파는 곳",
+      "국을 담아 먹는 그릇",
+      "은행나무에 달리는 부채꼴 모양의 잎",
+      "불을 끄고 사람을 구하는 사람"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(22>20)",
+      "옵션4 길이초과(23>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_017",
+    "lemma": "이제껏",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "여럿 가운데 어느 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음",
+      "병을 치료하거나 건강을 돕는 약으로 쓰는 풀",
+      "지금에 이르기까지 계속"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "여럿 가운데 하나를 더 두드러지게",
+      "무섭다고 느끼는 마음",
+      "병을 치료하는 약으로 쓰는 풀",
+      "지금에 이르기까지 계속"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(21>20)",
+      "옵션3 길이초과(24>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_021",
+    "lemma": "감사히",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "무섭다고 느끼는 마음",
+      "병을 치료하거나 건강을 돕는 약으로 쓰는 풀",
+      "고마운 마음으로",
+      "소금처럼 짜게 느껴지는 맛"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "무섭다고 느끼는 마음",
+      "병을 치료하는 약으로 쓰는 풀",
+      "고마운 마음으로",
+      "소금처럼 짜게 느껴지는 맛"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션2 길이초과(24>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_022",
+    "lemma": "국그릇",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "도리에 맞고 올바른 말",
+      "유리로 만든 병",
+      "일할 직장을 얻음",
+      "국을 담아 먹는 그릇"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "도리에 맞고 올바른 말",
+      "유리로 만든 병",
+      "일할 직장을 얻음",
+      "국을 담아 먹는 그릇"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_024",
+    "lemma": "무서움",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "무섭다고 느끼는 마음",
+      "불을 끄고 사람을 구조하는 소방대의 구성원",
+      "이러하기도 하고 저러하기도 한 여러 가지",
+      "파를 주재료로 하여 담근 김치"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "무섭다고 느끼는 마음",
+      "불을 끄고 사람을 구하는 사람",
+      "이러하고 저러한 여러 가지",
+      "파를 주재료로 하여 담근 김치"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션2 길이초과(23>20)",
+      "옵션3 길이초과(22>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_025",
+    "lemma": "바른말",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "병을 치료하거나 건강을 돕는 약으로 쓰는 풀",
+      "도리에 맞고 올바른 말",
+      "소금처럼 짜게 느껴지는 맛",
+      "일이 매우 중요하고 몹시 급한 상태"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "병을 치료하는 약으로 쓰는 풀",
+      "도리에 맞고 올바른 말",
+      "소금처럼 짜게 느껴지는 맛",
+      "일이 매우 중요하고 몹시 급한 상태"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(24>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_031",
+    "lemma": "유리병",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "유리로 만든 병",
+      "소금처럼 짜게 느껴지는 맛",
+      "일이 매우 중요하고 몹시 급한 상태",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "유리로 만든 병",
+      "소금처럼 짜게 느껴지는 맛",
+      "봄철에 피는 꽃",
+      "밥을 짓는 데 쓰는 솥이나 기구"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_034",
+    "lemma": "짠맛",
+    "level": 0,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "파를 주재료로 하여 담근 김치",
+      "마음먹거나 바라는 것과 같이",
+      "소금처럼 짜게 느껴지는 맛",
+      "다른 사람이나 사회를 돕는 일을 스스로 하는 사람"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "파를 주재료로 하여 담근 김치",
+      "마음먹거나 바라는 것과 같이",
+      "소금처럼 짜게 느껴지는 맛",
+      "스스로 나서서 남을 돕는 사람"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션4 길이초과(27>20)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_035",
+    "lemma": "취업",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물에 비누를 풀어서 만든 물",
+      "일할 직장을 얻음"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "일이 매우 중요하고 몹시 급한 상태",
+      "밥을 짓는 데 쓰는 솥이나 기구",
+      "물에 비누를 풀어서 만든 물",
+      "일할 직장을 얻음"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L0_SC_V191_B001_036",
+    "lemma": "파김치",
+    "level": 0,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "파를 주재료로 하여 담근 김치",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "파를 주재료로 하여 담근 김치",
+      "물고기를 낚을 수 있도록 마련한 곳",
+      "봄철에 피는 꽃",
+      "정해진 때 없이 자주"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_027",
+    "lemma": "가계부",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_035",
+    "lemma": "가뜩이나",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "그렇지 않아도 이미 매우",
+      "가을철의 어느 날이나 그날의 날씨"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "그렇지 않아도 이미 매우",
+      "가을철의 어느 날이나 그날의 날씨"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_038",
+    "lemma": "가래떡",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "길을 따라 줄지어 심어 놓은 나무",
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "길을 따라 줄지어 심어 놓은 나무",
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_040",
+    "lemma": "가로세로",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_041",
+    "lemma": "가로수",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "길을 따라 줄지어 심어 놓은 나무",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "무쇠 등으로 만든 크고 깊은 솥",
+      "길을 따라 줄지어 심어 놓은 나무",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_044",
+    "lemma": "가르마",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "여러 물건이 고르고 반듯하게"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "한 해의 계절 가운데 가을인 때",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "여러 물건이 고르고 반듯하게"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_046",
+    "lemma": "가마솥",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1914_B014_047",
+    "lemma": "가만가만",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "움직임이나 소리가 드러나지 않도록 조용히",
+      "가을철의 어느 날이나 그날의 날씨",
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_003",
+    "lemma": "가뭄",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "한 해의 계절 가운데 가을인 때",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "한 해의 계절 가운데 가을인 때",
+      "오랫동안 비가 내리지 않아 땅이 메마른 날씨",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_019",
+    "lemma": "가을날",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "가을철의 어느 날이나 그날의 날씨",
+      "복잡하지 않고 편리하게"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "가을철의 어느 날이나 그날의 날씨",
+      "복잡하지 않고 편리하게"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_024",
+    "lemma": "가을철",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "한 해의 계절 가운데 가을인 때"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "일반 가정에서 사용하도록 만든 것",
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "한 해의 계절 가운데 가을인 때"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_028",
+    "lemma": "가장자리",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "물건이나 장소의 둘레 또는 끝부분",
+      "여러 물건이 고르고 반듯하게",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_030",
+    "lemma": "가정용",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "일반 가정에서 사용하도록 만든 것",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "한 가족이 중요하게 여기며 지키는 가르침",
+      "일반 가정에서 사용하도록 만든 것",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_036",
+    "lemma": "가지런히",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "여러 물건이 고르고 반듯하게",
+      "소갈비를 물에 오래 끓여 만든 국"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "여러 물건이 고르고 반듯하게",
+      "소갈비를 물에 오래 끓여 만든 국"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1915_B015_042",
+    "lemma": "가훈",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "한 가족이 중요하게 여기며 지키는 가르침"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "한 가족이 중요하게 여기며 지키는 가르침"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_008",
+    "lemma": "간장게장",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "손질한 게를 양념한 간장에 담가 숙성시킨 음식",
+      "복잡하지 않고 편리하게",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_010",
+    "lemma": "간지럼",
+    "level": 1,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 더 높은 단계의 교육을 받는 3년 과정의 학교"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "여러 가닥이나 조각으로 심하게 찢어진 모양",
+      "살갗이 가렵고 웃음이 날 듯한 느낌",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 다니는 3년 과정의 학교"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션4 길이초과(35>26)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_016",
+    "lemma": "간편히",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "복잡하지 않고 편리하게",
+      "가정의 수입과 지출을 날짜별로 적는 장부"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "복잡하지 않고 편리하게",
+      "가정의 수입과 지출을 날짜별로 적는 장부"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_020",
+    "lemma": "갈기갈기",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "여러 가닥이나 조각으로 심하게 찢어진 모양"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_021",
+    "lemma": "갈대밭",
+    "level": 1,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 더 높은 단계의 교육을 받는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "갈대가 많이 모여 자라는 곳",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "중학교를 마친 뒤 다니는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(35>26)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_023",
+    "lemma": "갈비구이",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "토막 낸 갈치를 양념과 함께 조린 반찬",
+      "소나 돼지의 갈비를 양념해 구운 음식",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_024",
+    "lemma": "갈비탕",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "길을 따라 줄지어 심어 놓은 나무"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "그렇지 않아도 이미 매우",
+      "소갈비를 물에 오래 끓여 만든 국",
+      "길을 따라 줄지어 심어 놓은 나무"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_027",
+    "lemma": "갈치조림",
+    "level": 1,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "중학교를 마친 뒤 더 높은 단계의 교육을 받는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "토막 낸 갈치를 양념과 함께 조린 반찬"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "중학교를 마친 뒤 다니는 3년 과정의 학교",
+      "쌀가루 반죽을 길고 둥근 막대 모양으로 뽑은 떡",
+      "머리카락을 양쪽으로 나눌 때 생기는 선",
+      "토막 낸 갈치를 양념과 함께 조린 반찬"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(35>26)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L1_SC_V1916_B016_036",
+    "lemma": "감명",
+    "level": 1,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "깊이 감동하여 마음속에 오래 남은 느낌",
+      "가정의 수입과 지출을 날짜별로 적는 장부",
+      "가로 방향과 세로 방향을 함께 이르는 말",
+      "무쇠 등으로 만든 크고 깊은 솥"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L2_SC_V19101_B101_016",
+    "lemma": "인간관계",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "작자 자신의 일생을 소재로 스스로 짓거나, 남에게 구술하여 쓰게 한 전기",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "인간과 인간, 또는 인간과 집단과의 관계를 통틀어 이르는 말",
+      "사업자가 자기 상품에 대하여, 경쟁업체의 것과 구별하기 위하여 사용하는 기호ㆍ문자ㆍ도형 따위의 일정한 표지"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "자기 일생을 스스로 짓거나 남에게 말해 쓰게 한 전기",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "인간과 인간, 또는 인간과 집단과의 관계를 통틀어 이르는 말",
+      "다른 상품과 구별하려고 사용하는 상표나 이름"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(40>34)",
+      "옵션4 길이초과(59>34)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L2_SC_V19106_B106_012",
+    "lemma": "적응력",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "일정한 조건이나 환경 따위에 맞추어 응하거나 알맞게 되는 능력",
+      "사업자가 자기 상품에 대하여, 경쟁업체의 것과 구별하기 위하여 사용하는 기호ㆍ문자ㆍ도형 따위의 일정한 표지",
+      "전체 물건의 품질이나 상태 따위를 알아볼 수 있도록 그 일부를 뽑아 놓거나, 미리 선보이는 물건"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기",
+      "일정한 조건이나 환경 따위에 맞추어 응하거나 알맞게 되는 능력",
+      "다른 상품과 구별하려고 사용하는 상표나 이름",
+      "전체를 알아보도록 미리 보여 주는 물건의 일부"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(59>34)",
+      "옵션4 길이초과(53>34)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L2_SC_V19117_B117_007",
+    "lemma": "청소년기",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표",
+      "여러 가지 물리량(物理量), 곧 소리ㆍ빛ㆍ온도ㆍ압력 따위를 검출하는 소자(素子)",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표",
+      "소리·빛·온도·압력 같은 것을 알아내는 장치",
+      "아동이 신체적ㆍ정신적ㆍ사회적으로 성인이 되어 가는 도중의 시기"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션3 길이초과(44>34)",
+      "옵션3 한자포함"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L2_SC_V1935_B035_038",
+    "lemma": "노동력",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "인터넷에서 사용자들이 정보가 필요할 때 언제든지 그것을 볼 수 있도록 웹 서버에 저장된 집합체",
+      "미리 녹음하거나 녹화한 것을 재생하지 아니하고, 프로그램의 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형을 이용하여 그것이 마치 살아 있는 것처럼 생동감 있게 촬영한 영화"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "물건과 서비스를 만드는 데 사용되는 사람의 일할 능력",
+      "인터넷에서 정보를 볼 수 있게 모아 둔 곳",
+      "녹화하지 않고 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형이 살아 움직이는 것처럼 찍은 영화"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": [
+      "옵션2 길이초과(52>34)",
+      "옵션3 길이초과(53>34)",
+      "옵션4 길이초과(43>34)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L2_SC_V1971_B071_036",
+    "lemma": "상품권",
+    "level": 2,
+    "changed_in_regeneration": true,
+    "db_current_options": [
+      "미리 녹음하거나 녹화한 것을 재생하지 아니하고, 프로그램의 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형을 이용하여 그것이 마치 살아 있는 것처럼 생동감 있게 촬영한 영화",
+      "자기 자신 또는 자기와 관련되어 있는 것에 대하여 스스로 그 가치나 능력을 믿고 당당히 여기는 마음",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "녹화하지 않고 제작과 방송이 동시에 이루어지는 방송",
+      "만화나 인형이 살아 움직이는 것처럼 찍은 영화",
+      "자신이나 자신과 관련된 것을 스스로 자랑스럽게 여기는 마음",
+      "액면 가격에 상당한 상품과 교환할 수 있는 표"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": [
+      "옵션1 길이초과(53>34)",
+      "옵션2 길이초과(43>34)",
+      "옵션3 길이초과(55>34)"
+    ]
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_029",
+    "lemma": "가공식품",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_030",
+    "lemma": "가공업",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "우유의 물기를 없애 가루로 만든 식품",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "우유의 물기를 없애 가루로 만든 식품",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_042",
+    "lemma": "가루받이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_043",
+    "lemma": "가루우유",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_045",
+    "lemma": "가리비",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1914_B014_049",
+    "lemma": "가면극",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_008",
+    "lemma": "가스보일러",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가을에 익은 곡식을 거두어들이는 일"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "가을에 익은 곡식을 거두어들이는 일"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_009",
+    "lemma": "가스오븐레인지",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_011",
+    "lemma": "가슴뼈",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "가슴 앞쪽 가운데에 있는 복장뼈의 옛 이름",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_012",
+    "lemma": "가시덩굴",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가오리 모양의 몸과 긴 꼬리를 가진 연",
+      "가시가 있는 식물의 길게 뻗은 줄기",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_014",
+    "lemma": "가엾이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을철에 주로 나타나거나 우는 벌레",
+      "딱한 처지를 마음 아프고 불쌍하게 여기는 태도로",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_015",
+    "lemma": "가오리연",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가오리 모양의 몸과 긴 꼬리를 가진 연"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_016",
+    "lemma": "가요계",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "대중가요와 관련된 사람들이 활동하는 분야",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_017",
+    "lemma": "가운뎃손가락",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가을철에 주로 나타나거나 우는 벌레",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가을철에 주로 나타나거나 우는 벌레",
+      "다섯 손가락 가운데 세 번째에 있는 가장 긴 손가락",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_018",
+    "lemma": "가을걷이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "가을에 익은 곡식을 거두어들이는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_021",
+    "lemma": "가을벌레",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "가을철에 주로 나타나거나 우는 벌레"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "단체나 서비스에 가입한 사람",
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "가을철에 주로 나타나거나 우는 벌레"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_025",
+    "lemma": "가이",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "벼 이삭 무늬가 새겨진 옛 제사용 그릇의 한 종류",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_026",
+    "lemma": "가입자",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "단체나 서비스에 가입한 사람",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "가정에서 전기를 사용해 작동하는 기계 제품",
+      "단체나 서비스에 가입한 사람",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_027",
+    "lemma": "가장무도회",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "재료를 처리해 새로운 제품을 만드는 산업"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "사람들이 여러 모습으로 변장하고 춤추며 즐기는 모임",
+      "재료를 처리해 새로운 제품을 만드는 산업"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_029",
+    "lemma": "가전제품",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "가정에서 전기를 사용해 작동하는 기계 제품"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "정도나 대우가 몹시 모질고 혹독함",
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "가정에서 전기를 사용해 작동하는 기계 제품"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_037",
+    "lemma": "가지치기",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "식물이 잘 자라도록 불필요한 가지를 잘라 다듬는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_040",
+    "lemma": "가혹",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개"
+    ],
+    "db_current_correct": 2,
+    "regenerated_options": [
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체",
+      "정도나 대우가 몹시 모질고 혹독함",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개"
+    ],
+    "regenerated_correct": 2,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_043",
+    "lemma": "각계각층",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극"
+    ],
+    "db_current_correct": 3,
+    "regenerated_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "꽃가루가 수술에서 암술머리로 옮겨 붙는 일",
+      "사회의 여러 분야와 서로 다른 위치에 있는 사람들",
+      "탈이나 가면을 쓰고 몸짓과 말로 펼치는 연극"
+    ],
+    "regenerated_correct": 3,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_045",
+    "lemma": "각기둥",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체"
+    ],
+    "db_current_correct": 4,
+    "regenerated_options": [
+      "농축산물이나 수산물을 처리해 먹기 편하게 만든 식품",
+      "우유의 물기를 없애 가루로 만든 식품",
+      "가스를 태워 물을 데우고 난방하는 기계",
+      "서로 평행한 두 밑면과 여러 직사각형 옆면으로 된 입체"
+    ],
+    "regenerated_correct": 4,
+    "db_value_strict_fail_reasons": []
+  },
+  {
+    "item_id": "MF_C_SC_EXCORE_L3_SC_V1915_B015_046",
+    "lemma": "각도기",
+    "level": 3,
+    "changed_in_regeneration": false,
+    "db_current_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "db_current_correct": 1,
+    "regenerated_options": [
+      "각의 크기를 재는 눈금이 표시된 도구",
+      "재료를 처리해 새로운 제품을 만드는 산업",
+      "부채처럼 생긴 단단한 껍데기를 가진 바다 조개",
+      "가스레인지와 오븐이 한데 붙어 있는 조리 기구"
+    ],
+    "regenerated_correct": 1,
+    "db_value_strict_fail_reasons": []
+  }
+]
