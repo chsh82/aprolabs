@@ -52,4 +52,9 @@ def login_submit(
 def logout():
     response = RedirectResponse("/login", status_code=302)
     response.delete_cookie(COOKIE_NAME, domain=".aprolabs.co.kr")
+    # 2026-09-28 23:15(28643e7) 이전에 발급된 세션 쿠키는 domain 속성이 없는
+    # host-only 쿠키다 - domain=".aprolabs.co.kr" 삭제만으로는 그 쿠키가
+    # 지워지지 않아 로그아웃이 실패한 것처럼 보인다(실측으로 재현·확인함).
+    # 두 형태를 모두 지워야 이전 세션도 확실히 로그아웃된다.
+    response.delete_cookie(COOKIE_NAME)
     return response
