@@ -123,6 +123,30 @@ async def _generate_openai(prompt: str, ratio: str) -> dict:
 
 _PROVIDERS = {"openai": _generate_openai}
 
+# 2026-09-29 사용자 지시 - 검수 중 AI 생성/원본 대신 검수자가 가진 이미지
+# 파일을 직접 올릴 수 있어야 한다는 요청. generate_candidates와 같은 자리
+# (assets/generated/)에 저장해 store.resolve_image_urls()가 그대로 처리하게
+# 한다 - "생성됨" 여부와는 무관하게 그 폴더 밑은 다 "검수 화면에서 만들어진
+# 자산"이라는 뜻으로 쓰인다.
+_MAX_UPLOAD_BYTES = 15 * 1024 * 1024
+_UPLOAD_EXT = {"JPEG": "jpg", "PNG": "png", "WEBP": "webp"}
+
+
+def save_uploaded_image(data: bytes) -> dict:
+    if len(data) > _MAX_UPLOAD_BYTES:
+        raise ValueError(f"파일이 너무 큽니다({len(data) // 1024}KB, 최대 {_MAX_UPLOAD_BYTES // 1024}KB).")
+    try:
+        Image.open(io.BytesIO(data)).verify()
+        im = Image.open(io.BytesIO(data))  # verify()가 파일 핸들을 소모해 다시 열어야 함
+        im.load()
+    except Exception as e:
+        raise ValueError(f"이미지 파일이 아니거나 손상되었습니다: {e}") from e
+    if im.format not in _UPLOAD_EXT:
+        raise ValueError(f"지원하지 않는 이미지 형식입니다({im.format}) - JPEG/PNG/WEBP만 가능합니다.")
+    filename = f"{uuid.uuid4().hex}.{_UPLOAD_EXT[im.format]}"
+    (GENERATED_DIR / filename).write_bytes(data)
+    return {"file_path": f"generated/{filename}", "width": im.width, "height": im.height}
+
 
 async def generate_candidates(scene: str, avoid: str, quarter: str | None,
                                 ratio: str, count: int) -> list[dict]:

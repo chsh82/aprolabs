@@ -1301,6 +1301,38 @@ function renderSlotInspector(body, page, idx, basePath) {
     });
   });
 
+  // 2026-09-29 사용자 지시 - AI 생성/원본 선택 외에 검수자가 가진 파일을
+  // 직접 올릴 수 있어야 한다는 요청. FormData라 api()(Content-Type:
+  // application/json 고정)를 못 쓰고 raw fetch로 올린 뒤, 받은 file_path로
+  // "원본 이미지로 바꾸기"와 같은 모양의 PATCH를 그대로 태운다.
+  const uploadInput = el("input", { type: "file", accept: "image/jpeg,image/png,image/webp" });
+  const uploadStatus = el("span", { class: "hint" });
+  body.append(field("직접 업로드", uploadInput, uploadStatus));
+  uploadInput.onchange = async () => {
+    const file = uploadInput.files[0];
+    if (!file) return;
+    uploadStatus.textContent = "업로드 중…";
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(`/api/editions/${editionId}/pages/${idx}/upload-image`, { method: "POST", body: fd });
+      if (!res.ok) {
+        let detail = res.statusText;
+        try { detail = (await res.json()).detail || detail; } catch (e) {}
+        throw new Error(detail);
+      }
+      const data = await res.json();
+      uploadStatus.textContent = "";
+      await patch([{ op: "replace", path: slotPath, value: { img: data.file_path, src: "직접 업로드" } }],
+        { reason: "검수: 이미지 자리에 업로드한 이미지 지정" });
+    } catch (e) {
+      uploadStatus.textContent = "";
+      toast(`업로드 실패: ${e.message}`, { sticky: true });
+    } finally {
+      uploadInput.value = "";
+    }
+  };
+
   const sceneInput = el("textarea", { rows: "2" }, slot.scene || "");
   const avoidInput = el("textarea", { rows: "2" }, slot.avoid || "");
   body.append(field("또는 생성 지시문 - 장면(scene)", sceneInput));

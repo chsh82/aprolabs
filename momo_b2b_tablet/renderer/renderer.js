@@ -137,7 +137,10 @@ export async function mountEdition({ edition, images, mode = "review", brand, ad
   }
   const STYLE = (() => { const p = PALETTES[QUARTER]; return `${PAL_NAME[QUARTER]} 분기 하우스 스타일: ${p.main}·${p.sub}·${p.point} 3색 이내, 가는 잉크 선의 평면 일러스트, 배경은 종이색. 이미지 안에 글자 없음. 원작 삽화의 화풍과 인물 표현을 따라 하지 않는다. 흑백으로 복사해도 형태를 알아볼 수 있게.`; })();
   function slotHtml(s, q) {
-    if (s.img) return `<figure class="slot img"><img src="${IMG[s.img]}" alt=""><figcaption class="sl-p">원본 교재 이미지를 그대로 씁니다${s.src ? ` (${esc(s.src)})` : ""}. 생성하지 않아요.</figcaption></figure>`;
+    // s.src가 있으면 그 출처(원본 N쪽 / 직접 업로드)를 그대로 문장에 넣는다 -
+    // 2026-09-29 업로드 기능 추가 전엔 "원본 교재 이미지"로 고정돼 있었는데
+    // 업로드 이미지에는 안 맞는 말이라 출처 기반으로 바꿨다.
+    if (s.img) return `<figure class="slot img"><img src="${IMG[s.img]}" alt=""><figcaption class="sl-p">${s.src ? esc(s.src) : "이 이미지"}를 그대로 씁니다. 생성하지 않아요.</figcaption></figure>`;
     const prompt = `장면: ${s.scene}\n답 유출 금지: 질문 "${q.t}"의 답을 드러내지 않는다. ${s.avoid}\n${STYLE}`;
     return `<figure class="slot" data-prompt="${esc(prompt)}"><span class="sl-t">생성 이미지 자리</span><span class="sl-r"></span><span class="sl-p">${esc(prompt).replace(/\n/g, "<br>")}</span></figure>`;
   }

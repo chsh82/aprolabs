@@ -353,6 +353,20 @@ async def generate_images(edition_id: int, page_idx: int, req: GenerateImagesReq
     return {"candidates": candidates, "usage": store.image_usage_summary()}
 
 
+@review_router.post("/api/editions/{edition_id}/pages/{page_idx}/upload-image")
+async def upload_page_image(edition_id: int, page_idx: int, file: UploadFile = File(...)):
+    """2026-09-29 사용자 지시 - AI 생성/원본 선택 외에 검수자가 가진 이미지
+    파일을 직접 올릴 수 있어야 한다는 요청. 저장만 하고 슬롯에 반영은 안
+    한다(그대로 PATCH 경로를 태우는 게 choose-image와 같은 패턴) - 클라이언트가
+    받은 file_path로 이어서 PATCH /api/editions/{id}를 호출해 슬롯을 바꾼다."""
+    data = await file.read()
+    try:
+        result = image_gen.save_uploaded_image(data)
+    except ValueError as e:
+        raise HTTPException(422, str(e)) from e
+    return result
+
+
 @review_router.post("/api/editions/{edition_id}/choose-image")
 def choose_image(edition_id: int, req: ChooseImageRequest,
                   editor_name: str = Depends(review_auth.get_current_editor)):
