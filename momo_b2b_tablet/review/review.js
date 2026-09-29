@@ -8,7 +8,23 @@
  */
 
 const qs = new URLSearchParams(location.search);
-const editionId = qs.get("edition");
+let editionId = qs.get("edition");
+
+// 2026-09-29 발견한 문제 - approved/published된 edition을 계속 그 id로 편집하면
+// store.patch_edition이 매번 새 버전(edition_id가 다른 새 row)을 만드는데(SPEC §5
+// "확정된 edition의 layout_json은 수정 불가"), 화면은 URL의 옛 edition_id를 계속
+// 써서 다음 편집이 "이번에 막 만든 새 버전"이 아니라 "원래(승인된) 버전"에서 또
+// 새로 포크됐다 - 편집이 쌓이지 않고 매번 따로 버려지는 버전만 늘어났다. 응답의
+// id가 지금 쓰던 것과 다르면 그 새 id를 이어서 쓰게 전환한다.
+function adoptEditionId(newId) {
+  if (newId == null || String(newId) === String(editionId)) return;
+  editionId = newId;
+  state.editionId = newId;
+  const url = new URL(location.href);
+  url.searchParams.set("edition", String(editionId));
+  history.replaceState(null, "", url);
+  toast(`승인/공개된 버전이라 새 버전(edition ${editionId})을 만들어 이어서 편집합니다. 이 창을 계속 쓰세요.`, { sticky: true });
+}
 
 const $ = sel => document.querySelector(sel);
 const el = (tag, attrs = {}, children = []) => {
@@ -102,6 +118,7 @@ async function patch(ops, { reason } = {}) {
       method: "PATCH",
       body: JSON.stringify({ patch: ops, editor: "reviewer", reason, expected_rev: state.rev }),
     });
+    adoptEditionId(data.id);
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     await refreshAll();
     toast("저장했습니다.");
@@ -523,6 +540,7 @@ async function applyPresetPreview() {
           method: "POST",
           body: JSON.stringify({ preset: pp.preset, page_idx: pp.pageIdx, params: pp.params || null, editor: "reviewer", expected_rev: state.rev }),
         });
+    adoptEditionId(data.id);
     state.layout = data.layout; state.rev = data.rev; state.status = data.status;
     sessionStorage.removeItem(pp.key);
     state.presetPreview = null;
