@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}중등 어휘 레벨 검수{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-2xl mx-auto px-6 py-6">
+  <h1 class="text-xl font-bold mb-1">중등 어휘 레벨 검수 (1차 배치 {{ stats.total }}건)</h1>
+  <div class="text-sm text-gray-500 mb-4">
+    국립국어원 공식 5등급(중1~3) 기반 신규 어휘 확장 후보입니다. 이 화면의
+    판정을 저장해도 vocab_level·문항·매니페스트·공개 플래그는 전혀
+    바뀌지 않습니다 - 별도 판정 테이블에 기록만 합니다. 아직
+    vocabulary_contents에 없는 신규 어휘라, '제외' 판정도 원천 삭제가
+    아니라 "이번 중등 배치에서 제외"라는 기록일 뿐입니다.
+  </div>
+
+  <div class="border border-gray-200 rounded-xl p-4 mb-4 bg-white">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-semibold text-gray-700">진행률</span>
+      <span class="text-sm text-gray-600">{{ stats.judged }}/{{ stats.total }} 검수 완료</span>
+    </div>
+    <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+      <div class="bg-blue-600 h-2 rounded-full" style="width: {{ (stats.judged / stats.total * 100) if stats.total else 0 }}%"></div>
+    </div>
+    <div class="grid grid-cols-5 gap-2 text-xs text-center">
+      <div class="bg-gray-50 rounded-lg py-2"><div class="font-bold text-gray-700">{{ stats.unjudged }}</div><div class="text-gray-400">미검수</div></div>
+      <div class="bg-gray-50 rounded-lg py-2"><div class="font-bold text-gray-700">{{ stats.counts['L3'] }}</div><div class="text-gray-400">L3</div></div>
+      <div class="bg-gray-50 rounded-lg py-2"><div class="font-bold text-gray-700">{{ stats.counts['L4'] }}</div><div class="text-gray-400">L4</div></div>
+      <div class="bg-gray-50 rounded-lg py-2"><div class="font-bold text-gray-700">{{ stats.counts['경계 유지'] }}</div><div class="text-gray-400">경계 유지</div></div>
+      <div class="bg-gray-50 rounded-lg py-2"><div class="font-bold text-gray-700">{{ stats.counts['제외'] }}</div><div class="text-gray-400">제외</div></div>
+    </div>
+  </div>
+
+  <div class="flex gap-2 mb-3 text-sm">
+    <a href="/vocab-grade5-candidate-review/" class="px-3 py-1.5 rounded-lg {% if not filter %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">전체</a>
+    <a href="/vocab-grade5-candidate-review/?filter=unjudged" class="px-3 py-1.5 rounded-lg {% if filter == 'unjudged' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">미검수만</a>
+  </div>
+
+  <div class="space-y-2">
+    {% for item in rows %}
+    <a href="/vocab-grade5-candidate-review/{{ item.row.candidate_id }}"
+       class="block border border-gray-200 rounded-xl px-4 py-3 hover:border-blue-400 transition">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-gray-800">{{ item.row.lemma }}</span>
+          <span class="text-xs text-gray-400 ml-2">{{ item.row.pos }}{% if item.row.homonym_number %} · 동형{{ item.row.homonym_number }}{% endif %}</span>
+          {% if item.row.specialized_domain_flag or item.row.polysemy_risk_flag %}
+          <div class="text-xs text-amber-600 mt-0.5">
+            {% if item.row.specialized_domain_flag %}전문용어{% endif %}
+            {% if item.row.specialized_domain_flag and item.row.polysemy_risk_flag %} · {% endif %}
+            {% if item.row.polysemy_risk_flag %}다의어 위험{% endif %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="text-xs text-right shrink-0 ml-3">
+          {% if item.judgment %}
+            {% if item.stale %}
+            <span class="text-amber-600 font-medium">판정 있음(만료)</span>
+            {% else %}
+            <span class="text-blue-600 font-medium">{{ judgment_labels.get(item.judgment.judgment, item.judgment.judgment) }}</span>
+            {% endif %}
+          {% else %}
+          <span class="text-gray-400">미검수</span>
+          {% endif %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+    {% if not rows %}
+    <div class="text-sm text-gray-400 text-center py-8">해당 조건의 후보가 없습니다.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
