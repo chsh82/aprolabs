@@ -1,0 +1,32 @@
+{
+  "raw_rows": 17000,
+  "distinct_lemma": 16551,
+  "distinct_lemma_hom": 17000,
+  "pos_counter": {
+    "명사": 13078,
+    "부사": 789,
+    "동사": 2246,
+    "형용사": 852,
+    "감탄사": 51,
+    "관형사": 237,
+    "의존명사": 54,
+    "수사": 11,
+    "대명사": 12,
+    "품사없음": 5,
+    "보조동사": 1,
+    "보조형용사": 1
+  },
+  "domain_has_special_rows": 4706,
+  "bucket_counter": {
+    "신규_어휘_후보": 16938,
+    "동형이의_품사_확인_필요": 14,
+    "기존_콘텐츠와_연결_후보": 48
+  },
+  "recovered_from_49census": 45,
+  "census_49_total": 49,
+  "new_candidate_total": 16938,
+  "batch100_specialized": 31,
+  "batch100_homonym_risk": 9,
+  "batch100_proper_noun": 0,
+  "strata_count": 18
+}
