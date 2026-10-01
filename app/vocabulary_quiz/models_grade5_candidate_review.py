@@ -82,3 +82,26 @@ class VocabularyGrade5CandidateJudgment(Base):
     # 새 토큰이 발급되므로, 의도적 재판정은 다른 토큰으로 정상 저장된다.
     submission_token = Column(Text, nullable=True)
     created_at = Column(Text, nullable=True, server_default=text("(datetime('now'))"))
+
+
+class VocabularyGrade5CandidateModelPrediction(Base):
+    """Gemini(또는 추후 다른 모델)의 레벨 제안 - 사람 판정
+    (VocabularyGrade5CandidateJudgment)과 완전히 분리된 별도 테이블이다.
+    이 테이블은 review 화면 어디에서도 렌더링하지 않는다(사람에게 자동
+    제안·근거를 보여주지 않는다는 사용자 지시) - 라우터/서비스 계층
+    어디에도 이 모델을 읽어 템플릿에 넘기는 코드가 없다(비교·분석
+    스크립트에서만 직접 조회)."""
+    __tablename__ = "vocabulary_grade5_candidate_model_predictions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    candidate_id = Column(Text, nullable=False, index=True)
+    model_name = Column(Text, nullable=False)
+    model_version = Column(Text, nullable=False)
+    prompt_template_hash = Column(Text, nullable=False)
+    predicted_judgment = Column(Text, nullable=True)  # L3/L4/경계 유지/검토 필요, 오류 시 NULL
+    predicted_reason = Column(Text, nullable=True)
+    grounded = Column(Integer, nullable=True)
+    borderline = Column(Integer, nullable=True)
+    api_error = Column(Integer, nullable=False, server_default=text("0"))
+    error_detail = Column(Text, nullable=True)
+    computed_at = Column(Text, nullable=False)

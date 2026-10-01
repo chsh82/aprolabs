@@ -2,14 +2,24 @@
 {% block title %}중등 어휘 레벨 검수{% endblock %}
 {% block content_wrapper %}
 <div class="max-w-2xl mx-auto px-6 py-6">
-  <h1 class="text-xl font-bold mb-1">중등 어휘 레벨 검수 (1차 배치 {{ stats.total }}건)</h1>
+  <h1 class="text-xl font-bold mb-1">중등 어휘 레벨 검수 ({{ batch_no }}차 배치 {{ stats.total }}건)</h1>
   <div class="text-sm text-gray-500 mb-4">
     국립국어원 공식 5등급(중1~3) 기반 신규 어휘 확장 후보입니다. 이 화면의
     판정을 저장해도 vocab_level·문항·매니페스트·공개 플래그는 전혀
     바뀌지 않습니다 - 별도 판정 테이블에 기록만 합니다. 아직
     vocabulary_contents에 없는 신규 어휘라, '제외' 판정도 원천 삭제가
-    아니라 "이번 중등 배치에서 제외"라는 기록일 뿐입니다.
+    아니라 "이번 중등 배치에서 제외"라는 기록일 뿐입니다. 자동(모델) 제안은
+    이 화면에 전혀 표시하지 않습니다 - 사람이 직접 판정합니다.
   </div>
+
+  {% if available_batches|length > 1 %}
+  <div class="flex gap-2 mb-3 text-sm">
+    {% for b in available_batches %}
+    <a href="/vocab-grade5-candidate-review/?batch={{ b }}"
+       class="px-3 py-1.5 rounded-lg {% if b == batch_no %}bg-indigo-50 text-indigo-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">{{ b }}차 배치</a>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <div class="border border-gray-200 rounded-xl p-4 mb-4 bg-white">
     <div class="flex items-center justify-between mb-2">
@@ -29,8 +39,8 @@
   </div>
 
   <div class="flex gap-2 mb-3 text-sm">
-    <a href="/vocab-grade5-candidate-review/" class="px-3 py-1.5 rounded-lg {% if not filter %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">전체</a>
-    <a href="/vocab-grade5-candidate-review/?filter=unjudged" class="px-3 py-1.5 rounded-lg {% if filter == 'unjudged' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">미검수만</a>
+    <a href="/vocab-grade5-candidate-review/?batch={{ batch_no }}" class="px-3 py-1.5 rounded-lg {% if not filter %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">전체</a>
+    <a href="/vocab-grade5-candidate-review/?batch={{ batch_no }}&filter=unjudged" class="px-3 py-1.5 rounded-lg {% if filter == 'unjudged' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">미검수만</a>
   </div>
 
   <div class="space-y-2">

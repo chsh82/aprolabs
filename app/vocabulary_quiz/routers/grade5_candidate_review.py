@@ -39,10 +39,15 @@ def _reviewer_email(user_id: str) -> str | None:
 def index(
     request: Request,
     filter: str = "",
+    batch: int = g5r.DEFAULT_BATCH_NO,
     db: Session = Depends(get_vocabulary_quiz_db),
     _admin: str = Depends(require_admin),
 ):
-    batch_no = g5r.DEFAULT_BATCH_NO
+    # 배치별 진행률·판정 집계가 섞이지 않도록 ?batch=N으로 분리한다(기존
+    # service 계층 함수들은 처음부터 batch_no 파라미터를 받고 있었다 -
+    # 이 라우트만 1번으로 고정돼 있던 것을 외부로 노출한다).
+    batch_no = batch
+    available_batches = g5r.available_batch_numbers(db)
     rows_all = g5r.ordered_batch_rows(db, batch_no)
     latest_map = g5r.latest_judgments_map(db, batch_no)
     stats = g5r.progress_stats(db, batch_no)
@@ -57,7 +62,8 @@ def index(
 
     return templates.TemplateResponse("vocabulary_quiz/grade5_candidate_review_index.html", {
         "request": request, "rows": rows, "stats": stats, "filter": filter,
-        "judgment_labels": JUDGMENT_LABELS,
+        "judgment_labels": JUDGMENT_LABELS, "batch_no": batch_no,
+        "available_batches": available_batches,
     }, headers=NOINDEX_HEADERS)
 
 

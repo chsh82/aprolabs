@@ -21,6 +21,14 @@ from app.vocabulary_quiz.models_grade5_candidate_review import (
 DEFAULT_BATCH_NO = 1
 
 
+def available_batch_numbers(db: Session) -> list[int]:
+    """실제 적재된 batch_no 목록(오름차순) - 목록 화면의 배치 선택기용."""
+    rows = db.query(VocabularyGrade5CandidateBatch.batch_no).distinct().order_by(
+        VocabularyGrade5CandidateBatch.batch_no
+    ).all()
+    return [r[0] for r in rows]
+
+
 def ordered_batch_rows(db: Session, batch_no: int = DEFAULT_BATCH_NO) -> list[VocabularyGrade5CandidateBatch]:
     """표제어 가나다순 - 재현 가능하고 세션 간 일관된 순서."""
     return (

@@ -129,7 +129,15 @@ def build_rows() -> tuple[list[dict], str]:
     return out, batch_hash
 
 
-def apply_to_db(db_path: str, rows: list[dict], *, dry_run: bool) -> None:
+def apply_to_db(db_path: str, rows: list[dict], *, dry_run: bool,
+                 expected_table_total: int | None = None) -> None:
+    """expected_table_total: 적용 후 vocabulary_grade5_candidate_batch 전체
+    행 수의 기댓값(누적, 여러 배치 합산). 생략하면 이 모듈의 EXPECTED_TOTAL
+    (단일 배치 전용 값)을 그대로 쓴다 - 1차 배치(batch1)는 테이블 전체가
+    그 배치뿐이라 기존 동작과 동일하다. 2차 이후 배치(apply_grade5_
+    candidate_batch2.py 등)는 누적 총수(예: 200)를 명시로 넘긴다."""
+    if expected_table_total is None:
+        expected_table_total = EXPECTED_TOTAL
     con = connect_rw(db_path)
     con.execute("PRAGMA foreign_keys=ON")
     cur = con.cursor()
@@ -219,10 +227,10 @@ def apply_to_db(db_path: str, rows: list[dict], *, dry_run: bool) -> None:
 
     cur.execute("SELECT COUNT(*) FROM vocabulary_grade5_candidate_batch")
     final_total = cur.fetchone()[0]
-    print(f"GATE 11: vocabulary_grade5_candidate_batch 총수 = {final_total} (기대 {EXPECTED_TOTAL})")
+    print(f"GATE 11: vocabulary_grade5_candidate_batch 총수 = {final_total} (기대 {expected_table_total})")
 
     con.close()
-    if not (integrity_ok and fk_ok and final_total == EXPECTED_TOTAL
+    if not (integrity_ok and fk_ok and final_total == expected_table_total
             and pre_content_total == post_content_total and pre_item_total == post_item_total
             and pre_ref_total == post_ref_total):
         raise RuntimeError("사후 검증 실패 - 위 GATE 로그 확인 필요")

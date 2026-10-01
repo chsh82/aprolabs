@@ -1,0 +1,7 @@
+﻿actual,predicted,count
+L3,L3,48
+L3,L4,10
+L3,경계 유지,2
+L4,L3,30
+L4,L4,8
+L4,경계 유지,2

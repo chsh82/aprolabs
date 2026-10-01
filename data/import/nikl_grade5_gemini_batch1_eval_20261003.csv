@@ -1,0 +1,101 @@
+﻿candidate_id,lemma,pos,predicted_judgment,predicted_reason,grounded,borderline,api_error,error_detail,model,prompt_template_hash,actual_judgment,correct
+G5-01725eddae69e013,팩,부사,L3,"일상 언어생활 및 문학 작품 표현에서 다채롭게 쓰이는 흉내내는 말로, 중학교 1~2학년 수준에서 충분히 습득하는 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-040795386d94973e,차렷하다,동사,L3,"일상생활과 체육/학교 생활에서 매우 보편적으로 사용하는 동작 동사로, 중학교 1~2학년 수준에서 기본적인 습득이 완료됩니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-04c5b7256a520ffc,화전민,명사,L3,초등학교 고학년~중학교 1-2학년 사회 및 역사 교과 과정에서 비중 있게 등장하는 역사·지리 개념어입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-06fbed8fcc30dc90,도르르,부사,L3,"사물의 모양이나 움직임을 나타내는 친숙한 음성상징어로, 중학교 1~2학년 수준에서 습득 가능한 기본적인 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-0839f66c2ea53a97,성좌,명사,L3,"'별자리'를 뜻하는 한자어로, 중학교 과학 및 문학 지문에서 자주 접하게 되는 기본 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-084929035943b0bd,발전기,명사,L3,"더 나은 단계로 나아가는 시기를 뜻하는 추상명사로, 중학교 1~2학년 수준의 서술문이나 설명문에서 흔히 접할 수 있습니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-0b695941ae270b65,낙엽수,명사,L3,"잎이 떨어지는 나무를 뜻하는 기본 과학 어휘로, 초등 및 중1~2학년 수준에서 습득됩니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-0fa0e0a975e55d66,벨기에,명사,L3,"세계 지리 및 일반 상식 수준의 국가명으로, 중학교 1~2학년 사회/지리 교과 과정에서 다루어집니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-100f458100a9d8fb,마늘종,명사,L3,"식재료 및 식문화와 관련된 일상 어휘로, 중학교 1~2학년 생활 어휘 범위에 속합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-1db1883c75c2d50a,성싶다,보조 형용사,L3,"중학교 국어 문법 과정에서 배우는 보조 형용사(~할 성싶다)로, 중1~2학년 수준에서 자연스럽게 이해 및 활용합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-1fa1f8a3b75321d7,소맥분,명사,L3,"밀가루를 이르는 한자어로, 실생활 상품표기나 실용문 등에서 중학교 1~2학년 시기에 습득하게 됩니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-2007e54a3970cc0b,상서롭다,형용사,L3,"중학교 국어 교과서의 고전 소설, 설화, 문학 작품 지문에 빈번히 등장하는 주요 문학 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-22a690bb519bce1b,산발치,명사,L3,"산의 아랫부분을 뜻하는 고유어로, 중학교 국어 시/소설 지문 등 문학 작품 읽기를 통해 중1~2학년 수준에서 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-24f9f70b64fbfd3c,동판화,명사,L3,중학교 미술 교과 과정의 판화 단원에서 기본적으로 다루는 미술 용어입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-25ba52eb835b5d79,품팔이,명사,L3,중학교 국어 교과에 수록되는 근대 현대 소설 및 역사 관련 지문에서 자주 등장하는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-28d404829adc5577,무용하다,형용사,L3,"'쓸모가 없다'라는 뜻의 한자어 어휘로, 중학교 1~2학년 수준의 비문학 논설문이나 설명문에서 자주 활용됩니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-2afba88d26d3b620,마지않다,보조 동사,L3,"'축하해 마지않는다' 등의 표현으로 쓰이는 보조 동사로, 중학교 국어 글쓰기 및 문학 표현 학습 과정에서 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-2df2bb0b3bb9a077,브레인스토밍,명사,L3,"중학교 1~2학년 국어 교과서의 '듣기·말하기', '토의와 토론' 및 '아이디어 떠올리기' 단원 단골 개념어입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-2ec00f40649615b7,의창,명사,L3,중학교 2학년 역사(한국사) 교과 과정의 고려 시대 제도 부문에서 핵심적으로 다루는 역사 용어입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-2f891def41c1e963,생명수,명사,L3,"생명을 살리는 물이라는 직관적인 의미와 비유적 쓰임을 지닌 어휘로, 중학교 1~2학년 수준에서 쉽게 이해할 수 있습니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-2fd478453d644311,자책감,명사,L3,"'자책감'은 자신의 잘못을 뉘우치고 책망하는 감정으로, 중학교 1~2학년 문학 및 비문학 지문에서 자주 접하는 기본적 감정 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-33e172c1fb916e0d,의혹하다,동사,검토 필요,'의혹하다'는 명사 '의혹'과 달리 용언 형태로서 쓰임이 매우 드물고 생소하여 습득 시기를 단정하기 어렵습니다.,False,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,N/A(hold)
+G5-348ec1fbafbe03a9,암만하다,동사,검토 필요,'암만하다'는 현대 국어 사용자에게 매우 생소한 어휘로 판단 근거가 부족합니다.,False,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-35d7896d01fecab8,동지애,명사,L3,"'동지애'는 뜻을 함께하는 사람들의 유대감을 뜻하는 어휘로, 중학교 1~2학년 수준에서 일상적·문학적으로 자연스럽게 익힙니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-3614e4f1ad2da304,적시타,명사,L3,'적시타'는 야구 및 스포츠 관련 대중적 용어로 중학교 1~2학년 수준의 친숙도를 가집니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-36f40d4775d9e761,희희낙락거리다,동사,L3,"'희희낙락거리다'는 기뻐하고 즐거워하는 모습을 나타내는 표현으로, 중1~2 학생들에게 익숙한 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-37ab89103f8c1de7,부활절,명사,L3,'부활절'은 문화적·종교적 기념일 개념으로 중학교 1~2학년 시기 이전에 이미 습득하는 기본 상식 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-37bfdbe7465049a9,캘커타,명사,경계 유지,'캘커타'는 인도의 지명이자 구 명칭으로 세계사/지리 학습 시기에 따라 중2와 중3 경계에 걸쳐 있습니다.,False,True,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-3a3fa28212cbd5ef,치어,명사,L3,'치어'는 어린 물고기를 뜻하는 기본 생물 용어로 중1~2 과정에서 상식적으로 충분히 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-3aedc662710832d4,순서도,명사,L3,"'순서도'는 문제 해결 절차를 기호로 나타낸 그림으로, 중학교 1~2학년 정보 및 수학 교과에서 기본적으로 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-3e166437d3525d91,연방,명사,L4,"'연방'은 국가 형태와 주권, 외교권 등의 정치·사회적 개념을 이해해야 하므로 중학교 3학년 수준에 적합합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-402f9c0c64136e9e,천고,명사,경계 유지,'천고'는 아주 먼 옛날이나 세월을 뜻하는 한문투 어휘로 고전문학이나 심화 독해에서 등장하여 L3와 L4의 경계에 있습니다.,False,True,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-41a528d6394ba219,보리수나무,명사,L3,'보리수나무'는 문학 작품이나 자연 관찰 등에서 흔히 접할 수 있는 식물명으로 중1~2 수준에서 이해 가능합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-41d7d493497694bb,조달,명사,L4,'조달'은 자금이나 물자를 대어 준다는 뜻의 경제·행정 관련 어휘로 중학교 3학년 수준의 사회/경제 분야 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,False
+G5-43238e3a751baddf,수사법,명사,L3,"'수사법'은 문장을 효과적으로 꾸미는 방법으로, 중학교 1~2학년 국어 교육과정에서 핵심적으로 다루는 개념어입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-44a69a009f753aa8,타향,명사,L3,'타향'은 고향이 아닌 곳을 의미하는 일반적인 명사로 중학교 1~2학년 문학 및 일상생활에서 널리 쓰입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-4561caf904dd8cfe,설피,명사,경계 유지,'설피'는 전통 민속 도구 어휘로 교과서 문학 작품 등에 등장하나 일상성이 낮아 L3와 L4 경계로 볼 수 있습니다.,False,True,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-4d4e81d64548e5c4,면회하다,동사,L3,"'면회하다'는 제약된 공간의 사람을 찾아가 만나는 뜻으로, 중1~2 수준에서 일상적으로 인지하는 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-4e23b8f2082b588a,쾌속,명사,L3,'쾌속'은 매우 빠른 속도를 뜻하는 직관적인 어휘로 중학교 1~2학년 수준에서 쉽게 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-5033b876a45aa218,저딴,관형사,L3,'저딴'은 '저따위'의 구어적 표현으로 학생들이 일상 대화나 문학 작품의 대화문에서 자주 접하는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-5047276d84610bfb,소송비,명사,L4,"소송 진행 및 법원의 재판 비용과 관련된 법률 영역의 어휘로, 중학교 3학년 수준의 사회·법 관련 단원에서 익히기에 적합합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,False
+G5-5a623b21f6f73b62,이다,동사,L3,"'지붕을 이다'와 같이 쓰이는 고유어 동사로, 중학교 1~2학년 문학 작품이나 전통문화 관련 글에서 접하고 익히는 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-5a852850f4ed0e6f,춘곤증,명사,L3,봄철 신체 변화를 나타내는 친숙한 일상 어휘로 중학교 1~2학년 수준에서 충분히 습득되어 있습니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-5ad6bd69c1024a46,유효하다,형용사,L3,"효과가 있거나 효력이 있음을 뜻하는 자주 쓰이는 어휘로, 중학교 1~2학년 언어 생활 및 글읽기에서 기본적으로 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-6157838a22ae3d2b,멍군,명사/감탄사,L3,장기 놀이 관련 어휘 및 관용적 표현('장군 멍군')으로 사용되어 중학교 1~2학년 학생에게 친숙합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-6466cefcb6f43e77,조,의존 명사,L3,"법률/규정의 조항이나 조목을 나타내는 의존 명사로, 중학교 1~2학년 교과 과정 및 교칙 등에서 자연스럽게 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-691a964ace5eef18,리비아,명사,L3,아프리카 국가명으로 중학교 1~2학년 사회/지리 교과 과정에서 익히는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-69cf854ee18aa3f1,고것,대명사,L3,일상 대화 및 문학 작품에서 흔히 쓰이는 구어체 대명사로 중학교 1~2학년 수준에서 이미 잘 알고 있습니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-69d419978e0cf85e,합죽선,명사,L4,"우리나라 전통 부채의 일종을 가리키는 구체적인 전통문화 어휘로, 중학교 3학년 수준의 심화 국어/문학 설명문 등에서 접하기 쉽습니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-6de00460b8d3f2ed,유공자,명사,L3,'독립유공자' 등의 형태로 시사 및 역사 영역에서 자주 접하는 어휘로 중학교 1~2학년 수준에서 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-6e330f8625937b4b,조반,명사,L3,"아침밥을 이르는 한자어로, 중학교 1~2학년 국어 소설 작품 등에서 자주 접하며 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-6f29f2db8bd5047a,원생,명사,L3,"학원생, 원생 등 특정 기관에 속해 배우거나 수용된 사람을 뜻하는 어휘로 중학교 1~2학년에게 친숙합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-6fbf37d42d4be6ae,밥투정,명사,L3,일상적이고 직관적인 어휘로 중학교 1~2학년 학생이 이미 익히고 있는 기본 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-72abbffade28c040,대입,품사 없음,L3,'대학교 입학'의 줄임말로 진로 및 진학 관련 일상 대화에서 중학교 1~2학년 시기부터 흔히 사용하는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-7553747fc991504b,서넛,수사,L3,수의 대략을 나타내는 기초적인 고유어 수사로 중학교 1~2학년 수준에서 익히고 활용합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-75db47a8af772ebf,경제인,명사,L4,경제계 인물뿐만 아니라 경제학에서 다루는 합리적 인간상('경제인')을 포함하는 학술적·사회적 개념어로 중학교 3학년 사회/경제 단원에서 주로 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,False
+G5-795351a35677b337,살상하다,동사,L3,"역사나 뉴스 등에서 자주 접하는 한자어 동사로, 중학교 1~2학년 글읽기에서 기본적으로 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-7f73a436a64e023d,자전축,명사,L3,중학교 2학년 과학 교과 과정(지구의 자정과 공전)에서 핵심적으로 다루는 과학 개념어입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-80c717622f097d44,해명하다,동사,L3,"어떤 내용이나 사실을 밝혀서 풀이하는 것을 뜻하는 일반 어휘로, 중학교 1~2학년 국어 및 비문학 지문에서 널리 쓰입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-81553c0dff4e02aa,깜짝거리다,동사,L3,눈을 자꾸 살짝 감았다 뜨는 동작을 나타내는 기초 의태어/동사로 중학교 1~2학년 수준에서 충분히 습득되는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-81fe200c24117ec5,혈세,명사,L3,"'혈세'는 귀중한 세금을 비유하거나 가혹한 세금을 의미하는 단어로, 중학교 1~2학년 수준의 사회 및 국어 매체 자료에서 흔히 접할 수 있다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-82462e20f850e89d,구상도,명사,L3,"'구상도'는 미술이나 기획 수업 등에서 계획한 생각을 그림으로 표현하는 그림을 뜻하며, 중학교 1~2학년 교육과정에서 자연스럽게 습득한다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-85e1f60f7edb514f,도시민,명사,L3,"'도시민'은 도시에 사는 사람을 뜻하는 직관적인 한자 어휘로, 중학교 1~2학년 사회 및 국어 어휘 수준에 적합하다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-86ac65ab170bf93b,고안되다,동사,L3,"'고안되다'는 연구하여 새로운 안이 나오다는 뜻으로, 중학교 1~2학년 국어 및 기술/과학 교과에서 자주 사용하는 어휘이다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-8b5bf85d6ee5c386,저능아,명사,L3,"'저능아'는 지능이 떨어지는 아이를 뜻하는 일상적·문학적 어휘로, 중학교 1~2학년 수준에서 이미 그 의미를 이해하고 있다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-8ce1ebfbf28902b8,개축,명사,L4,"'개축'은 허물어지거나 낡은 건물을 새로 짓거나 고쳐 쌓는 한자어 행정·건축 용어로, 중학교 3학년 사회/사회탐구 관련 개념에서 주로 학습한다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,False
+G5-8dc227085473c585,하오,명사,L4,"'하오'는 오후(낮 12시~밤 12시)를 뜻하는 문어적 표현으로, 중학교 3학년 고전 소설이나 역사적 문맥에서 습득하기 자연스럽다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-8eb7191f007f9d70,보국안민,명사,L4,"'보국안민'은 나랏일을 돕고 백성을 편안하게 한다는 한자성어로, 중학교 3학년 역사(한국사) 교육과정의 동학 농민 운동 단원에서 핵심적으로 배운다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,False
+G5-9050b15f83fa1e98,국방력,명사,L3,"'국방력'은 국토방위를 위한 군사적 힘을 뜻하며, 중학교 1~2학년 사회 및 시사 관련 어휘로 충분히 이해할 수 있다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-905ab8dffc17990c,정보비,명사,L4,"'정보비'는 정보 활동에 드는 경비를 뜻하는 행정/시사 어휘로, 중학교 3학년 수준의 뉴스나 사회 매체 이해 과정에서 익히게 된다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-92af004a38b66494,부촌,명사,L3,"'부촌'은 부자가 많이 사는 마을을 뜻하는 어휘로, 중학교 1~2학년 일상 어휘 및 국어 독해 수준에서 잘 알려져 있다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-9407574f98d8223a,종잡다,동사,L3,"'종잡다'는 대강 어림잡아 헤아린다는 뜻의 일상적 순우리말 동사로, 중학교 1~2학년 수준에서 습득하는 어휘이다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-95486a515505d9c7,불여우,명사,L3,"'불여우'는 꾀가 많고 못된 여자를 비유적으로 이르는 말로, 중학교 1~2학년 이전에 친숙하게 익히는 관용적 표현이다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-95b7dd4ace059499,회답서,명사,L3,"'회답서'는 물음이나 편지에 대해 답변하는 글을 뜻하며, 중학교 1~2학년 국어 편지글/서신 교과 과정에서 이해하기 쉽다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-9a8bb8abc0cfa4da,탄생석,명사,L3,"'탄생석'은 태어난 달을 상징하는 보석이라는 뜻으로, 중학교 1~2학년 학생들에게 친숙하고 쉬운 일반 어휘이다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-a1d45cd61a3f5e0b,지근지근,부사,L3,"'지근지근'은 머리가 쑤시듯 아픈 모양을 나타내는 부사로, 중학교 1~2학년 수준의 일상적·문학적 표현이다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-a73d584594fadecb,비장,명사,검토 필요,"'비장'은 림프 계통 기관을 가리키는 해부학/생물학 전문어로, 중학교 교육과정 일반 어휘 범주를 벗어나 생소하므로 판단 근거가 부족하다.",False,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-ab0a37f0461f391b,축하문,명사,L3,"'축하문'은 축하하는 뜻을 적은 글을 의미하는 직관적인 한자 합성어로, 중학교 1~2학년 수준에서 쉽게 습득할 수 있다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-b03ce361da20f505,영인본,명사,검토 필요,"'영인본'은 원본을 사진 등의 방법으로 복제한 인쇄물을 뜻하는 서지학 전문 용어로, 중학생 수준에서 매우 생소하여 판단 근거가 부족하다.",False,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-ba399454712d85f7,빼다,동사,L3,'빼다'의 '두렵거나 싫어서 하지 아니하려고 하다'(예: 몸을 빼다)라는 의미는 중학교 1~2학년 구어 및 관용적 표현으로 자연스럽게 습득한다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-ba4c83e7811f8be7,답사하다,동사,검토 필요,제시된 뜻풀이는 '답사하다'의 일반적 의미(현장 조사)가 아닌 고어·조선 시대의 특수 전문어적 의미이므로 학생들에게 매우 생소하여 근거가 부족합니다.,False,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-bc3d3e5746938ca4,교직원,명사,L3,"학교 생활 및日常 대화에서 일찍 접하는 어휘로, 중학교 1~2학년 수준에서 충분히 습득하는 기본 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-c0085da6adae9d1a,연역적,명사/관형사,L4,"논술 및 논리적 사고, 설명문·논설문 분석을 본격적으로 다루는 중학교 3학년 국어 교육과정에서 주로 습득합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-c2a665fdc57f20bf,올곧다,형용사,L3,인물의 성품이나 태도를 묘사할 때 자주 쓰이는 순우리말 표현으로 중학교 1~2학년 수준에서 습득하는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-cb0ca8ec0b1687e8,시찰,명사,L3,사회 현장 탐방이나 사회/국어 교과서 등에서 중학교 1~2학년 시기에 익히기 자연스러운 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-d056b31791209fae,해중,명사,L3,"한자 구성(바다 해, 가운데 중)이 단순하여 바다 속/가운데라는 의미를 중1~2 수준에서 직관적으로 이해할 수 있습니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-d54c4a6b3d2a0a28,명제,명사,L4,"논리학 및 수학, 고난도 논설문 읽기 단원에서 본격적으로 습득하는 개념어이므로 중학교 3학년 수준에 적합합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-d61ddc78e13976ab,뱃심,명사,L3,일상 관용적 표현이나 문학 작품에서 자주 접할 수 있는 표현으로 중1~2 수준에서 기본적으로 익히는 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-d6add3880c766a14,대소,명사,L3,크기와 작음을 뜻하는 기초적인 한자어 개념으로 중학교 1~2학년 이전에 이미 자연스럽게 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-dd925e505c88b4a6,삼중창,명사,L3,중학교 음악 교육과정 및 국어 교과서의 예술 관련 지문에서 기본적으로 다루는 기초 음악 용어입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-e15695de1f4b174e,열등하다,형용사,L3,"'열등감', '열등하다' 등의 어휘는 중학교 1~2학년 수준에서 폭넓게 익히는 일상어입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-eb06e056b4f673b1,메가,의존 명사,L3,데이터 수치 및 전자기파 단위로서 초·중등 학생들에게 매우 친숙한 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-ebf10f49fc3e8e8c,앎,명사,L3,"동사 '알다'의 명사형으로, 중학교 1~2학년 국어 및 도덕/사회 교과서에서 자주 접하는 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-f5092bcafadde4af,좋이,부사,검토 필요,"'좋이'라는 부사는 현대 국어 구어체에서 거의 사용되지 않는 예스러운 용법으로, 학생들에게 친숙하지 않아 판단 근거가 부족합니다.",False,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,N/A(hold)
+G5-f56ec31b51660fa1,엄밀하다,형용사,L3,"'엄밀히 말하면', '엄밀한 검증' 등의 표현으로 중학교 1~2학년 수준에서 널리 쓰이는 어휘입니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
+G5-f760313fffa29820,전국구,명사,L4,선거 제도 및 정치 파트를 다루는 중학교 3학년 사회/시사 관련 국어 단원에서 다루기 적합한 전문 어휘입니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-f9ebd68ab390df8c,논박,명사,L4,"토론, 토의 및 상대 주장의 허점을 밝히는 고난도 비판적 읽기를 다루는 중학교 3학년 국어 과정에 적합합니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-fabaf9d4d2256825,공사,명사,L4,"역사 및 사회 교과, 근대 외교 관련 지문에서 다루는 외교관 계급 개념으로 중학교 3학년 수준에 가깝습니다.",True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,True
+G5-fcef8d2373e7be3f,체,감탄사,L3,일상적 대화나 소설의 인물 대사에서 흔하게 등장하는 감탄사로 중1~2 이하에서도 충분히 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L4,False
+G5-fe48c1f1a6d5d75d,변주,명사,L3,음악 수업(변주곡) 및 국어 비문학/문학 지문에서 변형 표현을 가리킬 때 중1~2 수준에서 기본 습득합니다.,True,False,False,,gemini-3.6-flash,305d00a3d7b055f6,L3,True
