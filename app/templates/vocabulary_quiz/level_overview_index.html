@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}어휘 레벨 현황{% endblock %}
+{% block content_wrapper %}
+<div class="max-w-5xl mx-auto px-6 py-6">
+  <h1 class="text-xl font-bold mb-1">어휘 레벨 현황 (전체 {{ result.total_all }}건, 조회 전용)</h1>
+  <div class="text-sm text-gray-500 mb-4">
+    현재 출제 레벨·공식등급·공식 추천 범위·사람 판정(tier1)·동형이의/전문 의미
+    주의·연결 문항 수를 한 화면에서 조회합니다. 이 화면에서는 어떤 값도 바꿀 수
+    없습니다(판정은 "국립국어원 등급 검수(tier1)" 화면에서만 합니다) - 모델(Gemini)
+    제안은 이 화면에 전혀 표시하지 않습니다.
+  </div>
+
+  <div class="border border-gray-200 rounded-xl p-4 mb-4 bg-white">
+    <div class="text-xs font-semibold text-gray-500 mb-2">범주별 건수(전체 {{ result.total_all }}건 기준)</div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+      {% for cat, label in category_labels.items() %}
+      <div class="bg-gray-50 rounded-lg py-2 px-2 text-center">
+        <div class="font-bold text-gray-700">{{ result.category_counts.get(cat, 0) }}</div>
+        <div class="text-gray-400">{{ label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form method="GET" class="border border-gray-200 rounded-xl p-4 mb-4 bg-white flex flex-wrap gap-3 items-end text-sm">
+    <div>
+      <label class="block text-xs text-gray-500 mb-1">현재 레벨</label>
+      <select name="level" class="border border-gray-200 rounded-lg px-2 py-1.5 text-sm">
+        <option value="">전체</option>
+        {% for lv, label in grade_labels.items() %}
+        <option value="{{ lv }}" {% if filters.level == lv|string %}selected{% endif %}>L{{ lv }}({{ label }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-500 mb-1">사람 판정(tier1)</label>
+      <select name="judgment" class="border border-gray-200 rounded-lg px-2 py-1.5 text-sm">
+        <option value="">전체</option>
+        <option value="__none__" {% if filters.judgment == '__none__' %}selected{% endif %}>판정 없음</option>
+        {% for j in judgment_choices %}
+        <option value="{{ j }}" {% if filters.judgment == j %}selected{% endif %}>{{ j }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="flex items-center gap-1.5 text-sm">
+        <input type="checkbox" name="change_candidate" value="1" {% if filters.change_candidate == '1' %}checked{% endif %}>
+        변경 후보만(tier1 조정·RULE_A/B)
+      </label>
+    </div>
+    <div>
+      <label class="flex items-center gap-1.5 text-sm">
+        <input type="checkbox" name="needs_review" value="1" {% if filters.needs_review == '1' %}checked{% endif %}>
+        검토 필요만(공식5등급 미검수·미매칭/다중후보/의미위험·tier1 뜻확인/보류)
+      </label>
+    </div>
+    <div>
+      <label class="block text-xs text-gray-500 mb-1">표제어 검색</label>
+      <input type="text" name="q" value="{{ filters.q }}" placeholder="표제어 일부"
+             class="border border-gray-200 rounded-lg px-2 py-1.5 text-sm">
+    </div>
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-1.5 rounded-lg">조회</button>
+    <a href="/vocab-level-overview/" class="text-sm text-gray-400 hover:text-gray-600">필터 초기화</a>
+  </form>
+
+  <div class="text-xs text-gray-400 mb-2">
+    조건에 맞는 {{ result.total_matched }}건 중 {{ (result.page - 1) * result.page_size + 1 }}–{{ [result.page * result.page_size, result.total_matched]|min }}건 표시
+    (페이지 {{ result.page }}/{{ result.total_pages }})
+  </div>
+
+  <div class="overflow-x-auto border border-gray-200 rounded-xl bg-white">
+    <table class="w-full text-xs">
+      <thead class="bg-gray-50 text-gray-500">
+        <tr>
+          <th class="px-2 py-2 text-left">표제어</th>
+          <th class="px-2 py-2 text-left">현재 레벨</th>
+          <th class="px-2 py-2 text-left">공식등급</th>
+          <th class="px-2 py-2 text-left">공식 추천 범위</th>
+          <th class="px-2 py-2 text-left">사람 판정(tier1)</th>
+          <th class="px-2 py-2 text-left">범주(적용 대상)</th>
+          <th class="px-2 py-2 text-left">동형이의·전문의미 주의</th>
+          <th class="px-2 py-2 text-right">연결 문항 수</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for r in result.rows %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-2 py-2 font-medium text-gray-800">{{ r.lemma }}<span class="text-gray-400">/{{ r.pos or '-' }}</span></td>
+          <td class="px-2 py-2">
+            {% if r.현재레벨 is not none %}
+            L{{ r.현재레벨 }}({{ r.grade_label }})
+            {% if r.level_status == 'REVIEW_BOUNDARY' %}<span class="text-amber-600">경계</span>{% endif %}
+            {% else %}-{% endif %}
+          </td>
+          <td class="px-2 py-2">{{ r.official_grade or '-' }}</td>
+          <td class="px-2 py-2">{{ r.proposed_base_level or '-' }}</td>
+          <td class="px-2 py-2">
+            {% if r.tier1_judgment %}
+            <span class="text-blue-600">{{ r.tier1_judgment }}</span>
+            {% else %}<span class="text-gray-400">판정 없음</span>{% endif %}
+          </td>
+          <td class="px-2 py-2">{{ category_labels.get(r.category, r.category) }}</td>
+          <td class="px-2 py-2 text-amber-700">
+            {{ r.exception_reason or '' }}{% if r.exception_reason_secondary %} · {{ r.exception_reason_secondary }}{% endif %}
+            {% if r.match_type in ('매칭없음','다중후보','단일일치_동형이의주의','표제어만일치') %}
+            <div class="text-gray-400">match_type={{ r.match_type }}</div>
+            {% endif %}
+          </td>
+          <td class="px-2 py-2 text-right">{{ r.linked_item_count }}</td>
+        </tr>
+        {% endfor %}
+        {% if not result.rows %}
+        <tr><td colspan="8" class="px-2 py-8 text-center text-gray-400">조건에 맞는 항목이 없습니다.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-between text-sm mt-3">
+    {% set base_qs = "level=" + filters.level + "&judgment=" + filters.judgment + "&change_candidate=" + filters.change_candidate + "&needs_review=" + filters.needs_review + "&q=" + filters.q %}
+    {% if result.page > 1 %}
+    <a href="/vocab-level-overview/?{{ base_qs }}&page={{ result.page - 1 }}" class="text-blue-600 hover:underline">← 이전 페이지</a>
+    {% else %}<span></span>{% endif %}
+    {% if result.page < result.total_pages %}
+    <a href="/vocab-level-overview/?{{ base_qs }}&page={{ result.page + 1 }}" class="text-blue-600 hover:underline">다음 페이지 →</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
