@@ -3,12 +3,18 @@
 {% block content_wrapper %}
 <div class="max-w-2xl mx-auto px-6 py-6">
   <h1 class="text-xl font-bold mb-1">L3 중등 보강 1차 콘텐츠·문항 검수 ({{ judged }}/{{ total }})</h1>
-  <div class="text-sm text-gray-500 mb-6">
+  <div class="text-sm text-gray-500 mb-2">
     공식 5등급 신규 어휘 중 사람이 L3로 판정한 30건(2026-10-07, 관리자 전용 ·
     학생 비공개). <strong>여기 판정은 콘텐츠·문항 검수일 뿐 레벨 판정이
     아닙니다</strong> - 레벨(L3)은 이미 다른 화면에서 사람이 판정했고, 이
     화면에서 바꾸지 않습니다. 판정을 저장해도 student_exposure/public_ready는
     바뀌지 않습니다(실제 공개 전환 기능은 이 화면에 없습니다).
+  </div>
+  <div class="text-sm text-emerald-700 mb-6 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+    2026-10-07 오답 선택지 v2 개정: <strong>{{ revised_count }}건 오답 전면 재설계</strong>
+    (item_id 새로 등록, 과거 문항은 비활성화해 보존) ·
+    <strong>{{ stale_count }}건 재검수 필요</strong>(개정으로 기존 승인 신선도 만료) ·
+    <strong>{{ total - revised_count }}건 보류</strong>(벨기에 - 오답 설계 보류, 기존 승인 그대로 유효).
   </div>
 
   <div class="space-y-2">
@@ -19,14 +25,18 @@
         <div>
           <span class="font-medium text-gray-800">{{ row.content.lemma }}</span>
           <span class="text-xs text-gray-400 ml-2">{{ row.content.pos }} · {{ row.content.content_id }}</span>
+          <span class="text-xs ml-2 px-1.5 py-0.5 rounded
+              {% if row.revised %}bg-emerald-100 text-emerald-700{% else %}bg-gray-100 text-gray-500{% endif %}">
+            {{ '오답 개정됨(v2)' if row.revised else '보류(v1 유지)' }}
+          </span>
         </div>
         <div class="text-xs">
-          {% if row.review %}
-            {% if row.stale %}
-            <span class="text-amber-600 font-medium">판정 있음(신선도 만료)</span>
-            {% else %}
-            <span class="text-blue-600 font-medium">{{ verdict_labels[row.review.verdict] }}</span>
-            {% endif %}
+          {% if row.status == '재검수 필요' %}
+          <span class="text-amber-600 font-medium">재검수 필요(개정으로 만료)</span>
+          {% elif row.status == '승인 유지' %}
+          <span class="text-blue-600 font-medium">{{ verdict_labels[row.review.verdict] }}(유지)</span>
+          {% elif row.status == '보류' %}
+          <span class="text-gray-500 font-medium">{{ verdict_labels[row.review.verdict] if row.review else '판정 없음' }}(보류)</span>
           {% else %}
           <span class="text-gray-400">검수 전</span>
           {% endif %}

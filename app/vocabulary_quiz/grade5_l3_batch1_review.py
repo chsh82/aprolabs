@@ -73,12 +73,56 @@ def next_content_id(db: Session, content_id: str) -> str | None:
 
 
 def linked_items(db: Session, content_id: str) -> list[VocabularyMultiformatItem]:
+    """현재 활성(is_active=1) 문항만 - 2026-10-07 오답 개정으로 29단어는
+    기존 문항이 비활성화되고 새 item_id로 다시 적재됐다(원본은 감사
+    자료로 DB에 그대로 남아 있지만 is_active=0이라 여기서는 안 보인다).
+    이 필터가 없으면 개정된 콘텐츠의 신선도 해시가 "구+신 문항 2배"로
+    잘못 계산된다."""
     return (
         db.query(VocabularyMultiformatItem)
         .filter(VocabularyMultiformatItem.source_content_id == content_id)
         .filter(VocabularyMultiformatItem.source_version == SOURCE_VERSION)
+        .filter(VocabularyMultiformatItem.is_active == 1)
         .order_by(VocabularyMultiformatItem.item_id)
         .all()
+    )
+
+
+# 2026-10-07 오답 개정에서 제외·보류한 content_id - scripts/vocab/
+# grade5_batch1_distractors_v2.py의 HOLD와 같은 값이다(app 코드가 scripts/
+# 디렉터리를 import하면 배포 경로에 따라 깨지기 쉬워, 적용 결과만 여기
+# 상수로 그대로 옮겨 적었다 - 두 곳의 값이 어긋나면 안 되므로 바꿀 때
+# 반드시 같이 바꿀 것).
+HELD_CONTENT_IDS: frozenset[str] = frozenset({
+    "G5-0fa0e0a975e55d66",  # 벨기에 - 국가명이라 의미 기준 오답 설계가 어려워 보류
+})
+
+
+def is_revised(content_id: str) -> bool:
+    """이 content_id가 2026-10-07 오답 개정 대상(29건)인지."""
+    return content_id not in HELD_CONTENT_IDS
+
+
+def inactive_items(db: Session, content_id: str) -> list[VocabularyMultiformatItem]:
+    """비활성화된(is_active=0) 원본 문항 - 감사·before/after 비교 화면용.
+    2026-10-07 오답 개정으로 비활성화된 29단어의 원본 58문항이 여기 해당."""
+    return (
+        db.query(VocabularyMultiformatItem)
+        .filter(VocabularyMultiformatItem.source_content_id == content_id)
+        .filter(VocabularyMultiformatItem.source_version == SOURCE_VERSION)
+        .filter(VocabularyMultiformatItem.is_active == 0)
+        .order_by(VocabularyMultiformatItem.item_id)
+        .all()
+    )
+
+
+def hold_reason(content_id: str) -> str | None:
+    if content_id not in HELD_CONTENT_IDS:
+        return None
+    return (
+        "국가명은 '의미' 기준 오답(유의어/행위·결과/부분·전체 등)을 적용하기 어렵고, "
+        "다른 나라 특징을 오답으로 쓰려면 검증 안 된 사실을 새로 끌어와야 해 이번 "
+        "개정에서는 보류했습니다(수량을 채우려고 억지로 넣지 않음)."
     )
 
 

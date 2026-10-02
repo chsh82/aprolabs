@@ -167,12 +167,22 @@ EXPECTED_L6_PILOT_ITEM_COUNT = 40
 # 않고, 대신 content.is_active=1·student_exposure=0·public_ready=0만
 # 확인한다(아래 _select_grade5_l3_batch1_item_ids 참고). 레벨 미확정이라는
 # 사실을 가짜 레벨 행을 만들어 감추지 않는다.
+# 2026-10-07 오답 개정(v2): 30단어 중 29단어(58문항)는 오답을 전면
+# 재설계해 **새 item_id**(기존 id + "_V2")로 다시 적재했다 - 기존 item_id는
+# 삭제하지 않고 is_active=0으로만 비활성화했다(VocabularyMultiformatResponse.
+# item_id가 이 테이블을 FK로 참조하고, 결과 조회가 세션 스냅샷이 아니라
+# 문항을 매번 다시 읽는 구조라 기존 id를 그대로 덮어쓰면 과거 응시 결과가
+# 조용히 달라질 수 있었음 - 당시 세션 0건이었지만 구조상 새 id로 처리).
+# 벨기에 1단어(2문항)는 국가명이라 의미 기준 오답을 만들기 어려워 이번
+# 개정에서 제외·보류했다 - 매니페스트(아래)에서 빠져 있어 기본 응시 풀에
+# 들어오지 않지만, 그 content_id·기존 문항·기존 승인은 전혀 건드리지
+# 않았다. 그래서 기대 건수가 60 -> 58로 줄었다.
 GRADE5_L3_BATCH1_SOURCE_VERSION = "nikl_grade5_l3_batch1_v1"
 GRADE5_L3_BATCH1_MANIFEST_PATH = (
     Path(__file__).resolve().parents[3]
     / "data" / "vocab" / "nikl_grade5_l3_batch1_manifest_v1.json"
 )
-EXPECTED_GRADE5_L3_BATCH1_ITEM_COUNT = 60
+EXPECTED_GRADE5_L3_BATCH1_ITEM_COUNT = 58
 
 
 class PilotBatchIntegrityError(Exception):

@@ -54,12 +54,27 @@ def index(
             continue
         review = br.latest_review(db, cid)
         stale = br.review_is_stale(db, review, content) if review else None
-        rows.append({"content": content, "review": review, "stale": stale})
+        revised = br.is_revised(cid)
+        if not revised:
+            status = "보류"
+        elif review is None:
+            status = "검수 전"
+        elif stale:
+            status = "재검수 필요"
+        else:
+            status = "승인 유지"
+        rows.append({
+            "content": content, "review": review, "stale": stale,
+            "revised": revised, "status": status,
+        })
 
     judged = sum(1 for r in rows if r["review"] is not None)
+    revised_count = sum(1 for r in rows if r["revised"])
+    stale_count = sum(1 for r in rows if r["status"] == "재검수 필요")
     return templates.TemplateResponse("vocabulary_quiz/grade5_l3_batch1_review_index.html", {
         "request": request, "rows": rows, "verdict_labels": VERDICT_LABELS,
         "total": len(rows), "judged": judged,
+        "revised_count": revised_count, "stale_count": stale_count,
     }, headers=NOINDEX_HEADERS)
 
 
@@ -78,10 +93,24 @@ def detail(
         raise HTTPException(status_code=404, detail="콘텐츠를 찾을 수 없습니다")
 
     items = br.linked_items(db, content_id)
-    items_with_options = [
-        {"item": it, "options": json.loads(it.options_json) if it.options_json else []}
-        for it in items
-    ]
+
+    def _with_admin_notes(it):
+        options = json.loads(it.options_json) if it.options_json else []
+        flags_list = json.loads(it.qa_flags_json) if it.qa_flags_json else [{}]
+        flags = flags_list[0] if flags_list else {}
+        return {
+            "item": it, "options": options,
+            "wrong_option_reasons": flags.get("wrong_option_reasons"),
+            "key_clue": flags.get("key_clue"),
+            "revised_from_item_id": flags.get("revised_from_item_id"),
+            "v2_hold_reason": flags.get("v2_hold_reason"),
+        }
+
+    items_with_options = [_with_admin_notes(it) for it in items]
+    revised = br.is_revised(content_id)
+    old_items_with_options = (
+        [_with_admin_notes(it) for it in br.inactive_items(db, content_id)] if revised else []
+    )
 
     history = br.review_history(db, content_id)
     latest = history[0] if history else None
@@ -90,6 +119,8 @@ def detail(
     return templates.TemplateResponse("vocabulary_quiz/grade5_l3_batch1_review_detail.html", {
         "request": request, "content": content,
         "items_with_options": items_with_options,
+        "old_items_with_options": old_items_with_options,
+        "revised": revised, "hold_reason": br.hold_reason(content_id),
         "human_level_note": br.human_level_note(content_id),
         "history": history, "latest": latest, "stale": stale,
         "verdict_choices": VERDICT_CHOICES, "verdict_labels": VERDICT_LABELS,
