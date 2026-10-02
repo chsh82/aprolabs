@@ -18,6 +18,7 @@ from app.vocabulary_quiz.routers import publish_review as vocabulary_quiz_publis
 from app.vocabulary_quiz.routers import official_grade_review as vocabulary_quiz_official_grade_review
 from app.vocabulary_quiz.routers import grade5_candidate_review as vocabulary_quiz_grade5_candidate_review
 from app.vocabulary_quiz.routers import level_overview as vocabulary_quiz_level_overview
+from app.vocabulary_quiz.routers import grade5_l3_batch1_review as vocabulary_quiz_grade5_l3_batch1_review
 from app import isbn
 from app.auth import get_current_user_id
 
@@ -86,6 +87,7 @@ app.include_router(vocabulary_quiz_publish_review.router)
 app.include_router(vocabulary_quiz_official_grade_review.router)
 app.include_router(vocabulary_quiz_grade5_candidate_review.router)
 app.include_router(vocabulary_quiz_level_overview.router)
+app.include_router(vocabulary_quiz_grade5_l3_batch1_review.router)
 
 # 외부 서비스(momoai_web) 연동용 - 세션 쿠키가 아니라 X-API-Key로 자체 인증하므로
 # 아래 auth_middleware의 로그인 리디렉션 대상에서 빼야 한다(안 빼면 미로그인

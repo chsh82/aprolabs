@@ -48,6 +48,23 @@
       학생에게는 공개되지 않습니다.
     </p>
     {% endif %}
+
+    <label class="flex items-center gap-2 border rounded-lg px-3 py-2 text-sm cursor-pointer mb-1 bg-emerald-50 border-emerald-300"
+           {% if grade5_l3_batch1_unavailable_reason %}title="{{ grade5_l3_batch1_unavailable_reason }}"{% endif %}>
+      <input type="checkbox" id="grade5-l3-batch1-checkbox" {% if not grade5_l3_batch1_available %}disabled{% endif %}>
+      <span>L3 중등 보강 1차 문항만 출제 (2026-10-07, 공식 5등급 신규 어휘 30건 · 관리자 검토 전용 · 레벨 미확정{% if not grade5_l3_batch1_available %} — 비활성{% endif %})</span>
+    </label>
+    {% if grade5_l3_batch1_unavailable_reason %}
+    <p class="text-xs {% if '무결성' in grade5_l3_batch1_unavailable_reason %}text-red-600{% else %}text-gray-500{% endif %} mb-1">
+      {{ grade5_l3_batch1_unavailable_reason }}
+    </p>
+    {% else %}
+    <p class="text-xs text-emerald-700 mb-1">
+      사람이 L3로 직접 판정한 신규 어휘 30건 · 60문항(MEANING_CHOICE 30 + CONTEXT_MEANING 30).
+      공식 레벨 정책(RULE_A/B)을 거치지 않아 <code>vocab_level</code>이 아예 없는 상태이며
+      학생에게는 공개되지 않습니다.
+    </p>
+    {% endif %}
     <div class="mb-4"></div>
 
     <div id="level-scope-fields">
@@ -211,6 +228,14 @@
     return !!(existingL0L3Checkbox && existingL0L3Checkbox.checked);
   }
 
+  // ---------- L3 중등 보강 1차(2026-10-07) - 다른 세 미리보기 모드와 상호 배타적,
+  // L4·L5 파일럿처럼 레벨 선택 없는 고정 배치 ----------
+  const grade5L3Batch1Checkbox = document.getElementById("grade5-l3-batch1-checkbox");
+
+  function isGrade5L3Batch1Mode() {
+    return !!(grade5L3Batch1Checkbox && grade5L3Batch1Checkbox.checked);
+  }
+
   function selectedLevel() {
     return levelSelect.value === "" ? null : parseInt(levelSelect.value, 10);
   }
@@ -250,9 +275,10 @@
       }
       return;
     }
-    if (isPilotMode() || isL6PilotMode()) {
-      const endpoint = isL6PilotMode() ? "/l6-pilot-availability" : "/pilot-availability";
-      const label = isL6PilotMode() ? "L6 파일럿" : "파일럿";
+    if (isPilotMode() || isL6PilotMode() || isGrade5L3Batch1Mode()) {
+      const endpoint = isL6PilotMode() ? "/l6-pilot-availability"
+        : isGrade5L3Batch1Mode() ? "/grade5-l3-batch1-availability" : "/pilot-availability";
+      const label = isL6PilotMode() ? "L6 파일럿" : isGrade5L3Batch1Mode() ? "L3 중등 보강 1차" : "파일럿";
       const types = Array.from(document.querySelectorAll(".type-checkbox:checked:not(:disabled)")).map(el => el.value);
       const params = new URLSearchParams();
       types.forEach(t => params.append("item_type", t));
@@ -314,7 +340,7 @@
       startBtn.classList.add("opacity-40", "cursor-not-allowed");
       return;
     }
-    if ((isPilotMode() || isL6PilotMode() || isExistingL0L3PreviewMode() || selectedLevel() !== null) && lastAvailability) {
+    if ((isPilotMode() || isL6PilotMode() || isExistingL0L3PreviewMode() || isGrade5L3Batch1Mode() || selectedLevel() !== null) && lastAvailability) {
       startBtn.disabled = questionCount > lastAvailability.available_items || lastAvailability.available_items === 0;
       startBtn.classList.toggle("opacity-40", startBtn.disabled);
       startBtn.classList.toggle("cursor-not-allowed", startBtn.disabled);
@@ -385,13 +411,14 @@
   if (pilotModeCheckbox) {
     pilotModeCheckbox.addEventListener("change", () => {
       if (isPilotMode()) {
-        if (l6PilotModeCheckbox) l6PilotModeCheckbox.checked = false;  // 세 미리보기 모드는 서로 상호 배타적
+        if (l6PilotModeCheckbox) l6PilotModeCheckbox.checked = false;  // 네 미리보기 모드는 서로 상호 배타적
+        if (grade5L3Batch1Checkbox) grade5L3Batch1Checkbox.checked = false;
         if (existingL0L3Checkbox && existingL0L3Checkbox.checked) {
           existingL0L3Checkbox.checked = false;
           exitExistingL0L3PreviewUiState();
         }
         enterPilotUiState("파일럿 모드는 십자말을 지원하지 않습니다.");
-      } else if (!isL6PilotMode() && !isExistingL0L3PreviewMode()) {
+      } else if (!isL6PilotMode() && !isExistingL0L3PreviewMode() && !isGrade5L3Batch1Mode()) {
         exitPilotUiState();
       }
       questionCountField.classList.remove("hidden");
@@ -402,13 +429,14 @@
   if (l6PilotModeCheckbox) {
     l6PilotModeCheckbox.addEventListener("change", () => {
       if (isL6PilotMode()) {
-        if (pilotModeCheckbox) pilotModeCheckbox.checked = false;  // 세 미리보기 모드는 서로 상호 배타적
+        if (pilotModeCheckbox) pilotModeCheckbox.checked = false;  // 네 미리보기 모드는 서로 상호 배타적
+        if (grade5L3Batch1Checkbox) grade5L3Batch1Checkbox.checked = false;
         if (existingL0L3Checkbox && existingL0L3Checkbox.checked) {
           existingL0L3Checkbox.checked = false;
           exitExistingL0L3PreviewUiState();
         }
         enterPilotUiState("L6 파일럿 모드는 십자말을 지원하지 않습니다.");
-      } else if (!isPilotMode() && !isExistingL0L3PreviewMode()) {
+      } else if (!isPilotMode() && !isExistingL0L3PreviewMode() && !isGrade5L3Batch1Mode()) {
         exitPilotUiState();
       }
       questionCountField.classList.remove("hidden");
@@ -419,11 +447,30 @@
   if (existingL0L3Checkbox) {
     existingL0L3Checkbox.addEventListener("change", () => {
       if (isExistingL0L3PreviewMode()) {
-        if (pilotModeCheckbox) pilotModeCheckbox.checked = false;  // 세 미리보기 모드는 서로 상호 배타적
+        if (pilotModeCheckbox) pilotModeCheckbox.checked = false;  // 네 미리보기 모드는 서로 상호 배타적
         if (l6PilotModeCheckbox) l6PilotModeCheckbox.checked = false;
+        if (grade5L3Batch1Checkbox) grade5L3Batch1Checkbox.checked = false;
         enterExistingL0L3PreviewUiState();
       } else {
         exitExistingL0L3PreviewUiState();
+      }
+      questionCountField.classList.remove("hidden");
+      refreshAvailability();
+    });
+  }
+
+  if (grade5L3Batch1Checkbox) {
+    grade5L3Batch1Checkbox.addEventListener("change", () => {
+      if (isGrade5L3Batch1Mode()) {
+        if (pilotModeCheckbox) pilotModeCheckbox.checked = false;  // 네 미리보기 모드는 서로 상호 배타적
+        if (l6PilotModeCheckbox) l6PilotModeCheckbox.checked = false;
+        if (existingL0L3Checkbox && existingL0L3Checkbox.checked) {
+          existingL0L3Checkbox.checked = false;
+          exitExistingL0L3PreviewUiState();
+        }
+        enterPilotUiState("L3 중등 보강 1차 모드는 십자말을 지원하지 않습니다.");
+      } else if (!isPilotMode() && !isL6PilotMode() && !isExistingL0L3PreviewMode()) {
+        exitPilotUiState();
       }
       questionCountField.classList.remove("hidden");
       refreshAvailability();
@@ -495,7 +542,8 @@
     const pilotMode = isPilotMode();
     const l6PilotMode = isL6PilotMode();
     const existingL0L3PreviewMode = isExistingL0L3PreviewMode();
-    const level = (pilotMode || l6PilotMode) ? null : selectedLevel();
+    const grade5L3Batch1Mode = isGrade5L3Batch1Mode();
+    const level = (pilotMode || l6PilotMode || grade5L3Batch1Mode) ? null : selectedLevel();
     if (existingL0L3PreviewMode && level === null) {
       showError(setupError, "L0~L3 확장 미리보기는 레벨(L0~L3)을 선택해야 합니다.");
       return;
@@ -509,6 +557,8 @@
       } else if (existingL0L3PreviewMode) {
         body.existing_l0l3_preview_mode = true;
         body.selected_vocab_level = level;
+      } else if (grade5L3Batch1Mode) {
+        body.grade5_l3_batch1_mode = true;
       } else if (level !== null) {
         body.selected_vocab_level = level;
         body.confidence_mode = selectedConfidenceMode();

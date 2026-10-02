@@ -1,0 +1,11 @@
+{
+  "source_version": "nikl_grade5_l3_batch1_v1",
+  "generator_version": "nikl_grade5_l3_batch1_dryrun_v1",
+  "content_count": 30,
+  "item_count": 60,
+  "input_content_dryrun_sha256": "a2d3ec21177a8deb19a8a671a8605ec0248f142528ac9eb76014e0610628cc7c",
+  "input_items_dryrun_sha256": "dc8ab2661353e9e095c66a4f4744a81471b523444ecb1818ba2e0de569a5869d",
+  "final_content_csv_sha256": "310847c5531a7c453e229f4496484d1ffc21d5705d7bcd9f34a6e6c5497cecbb",
+  "manifest_json_sha256": "a09fb6e455d86271f4cec0c581db5fea02c3513c1e4f1eb7c47e3fc7b3caeb8a",
+  "finalized_at": "2026-10-07"
+}
