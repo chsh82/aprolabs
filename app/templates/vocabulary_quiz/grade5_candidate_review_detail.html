@@ -3,8 +3,8 @@
 {% block content_wrapper %}
 <div class="max-w-2xl mx-auto px-6 py-6">
   <div class="flex items-center justify-between">
-    <a href="/vocab-grade5-candidate-review/" class="text-sm text-blue-600 hover:underline">← 목록</a>
-    <span class="text-xs text-gray-400">{{ position }}/{{ total }}</span>
+    <a href="/vocab-grade5-candidate-review/{% if from_filter %}?filter={{ from_filter }}{% endif %}" class="text-sm text-blue-600 hover:underline">← 목록</a>
+    <span class="text-xs text-gray-400">{% if from_filter == 'v2_rep12' %}v2 대표 사례 {% endif %}{{ position }}/{{ total }}</span>
   </div>
 
   <div class="border border-gray-200 rounded-xl p-6 mt-3 mb-6 bg-white">
@@ -56,25 +56,29 @@
 
     <form method="POST" action="/vocab-grade5-candidate-review/{{ row.candidate_id }}/judgment">
       <input type="hidden" name="submission_token" value="{{ submission_token }}">
+      {% if from_filter %}<input type="hidden" name="return_filter" value="{{ from_filter }}">{% endif %}
       <div class="flex gap-2 mb-3 flex-wrap">
         {% for j in judgment_choices %}
         <label class="flex items-center gap-1.5 text-sm border border-gray-200 rounded-lg px-3 py-1.5 cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
-          <input type="radio" name="judgment" value="{{ j }}" required>
+          <input type="radio" name="judgment" value="{{ j }}" required {% if latest and latest.judgment == j %}checked{% endif %}>
           {{ judgment_labels.get(j, j) }}
         </label>
         {% endfor %}
       </div>
+      {% if latest %}
+      <div class="text-xs text-gray-400 mb-1">기존 판정이 그대로 선택돼 있습니다 - 판정을 바꾸지 않고 "이 레벨로 판단한 이유"만 아래에 적어도 됩니다.</div>
+      {% endif %}
       <textarea name="rationale" rows="3" placeholder="판정 근거를 입력하세요(선택)"
                 class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3"></textarea>
       <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg">
-        판정 저장 후 다음 미검수 항목
+        {% if from_filter == 'v2_rep12' %}저장 후 대표 사례 목록으로{% else %}판정 저장 후 다음 미검수 항목{% endif %}
       </button>
     </form>
   </div>
 
   <div class="flex justify-between text-sm mb-6">
-    {% if prev_id %}<a href="/vocab-grade5-candidate-review/{{ prev_id }}" class="text-blue-600 hover:underline">← 이전 항목(재검토)</a>{% else %}<span></span>{% endif %}
-    {% if next_id %}<a href="/vocab-grade5-candidate-review/{{ next_id }}" class="text-blue-600 hover:underline">다음 항목 →</a>{% endif %}
+    {% if prev_id %}<a href="/vocab-grade5-candidate-review/{{ prev_id }}{% if from_filter %}?from_filter={{ from_filter }}{% endif %}" class="text-blue-600 hover:underline">← 이전 항목(재검토)</a>{% else %}<span></span>{% endif %}
+    {% if next_id %}<a href="/vocab-grade5-candidate-review/{{ next_id }}{% if from_filter %}?from_filter={{ from_filter }}{% endif %}" class="text-blue-600 hover:underline">다음 항목 →</a>{% endif %}
   </div>
 
   {% if history|length > 1 %}

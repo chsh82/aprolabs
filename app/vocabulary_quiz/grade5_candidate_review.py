@@ -20,6 +20,28 @@ from app.vocabulary_quiz.models_grade5_candidate_review import (
 
 DEFAULT_BATCH_NO = 1
 
+# v2 분류기 개발 보고서(reports/nikl_grade5_classifier_v2_development_20261005.md
+# 2절)의 사람×v1 양방향 오류 대표 12건 - 1·2차 배치에 걸쳐 있어 단일
+# batch_no로는 조회할 수 없다. 사람 판정은 이미 존재한다(기존 배치 검수에서
+# 나온 실제 판정) - 이 목록은 그 12건을 배치 구분 없이 한 화면에서 다시 찾아
+# "판단 이유"만 선택적으로 추가 기록할 수 있게 하는 용도다. 모델 예측값은
+# 여기 담지 않는다(화면에 노출 안 함 - VocabularyGrade5CandidateModelPrediction
+# 과 동일 원칙).
+V2_REP12_CANDIDATE_IDS = [
+    "G5-8ce1ebfbf28902b8",  # 개축
+    "G5-75db47a8af772ebf",  # 경제인
+    "G5-8eb7191f007f9d70",  # 보국안민
+    "G5-5047276d84610bfb",  # 소송비
+    "G5-1db1883c75c2d50a",  # 성싶다
+    "G5-ea479b2f55daa588",  # 외성
+    "G5-24f9f70b64fbfd3c",  # 동판화
+    "G5-22b1c6b714665ce3",  # 재담
+    "G5-5a623b21f6f73b62",  # 이다
+    "G5-5b6159140976c02f",  # 어진
+    "G5-43238e3a751baddf",  # 수사법
+    "G5-7627eeba20ba7a7f",  # 이래
+]
+
 
 def available_batch_numbers(db: Session) -> list[int]:
     """실제 적재된 batch_no 목록(오름차순) - 목록 화면의 배치 선택기용."""
@@ -72,13 +94,29 @@ def judgment_history(db: Session, candidate_id: str) -> list[VocabularyGrade5Can
 def latest_judgments_map(db: Session, batch_no: int = DEFAULT_BATCH_NO) -> dict[str, VocabularyGrade5CandidateJudgment]:
     """후보별 최신 판정 1개만 - 집계·진행률은 반드시 이 함수를 통해서만
     계산한다(판정 이력 전체 행 수를 세면 안 됨)."""
-    ids = ordered_candidate_ids(db, batch_no)
+    return latest_judgments_map_for_ids(db, ordered_candidate_ids(db, batch_no))
+
+
+def latest_judgments_map_for_ids(db: Session, candidate_ids: list[str]) -> dict[str, VocabularyGrade5CandidateJudgment]:
     out: dict[str, VocabularyGrade5CandidateJudgment] = {}
-    for cid in ids:
+    for cid in candidate_ids:
         j = latest_judgment(db, cid)
         if j is not None:
             out[cid] = j
     return out
+
+
+def rep12_rows(db: Session) -> list[VocabularyGrade5CandidateBatch]:
+    """V2_REP12_CANDIDATE_IDS에 해당하는 배치 행을 그 목록 순서 그대로
+    반환한다(배치 번호가 섞여 있어 lemma 가나다순이 아니라 보고서 표
+    순서를 그대로 따른다)."""
+    found = {
+        r.candidate_id: r
+        for r in db.query(VocabularyGrade5CandidateBatch)
+        .filter(VocabularyGrade5CandidateBatch.candidate_id.in_(V2_REP12_CANDIDATE_IDS))
+        .all()
+    }
+    return [found[cid] for cid in V2_REP12_CANDIDATE_IDS if cid in found]
 
 
 def progress_stats(db: Session, batch_no: int = DEFAULT_BATCH_NO) -> dict:

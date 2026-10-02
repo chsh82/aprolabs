@@ -43,6 +43,23 @@ def index(
     db: Session = Depends(get_vocabulary_quiz_db),
     _admin: str = Depends(require_admin),
 ):
+    # v2 분류기 보고서 대표 12건은 배치 구분 없이 한 화면에서 다시 보는
+    # 전용 뷰다 - 기존 배치별 진행률·목록 로직과 완전히 분리해서 처리한다
+    # (아래 batch_no 분기와 섞으면 진행률 집계가 12건 기준으로 잘못 계산됨).
+    if filter == "v2_rep12":
+        rows_all = g5r.rep12_rows(db)
+        latest_map = g5r.latest_judgments_map_for_ids(db, [r.candidate_id for r in rows_all])
+        rows = []
+        for r in rows_all:
+            j = latest_map.get(r.candidate_id)
+            stale = g5r.judgment_is_stale(j, r) if j is not None else None
+            rows.append({"row": r, "judgment": j, "stale": stale})
+        return templates.TemplateResponse("vocabulary_quiz/grade5_candidate_review_index.html", {
+            "request": request, "rows": rows, "stats": None, "filter": filter,
+            "judgment_labels": JUDGMENT_LABELS, "batch_no": batch,
+            "available_batches": g5r.available_batch_numbers(db),
+        }, headers=NOINDEX_HEADERS)
+
     # 배치별 진행률·판정 집계가 섞이지 않도록 ?batch=N으로 분리한다(기존
     # service 계층 함수들은 처음부터 batch_no 파라미터를 받고 있었다 -
     # 이 라우트만 1번으로 고정돼 있던 것을 외부로 노출한다).
@@ -71,6 +88,7 @@ def index(
 def detail(
     candidate_id: str,
     request: Request,
+    from_filter: str = "",
     db: Session = Depends(get_vocabulary_quiz_db),
     _admin: str = Depends(require_admin),
 ):
@@ -78,7 +96,14 @@ def detail(
     if row is None:
         raise HTTPException(status_code=404, detail="후보 데이터를 찾을 수 없습니다")
 
-    ids = g5r.ordered_candidate_ids(db, row.batch_no)
+    # v2 대표 12건 목록에서 들어온 경우, 이전/다음도 그 12건 안에서만
+    # 움직인다 - 그 후보가 속한 전체 배치(최대 100건) 순서로 튀면 "대표
+    # 사례만 훑어본다"는 목적에 맞지 않는다.
+    if from_filter == "v2_rep12" and candidate_id in g5r.V2_REP12_CANDIDATE_IDS:
+        ids = g5r.V2_REP12_CANDIDATE_IDS
+    else:
+        from_filter = ""
+        ids = g5r.ordered_candidate_ids(db, row.batch_no)
     idx = ids.index(candidate_id)
     prev_id = ids[idx - 1] if idx > 0 else None
     next_id = ids[idx + 1] if idx + 1 < len(ids) else None
@@ -92,7 +117,7 @@ def detail(
         "request": request, "row": row, "history": history, "latest": latest, "stale": stale,
         "judgment_choices": JUDGMENT_CHOICES, "judgment_labels": JUDGMENT_LABELS,
         "prev_id": prev_id, "next_id": next_id, "submission_token": token,
-        "position": idx + 1, "total": len(ids),
+        "position": idx + 1, "total": len(ids), "from_filter": from_filter,
     }, headers=NOINDEX_HEADERS)
 
 
@@ -103,6 +128,7 @@ def save_judgment(
     judgment: str = Form(...),
     rationale: str = Form(""),
     submission_token: str = Form(...),
+    return_filter: str = Form(""),
     db: Session = Depends(get_vocabulary_quiz_db),
     admin_user_id: str = Depends(require_admin),
 ):
@@ -116,6 +142,13 @@ def save_judgment(
         db, candidate_id, judgment, rationale.strip(),
         admin_user_id, _reviewer_email(admin_user_id), submission_token,
     )
+
+    # 대표 12건 화면에서 들어온 저장은 "다음 미검수"를 찾아 전체 배치를
+    # 헤매지 않고 그 12건 목록으로 돌아간다 - 12건은 이미 전부 판정이
+    # 있어 next_unjudged_candidate_id가 배치 전체에서 엉뚱한 항목을
+    # 찾아버리기 때문.
+    if return_filter == "v2_rep12":
+        return RedirectResponse(url="/vocab-grade5-candidate-review/?filter=v2_rep12", status_code=303)
 
     next_id = g5r.next_unjudged_candidate_id(db, candidate_id, row.batch_no)
     if next_id:

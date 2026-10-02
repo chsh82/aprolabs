@@ -2,6 +2,16 @@
 {% block title %}중등 어휘 레벨 검수{% endblock %}
 {% block content_wrapper %}
 <div class="max-w-2xl mx-auto px-6 py-6">
+  {% if filter == 'v2_rep12' %}
+  <h1 class="text-xl font-bold mb-1">v2 분류기 대표 사례 ({{ rows|length }}건)</h1>
+  <div class="text-sm text-gray-500 mb-4">
+    reports/nikl_grade5_classifier_v2_development_20261005.md 2절의 사람×v1
+    양방향 오류 대표 12건입니다. 사람 판정은 1·2차 배치 검수에서 이미 나온
+    값이고 여기서 바뀌지 않습니다. 모델 예측·모델 근거는 이 화면에 표시하지
+    않습니다 - "이 레벨로 판단한 이유"를 선택적으로 추가 기록할 수만
+    있습니다.
+  </div>
+  {% else %}
   <h1 class="text-xl font-bold mb-1">중등 어휘 레벨 검수 ({{ batch_no }}차 배치 {{ stats.total }}건)</h1>
   <div class="text-sm text-gray-500 mb-4">
     국립국어원 공식 5등급(중1~3) 기반 신규 어휘 확장 후보입니다. 이 화면의
@@ -37,15 +47,17 @@
       <div class="bg-gray-50 rounded-lg py-2"><div class="font-bold text-gray-700">{{ stats.counts['제외'] }}</div><div class="text-gray-400">제외</div></div>
     </div>
   </div>
+  {% endif %}
 
   <div class="flex gap-2 mb-3 text-sm">
     <a href="/vocab-grade5-candidate-review/?batch={{ batch_no }}" class="px-3 py-1.5 rounded-lg {% if not filter %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">전체</a>
     <a href="/vocab-grade5-candidate-review/?batch={{ batch_no }}&filter=unjudged" class="px-3 py-1.5 rounded-lg {% if filter == 'unjudged' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">미검수만</a>
+    <a href="/vocab-grade5-candidate-review/?filter=v2_rep12" class="px-3 py-1.5 rounded-lg {% if filter == 'v2_rep12' %}bg-blue-50 text-blue-700 font-semibold{% else %}text-gray-500 border border-gray-200{% endif %}">v2 대표 사례(12건)</a>
   </div>
 
   <div class="space-y-2">
     {% for item in rows %}
-    <a href="/vocab-grade5-candidate-review/{{ item.row.candidate_id }}"
+    <a href="/vocab-grade5-candidate-review/{{ item.row.candidate_id }}{% if filter == 'v2_rep12' %}?from_filter=v2_rep12{% endif %}"
        class="block border border-gray-200 rounded-xl px-4 py-3 hover:border-blue-400 transition">
       <div class="flex items-center justify-between">
         <div>
