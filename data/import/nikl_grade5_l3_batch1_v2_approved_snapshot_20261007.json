@@ -1,0 +1,669 @@
+{
+  "snapshot_generated_at_utc": "2026-10-06T15:44:09.920302Z",
+  "source_version": "nikl_grade5_l3_batch1_v1",
+  "held_content_ids": [
+    "G5-0fa0e0a975e55d66"
+  ],
+  "contents": [
+    {
+      "content_id": "G5-8ce1ebfbf28902b8",
+      "lemma": "개축",
+      "held": false,
+      "content_hash": "ef42e05d58c139235dfcb6e2902c3c98dd2aaae979caf34e2e323e2304ef58bf",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-8ce1ebfbf28902b8_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "a9eb8741d00fac9c79f0568c72f99e401354d0ef3f2f55fd0a354bb420b0aa60"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-8ce1ebfbf28902b8_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "c96933a257deee89e7b808cc0977b1df75cf76a07bab3a43d5121e10a8614b35"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:26:16",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "ef42e05d58c139235dfcb6e2902c3c98dd2aaae979caf34e2e323e2304ef58bf"
+    },
+    {
+      "content_id": "G5-15d9d99fbc5ed1f2",
+      "lemma": "견학단",
+      "held": false,
+      "content_hash": "3d03df5d3d9520ffab129d627cf1b34914ec0aa8b40d7009009ef0bcbe2859ec",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-15d9d99fbc5ed1f2_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "6ae8d557161cd1fc3cf04f15f10b12e9495b81e56fd38aa1d30654bab2fc1c1b"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-15d9d99fbc5ed1f2_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "b54c28c035d15d465df4469012f9b729f644be671254e1e0bbda6861efbaf7e2"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:26:36",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "3d03df5d3d9520ffab129d627cf1b34914ec0aa8b40d7009009ef0bcbe2859ec"
+    },
+    {
+      "content_id": "G5-288ade20add47e11",
+      "lemma": "경조사",
+      "held": false,
+      "content_hash": "450b9afb00213bce341b9ac466883c492588e4950529010d7c764816d42ed52d",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-288ade20add47e11_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "7b7edaac3a4b2115572542548254d01578d01eea2b0f1588cbce237351bedcaa"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-288ade20add47e11_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "b5e8b0499b06a206b663e748d0f4c463dec182b76ab00f88648bfe5091b4ed15"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:27:29",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "450b9afb00213bce341b9ac466883c492588e4950529010d7c764816d42ed52d"
+    },
+    {
+      "content_id": "G5-86ac65ab170bf93b",
+      "lemma": "고안되다",
+      "held": false,
+      "content_hash": "436bf691731c08177a09b860611ef240d0da4e970bf13b8a4a2214e9779843d0",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-86ac65ab170bf93b_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "141fb898610741c5ce8ff4ffb9cc2e21732bb2bf0c989b6719d9099953c1397f"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-86ac65ab170bf93b_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "f65db81b2c763534ffcc5a9cbd5da4afbcb3886fa2093ed63762b5feaeb4e060"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:27:45",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "436bf691731c08177a09b860611ef240d0da4e970bf13b8a4a2214e9779843d0"
+    },
+    {
+      "content_id": "G5-b0c32a2b4cac3bd9",
+      "lemma": "공기주머니",
+      "held": false,
+      "content_hash": "e4fc45a265d96cca1d6749dff79297d37a82c5b26f4d9280bcf84a11d01f2f61",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-b0c32a2b4cac3bd9_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "e8b805c473ca3b01ca50e9a41e5f7af7209821ed269bd8adf41dfd037ac8a5b1"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-b0c32a2b4cac3bd9_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "a06aedcf1e2083c6ed456179600dacf169fbca58480d53803e5732dfba757a98"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:27:58",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "e4fc45a265d96cca1d6749dff79297d37a82c5b26f4d9280bcf84a11d01f2f61"
+    },
+    {
+      "content_id": "G5-bc3d3e5746938ca4",
+      "lemma": "교직원",
+      "held": false,
+      "content_hash": "c54007aaa8b4ea4351861832bf4639f28cffeead8a7751480d986901032d5655",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-bc3d3e5746938ca4_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "8f66b833d138a91e9ec5e50de2a66ab8a579017609eef483b82457cb70fb0fa5"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-bc3d3e5746938ca4_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "8ae289c1c8993a25c4dea5f5c79c064e1af904a8303fb2f929b3aaa277ab9d2e"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:28:26",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "c54007aaa8b4ea4351861832bf4639f28cffeead8a7751480d986901032d5655"
+    },
+    {
+      "content_id": "G5-9050b15f83fa1e98",
+      "lemma": "국방력",
+      "held": false,
+      "content_hash": "ccfc085c0e3c8795934ef1c4b2140b1e272bf66cc365df5cfc490c563c20da57",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-9050b15f83fa1e98_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "e6b0a2ba6dc0cb63c6d56dbe660ef83cf3493a3c9eef725962d20127cb51c1d7"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-9050b15f83fa1e98_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "f150b853fd913acc722655d85bb67631219b1714bd683e7211597ec6ace3a933"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:28:44",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "ccfc085c0e3c8795934ef1c4b2140b1e272bf66cc365df5cfc490c563c20da57"
+    },
+    {
+      "content_id": "G5-40fd9cf0513a6748",
+      "lemma": "꺼칠하다",
+      "held": false,
+      "content_hash": "b166ea4bb839b8762f939b73a5a336c050f2513417ee50fae14deb0540cc26df",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-40fd9cf0513a6748_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "eb742f7fcb4e250effac64eeddc0b76e5ed9f9c59d15feee702e156d9464a02e"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-40fd9cf0513a6748_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "f6d502ba7caf273fd1e05f1093fa28b8453ab3aed0ff7e4d3d5e41d9f2ca2040"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:29:43",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "b166ea4bb839b8762f939b73a5a336c050f2513417ee50fae14deb0540cc26df"
+    },
+    {
+      "content_id": "G5-0b695941ae270b65",
+      "lemma": "낙엽수",
+      "held": false,
+      "content_hash": "e5d45b16d47263dc7abc0c25998d547c3a874f0232f2ff4bb00f0135a2b6785c",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-0b695941ae270b65_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "bcad44f3bdff16a37313369dd84ed0b34bf4b1d8e6e7cc1134433c2db7a2bb26"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-0b695941ae270b65_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "f6805c6076bb65531756e7e027c9f92ea3d42c49b98aecd7fc2ab0c7ca292f45"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:29:58",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "e5d45b16d47263dc7abc0c25998d547c3a874f0232f2ff4bb00f0135a2b6785c"
+    },
+    {
+      "content_id": "G5-c02960d8706f5e30",
+      "lemma": "내야수",
+      "held": false,
+      "content_hash": "d0aecccc0e7f48a1fcf6889ac8a82f80a5093f9ada717aaa74613fa6939d53a3",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-c02960d8706f5e30_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "65bef43ddeba0424fb1a4e03a46537cf2e6782f5c28c93a2b3ffc8b2de29f6ec"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-c02960d8706f5e30_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "9b8cea9ac6a9a1eeb3cb4a5fa123ab0a81885a21b6fc105929f643a770d4df7b"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:30:22",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "d0aecccc0e7f48a1fcf6889ac8a82f80a5093f9ada717aaa74613fa6939d53a3"
+    },
+    {
+      "content_id": "G5-108296da3208d97a",
+      "lemma": "노여워하다",
+      "held": false,
+      "content_hash": "02f6f6e6708c87386f03d64dff7f310db70688e3e1bfad5a2e80a2c08ea15e9d",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-108296da3208d97a_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "5395d401b3d434e31f2798d2910bef586e1157e45029610354f0acad0fa96579"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-108296da3208d97a_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "ccd505827860ae2055b593477afa072f9c7e1ef7a3fa2137ea7a23fe5c60b5ef"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:30:41",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "02f6f6e6708c87386f03d64dff7f310db70688e3e1bfad5a2e80a2c08ea15e9d"
+    },
+    {
+      "content_id": "G5-a71a19a47aee8d59",
+      "lemma": "단음",
+      "held": false,
+      "content_hash": "9556a2e34a4645133c4390d2fb576dd0ea3e81d8f40603a673cffb08db7e71ae",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-a71a19a47aee8d59_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "6e209e455b76957cdc464ff6f07882a15494cd766ce537447117de6b4aec7fe5"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-a71a19a47aee8d59_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "5efe6dea57278cc31d10154af717637345ccc871e7a3dd8b44e13768a00995af"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:30:56",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "9556a2e34a4645133c4390d2fb576dd0ea3e81d8f40603a673cffb08db7e71ae"
+    },
+    {
+      "content_id": "G5-d6add3880c766a14",
+      "lemma": "대소",
+      "held": false,
+      "content_hash": "d63ae5540e31f4c89f86f1c0826a845987aedcaba49169f3f1a08f13c71ae740",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-d6add3880c766a14_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "0825c064ee9580c52ee78924e8103a75ef5e2d86faeeb9e39583dfd43bc1d443"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-d6add3880c766a14_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "e072b966f9c24e279a8fba24f18dd66d77d6ada5270158e0dc297ae1ed45d3b3"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:31:12",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "d63ae5540e31f4c89f86f1c0826a845987aedcaba49169f3f1a08f13c71ae740"
+    },
+    {
+      "content_id": "G5-85e1f60f7edb514f",
+      "lemma": "도시민",
+      "held": false,
+      "content_hash": "d58bb26a86f0e3ba1d68c35930491d1c5ab8d84f21bded0a4995284514ced4ee",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-85e1f60f7edb514f_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "578252cea8863b77a7c512904c925600dda5d5be8a579d3df8a541a671f97ae8"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-85e1f60f7edb514f_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "596a5dfb33fac35cded813058ecc51e98a3356007020bc72ccfe6ed6697b65e8"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:31:40",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "d58bb26a86f0e3ba1d68c35930491d1c5ab8d84f21bded0a4995284514ced4ee"
+    },
+    {
+      "content_id": "G5-35d7896d01fecab8",
+      "lemma": "동지애",
+      "held": false,
+      "content_hash": "b4fc71c34bcd1f7bd2a327852f657047013b50aa272c2e4373f5b1e5fc3b1cf5",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-35d7896d01fecab8_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "a22a2d9c282354b4c2da28c19b9a56be22449a26cb1c488fcdc8c7a792a9adbe"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-35d7896d01fecab8_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "b34d78b2799c3a82746742fcfcd4d836d35377483f2e5159a844e44bf957cf38"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:32:03",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "b4fc71c34bcd1f7bd2a327852f657047013b50aa272c2e4373f5b1e5fc3b1cf5"
+    },
+    {
+      "content_id": "G5-978789e2dc690091",
+      "lemma": "뒤룩뒤룩",
+      "held": false,
+      "content_hash": "bf2bae86e0fef4f1c65ea6180037c36bab7ba9d8496def9e58e9911e495133e0",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-978789e2dc690091_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "c1fdf9a350f88eff4707a333a14ca608f0d6a31e2de33d968a9dc9e691f21fb6"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-978789e2dc690091_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "48b258d60371cfb94611bd435e45e17d14c56bf0aa514acf7d7b8b05a3374709"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:32:16",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "bf2bae86e0fef4f1c65ea6180037c36bab7ba9d8496def9e58e9911e495133e0"
+    },
+    {
+      "content_id": "G5-4d4e81d64548e5c4",
+      "lemma": "면회하다",
+      "held": false,
+      "content_hash": "e3ba4e6edbeaefad84c9c27611405a4bbef93dbe6f5558ad3a2a71ec663af2d3",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-4d4e81d64548e5c4_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "4b5b8bd61fc23f401fe7935fd5941923743c4b8cb538b9340077ac95e47474ca"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-4d4e81d64548e5c4_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "bbc07c587f26a4cbaa9a278e23fad54274f76e0f0e12774267b6e10043811b43"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:32:33",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "e3ba4e6edbeaefad84c9c27611405a4bbef93dbe6f5558ad3a2a71ec663af2d3"
+    },
+    {
+      "content_id": "G5-be52d7e48cccce04",
+      "lemma": "모기약",
+      "held": false,
+      "content_hash": "8399d801243e5b89c7a0eefdc82592d71cb2ba7dff37958c1b4e11dae1fe4df9",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-be52d7e48cccce04_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "63dc822766fb56613de6b8a55a027aa09118004a67fae0b65f8d9583ba5cb321"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-be52d7e48cccce04_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "4a09dc5d4e15a79a0d9024765277420760ed77e88e25b449d4ab80e89dc01e60"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:32:49",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "8399d801243e5b89c7a0eefdc82592d71cb2ba7dff37958c1b4e11dae1fe4df9"
+    },
+    {
+      "content_id": "G5-6fbf37d42d4be6ae",
+      "lemma": "밥투정",
+      "held": false,
+      "content_hash": "2cb3203fa46cb6f186df63245863d394abf559d21b46502c9eb09b625f593c71",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-6fbf37d42d4be6ae_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "0275656ed98556fff5e26e1edecf625a0f4ed477ca6fba20d551f1180c81d4fb"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-6fbf37d42d4be6ae_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "a999d365f34b86c38481ec531f778fca37ef483b38e1348df9691904ae515f6f"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:33:02",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "2cb3203fa46cb6f186df63245863d394abf559d21b46502c9eb09b625f593c71"
+    },
+    {
+      "content_id": "G5-c26610ca828c6022",
+      "lemma": "범행자",
+      "held": false,
+      "content_hash": "f2242632ced042ed243e89d857da6a8cd9d7b8eb241f27bbcf4c7d287d605a30",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-c26610ca828c6022_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "e9178bad533cf944cb951c0ccb153018c8ae442174b5efee049a7a1ca081c371"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-c26610ca828c6022_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "920217cb68a8cba562aecc37db045d3b4ba3442d51890a28916b25fcd6e67ed9"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:35:20",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "f2242632ced042ed243e89d857da6a8cd9d7b8eb241f27bbcf4c7d287d605a30"
+    },
+    {
+      "content_id": "G5-0fa0e0a975e55d66",
+      "lemma": "벨기에",
+      "held": true,
+      "content_hash": "9b6b99a1851f7de3d6b0dd8ca942c53c846f35d816f340975af34f1481bd6d1f",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-0fa0e0a975e55d66",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "128aabe71dd3445358b39571395713ac1c0f1643229c0469a3513476cf92d1bc"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-0fa0e0a975e55d66",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "625261489e266171e61c2dd4f381a41469458e02df0fbed30927c7f4db8c406e"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:36:13",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "9b6b99a1851f7de3d6b0dd8ca942c53c846f35d816f340975af34f1481bd6d1f"
+    },
+    {
+      "content_id": "G5-effce8eb3869356c",
+      "lemma": "변성기",
+      "held": false,
+      "content_hash": "6c9148370d244907d17ae45e8d3be8ae4ad6f1c3bb1ae1f45fbcd2c1d896f423",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-effce8eb3869356c_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "270bc86c76b263be9b5e2f4ddac93ee6da1ca938b4136fa32c08f7867d8dd7e7"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-effce8eb3869356c_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "dab7f23b78bac6f78dd0ec6cd7644fed7f04e8380415228b30569ea7f72a6651"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:36:26",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "6c9148370d244907d17ae45e8d3be8ae4ad6f1c3bb1ae1f45fbcd2c1d896f423"
+    },
+    {
+      "content_id": "G5-8eb7191f007f9d70",
+      "lemma": "보국안민",
+      "held": false,
+      "content_hash": "fa1271dc3abe01392d7191e60b6fbfab88fa9a79e972b26b6ec1bf870096c7c4",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-8eb7191f007f9d70_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "5504cf1bf8d163fa5590b9c1cf8f8e756a56db21536605ddac5b2c056eec365a"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-8eb7191f007f9d70_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "f8ff353f387bc4c65aa429760a3be80ef9cbf500ad1fa06423402a0f99803f4f"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:36:36",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "fa1271dc3abe01392d7191e60b6fbfab88fa9a79e972b26b6ec1bf870096c7c4"
+    },
+    {
+      "content_id": "G5-92af004a38b66494",
+      "lemma": "부촌",
+      "held": false,
+      "content_hash": "675790ec51f0bfe3143d0f8876130e5e54675b8b77fd7a929c3e6aac427382a7",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-92af004a38b66494_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "325704f2f9e88c34a899c10466479caa3a69327618638628f92db4d3a60efb4c"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-92af004a38b66494_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "67ff881ebe744edcb2e17012c5c739cf7a22f32086c48cb6bba9fb44a5dc3a30"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:36:46",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "675790ec51f0bfe3143d0f8876130e5e54675b8b77fd7a929c3e6aac427382a7"
+    },
+    {
+      "content_id": "G5-2df2bb0b3bb9a077",
+      "lemma": "브레인스토밍",
+      "held": false,
+      "content_hash": "380b385ce4811fa841554e9756fca188bc5f7148600454e8edbdb961e5cbd3ba",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-2df2bb0b3bb9a077_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "7b8f4cc895f2c0dd85da10253f95502b431093567a0ef13418892a7a03e2a605"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-2df2bb0b3bb9a077_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "7c938ff12efa3b5aff2de269a7c9c7e1cf296dd439cd7e01ca10925f2a963113"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:36:58",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "380b385ce4811fa841554e9756fca188bc5f7148600454e8edbdb961e5cbd3ba"
+    },
+    {
+      "content_id": "G5-795351a35677b337",
+      "lemma": "살상하다",
+      "held": false,
+      "content_hash": "205934ee0160017fc2269ba267d9b54e779424b5a080688ec3f6aa191bb38365",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-795351a35677b337_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "9df66bbf0ff44113e763f4f7be66e4407a4d06cb20f09634c1df81f33bac823e"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-795351a35677b337_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "d02f60f07c7ed94a03c335f801cb38d730a24ea6066ca38d07299b2ce57c7539"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:40:12",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "205934ee0160017fc2269ba267d9b54e779424b5a080688ec3f6aa191bb38365"
+    },
+    {
+      "content_id": "G5-dd925e505c88b4a6",
+      "lemma": "삼중창",
+      "held": false,
+      "content_hash": "3f8639cbeb93c1276da9cc42c3c4fea8495b63c72a9e5daefa65064960e0e34a",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-dd925e505c88b4a6_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "be580dbacc2a41c947425943aa482de6bf4a6412880102f82147bdaf94b70563"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-dd925e505c88b4a6_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "faebd5b282af0a98567ab879866b6745b7ebe3ec80a8f4346b00024abc0a9e18"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:40:22",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "3f8639cbeb93c1276da9cc42c3c4fea8495b63c72a9e5daefa65064960e0e34a"
+    },
+    {
+      "content_id": "G5-9ebfb75821a2164a",
+      "lemma": "상용",
+      "held": false,
+      "content_hash": "95b84a8914abf68948d89728fbb170ecc9b6dc267ac9d9b661ef20dc2c032d2f",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-9ebfb75821a2164a_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "0becf493650319d8e0aff9996c0acc9b3cbe95c59c02ce5e7d2516b251e81a15"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-9ebfb75821a2164a_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "f4046e6fc07dd89ee0e12fffe99e9d412cc389a4515cca32b6ffebdc65b557c6"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:40:41",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "95b84a8914abf68948d89728fbb170ecc9b6dc267ac9d9b661ef20dc2c032d2f"
+    },
+    {
+      "content_id": "G5-7553747fc991504b",
+      "lemma": "서넛",
+      "held": false,
+      "content_hash": "c3c2f2b05a86c9cea330e39c592dbeed085ad7f81d5d66ce8cf19a92d86b4b64",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-7553747fc991504b_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "bfaf7a8564b28f8f696ddb5c23f1aff10d3ecaec6a3d428185ca40681898a79e"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-7553747fc991504b_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "2c1c2ce279375ab5c0fa2d726d592b03eed9a5e801eb0b6c2fb90e8204bd98c8"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:41:08",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "c3c2f2b05a86c9cea330e39c592dbeed085ad7f81d5d66ce8cf19a92d86b4b64"
+    },
+    {
+      "content_id": "G5-5047276d84610bfb",
+      "lemma": "소송비",
+      "held": false,
+      "content_hash": "2eeead81dfc373945c574bbb235b640bf69e398d900eb9b637d53723e16c5fe7",
+      "items": [
+        {
+          "item_id": "MF_G5L3B1_C_G5-5047276d84610bfb_V2",
+          "item_type": "CONTEXT_MEANING",
+          "item_hash": "466114cf005a412d4f4ee43a0302c205dcba0efa33a9bb3e76c745bf7eba1af1"
+        },
+        {
+          "item_id": "MF_G5L3B1_M_G5-5047276d84610bfb_V2",
+          "item_type": "MEANING_CHOICE",
+          "item_hash": "6dee85e6f29e30d8ba1715aa14a915429b3693786ff418d60c0331a5653ed425"
+        }
+      ],
+      "latest_review_verdict": "APPROVED_CANDIDATE",
+      "latest_review_reviewed_at": "2026-10-06 15:41:20",
+      "latest_review_reviewer_user_id": "476e5d68-9415-40d2-84a4-29f585e08889",
+      "latest_review_content_hash_at_review": "2eeead81dfc373945c574bbb235b640bf69e398d900eb9b637d53723e16c5fe7"
+    }
+  ]
+}
