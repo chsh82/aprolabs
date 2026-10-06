@@ -246,14 +246,27 @@ def risk_review_info(db: Session, cfg: L3BatchConfig, content_id: str) -> dict |
     `vocabulary_publish_reviews`와는 완전히 분리된 참고 정보일 뿐이고,
     검수하지 않은 문항에 승인 판정을 자동으로 채워 넣지 않는다(이 함수는
     읽기만 하며, latest_review()/save_review()가 다루는 사람 판정 테이블은
-    전혀 건드리지 않는다). 활성 문항 중 risk_review가 있는 첫 항목 기준
-    (두 유형이 같은 오답 집합을 공유하므로 risk_category는 보통 동일)."""
+    전혀 건드리지 않는다).
+
+    표본(sampled)은 콘텐츠당 두 유형(MEANING_CHOICE/CONTEXT_MEANING) 중
+    **한쪽에만** 걸릴 수 있다(고정 시드로 유형까지 배정하므로) - 그래서
+    item_id 정렬 순서상 먼저 나온 항목 하나만 보고 판단하면 안 되고, 활성
+    문항 전체를 합쳐서(OR) "이 콘텐츠가 표본에 포함됐는가"를 판단해야
+    한다. risk_category/risk_reason은 두 유형이 같은 오답 집합을 공유해
+    항상 동일하므로 아무 항목에서나 가져와도 된다."""
+    merged: dict | None = None
     for item in linked_items(db, cfg, content_id):
         if not item.qa_flags_json:
             continue
         flags_list = json.loads(item.qa_flags_json)
         flags = flags_list[0] if flags_list else {}
         rr = flags.get("risk_review")
-        if rr:
-            return rr
-    return None
+        if not rr:
+            continue
+        if merged is None:
+            merged = dict(rr)
+        if rr.get("sampled"):
+            merged["sampled"] = True
+            merged["sample_seed"] = rr.get("sample_seed")
+            merged["sample_verdict"] = rr.get("sample_verdict")
+    return merged
