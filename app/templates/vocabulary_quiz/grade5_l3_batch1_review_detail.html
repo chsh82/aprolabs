@@ -9,6 +9,21 @@
     {{ human_level_note }}
   </div>
 
+  {% if risk_info and risk_info.risk_category not in (None, 'NONE') %}
+  <div class="border border-amber-200 rounded-xl p-4 mb-3 bg-amber-50 text-sm text-amber-800">
+    <strong>⚠ 위험 항목(사람 확인 필요)</strong> - {{ risk_info.risk_reason }}
+    <div class="text-xs text-amber-700 mt-1">AI 재검토(생성과 분리, {{ risk_info.reviewed_at }})에서
+    발견 - 이 표시는 참고용이며 사람 승인을 대신하지 않습니다. 아래에서 직접 판정해 주세요.</div>
+  </div>
+  {% elif risk_info and risk_info.sampled %}
+  <div class="border border-indigo-200 rounded-xl p-4 mb-3 bg-indigo-50 text-sm text-indigo-800">
+    <strong>🎯 표본 검수 대상</strong> - 고정 시드({{ risk_info.sample_seed }})로 선정된 표본 중
+    하나로, AI 재검토 결과 <strong>{{ risk_info.sample_verdict }}</strong>였습니다.
+    <div class="text-xs text-indigo-700 mt-1">이 표본 검토는 사람 승인을 대신하지 않습니다 -
+    여전히 아래에서 직접 판정해야 "검수 완료"로 기록됩니다.</div>
+  </div>
+  {% endif %}
+
   {% if held %}
   <div class="border border-gray-300 rounded-xl p-4 mb-3 bg-gray-50 text-sm text-gray-700">
     <strong>이번 배치에서 보류됨</strong> - {{ hold_reason }}

@@ -62,13 +62,17 @@ def _resolve_content_any_batch(db: Session, content_id: str) -> tuple[Vocabulary
 def index(
     request: Request,
     batch: str = "batch1",
+    filter: str = "all",  # noqa: A002 - 쿼리 파라미터명을 ?filter=로 유지하기 위해 그대로 둠
     db: Session = Depends(get_vocabulary_quiz_db),
     _admin: str = Depends(require_admin),
 ):
+    filter_mode = filter
     try:
         cfg = br.get_batch_config(batch)
     except ValueError:
         raise HTTPException(status_code=404, detail="알 수 없는 배치입니다")
+    if filter_mode not in ("all", "risk", "sample"):
+        raise HTTPException(status_code=400, detail="알 수 없는 filter 값입니다(all/risk/sample만 허용)")
 
     content_ids = br.ordered_batch_content_ids(db, cfg)
     rows = []
@@ -87,9 +91,13 @@ def index(
             status = "재검수 필요"
         else:
             status = "승인 유지"
+        # 위험 기반 검수(참고 정보일 뿐, 사람 판정을 대신하지 않음) - risk_review
+        # 비노출 배치(1차 등)는 risk_info가 항상 None이라 필터가 자연히 안 보임.
+        risk_info = br.risk_review_info(db, cfg, cid)
         rows.append({
             "content": content, "review": review, "stale": stale,
             "held": held, "status": status, "unloaded": False,
+            "risk_info": risk_info,
         })
 
     # 콘텐츠 자체를 DB에 적재하지 않은 보류 항목(예: 2차의 아멘·파키스탄) -
@@ -99,17 +107,28 @@ def index(
             "content": None, "unloaded_content_id": cid, "unloaded_lemma": lemma,
             "unloaded_reason": br.hold_reason(cfg, cid),
             "review": None, "stale": None, "held": True, "status": "보류",
-            "unloaded": True,
+            "unloaded": True, "risk_info": None,
         })
 
     judged = sum(1 for r in rows if r["review"] is not None)
     held_count = sum(1 for r in rows if r["held"])
     stale_count = sum(1 for r in rows if r["status"] == "재검수 필요")
     approved_count = sum(1 for r in rows if r["status"] == "승인 유지")
+    risk_count = sum(1 for r in rows if r["risk_info"] and r["risk_info"].get("risk_category") not in (None, "NONE"))
+    sample_count = sum(1 for r in rows if r["risk_info"] and r["risk_info"].get("sampled"))
+
+    if filter_mode == "risk":
+        visible_rows = [r for r in rows if r["risk_info"] and r["risk_info"].get("risk_category") not in (None, "NONE")]
+    elif filter_mode == "sample":
+        visible_rows = [r for r in rows if r["risk_info"] and r["risk_info"].get("sampled")]
+    else:
+        visible_rows = rows
+
     return templates.TemplateResponse("vocabulary_quiz/grade5_l3_batch1_review_index.html", {
-        "request": request, "rows": rows, "verdict_labels": VERDICT_LABELS,
+        "request": request, "rows": visible_rows, "verdict_labels": VERDICT_LABELS,
         "total": len(rows), "judged": judged,
         "held_count": held_count, "stale_count": stale_count, "approved_count": approved_count,
+        "risk_count": risk_count, "sample_count": sample_count, "filter_mode": filter_mode,
         "batches": br.BATCHES, "current_batch": cfg,
     }, headers=NOINDEX_HEADERS)
 
@@ -135,6 +154,7 @@ def detail(
             "key_clue": flags.get("key_clue"),
             "revised_from_item_id": flags.get("revised_from_item_id"),
             "v2_hold_reason": flags.get("v2_hold_reason"),
+            "risk_review": flags.get("risk_review"),
         }
 
     items_with_options = [_with_admin_notes(it) for it in items]
@@ -150,6 +170,7 @@ def detail(
         "old_items_with_options": old_items_with_options,
         "held": br.is_held(cfg, content_id), "hold_reason": br.hold_reason(cfg, content_id),
         "human_level_note": br.human_level_note(content_id),
+        "risk_info": br.risk_review_info(db, cfg, content_id),
         "history": history, "latest": latest, "stale": stale,
         "verdict_choices": VERDICT_CHOICES, "verdict_labels": VERDICT_LABELS,
     }, headers=NOINDEX_HEADERS)

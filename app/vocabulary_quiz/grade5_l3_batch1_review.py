@@ -237,3 +237,23 @@ def human_level_note(content_id: str) -> str:
         f"candidate_id={content_id}) - 이 레벨 판정은 아래 콘텐츠·문항 검수와는 "
         "별개입니다. 레벨 판정이 문항 승인을 의미하지 않습니다."
     )
+
+
+def risk_review_info(db: Session, cfg: L3BatchConfig, content_id: str) -> dict | None:
+    """위험 기반 검수(2026-10-07 도입) - 생성과 분리된 AI 재검토 + 고정시드
+    표본 검토 결과를 `vocabulary_multiformat_items.qa_flags_json`의
+    `risk_review` 키에서 읽어온다. **이 정보는 사람 승인이 아니다** -
+    `vocabulary_publish_reviews`와는 완전히 분리된 참고 정보일 뿐이고,
+    검수하지 않은 문항에 승인 판정을 자동으로 채워 넣지 않는다(이 함수는
+    읽기만 하며, latest_review()/save_review()가 다루는 사람 판정 테이블은
+    전혀 건드리지 않는다). 활성 문항 중 risk_review가 있는 첫 항목 기준
+    (두 유형이 같은 오답 집합을 공유하므로 risk_category는 보통 동일)."""
+    for item in linked_items(db, cfg, content_id):
+        if not item.qa_flags_json:
+            continue
+        flags_list = json.loads(item.qa_flags_json)
+        flags = flags_list[0] if flags_list else {}
+        rr = flags.get("risk_review")
+        if rr:
+            return rr
+    return None
