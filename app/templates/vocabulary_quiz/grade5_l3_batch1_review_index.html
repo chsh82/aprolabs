@@ -27,6 +27,21 @@
 
   <div class="space-y-2">
     {% for row in rows %}
+    {% if row.unloaded %}
+    <div class="block border border-dashed border-gray-300 rounded-xl px-4 py-3 bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="font-medium text-gray-500">{{ row.unloaded_lemma }}</span>
+          <span class="text-xs text-gray-400 ml-2">{{ row.unloaded_content_id }}</span>
+          <span class="text-xs ml-2 px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">보류 - 콘텐츠 미작성</span>
+        </div>
+        <span class="text-xs text-gray-400">판정 없음(보류)</span>
+      </div>
+      {% if row.unloaded_reason %}
+      <div class="text-xs text-gray-500 mt-1">{{ row.unloaded_reason }}</div>
+      {% endif %}
+    </div>
+    {% else %}
     <a href="/vocab-grade5-l3-batch1-review/{{ row.content.content_id }}"
        class="block border border-gray-200 rounded-xl px-4 py-3 hover:border-blue-400 transition">
       <div class="flex items-center justify-between">
@@ -50,6 +65,7 @@
         </div>
       </div>
     </a>
+    {% endif %}
     {% endfor %}
   </div>
 </div>

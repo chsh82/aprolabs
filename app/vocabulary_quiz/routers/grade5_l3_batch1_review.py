@@ -89,7 +89,17 @@ def index(
             status = "승인 유지"
         rows.append({
             "content": content, "review": review, "stale": stale,
-            "held": held, "status": status,
+            "held": held, "status": status, "unloaded": False,
+        })
+
+    # 콘텐츠 자체를 DB에 적재하지 않은 보류 항목(예: 2차의 아멘·파키스탄) -
+    # vocabulary_contents에 행이 없어도 보류 사유를 목록에서 보이게 한다.
+    for cid, lemma in cfg.unloaded_held_lemmas.items():
+        rows.append({
+            "content": None, "unloaded_content_id": cid, "unloaded_lemma": lemma,
+            "unloaded_reason": br.hold_reason(cfg, cid),
+            "review": None, "stale": None, "held": True, "status": "보류",
+            "unloaded": True,
         })
 
     judged = sum(1 for r in rows if r["review"] is not None)

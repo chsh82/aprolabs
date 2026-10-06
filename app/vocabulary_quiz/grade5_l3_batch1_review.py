@@ -39,6 +39,11 @@ class L3BatchConfig:
     source_version: str
     held_content_ids: frozenset[str] = field(default_factory=frozenset)
     held_reasons: dict[str, str] = field(default_factory=dict)
+    # 콘텐츠 자체를 DB에 적재하지 않은 보류 항목(예: 2차의 아멘·파키스탄 - 1차
+    # '벨기에'와 달리 애초에 콘텐츠 작성을 하지 않음)의 표시용 lemma. 이 사전에
+    # 있는 content_id는 vocabulary_contents에 행이 없어도 목록에 "보류" 행으로
+    # 보여준다(상세 페이지 링크는 없음 - 검토할 콘텐츠 자체가 없으므로).
+    unloaded_held_lemmas: dict[str, str] = field(default_factory=dict)
 
 
 BATCHES: dict[str, L3BatchConfig] = {
@@ -60,6 +65,10 @@ BATCHES: dict[str, L3BatchConfig] = {
         label="2차",
         source_version="nikl_grade5_l3_batch2_v1",
         held_content_ids=frozenset({"G5-b5364a7010af6ca0", "G5-88ade883dcf18ae7"}),  # 아멘, 파키스탄
+        unloaded_held_lemmas={
+            "G5-b5364a7010af6ca0": "아멘",
+            "G5-88ade883dcf18ae7": "파키스탄",
+        },
         held_reasons={
             "G5-b5364a7010af6ca0": (
                 "특정 종교(기독교) 기도·예배 의례에서 쓰는 용어 - 일반 교육용 어휘 문항으로 "
