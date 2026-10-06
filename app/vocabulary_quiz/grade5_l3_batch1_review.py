@@ -1,32 +1,95 @@
-"""L3 중등 보강 1차(2026-10-07) 콘텐츠·문항 검수 - 순수 로직(라우트 없음).
+"""L3 중등 보강 콘텐츠·문항 검수 - 배치 단위로 재사용되는 공용 로직.
 
-**사람의 L3 판정과 콘텐츠 검수 상태를 분리**하는 설계: 이 배치의 30건은
-전부 사람이 이미 L3로 판정했다(`vocabulary_grade5_candidate_judgments`,
-레벨 판정) - 그 판정을 "문항이 승인됐다"로 확대 해석하지 않는다. 콘텐츠·
-문항 검수 판정은 `vocabulary_publish_reviews`(app/vocabulary_quiz/
-models_publish_review.py, momolib 1순위 공개검토와 같은 테이블·같은
-verdict 체계를 재사용 - 새 테이블을 만들지 않음)에 **이 화면을 통해서만,
-사람이 실제로 버튼을 눌러야** 쓰인다. 검수 전에는 어떤 판정도 미리
-채워 넣지 않는다(기본값 "검수 전").
+**사람의 L3 판정과 콘텐츠 검수 상태를 분리**하는 설계: 이 배치들의 모든
+건은 전부 사람이 이미 L3로 판정했다(`vocabulary_grade5_candidate_
+judgments`, 레벨 판정) - 그 판정을 "문항이 승인됐다"로 확대 해석하지
+않는다. 콘텐츠·문항 검수 판정은 `vocabulary_publish_reviews`(app/
+vocabulary_quiz/models_publish_review.py, momolib 1순위 공개검토와 같은
+테이블·같은 verdict 체계를 재사용)에 **이 화면을 통해서만, 사람이 실제로
+버튼을 눌러야** 쓰인다. 검수 전에는 어떤 판정도 미리 채워 넣지 않는다
+(기본값 "검수 전").
 
 momolib 1순위 공개검토(app/vocabulary_quiz/publish_review.py)와는 완전히
-다른 대상(content_id 집합)을 쓰는 별도 모듈이다 - 그 파일의
-TIER1_SOURCE_VERSIONS(momolib 이식 완료 콘텐츠)을 건드리지 않는다(momolib
-무관 요구사항)."""
+다른 대상(content_id 집합)을 쓰는 별도 모듈이다.
+
+**배치 레지스트리(2026-10-07 2차 배치 추가 시 도입)**: 라우터·템플릿·
+`vocabulary_publish_reviews` 테이블을 배치마다 복제하지 않기 위해, 배치별
+차이(source_version·보류 content_id·보류 사유)만 `BATCHES`에 등록하고
+나머지 로직은 전부 공용 함수로 공유한다. 새 배치를 추가할 때는 이
+딕셔너리에 항목만 추가하면 된다(라우터·템플릿 변경 불필요)."""
 from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import dataclass, field
 
 from sqlalchemy.orm import Session
 
 from app.vocabulary_quiz.models import VocabularyContent, VocabularyMultiformatItem
 from app.vocabulary_quiz.models_publish_review import VocabularyPublishReview
 
-SOURCE_VERSION = "nikl_grade5_l3_batch1_v1"
-
 CONTENT_HASH_FIELDS = ("lemma", "pos", "canonical_definition", "student_definition", "example_sentence")
 ITEM_HASH_FIELDS = ("prompt", "options_json", "correct_option", "explanation")
+
+
+@dataclass(frozen=True)
+class L3BatchConfig:
+    batch_id: str
+    label: str  # 화면에 보이는 이름, 예: "1차"
+    source_version: str
+    held_content_ids: frozenset[str] = field(default_factory=frozenset)
+    held_reasons: dict[str, str] = field(default_factory=dict)
+
+
+BATCHES: dict[str, L3BatchConfig] = {
+    "batch1": L3BatchConfig(
+        batch_id="batch1",
+        label="1차",
+        source_version="nikl_grade5_l3_batch1_v1",
+        held_content_ids=frozenset({"G5-0fa0e0a975e55d66"}),  # 벨기에
+        held_reasons={
+            "G5-0fa0e0a975e55d66": (
+                "국가명은 '의미' 기준 오답(유의어/행위·결과/부분·전체 등)을 적용하기 어렵고, "
+                "다른 나라 특징을 오답으로 쓰려면 검증 안 된 사실을 새로 끌어와야 해 이번 "
+                "개정에서는 보류했습니다(수량을 채우려고 억지로 넣지 않음)."
+            ),
+        },
+    ),
+    "batch2": L3BatchConfig(
+        batch_id="batch2",
+        label="2차",
+        source_version="nikl_grade5_l3_batch2_v1",
+        held_content_ids=frozenset({"G5-b5364a7010af6ca0", "G5-88ade883dcf18ae7"}),  # 아멘, 파키스탄
+        held_reasons={
+            "G5-b5364a7010af6ca0": (
+                "특정 종교(기독교) 기도·예배 의례에서 쓰는 용어 - 일반 교육용 어휘 문항으로 "
+                "다루기에는 종교적 중립성 문제가 있어 보류했습니다(1차 '벨기에'와 같은 성격의 "
+                "편집 판단)."
+            ),
+            "G5-88ade883dcf18ae7": (
+                "국가명 - 1차 '벨기에'와 동일한 사유로 보류. 의미 기준 오답을 적용하기 어렵고, "
+                "다른 나라 특징을 오답으로 쓰려면 검증 안 된 사실이 필요해 사실 오류 위험이 "
+                "있습니다."
+            ),
+        },
+    ),
+}
+
+DEFAULT_BATCH = "batch1"
+
+
+def get_batch_config(batch_id: str | None) -> L3BatchConfig:
+    cfg = BATCHES.get(batch_id or DEFAULT_BATCH)
+    if cfg is None:
+        raise ValueError(f"알 수 없는 배치: {batch_id}")
+    return cfg
+
+
+def batch_config_for_source_version(source_version: str) -> L3BatchConfig | None:
+    for cfg in BATCHES.values():
+        if cfg.source_version == source_version:
+            return cfg
+    return None
 
 
 def _hash_row(values: dict) -> str:
@@ -42,18 +105,18 @@ def item_hash(item: VocabularyMultiformatItem) -> str:
     return _hash_row({f: getattr(item, f) for f in ITEM_HASH_FIELDS})
 
 
-def batch1_content_ids(db: Session) -> list[str]:
+def batch_content_ids(db: Session, cfg: L3BatchConfig) -> list[str]:
     rows = (
         db.query(VocabularyContent.content_id)
-        .filter(VocabularyContent.source_version == SOURCE_VERSION)
+        .filter(VocabularyContent.source_version == cfg.source_version)
         .distinct()
         .all()
     )
     return sorted({r[0] for r in rows})
 
 
-def ordered_batch1_content_ids(db: Session) -> list[str]:
-    ids = batch1_content_ids(db)
+def ordered_batch_content_ids(db: Session, cfg: L3BatchConfig) -> list[str]:
+    ids = batch_content_ids(db, cfg)
     rows = []
     for cid in ids:
         content = db.query(VocabularyContent).filter(VocabularyContent.content_id == cid).first()
@@ -62,8 +125,8 @@ def ordered_batch1_content_ids(db: Session) -> list[str]:
     return [r[1] for r in rows]
 
 
-def next_content_id(db: Session, content_id: str) -> str | None:
-    ordered = ordered_batch1_content_ids(db)
+def next_content_id(db: Session, cfg: L3BatchConfig, content_id: str) -> str | None:
+    ordered = ordered_batch_content_ids(db, cfg)
     if content_id not in ordered:
         return None
     idx = ordered.index(content_id)
@@ -72,62 +135,42 @@ def next_content_id(db: Session, content_id: str) -> str | None:
     return None
 
 
-def linked_items(db: Session, content_id: str) -> list[VocabularyMultiformatItem]:
-    """현재 활성(is_active=1) 문항만 - 2026-10-07 오답 개정으로 29단어는
-    기존 문항이 비활성화되고 새 item_id로 다시 적재됐다(원본은 감사
-    자료로 DB에 그대로 남아 있지만 is_active=0이라 여기서는 안 보인다).
-    이 필터가 없으면 개정된 콘텐츠의 신선도 해시가 "구+신 문항 2배"로
-    잘못 계산된다."""
+def linked_items(db: Session, cfg: L3BatchConfig, content_id: str) -> list[VocabularyMultiformatItem]:
+    """현재 활성(is_active=1) 문항만 - 1차 배치는 2026-10-07 오답 개정으로 기존
+    문항이 비활성화되고 새 item_id로 다시 적재된 이력이 있어(원본은 감사 자료로
+    DB에 남지만 is_active=0이라 여기서는 안 보임) 이 필터가 꼭 필요하다."""
     return (
         db.query(VocabularyMultiformatItem)
         .filter(VocabularyMultiformatItem.source_content_id == content_id)
-        .filter(VocabularyMultiformatItem.source_version == SOURCE_VERSION)
+        .filter(VocabularyMultiformatItem.source_version == cfg.source_version)
         .filter(VocabularyMultiformatItem.is_active == 1)
         .order_by(VocabularyMultiformatItem.item_id)
         .all()
     )
 
 
-# 2026-10-07 오답 개정에서 제외·보류한 content_id - scripts/vocab/
-# grade5_batch1_distractors_v2.py의 HOLD와 같은 값이다(app 코드가 scripts/
-# 디렉터리를 import하면 배포 경로에 따라 깨지기 쉬워, 적용 결과만 여기
-# 상수로 그대로 옮겨 적었다 - 두 곳의 값이 어긋나면 안 되므로 바꿀 때
-# 반드시 같이 바꿀 것).
-HELD_CONTENT_IDS: frozenset[str] = frozenset({
-    "G5-0fa0e0a975e55d66",  # 벨기에 - 국가명이라 의미 기준 오답 설계가 어려워 보류
-})
-
-
-def is_revised(content_id: str) -> bool:
-    """이 content_id가 2026-10-07 오답 개정 대상(29건)인지."""
-    return content_id not in HELD_CONTENT_IDS
-
-
-def inactive_items(db: Session, content_id: str) -> list[VocabularyMultiformatItem]:
-    """비활성화된(is_active=0) 원본 문항 - 감사·before/after 비교 화면용.
-    2026-10-07 오답 개정으로 비활성화된 29단어의 원본 58문항이 여기 해당."""
+def inactive_items(db: Session, cfg: L3BatchConfig, content_id: str) -> list[VocabularyMultiformatItem]:
+    """비활성화된(is_active=0) 원본 문항 - 감사·before/after 비교 화면용."""
     return (
         db.query(VocabularyMultiformatItem)
         .filter(VocabularyMultiformatItem.source_content_id == content_id)
-        .filter(VocabularyMultiformatItem.source_version == SOURCE_VERSION)
+        .filter(VocabularyMultiformatItem.source_version == cfg.source_version)
         .filter(VocabularyMultiformatItem.is_active == 0)
         .order_by(VocabularyMultiformatItem.item_id)
         .all()
     )
 
 
-def hold_reason(content_id: str) -> str | None:
-    if content_id not in HELD_CONTENT_IDS:
-        return None
-    return (
-        "국가명은 '의미' 기준 오답(유의어/행위·결과/부분·전체 등)을 적용하기 어렵고, "
-        "다른 나라 특징을 오답으로 쓰려면 검증 안 된 사실을 새로 끌어와야 해 이번 "
-        "개정에서는 보류했습니다(수량을 채우려고 억지로 넣지 않음)."
-    )
+def is_held(cfg: L3BatchConfig, content_id: str) -> bool:
+    return content_id in cfg.held_content_ids
 
 
-def current_item_hash_pairs(db: Session, content_id: str) -> list[list[str]]:
-    items = linked_items(db, content_id)
+def hold_reason(cfg: L3BatchConfig, content_id: str) -> str | None:
+    return cfg.held_reasons.get(content_id)
+
+
+def current_item_hash_pairs(db: Session, cfg: L3BatchConfig, content_id: str) -> list[list[str]]:
+    items = linked_items(db, cfg, content_id)
     return sorted([[it.item_id, item_hash(it)] for it in items])
 
 
@@ -149,17 +192,17 @@ def review_history(db: Session, content_id: str) -> list[VocabularyPublishReview
     )
 
 
-def review_is_stale(db: Session, review: VocabularyPublishReview, content: VocabularyContent) -> bool:
+def review_is_stale(db: Session, cfg: L3BatchConfig, review: VocabularyPublishReview, content: VocabularyContent) -> bool:
     if review.content_hash_at_review != content_hash(content):
         return True
     try:
         stored_pairs = json.loads(review.item_hashes_at_review_json)
     except (TypeError, ValueError):
         return True
-    return current_item_hash_pairs(db, content.content_id) != stored_pairs
+    return current_item_hash_pairs(db, cfg, content.content_id) != stored_pairs
 
 
-def save_review(db: Session, content_id: str, verdict: str, rationale: str,
+def save_review(db: Session, cfg: L3BatchConfig, content_id: str, verdict: str, rationale: str,
                  reviewer_user_id: str, reviewer_email: str | None) -> VocabularyPublishReview:
     content = db.query(VocabularyContent).filter(VocabularyContent.content_id == content_id).first()
     review = VocabularyPublishReview(
@@ -169,7 +212,7 @@ def save_review(db: Session, content_id: str, verdict: str, rationale: str,
         reviewer_user_id=reviewer_user_id,
         reviewer_email=reviewer_email,
         content_hash_at_review=content_hash(content),
-        item_hashes_at_review_json=json.dumps(current_item_hash_pairs(db, content_id), ensure_ascii=False),
+        item_hashes_at_review_json=json.dumps(current_item_hash_pairs(db, cfg, content_id), ensure_ascii=False),
     )
     db.add(review)
     db.commit()

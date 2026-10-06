@@ -184,6 +184,33 @@ GRADE5_L3_BATCH1_MANIFEST_PATH = (
 )
 EXPECTED_GRADE5_L3_BATCH1_ITEM_COUNT = 58
 
+# 2026-10-07 2차 배치(잔여 40건 중 38어휘) 추가: 매 배치마다 이 섹션 전체를
+# 복제하는 대신, 배치별 차이(source_version·매니페스트 경로·기대 건수)만
+# L3_BATCH_CONFIGS에 등록하고 검증·선택 로직(_select_l3_batch_item_ids 등)은
+# 공유한다. "grade5_l3_batch1"이라는 이름의 함수·상수는 하위 호환을 위해 그대로
+# 남겨 두되, 전부 batch_id="batch1"로 공용 로직을 호출하는 얇은 래퍼다.
+GRADE5_L3_BATCH2_SOURCE_VERSION = "nikl_grade5_l3_batch2_v1"
+GRADE5_L3_BATCH2_MANIFEST_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "data" / "vocab" / "nikl_grade5_l3_batch2_manifest_v1.json"
+)
+EXPECTED_GRADE5_L3_BATCH2_ITEM_COUNT = 76
+
+L3_BATCH_CONFIGS: dict[str, dict] = {
+    "batch1": {
+        "label": "L3 중등 보강 1차", "log_tag": "grade5-l3-batch1",
+        "source_version": GRADE5_L3_BATCH1_SOURCE_VERSION,
+        "manifest_path": GRADE5_L3_BATCH1_MANIFEST_PATH,
+        "expected_count": EXPECTED_GRADE5_L3_BATCH1_ITEM_COUNT,
+    },
+    "batch2": {
+        "label": "L3 중등 보강 2차", "log_tag": "grade5-l3-batch2",
+        "source_version": GRADE5_L3_BATCH2_SOURCE_VERSION,
+        "manifest_path": GRADE5_L3_BATCH2_MANIFEST_PATH,
+        "expected_count": EXPECTED_GRADE5_L3_BATCH2_ITEM_COUNT,
+    },
+}
+
 
 class PilotBatchIntegrityError(Exception):
     """파일럿 배치가 기대한 40건과 정확히 일치하지 않을 때(오염/누락) 발생시키는
@@ -298,75 +325,77 @@ def _expected_l6_pilot_item_ids(item_types: list[str] | None) -> frozenset[str]:
     return frozenset(r["item_id"] for r in rows)
 
 
-_grade5_l3_batch1_manifest_rows_cache: list[dict] | None = None
+_l3_batch_manifest_rows_cache: dict[str, list[dict]] = {}
 
 
-def _load_grade5_l3_batch1_manifest_rows() -> list[dict]:
-    """data/vocab/nikl_grade5_l3_batch1_manifest_v1.json(git 버전 관리 대상)에서
-    실제로 적재한 정확한 60행을 읽어 캐싱한다 - 다른 파일럿의 _load_*_manifest_
-    rows와 동일한 방어(파일 없음/형식 이상 시 즉시 예외)로 작동하되 완전히
-    별도 파일·캐시를 쓴다."""
-    global _grade5_l3_batch1_manifest_rows_cache
-    if _grade5_l3_batch1_manifest_rows_cache is not None:
-        return _grade5_l3_batch1_manifest_rows_cache
+def _load_l3_batch_manifest_rows(batch_id: str) -> list[dict]:
+    """data/vocab/nikl_grade5_l3_batch{N}_manifest_v1.json(git 버전 관리 대상)에서
+    실제로 적재한 정확한 행을 읽어 배치별로 캐싱한다 - 다른 파일럿의
+    _load_*_manifest_rows와 동일한 방어(파일 없음/형식 이상 시 즉시 예외)로
+    작동한다. 배치마다 이 함수를 복제하지 않고 L3_BATCH_CONFIGS로 분기한다."""
+    if batch_id in _l3_batch_manifest_rows_cache:
+        return _l3_batch_manifest_rows_cache[batch_id]
 
-    if not GRADE5_L3_BATCH1_MANIFEST_PATH.exists():
+    cfg = L3_BATCH_CONFIGS[batch_id]
+    path, expected_count, label = cfg["manifest_path"], cfg["expected_count"], cfg["label"]
+
+    if not path.exists():
         raise PilotBatchIntegrityError(
-            f"[배포 오류] L3 중등 보강 1차 매니페스트 파일이 서버에 없습니다: "
-            f"{GRADE5_L3_BATCH1_MANIFEST_PATH} - 이 파일은 git으로 버전 관리되므로 "
-            "(data/vocab/), 정상 배포됐다면 항상 존재해야 합니다. 관리자 작업 문제가 "
-            "아니라 배포 문제입니다 - 서버에서 `git status`/`git log -- "
-            "data/vocab/nikl_grade5_l3_batch1_manifest_v1.json`으로 이 파일이 실제로 "
+            f"[배포 오류] {label} 매니페스트 파일이 서버에 없습니다: {path} - 이 파일은 "
+            "git으로 버전 관리되므로(data/vocab/), 정상 배포됐다면 항상 존재해야 "
+            f"합니다. 관리자 작업 문제가 아니라 배포 문제입니다 - 서버에서 `git status`/"
+            f"`git log -- {path.relative_to(path.parents[3])}`으로 이 파일이 실제로 "
             "커밋·배포됐는지 확인하세요.",
             missing=set(), unexpected=set(),
         )
     try:
-        rows = json.loads(GRADE5_L3_BATCH1_MANIFEST_PATH.read_text(encoding="utf-8"))
+        rows = json.loads(path.read_text(encoding="utf-8"))
         ids = [row["item_id"] for row in rows]
     except Exception as exc:  # noqa: BLE001 - 어떤 파싱 실패든 즉시 큰 에러로 표면화
         raise PilotBatchIntegrityError(
-            f"L3 중등 보강 1차 매니페스트 파일을 읽을 수 없습니다: "
-            f"{GRADE5_L3_BATCH1_MANIFEST_PATH} ({exc})",
+            f"{label} 매니페스트 파일을 읽을 수 없습니다: {path} ({exc})",
             missing=set(), unexpected=set(),
         ) from exc
 
-    if len(ids) != EXPECTED_GRADE5_L3_BATCH1_ITEM_COUNT or len(set(ids)) != len(ids):
+    if len(ids) != expected_count or len(set(ids)) != len(ids):
         raise PilotBatchIntegrityError(
-            f"L3 중등 보강 1차 매니페스트가 예상({EXPECTED_GRADE5_L3_BATCH1_ITEM_COUNT}건, "
-            f"중복 0)과 다릅니다(실제 {len(ids)}건, distinct {len(set(ids))}건): "
-            f"{GRADE5_L3_BATCH1_MANIFEST_PATH}",
+            f"{label} 매니페스트가 예상({expected_count}건, 중복 0)과 다릅니다"
+            f"(실제 {len(ids)}건, distinct {len(set(ids))}건): {path}",
             missing=set(), unexpected=set(),
         )
 
-    _grade5_l3_batch1_manifest_rows_cache = rows
-    return _grade5_l3_batch1_manifest_rows_cache
+    _l3_batch_manifest_rows_cache[batch_id] = rows
+    return rows
 
 
-def _expected_grade5_l3_batch1_item_ids(item_types: list[str] | None) -> frozenset[str]:
-    """L4·L5의 _expected_pilot_item_ids와 동일한 역할, L3 중등 보강 1차 매니페스트 전용."""
-    rows = _load_grade5_l3_batch1_manifest_rows()
+def _expected_l3_batch_item_ids(batch_id: str, item_types: list[str] | None) -> frozenset[str]:
+    """L4·L5의 _expected_pilot_item_ids와 동일한 역할, L3 중등 보강 배치 전용."""
+    rows = _load_l3_batch_manifest_rows(batch_id)
     if item_types:
         allowed_types = set(item_types)
         rows = [r for r in rows if r["item_type"] in allowed_types]
     return frozenset(r["item_id"] for r in rows)
 
 
-def _select_grade5_l3_batch1_item_ids(db: Session, item_types: list[str] | None) -> list[str]:
-    """L3 중등 보강 1차 배치 후보 item_id 목록 - 매 요청마다 DB에서 새로 조회해
-    검증을 거친다(하드코딩된 item_id 목록을 코드에 박아넣지 않는다):
-      1) source_version == GRADE5_L3_BATCH1_SOURCE_VERSION이고 is_active=1인지.
+def _select_l3_batch_item_ids(db: Session, batch_id: str, item_types: list[str] | None) -> list[str]:
+    """L3 중등 보강 배치(1차·2차 공용) 후보 item_id 목록 - 매 요청마다 DB에서 새로
+    조회해 검증을 거친다(하드코딩된 item_id 목록을 코드에 박아넣지 않는다):
+      1) source_version == 해당 배치 source_version이고 is_active=1인지.
       2) 그 문항의 source_content_id가 vocabulary_contents에 실제로 존재하고
          is_active=1인지.
       3) 그 content의 student_exposure/public_ready가 여전히 0인지(비공개 유지).
     **L4/L5/L6 파일럿과 다른 점**: vocabulary_content_levels 확인을 하지
-    않는다 - 이 30개 content_id는 레벨 정책 파이프라인(RULE_A/B·공식등급
-    매칭)을 거친 적이 없는 신규 어휘라 애초에 그 테이블에 행이 없다. 가짜
-    레벨 행을 만들어 이 사실을 감추지 않는다(레벨 미확정 상태 그대로).
+    않는다 - 이 content_id들은 레벨 정책 파이프라인(RULE_A/B·공식등급 매칭)을
+    거친 적이 없는 신규 어휘라 애초에 그 테이블에 행이 없다. 가짜 레벨 행을
+    만들어 이 사실을 감추지 않는다(레벨 미확정 상태 그대로).
     통과한 결과는 고정 매니페스트 화이트리스트와 교집합해 오염을 제거하고,
     정확히 일치하지 않으면 PilotBatchIntegrityError를 던진다(다른 파일럿과
-    동일한 3단계 안전장치)."""
+    동일한 3단계 안전장치). 배치마다 이 함수를 복제하지 않는다."""
+    cfg = L3_BATCH_CONFIGS[batch_id]
+    source_version, log_tag, label = cfg["source_version"], cfg["log_tag"], cfg["label"]
+
     query = db.query(VocabularyMultiformatItem).filter(
-        VocabularyMultiformatItem.source_version == GRADE5_L3_BATCH1_SOURCE_VERSION,
+        VocabularyMultiformatItem.source_version == source_version,
         VocabularyMultiformatItem.is_active == 1,
     )
     if item_types:
@@ -378,8 +407,8 @@ def _select_grade5_l3_batch1_item_ids(db: Session, item_types: list[str] | None)
         content_id = item.source_content_id
         if not content_id:
             logger.warning(
-                "[grade5-l3-batch1] item_id=%s: source_content_id가 없어 후보에서 "
-                "제외합니다", item.item_id,
+                "[%s] item_id=%s: source_content_id가 없어 후보에서 제외합니다",
+                log_tag, item.item_id,
             )
             continue
         content = db.query(VocabularyContent).filter(
@@ -387,43 +416,43 @@ def _select_grade5_l3_batch1_item_ids(db: Session, item_types: list[str] | None)
         ).first()
         if content is None:
             logger.warning(
-                "[grade5-l3-batch1] item_id=%s: content_id=%s가 vocabulary_contents에 "
-                "존재하지 않아 제외합니다(고아 참조)", item.item_id, content_id,
+                "[%s] item_id=%s: content_id=%s가 vocabulary_contents에 존재하지 "
+                "않아 제외합니다(고아 참조)", log_tag, item.item_id, content_id,
             )
             continue
         if content.is_active != 1:
             logger.warning(
-                "[grade5-l3-batch1] item_id=%s: content_id=%s가 is_active=%s(예상 1)라 "
-                "제외합니다", item.item_id, content_id, content.is_active,
+                "[%s] item_id=%s: content_id=%s가 is_active=%s(예상 1)라 제외합니다",
+                log_tag, item.item_id, content_id, content.is_active,
             )
             continue
         if content.student_exposure != 0 or content.public_ready != 0:
             logger.warning(
-                "[grade5-l3-batch1] item_id=%s: content_id=%s의 student_exposure=%s/"
-                "public_ready=%s가 비공개(0/0) 상태가 아니라 제외합니다",
-                item.item_id, content_id, content.student_exposure, content.public_ready,
+                "[%s] item_id=%s: content_id=%s의 student_exposure=%s/public_ready=%s가 "
+                "비공개(0/0) 상태가 아니라 제외합니다",
+                log_tag, item.item_id, content_id, content.student_exposure, content.public_ready,
             )
             continue
         valid_ids.append(item.item_id)
 
-    expected_ids = _expected_grade5_l3_batch1_item_ids(item_types)
+    expected_ids = _expected_l3_batch_item_ids(batch_id, item_types)
     filtered_ids = [i for i in valid_ids if i in expected_ids]
     contaminants = set(valid_ids) - expected_ids
     if contaminants:
         logger.warning(
-            "[grade5-l3-batch1] 화이트리스트에 없는 item_id %d건이 검증을 통과해 "
-            "필터링됨(오염 의심): %s", len(contaminants), sorted(contaminants),
+            "[%s] 화이트리스트에 없는 item_id %d건이 검증을 통과해 필터링됨(오염 의심): %s",
+            log_tag, len(contaminants), sorted(contaminants),
         )
 
     missing = expected_ids - set(filtered_ids)
     if missing:
         logger.error(
-            "[grade5-l3-batch1] 화이트리스트 기준 기대 item_id %d건 중 %d건이 검증을 "
-            "통과하지 못했습니다 - 출제를 중단합니다: %s",
-            len(expected_ids), len(missing), sorted(missing),
+            "[%s] 화이트리스트 기준 기대 item_id %d건 중 %d건이 검증을 통과하지 "
+            "못했습니다 - 출제를 중단합니다: %s",
+            log_tag, len(expected_ids), len(missing), sorted(missing),
         )
         raise PilotBatchIntegrityError(
-            f"L3 중등 보강 1차 배치 무결성 검증 실패 - 기대한 {len(expected_ids)}건 중 "
+            f"{label} 배치 무결성 검증 실패 - 기대한 {len(expected_ids)}건 중 "
             f"{len(missing)}건이 후보에서 빠졌습니다({sorted(missing)}). "
             f"오염 의심 항목: {sorted(contaminants) if contaminants else '없음'}",
             missing=missing, unexpected=contaminants,
@@ -432,8 +461,9 @@ def _select_grade5_l3_batch1_item_ids(db: Session, item_types: list[str] | None)
     return filtered_ids
 
 
-def _grade5_l3_batch1_availability(db: Session, item_types: list[str] | None) -> dict:
-    candidate_ids = _select_grade5_l3_batch1_item_ids(db, item_types)
+def _l3_batch_availability(db: Session, batch_id: str, item_types: list[str] | None) -> dict:
+    cfg = L3_BATCH_CONFIGS[batch_id]
+    candidate_ids = _select_l3_batch_item_ids(db, batch_id, item_types)
     items = (
         db.query(VocabularyMultiformatItem)
         .filter(VocabularyMultiformatItem.item_id.in_(candidate_ids)).all()
@@ -446,12 +476,23 @@ def _grade5_l3_batch1_availability(db: Session, item_types: list[str] | None) ->
         if item.source_content_id:
             distinct_words.add(item.source_content_id)
     return {
+        "grade5_l3_batch_id": batch_id,
         "grade5_l3_batch1_mode": True,
-        "grade5_l3_batch1_source_version": GRADE5_L3_BATCH1_SOURCE_VERSION,
+        "grade5_l3_batch1_source_version": cfg["source_version"],
         "available_items": len(items),
         "distinct_words": len(distinct_words),
         "by_type": by_type,
     }
+
+
+# 하위 호환 래퍼(기존 호출부/테스트가 참조할 수 있는 이름 유지) - 전부 batch1로
+# 공용 로직을 호출할 뿐, 로직을 복제하지 않는다.
+def _select_grade5_l3_batch1_item_ids(db: Session, item_types: list[str] | None) -> list[str]:
+    return _select_l3_batch_item_ids(db, "batch1", item_types)
+
+
+def _grade5_l3_batch1_availability(db: Session, item_types: list[str] | None) -> dict:
+    return _l3_batch_availability(db, "batch1", item_types)
 
 
 # ==================== 기존 코퍼스 L0~L3 확장 미리보기(2026-09-29) 상수 ====================
@@ -650,6 +691,9 @@ class CreateSessionBody(BaseModel):
     grade5_l3_batch1_mode: bool = False  # True면 L3 중등 보강 1차(2026-10-07, 공식
     # 5등급 신규 어휘 30건) 전용 경로 - 다른 파일럿 모드와도 상호 배타적(동시 True면
     # 422). 레벨 선택 없음(전부 사람이 L3로 판정한 고정 배치).
+    grade5_l3_batch2_mode: bool = False  # True면 L3 중등 보강 2차(2026-10-07, 잔여
+    # 40건 중 38어휘) 전용 경로 - grade5_l3_batch1_mode와 완전히 별개 필드라 1차
+    # 동작에는 전혀 영향 없음. 둘 다 True면 422(다른 파일럿 모드와도 상호 배타적).
 
 
 class AnswerBody(BaseModel):
@@ -1272,19 +1316,24 @@ def get_existing_l0l3_preview_availability(
 def get_grade5_l3_batch1_availability(
     response: Response,
     item_type: list[str] = Query(default=[]),
+    batch: str = "batch1",
     db: Session = Depends(get_vocabulary_quiz_db),
     admin: str = Depends(require_admin),
 ):
-    """L3 중등 보강 1차(2026-10-07) 전용 가용량 조회 - 기존 /availability,
+    """L3 중등 보강 배치(1차·2차 공용) 가용량 조회 - 기존 /availability,
     /pilot-availability, /l6-pilot-availability, /existing-l0l3-preview-availability는
-    전혀 건드리지 않는 완전히 별도 엔드포인트다. 표시 전용, 세션을 만들지 않는다."""
+    전혀 건드리지 않는 완전히 별도 엔드포인트다. 표시 전용, 세션을 만들지 않는다.
+    `batch` 쿼리 파라미터로 배치를 선택한다(기본 batch1, 하위 호환) - 배치마다
+    엔드포인트를 새로 만들지 않는다."""
     _apply_noindex(response)
+    if batch not in L3_BATCH_CONFIGS:
+        raise HTTPException(status_code=404, detail=f"알 수 없는 배치: {batch}")
     unknown = set(item_type) - set(ITEM_TYPES)
     if unknown:
         raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
     types = [t for t in item_type if t != "CROSSWORD"] or None
     try:
-        return _grade5_l3_batch1_availability(db, types)
+        return _l3_batch_availability(db, batch, types)
     except PilotBatchIntegrityError as exc:
         raise _pilot_integrity_http_error(exc) from exc
 
@@ -1516,31 +1565,34 @@ def _create_existing_l0l3_preview_session(body: CreateSessionBody, db: Session, 
     }
 
 
-def _create_grade5_l3_batch1_session(body: CreateSessionBody, db: Session, admin: str) -> dict:
-    """L3 중등 보강 1차(2026-10-07) 전용 세션 생성 - _create_pilot_session(L4·L5)과
+def _create_l3_batch_session(body: CreateSessionBody, db: Session, admin: str, batch_id: str) -> dict:
+    """L3 중등 보강 배치(1차·2차 공용) 전용 세션 생성 - _create_pilot_session(L4·L5)과
     완전히 같은 구조를 그대로 따르되 별도 source_version/후보 선택 함수를 쓴다.
     기존 create_session() 본문의 일반 출제 분기·세 파일럿 분기는 한 글자도
-    건드리지 않는다."""
+    건드리지 않는다. 배치마다 이 함수를 복제하지 않고 batch_id로 분기한다."""
+    cfg = L3_BATCH_CONFIGS[batch_id]
+    source_version, label = cfg["source_version"], cfg["label"]
+
     item_types = None
     if body.item_types:
         unknown = set(body.item_types) - set(ITEM_TYPES)
         if unknown:
             raise HTTPException(status_code=400, detail=f"알 수 없는 item_type: {sorted(unknown)}")
         if "CROSSWORD" in body.item_types:
-            raise HTTPException(status_code=422, detail="L3 중등 보강 1차 모드는 십자말(CROSSWORD)을 지원하지 않습니다")
+            raise HTTPException(status_code=422, detail=f"{label} 모드는 십자말(CROSSWORD)을 지원하지 않습니다")
         item_types = body.item_types
 
     if body.question_count < 1 or body.question_count > 50:
         raise HTTPException(status_code=400, detail="question_count는 1~50 사이여야 합니다")
 
     try:
-        candidate_ids = _select_grade5_l3_batch1_item_ids(db, item_types)
+        candidate_ids = _select_l3_batch_item_ids(db, batch_id, item_types)
     except PilotBatchIntegrityError as exc:
         raise _pilot_integrity_http_error(exc) from exc
     candidate_count = len(candidate_ids)
     if candidate_count < body.question_count:
         raise HTTPException(status_code=409, detail={
-            "code": "INSUFFICIENT_GRADE5_L3_BATCH1_CANDIDATES",
+            "code": f"INSUFFICIENT_GRADE5_L3_{batch_id.upper()}_CANDIDATES",
             "requested": body.question_count,
             "available": candidate_count,
         })
@@ -1548,7 +1600,8 @@ def _create_grade5_l3_batch1_session(body: CreateSessionBody, db: Session, admin
     metadata = {
         "audience": "ADMIN_ONLY",
         "grade5_l3_batch1_mode": True,
-        "grade5_l3_batch1_source_version": GRADE5_L3_BATCH1_SOURCE_VERSION,
+        "grade5_l3_batch_id": batch_id,
+        "grade5_l3_batch1_source_version": source_version,
         "human_level_judgment_note": "전부 사람이 L3로 판정한 신규 어휘(공식 레벨 정책 미적용, 레벨 미확정)",
         "requested_count": body.question_count,
         "candidate_count": candidate_count,
@@ -1564,7 +1617,7 @@ def _create_grade5_l3_batch1_session(body: CreateSessionBody, db: Session, admin
     now = datetime.now(timezone.utc).isoformat()
     session_id = str(uuid.uuid4())
     session = VocabularyMultiformatSession(
-        id=session_id, user_id=admin, source_version=GRADE5_L3_BATCH1_SOURCE_VERSION,
+        id=session_id, user_id=admin, source_version=source_version,
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
         metadata_json=json.dumps(metadata, ensure_ascii=False),
@@ -1582,13 +1635,18 @@ def _create_grade5_l3_batch1_session(body: CreateSessionBody, db: Session, admin
         "session_id": session_id,
         "question_count": len(item_ids),
         "item_types": item_types,
-        "source_version": GRADE5_L3_BATCH1_SOURCE_VERSION,
+        "source_version": source_version,
         "level_info": None,
         "pilot_info": None,
         "l6_pilot_info": None,
         "existing_l0l3_preview_info": None,
-        "grade5_l3_batch1_info": metadata,
+        "grade5_l3_batch1_info": metadata if batch_id == "batch1" else None,
+        "grade5_l3_batch2_info": metadata if batch_id == "batch2" else None,
     }
+
+
+def _create_grade5_l3_batch1_session(body: CreateSessionBody, db: Session, admin: str) -> dict:
+    return _create_l3_batch_session(body, db, admin, "batch1")
 
 
 @api_router.post("/sessions")
@@ -1596,11 +1654,12 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
                     admin: str = Depends(require_admin)):
     _apply_noindex(response)
     modes_selected = sum([body.pilot_mode, body.l6_pilot_mode, body.existing_l0l3_preview_mode,
-                          body.grade5_l3_batch1_mode])
+                          body.grade5_l3_batch1_mode, body.grade5_l3_batch2_mode])
     if modes_selected > 1:
         raise HTTPException(status_code=422,
                              detail="pilot_mode/l6_pilot_mode/existing_l0l3_preview_mode/"
-                                    "grade5_l3_batch1_mode 중 하나만 선택할 수 있습니다")
+                                    "grade5_l3_batch1_mode/grade5_l3_batch2_mode 중 "
+                                    "하나만 선택할 수 있습니다")
     if body.pilot_mode:
         # L4·L5 파일럿(phase18) 전용 경로 - 아래 일반 출제 분기(레벨모드/혼합모드/
         # CROSSWORD, SOURCE_VERSION="2.1.29")는 이 반환 이후 전혀 실행되지 않는다.
@@ -1616,7 +1675,12 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
     if body.grade5_l3_batch1_mode:
         # L3 중등 보강 1차(2026-10-07) 전용 경로 - 아래 일반 출제 분기와 위 세
         # 파일럿 분기는 이 반환 이후 전혀 실행되지 않는다.
-        return _create_grade5_l3_batch1_session(body, db, admin)
+        return _create_l3_batch_session(body, db, admin, "batch1")
+    if body.grade5_l3_batch2_mode:
+        # L3 중등 보강 2차(2026-10-07) 전용 경로 - 1차와 완전히 같은 함수를 batch_id만
+        # 바꿔 재사용한다(복제 아님). 아래 일반 출제 분기와 다른 모드 분기는 이 반환
+        # 이후 전혀 실행되지 않는다.
+        return _create_l3_batch_session(body, db, admin, "batch2")
     if body.confidence_mode not in CONFIDENCE_MODES:
         raise HTTPException(status_code=422, detail="지원하지 않는 신뢰도 필터입니다(all_candidates/auto_only만 허용)")
 
@@ -1911,6 +1975,7 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
     l6_pilot_info = None
     existing_l0l3_preview_info = None
     grade5_l3_batch1_info = None
+    grade5_l3_batch2_info = None
     if metadata and metadata.get("pilot_mode"):
         # L4·L5 파일럿(phase18) 세션 - level_info(레벨모드 전용 필드 구성)는 그대로
         # None으로 두고, 별도 pilot_info로 노출한다(기존 level_info 소비 코드/테스트에
@@ -1942,6 +2007,16 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
             "selected_vocab_level": selected_level,
             "grade_label": GRADE_LABELS.get(selected_level) if selected_level is not None else None,
             "level_status_note": metadata.get("level_status_note", "레벨 미확정(PROVISIONAL_AUTO)"),
+            "requested_count": metadata.get("requested_count"),
+            "candidate_count": metadata.get("candidate_count"),
+            "actual_count": metadata.get("actual_count"),
+        }
+    elif metadata and metadata.get("grade5_l3_batch1_mode") and metadata.get("grade5_l3_batch_id") == "batch2":
+        # L3 중등 보강 2차(2026-10-07) 세션 - batch1과 같은 모양이되 별도 필드로
+        # 노출한다(기존 grade5_l3_batch1_info 소비 코드에 영향 없음).
+        grade5_l3_batch2_info = {
+            "grade5_l3_batch2_source_version": metadata.get("grade5_l3_batch1_source_version"),
+            "human_level_judgment_note": metadata.get("human_level_judgment_note"),
             "requested_count": metadata.get("requested_count"),
             "candidate_count": metadata.get("candidate_count"),
             "actual_count": metadata.get("actual_count"),
@@ -1981,6 +2056,7 @@ def session_result(session_id: str, response: Response, db: Session = Depends(ge
         "l6_pilot_info": l6_pilot_info,  # L6 파일럿(phase28) 세션에서만 값이 들어감, 그 외는 None
         "existing_l0l3_preview_info": existing_l0l3_preview_info,  # L0~L3 확장 미리보기 세션에서만 값, 그 외는 None
         "grade5_l3_batch1_info": grade5_l3_batch1_info,  # L3 중등 보강 1차 세션에서만 값, 그 외는 None
+        "grade5_l3_batch2_info": grade5_l3_batch2_info,  # L3 중등 보강 2차 세션에서만 값, 그 외는 None
     }
 
 
@@ -2075,6 +2151,23 @@ def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), a
             "상태입니다 - 서버 로그의 [grade5-l3-batch1] 태그를 확인하거나 개발 담당자에게 문의하세요."
         )
 
+    # L3 중등 보강 2차(2026-10-07) 체크박스 - 1차와 같은 공용 함수(_l3_batch_availability)를
+    # batch_id만 바꿔 재사용한다(복제 아님).
+    grade5_l3_batch2_unavailable_reason = None
+    try:
+        grade5_l3_batch2_available = _l3_batch_availability(db, "batch2", None)["available_items"] > 0
+        if not grade5_l3_batch2_available:
+            grade5_l3_batch2_unavailable_reason = "현재 조건을 만족하는 L3 중등 보강 2차 문항이 없습니다."
+    except PilotBatchIntegrityError as exc:
+        logger.error("[grade5-l3-batch2] play_page 렌더링 중 배치 무결성 오류로 체크박스를 "
+                     "비활성화합니다: %s", exc)
+        grade5_l3_batch2_available = False
+        grade5_l3_batch2_unavailable_reason = (
+            "L3 중등 보강 2차 배치 무결성 오류로 일시 중단되었습니다(매니페스트 파일 누락 "
+            "또는 예상 76건과 불일치). 관리자 작업 문제가 아니라 배포·데이터 점검이 필요한 "
+            "상태입니다 - 서버 로그의 [grade5-l3-batch2] 태그를 확인하거나 개발 담당자에게 문의하세요."
+        )
+
     return templates.TemplateResponse("vocabulary_quiz/multiformat_play.html", {
         "request": request, "item_types": ITEM_TYPES, "default_question_count": DEFAULT_QUESTION_COUNT,
         "level_grade_labels": GRADE_LABELS, "level_disabled": set(level_disabled),
@@ -2085,4 +2178,6 @@ def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), a
         "existing_l0l3_level_counts": existing_l0l3_level_counts,
         "grade5_l3_batch1_available": grade5_l3_batch1_available,
         "grade5_l3_batch1_unavailable_reason": grade5_l3_batch1_unavailable_reason,
+        "grade5_l3_batch2_available": grade5_l3_batch2_available,
+        "grade5_l3_batch2_unavailable_reason": grade5_l3_batch2_unavailable_reason,
     }, headers=NOINDEX_HEADERS)
