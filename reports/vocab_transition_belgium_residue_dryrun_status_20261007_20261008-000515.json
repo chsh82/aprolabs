@@ -1,0 +1,107 @@
+{
+  "task": "벨기에 residue item deactivation dry-run only",
+  "timestamp_kst": "20261008-000515",
+  "live_db_mutated": false,
+  "live_db": "/home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db",
+  "dryrun_db": "/home/chsh82/aprolabs/tmp/vocabulary_quiz_belgium_deactivate_dryrun_20261008-000515.db",
+  "target_item_ids": [
+    "MF_G5L3B1_C_G5-0fa0e0a975e55d66",
+    "MF_G5L3B1_M_G5-0fa0e0a975e55d66"
+  ],
+  "before": {
+    "integrity": "ok",
+    "db_sha256": "a37db5c73030d5a72fbb54ee13b390df53489e7eeec395843b287c1b882602d6",
+    "db_size": 17285120,
+    "items": [
+      {
+        "id": 1595,
+        "item_id": "MF_G5L3B1_C_G5-0fa0e0a975e55d66",
+        "item_type": "CONTEXT_MEANING",
+        "source_content_id": "G5-0fa0e0a975e55d66",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 1,
+        "lemma": "벨기에"
+      },
+      {
+        "id": 1594,
+        "item_id": "MF_G5L3B1_M_G5-0fa0e0a975e55d66",
+        "item_type": "MEANING_CHOICE",
+        "source_content_id": "G5-0fa0e0a975e55d66",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 1,
+        "lemma": "벨기에"
+      }
+    ],
+    "contents": [
+      {
+        "content_id": "G5-0fa0e0a975e55d66",
+        "lemma": "벨기에",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 1,
+        "public_ready": 0,
+        "student_exposure": 0,
+        "hold_reason": null
+      }
+    ]
+  },
+  "dryrun_update_rows": 2,
+  "after_dryrun": {
+    "integrity": "ok",
+    "fk_violations": 0,
+    "items": [
+      {
+        "id": 1595,
+        "item_id": "MF_G5L3B1_C_G5-0fa0e0a975e55d66",
+        "item_type": "CONTEXT_MEANING",
+        "source_content_id": "G5-0fa0e0a975e55d66",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 0,
+        "lemma": "벨기에"
+      },
+      {
+        "id": 1594,
+        "item_id": "MF_G5L3B1_M_G5-0fa0e0a975e55d66",
+        "item_type": "MEANING_CHOICE",
+        "source_content_id": "G5-0fa0e0a975e55d66",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 0,
+        "lemma": "벨기에"
+      }
+    ],
+    "contents": [
+      {
+        "content_id": "G5-0fa0e0a975e55d66",
+        "lemma": "벨기에",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 1,
+        "public_ready": 0,
+        "student_exposure": 0,
+        "hold_reason": null
+      }
+    ],
+    "dryrun_db_sha256": "f31ce789a9670a544789a58fa55e11a37829f1d4e0bcfe329003c45fad29769b"
+  },
+  "live_after_readback": {
+    "integrity": "ok",
+    "items": [
+      {
+        "id": 1595,
+        "item_id": "MF_G5L3B1_C_G5-0fa0e0a975e55d66",
+        "item_type": "CONTEXT_MEANING",
+        "source_content_id": "G5-0fa0e0a975e55d66",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 1,
+        "lemma": "벨기에"
+      },
+      {
+        "id": 1594,
+        "item_id": "MF_G5L3B1_M_G5-0fa0e0a975e55d66",
+        "item_type": "MEANING_CHOICE",
+        "source_content_id": "G5-0fa0e0a975e55d66",
+        "source_version": "nikl_grade5_l3_batch1_v1",
+        "is_active": 1,
+        "lemma": "벨기에"
+      }
+    ]
+  }
+}
