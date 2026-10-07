@@ -64,10 +64,13 @@ function buildBundles(item) {
     // 본문과 구분해 보존해야 하는 경우용(예: id=1607 '사랑을 뜻하는 한자 사랑 애') -
     // 없으면 기존과 완전히 동일(caption=null, figcaption 자체가 안 붙음).
     const caption = (item.ui_config && item.ui_config.excerpt_image_caption) || null;
+    // 2026-09-19 13차 안정화: excerpt_image_height_mm도 reference_image_height_mm과 같은
+    // 방식으로 표시 높이를 조절한다(없으면 기존과 완전히 동일).
+    const heightMm = item.ui_config && item.ui_config.excerpt_image_height_mm;
     const leadHtml = (item.excerpt_text
       ? blocks.excerptBlock(item, { tight: true })
       : blocks.readingTypeLabel(item)) +
-      blocks.figureBlock(blocks.docImageSrc(item.excerpt_image_path), caption);
+      blocks.figureBlock(blocks.docImageSrc(item.excerpt_image_path), caption, heightMm);
     return { leadHtml, leadKind: 'figure', answerHtml };
   }
   if (item.excerpt_text) {

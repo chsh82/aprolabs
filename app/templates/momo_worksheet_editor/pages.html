@@ -37,7 +37,7 @@
          class="block px-2 py-2 rounded text-xs border {{ 'bg-indigo-50 border-indigo-200 text-indigo-700 font-semibold' if t.page_id == selected_id else 'border-transparent text-gray-600 hover:bg-gray-50' }}">
         <div class="flex items-center justify-between">
           <span>{{ t.index }}. {{ t.label }}</span>
-          {% if not t.editable %}<span class="text-gray-300" title="이번 범위에서는 읽기 전용">🔒</span>{% endif %}
+          {% if not t.editable %}<span class="text-gray-300" title="{{ t.uneditable_reason }}">🔒</span>{% endif %}
         </div>
         {% if t.item_ids %}<div class="text-gray-400 mt-0.5">문항 {{ t.item_ids|join(', ') }}</div>{% endif %}
       </a>
@@ -111,7 +111,10 @@
     </div>
 
     {% if not page or page.layout_type not in ('halves', 'fullpage') %}
-    <p class="text-xs text-gray-400">이 페이지는 이번 범위(2단계 문항 페이지)에서 직접 편집을 지원하지 않습니다. 왼쪽에서 🔒 표시가 없는 페이지를 선택해주세요.</p>
+    <p class="text-xs text-gray-500 leading-relaxed">
+      {{ (selected_thumb.uneditable_reason if selected_thumb else None) or '이 페이지는 이번 범위(2단계 문항 페이지)에서 직접 편집을 지원하지 않습니다.' }}
+    </p>
+    <p class="text-xs text-gray-400 mt-2">왼쪽에서 🔒 표시가 없는 페이지를 선택해주세요.</p>
     {% elif not items %}
     <p class="text-xs text-gray-400">이 페이지에 편집 가능한 문항이 없습니다.</p>
     {% else %}
@@ -156,7 +159,36 @@
         <button type="submit" class="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white text-xs rounded transition">이 그림으로 후보 만들기</button>
       </form>
 
-      <p class="text-[11px] text-gray-300 mt-2">그림 크기·자르기·캡션 조절은 이번 범위에 아직 없습니다(미연결).</p>
+      {% set cfg = item.ui_config or {} %}
+      {% set layout_fields = [] %}
+      {% if item.reference_image_path %}{% set _ = layout_fields.append(('reference_image_path', '참고자료 그림', cfg.reference_image_caption, cfg.reference_image_height_mm)) %}{% endif %}
+      {% if cfg.reference_image2_path %}{% set _ = layout_fields.append(('reference_image2_path', '참고자료 그림 2', cfg.reference_image2_caption, cfg.reference_image2_height_mm)) %}{% endif %}
+      {% if item.excerpt_image_path %}{% set _ = layout_fields.append(('excerpt_image_path', '발췌문 그림', cfg.excerpt_image_caption, cfg.excerpt_image_height_mm)) %}{% endif %}
+
+      {% if layout_fields %}
+      <div class="mt-3 pt-3 border-t border-gray-50">
+        <p class="text-xs text-gray-500 mb-1.5">그림 크기·캡션 조절 <span class="text-gray-300">(자르기는 이번 범위에 없음 - 원본 파일은 그대로 유지)</span></p>
+        {% for field, label, cur_caption, cur_height in layout_fields %}
+        <form method="POST" action="/momo-worksheet-editor/{{ project_id }}/pages/{{ selected_id }}/propose" class="mb-2 flex items-end gap-1.5 flex-wrap">
+          <input type="hidden" name="item_id" value="{{ item.id }}">
+          <input type="hidden" name="operation" value="set_image_layout">
+          <input type="hidden" name="base_revision" value="{{ manifest.revision_id }}">
+          <input type="hidden" name="image_field" value="{{ field }}">
+          <div>
+            <label class="block text-[11px] text-gray-400">{{ label }} 캡션</label>
+            <input type="text" name="image_caption" value="{{ cur_caption or '' }}" placeholder="비워두면 캡션 없음"
+                   class="w-40 border border-gray-300 rounded px-2 py-1 text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] text-gray-400">높이(mm, 10~200)</label>
+            <input type="number" name="image_height_mm" min="10" max="200" step="1" value="{{ cur_height or '' }}"
+                   placeholder="비워두면 기본값" class="w-24 border border-gray-300 rounded px-2 py-1 text-xs">
+          </div>
+          <button type="submit" class="px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white text-xs rounded transition">이 설정으로 후보 만들기</button>
+        </form>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
     {% endfor %}
     {% endif %}

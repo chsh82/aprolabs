@@ -59,6 +59,7 @@ def _render(request, project_id, page_id=None, error=None):
 
     thumbs = pgs.page_thumbnails(manifest)
     selected_id = page_id or next((t["page_id"] for t in thumbs if t["editable"]), thumbs[0]["page_id"] if thumbs else None)
+    selected_thumb = next((t for t in thumbs if t["page_id"] == selected_id), None)
     page = next((p for p in manifest["pages"] if p["page_id"] == selected_id), None)
     items = pgs.page_items(project_id, page) if page and page["layout_type"] in ("halves", "fullpage") else []
     active_proposal = pgs.list_active_proposal(project_id, selected_id) if selected_id else None
@@ -78,7 +79,7 @@ def _render(request, project_id, page_id=None, error=None):
 
     return templates.TemplateResponse("momo_worksheet_editor/pages.html", {
         "request": request, "project_id": project_id, "meta": meta, "manifest": manifest,
-        "thumbs": thumbs, "selected_id": selected_id, "page": page, "items": items,
+        "thumbs": thumbs, "selected_id": selected_id, "selected_thumb": selected_thumb, "page": page, "items": items,
         "active_proposal": active_proposal, "current_preview_url": current_preview_url,
         "candidate_preview_url": candidate_preview_url, "error": error,
     })
@@ -129,6 +130,7 @@ async def pages_propose(
     item_id: str = Form(...), operation: str = Form(...), base_revision: str = Form(...),
     question_text: str = Form(""), answer_height_mm: str = Form(""),
     image_field: str = Form(""), image_file: UploadFile = File(None),
+    image_caption: str = Form(""), image_height_mm: str = Form(""),
 ):
     kwargs = {}
     if operation == "replace_image":
@@ -141,6 +143,10 @@ async def pages_propose(
         kwargs["question_text"] = question_text
     elif operation == "set_answer_area":
         kwargs["answer_height_mm"] = answer_height_mm
+    elif operation == "set_image_layout":
+        kwargs["image_field"] = image_field
+        kwargs["image_caption"] = image_caption
+        kwargs["image_height_mm"] = image_height_mm
 
     try:
         pgs.create_proposal(project_id, page_id, item_id, operation, base_revision, **kwargs)

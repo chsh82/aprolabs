@@ -71,8 +71,13 @@ function excerptBlock(item, opts) {
   return `${readingTypeLabel(item)}<blockquote class="excerpt${tight}">${esc(item.excerpt_text)}${cite}</blockquote>`;
 }
 
-function figureBlock(src, caption) {
-  return `<figure class="figure-block"><img src="${esc(src)}" alt="${esc(caption || '')}">` +
+// heightMm(2026-09-19 13차 안정화 - "그림 크기·캡션 조절"): 있으면 CSS의 기본 max-height
+// 대신 이 높이를 쓴다(인라인 style로 override, 종횡비는 img가 항상 auto 폭이라 유지됨).
+// 없으면 기존과 완전히 동일(스타일 속성 자체가 안 붙어 CSS 기본값을 그대로 씀) - 자르기는
+// 이번 범위에 없음(원본 이미지 파일 자체는 안 건드림, 표시 크기만 조절).
+function figureBlock(src, caption, heightMm) {
+  const style = heightMm ? ` style="max-height:${Math.max(10, Number(heightMm))}mm"` : '';
+  return `<figure class="figure-block"><img src="${esc(src)}" alt="${esc(caption || '')}"${style}>` +
     (caption ? `<figcaption>${esc(caption)}</figcaption>` : '') + `</figure>`;
 }
 
@@ -98,10 +103,13 @@ function answerLines(extraClass, heightMm) {
 function referenceBlock(item) {
   const cfg = item.ui_config || {};
   if (!item.reference_text && !item.reference_image_path && !cfg.reference_image2_path) return '';
+  // 2026-09-19 13차 안정화: 그림 캡션·표시 높이 조절(ui_config.reference_image_caption/
+  // reference_image_height_mm, 두 번째 그림은 기존 reference_image2_caption에 height_mm만
+  // 새로 추가) - 값이 없으면 이전과 완전히 동일하게 렌더링됨.
   const img = item.reference_image_path
-    ? figureBlock(docImageSrc(item.reference_image_path), null) : '';
+    ? figureBlock(docImageSrc(item.reference_image_path), cfg.reference_image_caption || null, cfg.reference_image_height_mm) : '';
   const img2 = cfg.reference_image2_path
-    ? figureBlock(docImageSrc(cfg.reference_image2_path), cfg.reference_image2_caption || null) : '';
+    ? figureBlock(docImageSrc(cfg.reference_image2_path), cfg.reference_image2_caption || null, cfg.reference_image2_height_mm) : '';
   const body = item.reference_text ? `<p class="reference__body">${esc(item.reference_text)}</p>` : '';
   const images = (img || img2) ? `<div class="reference__images">${img}${img2}</div>` : '';
   return `<div class="reference"><p class="reference__label">참고 자료</p>${body}${images}</div>`;

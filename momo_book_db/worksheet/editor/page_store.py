@@ -152,6 +152,17 @@ def _find_page(manifest, page_id):
     raise PageEditError(f"페이지를 찾을 수 없음: {page_id}")
 
 
+_UNEDITABLE_REASON = {
+    "cover": "표지 페이지는 이번 범위(2단계 문항 페이지 편집)에서 직접 편집을 지원하지 않습니다 - "
+             "표지 문구·책 정보는 문항 단위 조각이 아니라 이 페이지 편집기가 다루는 대상이 아닙니다.",
+    "step1": "1단계(어휘·OX) 페이지는 이번 범위에서 직접 편집을 지원하지 않습니다 - 어휘/OX 행은 "
+             "문항 하나가 아니라 여러 행이 한 페이지 여유 공간에 자동 배분되는 방식이라, 조각 하나만 "
+             "다시 렌더링하는 이번 엔진(페이지 고정 편집)이 아직 그 배분 로직까지 안전하게 부분 재계산하지 못합니다.",
+    "step3": "3단계(글쓰기) 페이지는 이번 범위에서 직접 편집을 지원하지 않습니다 - 주제 안내·활동 질문이 "
+             "한 페이지 전체로 묶여 있어 문항 단위 조각 치환 대상이 아닙니다.",
+}
+
+
 def page_thumbnails(manifest):
     """왼쪽 썸네일 목록용 - 표시 쪽수는 배열 순서에서 매길 뿐(page_id가 진짜 식별자)."""
     labels = {"cover": "표지", "step1": "1단계", "step2": "2단계", "step3": "3단계"}
@@ -164,6 +175,7 @@ def page_thumbnails(manifest):
             "role_index": p["role_index"], "layout_type": p["layout_type"],
             "label": f"{labels.get(p['role'], p['role'])}" + (f" {p['role_index']+1}" if p["role"] in ("step1", "step2") else ""),
             "editable": editable, "item_ids": item_ids,
+            "uneditable_reason": None if editable else _UNEDITABLE_REASON.get(p["role"], "이 페이지는 이번 범위에서 직접 편집을 지원하지 않습니다."),
         })
     return out
 
@@ -172,7 +184,17 @@ _FIELD_PART_PRIORITY = {
     "question_text": ("merged", "answer"),
     "answer_height_mm": ("merged", "answer"),
     "reference_image_path": ("merged", "answer"),
+    "reference_image2_path": ("merged", "answer"),
     "excerpt_image_path": ("merged", "lead"),
+}
+
+# operation "set_image_layout"이 다루는 그림 필드 -> ui_config 안의 캡션/높이 키 이름.
+# reference_image_path만 지금까지 캡션 필드가 없었다(referenceBlock이 caption=null을
+# 하드코딩했었음) - 13차에서 나머지 두 필드(reference_image2/excerpt)와 같은 패턴으로 맞춤.
+_IMAGE_LAYOUT_KEYS = {
+    "reference_image_path": ("reference_image_caption", "reference_image_height_mm"),
+    "reference_image2_path": ("reference_image2_caption", "reference_image2_height_mm"),
+    "excerpt_image_path": ("excerpt_image_caption", "excerpt_image_height_mm"),
 }
 
 
@@ -227,7 +249,8 @@ def validate_image(file_bytes):
 
 def create_proposal(project_id, page_id, item_id, operation, base_revision, *,
                      question_text=None, answer_height_mm=None,
-                     image_field=None, image_file_bytes=None, image_filename=None):
+                     image_field=None, image_file_bytes=None, image_filename=None,
+                     image_caption=None, image_height_mm=None):
     """직접 편집 1건 -> 후보 1건. 원본(page_manifest.json)·현재 저장 버전은 전혀 안 바뀐다.
     반환: proposal dict(status: ok=적용 가능한 후보 생김 / blocked=넘침으로 차단 /
     error=요청 자체 문제)."""
@@ -272,6 +295,36 @@ def create_proposal(project_id, page_id, item_id, operation, base_revision, *,
         new_path = f"{edit_doc_id}/{asset['asset_id']}{asset['ext']}"
         item[image_field] = new_path
         content_delta[image_field] = f"asset:{asset['asset_id']}{asset['ext']}"
+    elif operation == "set_image_layout":
+        # "그림 크기·캡션 조절" - 원본 이미지 파일은 안 건드리고 표시 방식(ui_config)만
+        # 바꾼다. 자르기는 이번 범위에 없음(별도 후속 과제로 명시).
+        if image_field not in _IMAGE_LAYOUT_KEYS:
+            raise PageEditError(f"이 그림 필드는 크기·캡션 조절을 지원하지 않습니다: {image_field}")
+        caption_key, height_key = _IMAGE_LAYOUT_KEYS[image_field]
+        h = None
+        if image_height_mm is not None and str(image_height_mm).strip():
+            try:
+                h = float(image_height_mm)
+            except (TypeError, ValueError):
+                raise PageEditError("그림 높이는 숫자(mm)여야 합니다.")
+            if h < 10 or h > 200:
+                raise PageEditError("그림 높이는 10~200mm 범위여야 합니다.")
+        cfg = dict(item.get("ui_config") or {})
+        if image_caption is not None and image_caption.strip():
+            cfg[caption_key] = image_caption.strip()
+        else:
+            cfg.pop(caption_key, None)
+        if h is not None:
+            cfg[height_key] = h
+        else:
+            cfg.pop(height_key, None)
+        item["ui_config"] = cfg
+        field = image_field
+        # ui_config는 항상 통째로 교체되는 기존 관행(기존 6~11차 RESTORATION_PATCHES와
+        # 동일 - project_store.build_effective_data가 필드 단위 병합이 아니라 그대로
+        # 대입하므로, 여기서 "현재 유효 ui_config(=item['ui_config'], 이미 이전
+        # overrides까지 반영된 상태)에 이번 변경만 덧씌운" 완전한 객체를 델타로 남긴다.
+        content_delta["ui_config"] = cfg
     else:
         raise PageEditError(f"알 수 없는 연산: {operation}")
 
@@ -523,14 +576,30 @@ def restore_revision(project_id, target_revision_id, base_revision):
     target = _read_json(hist_path)
 
     meta = ps.load_project(project_id)
+    # 버그 수정(2026-09-19 13차 - 실제 브라우저 복원 시험에서 발견): 예전엔 여기서 "현재"
+    # (가장 최근) content/design overrides를 그대로 가져다 썼다. 그런데 그 사이 다른
+    # 문항(예: 1608/1609)에 추가로 이미지 후보를 적용해 두면, 복원된 페이지 HTML(그
+    # 시점의 옛 이미지 경로)과 방금 만든 effective_data.json(최신 overrides, 새 이미지
+    # 경로)이 서로 어긋나 check.js의 콘텐츠 보존 대조(3D)가 FAIL하고 "복원 버전이 QA를
+    # 통과하지 못했습니다"로 막혔다 - 페이지 자체는 정상인데 검증 데이터가 최신 상태와
+    # 뒤섞여서 생긴 거짓 FAIL이었다. 복원 대상 리비전이 실제로 적용됐을 당시의 버전
+    # (target["applied_version_id"], 최초 고정본이면 target["frozen_from_version"])에
+    # 저장된 content/design overrides를 그대로 재사용해 "그 시점 전체"를 일관되게
+    # 되돌린다 - "복원"의 의미(문서 전체를 그 시점으로 되돌림)에도 이쪽이 맞다.
+    source_version_id = target.get("applied_version_id") or target.get("frozen_from_version")
     prev_content, prev_design = ({}, {})
-    if meta.get("current_version"):
+    if source_version_id:
+        prev_content, prev_design = ps.get_version_overrides(project_id, source_version_id)
+    elif meta.get("current_version"):
         prev_content, prev_design = ps.get_version_overrides(project_id, meta["current_version"])
     new_version_id = ps.save_version(
         project_id, json.loads(json.dumps(prev_content)), json.loads(json.dumps(prev_design)),
-        note=f"[페이지 편집] {target_revision_id}로 복원",
+        note=f"[페이지 편집] {target_revision_id}로 복원(당시 버전 {source_version_id or '?'} 기준)",
     )
     vdir = os.path.join(_pdir(project_id), "versions", new_version_id)
+    # build_effective_data()는 "현재" current_version을 읽으므로, 방금 save_version()이
+    # current_version을 이 복원 버전으로 옮겨 둔 상태에서 호출해야 위에서 고른(당시)
+    # overrides가 실제로 반영된 데이터가 나온다.
     data, _edit_doc_id, _vid = ps.build_effective_data(project_id)
     data_path = os.path.join(vdir, "effective_data.json")
     _write_json_atomic(data_path, data)
