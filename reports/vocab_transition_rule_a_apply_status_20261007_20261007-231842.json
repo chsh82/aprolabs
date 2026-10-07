@@ -1,0 +1,221 @@
+{
+  "task": "RULE_A live DB apply",
+  "timestamp_kst": "20261007-231842",
+  "live_db_path": "/home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db",
+  "manifest": "/home/chsh82/aprolabs/reports/vocab_transition_rule_a_dryrun_manifest_20261007_20261007-224108.csv",
+  "backup": {
+    "path": "/home/chsh82/aprolabs_data/vocabulary_quiz/backups/vocabulary_quiz_research.db.bak-rule-a-pre-20261007-231842",
+    "size": 17281024,
+    "sha256": "967154ed125ac12a94675541c97a8bcd9fa2c60454a6ada2f0ac2f9776b59d1a"
+  },
+  "before": {
+    "integrity": "ok",
+    "rule_a": 1368,
+    "rule_b": 40,
+    "other_pending_patterns": 0,
+    "db_size": 17281024,
+    "db_sha256": "967154ed125ac12a94675541c97a8bcd9fa2c60454a6ada2f0ac2f9776b59d1a",
+    "manifest_rows": 1368,
+    "manifest_sha256": "3cd6a77a66849d769406a06059b75677f0cd767d1403a5f473d36dbbba958498",
+    "public_nonzero_targets": 0,
+    "option1_intersection_targets": 0
+  },
+  "update_rows": 1368,
+  "after": {
+    "integrity": "ok",
+    "fk_violations": 0,
+    "rule_a": 0,
+    "rule_b": 40,
+    "other_pending_patterns": 1,
+    "db_size": 17285120,
+    "db_sha256": "a37db5c73030d5a72fbb54ee13b390df53489e7eeec395843b287c1b882602d6",
+    "target_rows_now_l2": 1368,
+    "public_nonzero_targets": 0
+  },
+  "availability_before": {
+    "L1_all_candidates": {
+      "level": 1,
+      "grade_label": "초등 3~4학년",
+      "confidence_mode": "all_candidates",
+      "level_version": "level_policy_v0.1",
+      "available_items": 324,
+      "distinct_words": 89,
+      "by_type": {
+        "MEANING_CHOICE": 89,
+        "WORD_FROM_DEFINITION": 89,
+        "CONTEXT_MEANING": 89,
+        "CONTEXT_CLOZE": 57,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L1_auto_only": {
+      "level": 1,
+      "grade_label": "초등 3~4학년",
+      "confidence_mode": "auto_only",
+      "level_version": "level_policy_v0.1",
+      "available_items": 244,
+      "distinct_words": 67,
+      "by_type": {
+        "MEANING_CHOICE": 67,
+        "WORD_FROM_DEFINITION": 67,
+        "CONTEXT_MEANING": 67,
+        "CONTEXT_CLOZE": 43,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L2_all_candidates": {
+      "level": 2,
+      "grade_label": "초등 5~6학년",
+      "confidence_mode": "all_candidates",
+      "level_version": "level_policy_v0.1",
+      "available_items": 346,
+      "distinct_words": 92,
+      "by_type": {
+        "MEANING_CHOICE": 92,
+        "WORD_FROM_DEFINITION": 92,
+        "CONTEXT_MEANING": 92,
+        "CONTEXT_CLOZE": 70,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L2_auto_only": {
+      "level": 2,
+      "grade_label": "초등 5~6학년",
+      "confidence_mode": "auto_only",
+      "level_version": "level_policy_v0.1",
+      "available_items": 23,
+      "distinct_words": 6,
+      "by_type": {
+        "MEANING_CHOICE": 6,
+        "WORD_FROM_DEFINITION": 6,
+        "CONTEXT_MEANING": 6,
+        "CONTEXT_CLOZE": 5,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L3_all_candidates": {
+      "level": 3,
+      "grade_label": "중등 1~2학년",
+      "confidence_mode": "all_candidates",
+      "level_version": "level_policy_v0.1",
+      "available_items": 444,
+      "distinct_words": 149,
+      "by_type": {
+        "MEANING_CHOICE": 149,
+        "WORD_FROM_DEFINITION": 84,
+        "CONTEXT_MEANING": 149,
+        "CONTEXT_CLOZE": 61,
+        "MATCH_WORD_MEANING": 1
+      }
+    },
+    "L3_auto_only": {
+      "level": 3,
+      "grade_label": "중등 1~2학년",
+      "confidence_mode": "auto_only",
+      "level_version": "level_policy_v0.1",
+      "available_items": 297,
+      "distinct_words": 80,
+      "by_type": {
+        "MEANING_CHOICE": 80,
+        "WORD_FROM_DEFINITION": 79,
+        "CONTEXT_MEANING": 80,
+        "CONTEXT_CLOZE": 58,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "availability_after": {
+    "L1_all_candidates": {
+      "level": 1,
+      "grade_label": "초등 3~4학년",
+      "confidence_mode": "all_candidates",
+      "level_version": "level_policy_v0.1",
+      "available_items": 324,
+      "distinct_words": 89,
+      "by_type": {
+        "MEANING_CHOICE": 89,
+        "WORD_FROM_DEFINITION": 89,
+        "CONTEXT_MEANING": 89,
+        "CONTEXT_CLOZE": 57,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L1_auto_only": {
+      "level": 1,
+      "grade_label": "초등 3~4학년",
+      "confidence_mode": "auto_only",
+      "level_version": "level_policy_v0.1",
+      "available_items": 244,
+      "distinct_words": 67,
+      "by_type": {
+        "MEANING_CHOICE": 67,
+        "WORD_FROM_DEFINITION": 67,
+        "CONTEXT_MEANING": 67,
+        "CONTEXT_CLOZE": 43,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L2_all_candidates": {
+      "level": 2,
+      "grade_label": "초등 5~6학년",
+      "confidence_mode": "all_candidates",
+      "level_version": "level_policy_v0.1",
+      "available_items": 625,
+      "distinct_words": 166,
+      "by_type": {
+        "MEANING_CHOICE": 166,
+        "WORD_FROM_DEFINITION": 165,
+        "CONTEXT_MEANING": 166,
+        "CONTEXT_CLOZE": 122,
+        "MATCH_WORD_MEANING": 6
+      }
+    },
+    "L2_auto_only": {
+      "level": 2,
+      "grade_label": "초등 5~6학년",
+      "confidence_mode": "auto_only",
+      "level_version": "level_policy_v0.1",
+      "available_items": 289,
+      "distinct_words": 78,
+      "by_type": {
+        "MEANING_CHOICE": 78,
+        "WORD_FROM_DEFINITION": 77,
+        "CONTEXT_MEANING": 78,
+        "CONTEXT_CLOZE": 56,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L3_all_candidates": {
+      "level": 3,
+      "grade_label": "중등 1~2학년",
+      "confidence_mode": "all_candidates",
+      "level_version": "level_policy_v0.1",
+      "available_items": 170,
+      "distinct_words": 75,
+      "by_type": {
+        "MEANING_CHOICE": 75,
+        "WORD_FROM_DEFINITION": 11,
+        "CONTEXT_MEANING": 75,
+        "CONTEXT_CLOZE": 9,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "L3_auto_only": {
+      "level": 3,
+      "grade_label": "중등 1~2학년",
+      "confidence_mode": "auto_only",
+      "level_version": "level_policy_v0.1",
+      "available_items": 31,
+      "distinct_words": 8,
+      "by_type": {
+        "MEANING_CHOICE": 8,
+        "WORD_FROM_DEFINITION": 8,
+        "CONTEXT_MEANING": 8,
+        "CONTEXT_CLOZE": 7,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "student_public_exposure_changed": false,
+  "rule_b_changed": false
+}
