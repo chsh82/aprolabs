@@ -1,0 +1,682 @@
+[
+  {
+    "headword": "유용하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 565,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        55,
+        "L5",
+        "쓸모가 있다."
+      ]
+    ],
+    "literacy_id": 2891,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "남의 것이나 이미 용도가 정해져 있는 것을 다른 데에 쓰다.",
+    "literacy_note": "원문: 유용하다 / L5 중복 등장 / krdict 동음이의 2건 중 1번 채택",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "기리다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 612,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        173,
+        "L5",
+        "뛰어난 업적이나 바람직한 정신, 위대한 사람 따위를 칭찬하고 기\n억하다."
+      ]
+    ],
+    "literacy_id": 2894,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "뛰어난 업적이나 본받을 만한 정신, 위대한 사람 등을 칭찬하고 기억하다.",
+    "literacy_note": "원문: 기리다 / L5 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "으레",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 1044,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        202,
+        "L5",
+        "틀림없이 언제나."
+      ]
+    ],
+    "literacy_id": 2923,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "두말할 것 없이 당연히.",
+    "literacy_note": "원문: 으레 / L5 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "독불장군",
+    "flag": "PUNCT_DAMAGE",
+    "rep_vocab_id": 1058,
+    "rep_level": "L3",
+    "rep_def": "무슨 일이든 자기 생각대로 혼자서 처리하는. 사람",
+    "other_candidates": [
+      [
+        203,
+        "L5",
+        "무슨 일이든 자기 생각대로 혼자서 처리하는 사람."
+      ]
+    ],
+    "literacy_id": 2924,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "무슨 일이든 자기 생각대로 혼자서 처리하는. 사람",
+    "literacy_note": "원문: 독불장군\n(32쪽) / L5 중복 등장",
+    "literacy_level": 1,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "궁색하다",
+    "flag": "SHORT_DEF",
+    "rep_vocab_id": 359,
+    "rep_level": "L3",
+    "rep_def": "아주 가난하다.",
+    "other_candidates": [
+      [
+        817,
+        "L4",
+        "1. 아주 가난하다.\n2. 말이나 태도, 행동의 이유나 근거 따위가 부족하다."
+      ],
+      [
+        1179,
+        "L5",
+        "말이나 태도, 행동의 이유나 근거 따위가 부족하다."
+      ]
+    ],
+    "literacy_id": 2940,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "아주 가난하다.",
+    "literacy_note": "원문: 궁색하다 / L4,L5 중복 등장",
+    "literacy_level": 1,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "비아냥거리다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 971,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        364,
+        "L3",
+        "얄밉게 빈정거리며 자꾸 놀리다."
+      ]
+    ],
+    "literacy_id": 2945,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "자꾸 비웃는 말을 하며 놀리다.",
+    "literacy_note": "원문: 비아냥거리다 / L3 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "읊다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 718,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        394,
+        "L3",
+        "억양을 넣어서 소리를 내어 시를 읽거나 외다."
+      ]
+    ],
+    "literacy_id": 2974,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "시나 노래 등을 억양을 넣어 읽거나 외다.",
+    "literacy_note": "원문: 읊다 / L3 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "문명",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 533,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        425,
+        "L4",
+        "인류가 이룩한 기술적, 사회적 발전과 삶의 양식"
+      ]
+    ],
+    "literacy_id": 3001,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "사람의 물질적, 기술적, 사회적 생활이 발전한 상태.",
+    "literacy_note": "원문: 문명 / L4 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "바래다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 501,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        691,
+        "L2",
+        null
+      ],
+      [
+        432,
+        "L4",
+        "볕이나 습기를 받아 색이 변하다"
+      ]
+    ],
+    "literacy_id": 3008,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "볕이나 습기 때문에 색이 희미해지거나 누렇게 변하다.",
+    "literacy_note": "원문: 바래다 / L2,L4 중복 등장 / krdict 동음이의 3건 중 1번 채택",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "혼비백산",
+    "flag": "SHORT_DEF",
+    "rep_vocab_id": 1063,
+    "rep_level": "L3",
+    "rep_def": "몹시 놀라 넋을 잃음을 이르는. 말",
+    "other_candidates": [
+      [
+        439,
+        "L4",
+        "혼백이 어지러이 흩어진다는 뜻으로, 몹시 놀라 넋을 잃음을 이르\n는 말."
+      ]
+    ],
+    "literacy_id": 3015,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "몹시 놀라 넋을 잃음을 이르는. 말",
+    "literacy_note": "원문: 혼비백산 / L4 중복 등장",
+    "literacy_level": 1,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "으름장",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 965,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        481,
+        "L6",
+        "말과 행동으로 위협하는 짓. (~을 놓다.)"
+      ]
+    ],
+    "literacy_id": 3057,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "말과 행동으로 으르고 협박하는 짓.",
+    "literacy_note": "원문: 으름장 / L6 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "모락모락",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 511,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        1153,
+        "L5",
+        "연기나 냄새, 김 따위가 계속 조금씩 피어오르는 모양."
+      ]
+    ],
+    "literacy_id": 3085,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "작은 것이 순조롭게 잘 자라는 모양.",
+    "literacy_note": "원문: 모락모락 / L5 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "요란하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 544,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        592,
+        "L2",
+        null
+      ]
+    ],
+    "literacy_id": 3117,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "어수선하고 시끄럽다.",
+    "literacy_note": "원문: 요란하다 / L2 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "익살스럽다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 547,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        904,
+        "L6",
+        null
+      ]
+    ],
+    "literacy_id": 3120,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "다른 사람을 웃기려고 일부러 재미있는 말이나 행동을 하는 데가 있다.",
+    "literacy_note": "원문: 익살스럽다 / L6 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "경계하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 550,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        943,
+        "L2",
+        null
+      ]
+    ],
+    "literacy_id": 3123,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "뜻밖의 사고나 위험이 생기지 않도록 살피고 조심하다.",
+    "literacy_note": "원문: 경계하다 / L2 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "안달하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 577,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        831,
+        "L4",
+        "속을 태우며 조급하게 굴다."
+      ]
+    ],
+    "literacy_id": 3149,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "속을 태우면서 조급하게 굴다.",
+    "literacy_note": "원문: 안달하다 / L4 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "미심쩍다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 595,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        725,
+        "L2",
+        null
+      ],
+      [
+        1086,
+        "L3",
+        "분명하지 못하여 마음이 놓이지 않는 데가 있다."
+      ]
+    ],
+    "literacy_id": 3166,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "분명하지 못해 마음이 편하지 않다.",
+    "literacy_note": "원문: 미심쩍다 / L3 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "관대하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 597,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        865,
+        "L5",
+        "마음이 너그럽고 크다."
+      ]
+    ],
+    "literacy_id": 3168,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "친절하고 정성스럽게 대하다.",
+    "literacy_note": "원문: 관대하다 / L5 중복 등장 / krdict 동음이의 2건 중 1번 채택",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "애지중지",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 601,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        785,
+        "L4",
+        "매우 사랑하고 소중히 여기는 모양."
+      ],
+      [
+        903,
+        "L6",
+        "매우 사랑하고 소중히 여기는 모양"
+      ]
+    ],
+    "literacy_id": 3172,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "매우 사랑하고 소중히 여기는 모양.",
+    "literacy_note": "원문: 애지중지 / L4,L6 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "선구자",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 609,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        786,
+        "L4",
+        "어떤 일이나 사상에서 다른 사람보다 앞선 사람."
+      ]
+    ],
+    "literacy_id": 3180,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "행렬에서 맨 앞에 가는 사람.",
+    "literacy_note": "원문: 선구자 / L4 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "가파르다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 629,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        706,
+        "L2",
+        null
+      ]
+    ],
+    "literacy_id": 3198,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "경사가 심하게 기울어져 있다.",
+    "literacy_note": "원문: 가파르다 / L2 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "거드름",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 680,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        821,
+        "L4",
+        "거만스러운 태도."
+      ]
+    ],
+    "literacy_id": 3208,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "잘난 체하며 남을 자기보다 낮고 하찮게 여기는 태도.",
+    "literacy_note": "원문: 거드름 / L4 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "늑장",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 1233,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        716,
+        "L2",
+        null
+      ]
+    ],
+    "literacy_id": 3241,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "느릿느릿하고 꾸물거리는 태도.",
+    "literacy_note": "원문: 늑장 / L2 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "모질다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 717,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        1066,
+        "L3",
+        "마음씨가 몹시 매섭고 독하다."
+      ],
+      [
+        1182,
+        "L5",
+        "참고 견디기 힘든 일을 거뜬히 견딜 만큼 억세다."
+      ]
+    ],
+    "literacy_id": 3242,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "마음씨나 말씨나 행동이 몹시 쌀쌀맞고 독하다.",
+    "literacy_note": "원문: 모질다 / L3,L5 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "감싸다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 727,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        1151,
+        "L5",
+        "전체를 둘러서 싸다."
+      ]
+    ],
+    "literacy_id": 3250,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "둘러서 덮다.",
+    "literacy_note": "원문: 감싸다 / L5 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "기색",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 931,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        756,
+        "L3",
+        "• 마음의 작용으로 얼굴에 드러나는 빛.\n• 어떠한 행동이나 현상 따위가 일어나는 것을 짐작할 수 있게\n하여 주는 눈치나 낌새"
+      ],
+      [
+        833,
+        "L5",
+        "마음의 작용으로 얼굴에 드러나는 빛. 어떠한 행동이나 현상 따위\n가 일어나는 것을 짐작할 수 있게 하여 주는 눈치나 낌새."
+      ]
+    ],
+    "literacy_id": 3278,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "마음속의 생각이나 감정이 얼굴이나 행동에 나타나는 것.",
+    "literacy_note": "원문: 기색 / L3,L5 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "으스대다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 985,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        773,
+        "L3",
+        "어울리지 아니하게 우쭐거리며 뽐내다."
+      ]
+    ],
+    "literacy_id": 3295,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "보기에 좋지 않게 우쭐거리며 뽐내다.",
+    "literacy_note": "원문: 으스대다 / L3 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "자초지종",
+    "flag": "SHORT_DEF",
+    "rep_vocab_id": 1070,
+    "rep_level": "L3",
+    "rep_def": "처음부터 끝까지의 과정.",
+    "other_candidates": [
+      [
+        808,
+        "L4",
+        "처음부터 끝까지. 일의 처음부터 끝까지의 전체 과정을 가리키는\n말"
+      ],
+      [
+        850,
+        "L5",
+        "처음부터 끝까지의 과정."
+      ],
+      [
+        1227,
+        "L6",
+        "처음부터 끝까지의 과정."
+      ]
+    ],
+    "literacy_id": 3324,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "처음부터 끝까지의 과정.",
+    "literacy_note": "원문: 자초지종 / L4,L5,L6 중복 등장",
+    "literacy_level": 1,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "고즈넉하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 968,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        927,
+        "L6",
+        "고요하고 아늑하다."
+      ]
+    ],
+    "literacy_id": 3426,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "분위기 등이 조용하고 편안하다.",
+    "literacy_note": "원문: 고즈넉하다 / L6 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "어수선하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 1036,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        934,
+        "L2",
+        null
+      ]
+    ],
+    "literacy_id": 3432,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "사물이 얽히고 뒤섞여 매우 어지럽다.",
+    "literacy_note": "원문: 어수선하다 / L2 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "못마땅하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 1019,
+    "rep_level": "L1",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        936,
+        "L2",
+        null
+      ]
+    ],
+    "literacy_id": 3434,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "별로 마음에 들지 않아 꺼림칙하다.",
+    "literacy_note": "원문: 못마땅하다 / L2 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  },
+  {
+    "headword": "숭배하다",
+    "flag": "NULL_DEF",
+    "rep_vocab_id": 955,
+    "rep_level": "L2",
+    "rep_def": "",
+    "other_candidates": [
+      [
+        1057,
+        "L3",
+        "우러러 .공경하다"
+      ]
+    ],
+    "literacy_id": 3450,
+    "literacy_review_status": "검수전",
+    "literacy_definition": "우러러 공경하다.",
+    "literacy_note": "원문: 숭배하다 / L3 중복 등장",
+    "literacy_level": 0,
+    "literacy_category": "어휘"
+  }
+]

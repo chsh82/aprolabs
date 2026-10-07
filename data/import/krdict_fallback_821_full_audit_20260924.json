@@ -1,0 +1,672 @@
+{
+  "total_momo_textbook_terms": 821,
+  "fallback_count": 317,
+  "fallback_mismatch_count": 0,
+  "risk_count": 123,
+  "no_risk_count": 194,
+  "risk_verdicts": {
+    "REPLACE_CANDIDATE": 4,
+    "NO_ISSUE": 1,
+    "HOLD": 118
+  },
+  "reproduced_replace_of_4": 3,
+  "reproduced_no_issue_of_17": 10,
+  "not_reproduced": [
+    [
+      3168,
+      "관대하다",
+      "REPLACE_CANDIDATE",
+      "HOLD",
+      "in_fallback_pool"
+    ],
+    [
+      2923,
+      "으레",
+      "NO_ISSUE",
+      "HOLD",
+      "in_fallback_pool"
+    ],
+    [
+      2974,
+      "읊다",
+      "NO_ISSUE",
+      "HOLD",
+      "in_fallback_pool"
+    ],
+    [
+      3008,
+      "바래다",
+      "NO_ISSUE",
+      "HOLD",
+      "in_fallback_pool"
+    ],
+    [
+      3242,
+      "모질다",
+      "NO_ISSUE",
+      "HOLD",
+      "in_fallback_pool"
+    ],
+    [
+      3250,
+      "감싸다",
+      "NO_ISSUE",
+      "HOLD",
+      "in_fallback_pool"
+    ],
+    [
+      3278,
+      "기색",
+      "NO_ISSUE",
+      "REPLACE_CANDIDATE",
+      "in_fallback_pool"
+    ],
+    [
+      3426,
+      "고즈넉하다",
+      "NO_ISSUE",
+      "HOLD",
+      "in_fallback_pool"
+    ]
+  ],
+  "new_replace_candidates": [],
+  "new_hold": [
+    {
+      "literacy_id": 3496,
+      "headword": "성큼",
+      "evidence": "momo_book.db에 '성큼'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3497,
+      "headword": "쪼그리다",
+      "evidence": "momo_book.db에 '쪼그리다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3498,
+      "headword": "경주",
+      "evidence": "momo_book.db에 '경주'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3499,
+      "headword": "웃음거리",
+      "evidence": "momo_book.db에 '웃음거리'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3500,
+      "headword": "떠들썩하다",
+      "evidence": "momo_book.db에 '떠들썩하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3501,
+      "headword": "터덜터덜",
+      "evidence": "momo_book.db에 '터덜터덜'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3505,
+      "headword": "나무라다",
+      "evidence": "momo_book.db에 '나무라다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3513,
+      "headword": "나약하다",
+      "evidence": "momo_book.db에 '나약하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3516,
+      "headword": "보살피다",
+      "evidence": "momo_book.db에 '보살피다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3517,
+      "headword": "훼방",
+      "evidence": "momo_book.db에 '훼방'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3432,
+      "headword": "어수선하다",
+      "evidence": "momo_book.db에 '어수선하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3526,
+      "headword": "후려치다",
+      "evidence": "momo_book.db에 '후려치다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3528,
+      "headword": "실례",
+      "evidence": "momo_book.db에 '실례'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3689,
+      "headword": "막바지",
+      "evidence": "momo_book.db에 '막바지'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3690,
+      "headword": "실하다",
+      "evidence": "momo_book.db에 '실하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3693,
+      "headword": "통계",
+      "evidence": "momo_book.db에 '통계'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3695,
+      "headword": "표본",
+      "evidence": "momo_book.db에 '표본'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3701,
+      "headword": "유행",
+      "evidence": "momo_book.db에 '유행'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3703,
+      "headword": "소재",
+      "evidence": "momo_book.db에 '소재'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 5개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3704,
+      "headword": "매듭",
+      "evidence": "momo_book.db에 '매듭'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3069,
+      "headword": "까막눈",
+      "evidence": "momo_book.db에 '까막눈'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3072,
+      "headword": "까마득하다",
+      "evidence": "momo_book.db에 '까마득하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 5개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3073,
+      "headword": "단장",
+      "evidence": "momo_book.db에 '단장'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3074,
+      "headword": "간직하다",
+      "evidence": "momo_book.db에 '간직하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3075,
+      "headword": "으뜸",
+      "evidence": "momo_book.db에 '으뜸'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3076,
+      "headword": "머금다",
+      "evidence": "momo_book.db에 '머금다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3078,
+      "headword": "휘영청",
+      "evidence": "momo_book.db에 '휘영청'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3079,
+      "headword": "슬쩍",
+      "evidence": "momo_book.db에 '슬쩍'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 5개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3084,
+      "headword": "질금질금",
+      "evidence": "momo_book.db에 '질금질금'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3087,
+      "headword": "지휘하다",
+      "evidence": "momo_book.db에 '지휘하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3088,
+      "headword": "어우러지다",
+      "evidence": "momo_book.db에 '어우러지다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3089,
+      "headword": "우러러보다",
+      "evidence": "momo_book.db에 '우러러보다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3090,
+      "headword": "굶주리다",
+      "evidence": "momo_book.db에 '굶주리다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3096,
+      "headword": "기록하다",
+      "evidence": "momo_book.db에 '기록하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3097,
+      "headword": "고약하다",
+      "evidence": "momo_book.db에 '고약하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 6개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3098,
+      "headword": "건조하다",
+      "evidence": "momo_book.db에 '건조하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 3개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3103,
+      "headword": "끼니",
+      "evidence": "momo_book.db에 '끼니'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3104,
+      "headword": "등장하다",
+      "evidence": "momo_book.db에 '등장하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3105,
+      "headword": "발전하다",
+      "evidence": "momo_book.db에 '발전하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3107,
+      "headword": "무역",
+      "evidence": "momo_book.db에 '무역'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3112,
+      "headword": "근사하다",
+      "evidence": "momo_book.db에 '근사하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3116,
+      "headword": "날렵하다",
+      "evidence": "momo_book.db에 '날렵하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3117,
+      "headword": "요란하다",
+      "evidence": "momo_book.db에 '요란하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3119,
+      "headword": "익숙하다",
+      "evidence": "momo_book.db에 '익숙하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3123,
+      "headword": "경계하다",
+      "evidence": "momo_book.db에 '경계하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3124,
+      "headword": "앙상하다",
+      "evidence": "momo_book.db에 '앙상하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3126,
+      "headword": "대치하다",
+      "evidence": "momo_book.db에 '대치하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3133,
+      "headword": "무던하다",
+      "evidence": "momo_book.db에 '무던하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3135,
+      "headword": "우직하다",
+      "evidence": "momo_book.db에 '우직하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3136,
+      "headword": "접목하다",
+      "evidence": "momo_book.db에 '접목하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3137,
+      "headword": "다독이다",
+      "evidence": "momo_book.db에 '다독이다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3142,
+      "headword": "담그다",
+      "evidence": "momo_book.db에 '담그다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3152,
+      "headword": "점잖다",
+      "evidence": "momo_book.db에 '점잖다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3153,
+      "headword": "내전",
+      "evidence": "momo_book.db에 '내전'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3154,
+      "headword": "유전",
+      "evidence": "momo_book.db에 '유전'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3159,
+      "headword": "통신",
+      "evidence": "momo_book.db에 '통신'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3161,
+      "headword": "케케묵다",
+      "evidence": "momo_book.db에 '케케묵다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3165,
+      "headword": "꾸물대다",
+      "evidence": "momo_book.db에 '꾸물대다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3169,
+      "headword": "지청구",
+      "evidence": "momo_book.db에 '지청구'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3171,
+      "headword": "애꿎다",
+      "evidence": "momo_book.db에 '애꿎다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3173,
+      "headword": "허술하다",
+      "evidence": "momo_book.db에 '허술하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3175,
+      "headword": "대조",
+      "evidence": "momo_book.db에 '대조'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3176,
+      "headword": "허름하다",
+      "evidence": "momo_book.db에 '허름하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3177,
+      "headword": "판가름",
+      "evidence": "momo_book.db에 '판가름'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3181,
+      "headword": "엄숙하다",
+      "evidence": "momo_book.db에 '엄숙하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3188,
+      "headword": "손짓",
+      "evidence": "momo_book.db에 '손짓'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3190,
+      "headword": "부수다",
+      "evidence": "momo_book.db에 '부수다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3193,
+      "headword": "안간힘",
+      "evidence": "momo_book.db에 '안간힘'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3195,
+      "headword": "그루",
+      "evidence": "momo_book.db에 '그루'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3197,
+      "headword": "덜컹거리다",
+      "evidence": "momo_book.db에 '덜컹거리다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3198,
+      "headword": "가파르다",
+      "evidence": "momo_book.db에 '가파르다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3203,
+      "headword": "숭배",
+      "evidence": "momo_book.db에 '숭배'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3207,
+      "headword": "한결같이",
+      "evidence": "momo_book.db에 '한결같이'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3214,
+      "headword": "수작",
+      "evidence": "momo_book.db에 '수작'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3215,
+      "headword": "재수",
+      "evidence": "momo_book.db에 '재수'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3220,
+      "headword": "초라하다",
+      "evidence": "momo_book.db에 '초라하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3221,
+      "headword": "맞추다",
+      "evidence": "momo_book.db에 '맞추다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 11개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3229,
+      "headword": "딴판",
+      "evidence": "momo_book.db에 '딴판'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3237,
+      "headword": "딱하다",
+      "evidence": "momo_book.db에 '딱하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3238,
+      "headword": "서리",
+      "evidence": "momo_book.db에 '서리'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 3개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3240,
+      "headword": "숨결",
+      "evidence": "momo_book.db에 '숨결'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3244,
+      "headword": "꺼리다",
+      "evidence": "momo_book.db에 '꺼리다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3245,
+      "headword": "아늑하다",
+      "evidence": "momo_book.db에 '아늑하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3247,
+      "headword": "디딤돌",
+      "evidence": "momo_book.db에 '디딤돌'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3428,
+      "headword": "난감하다",
+      "evidence": "momo_book.db에 '난감하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3430,
+      "headword": "교류",
+      "evidence": "momo_book.db에 '교류'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3438,
+      "headword": "도리질",
+      "evidence": "momo_book.db에 '도리질'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3440,
+      "headword": "다부지다",
+      "evidence": "momo_book.db에 '다부지다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3441,
+      "headword": "갸웃하다",
+      "evidence": "momo_book.db에 '갸웃하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3443,
+      "headword": "어긋나다",
+      "evidence": "momo_book.db에 '어긋나다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3444,
+      "headword": "조율",
+      "evidence": "momo_book.db에 '조율'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3445,
+      "headword": "발달",
+      "evidence": "momo_book.db에 '발달'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3446,
+      "headword": "애매하다",
+      "evidence": "momo_book.db에 '애매하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3447,
+      "headword": "감각",
+      "evidence": "momo_book.db에 '감각'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3449,
+      "headword": "흉측하다",
+      "evidence": "momo_book.db에 '흉측하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3451,
+      "headword": "영글다",
+      "evidence": "momo_book.db에 '영글다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3458,
+      "headword": "부스스",
+      "evidence": "momo_book.db에 '부스스'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3464,
+      "headword": "의무",
+      "evidence": "momo_book.db에 '의무'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3467,
+      "headword": "공약",
+      "evidence": "momo_book.db에 '공약'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3468,
+      "headword": "유세",
+      "evidence": "momo_book.db에 '유세'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3469,
+      "headword": "너저분하다",
+      "evidence": "momo_book.db에 '너저분하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3470,
+      "headword": "무작정",
+      "evidence": "momo_book.db에 '무작정'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 2개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3473,
+      "headword": "인색하다",
+      "evidence": "momo_book.db에 '인색하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3474,
+      "headword": "소용돌이",
+      "evidence": "momo_book.db에 '소용돌이'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 3개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3476,
+      "headword": "쭈뼛거리다",
+      "evidence": "momo_book.db에 '쭈뼛거리다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3481,
+      "headword": "지리",
+      "evidence": "momo_book.db에 '지리'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3482,
+      "headword": "게걸스레",
+      "evidence": "momo_book.db에 '게걸스레'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3483,
+      "headword": "틈새",
+      "evidence": "momo_book.db에 '틈새'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3485,
+      "headword": "받치다",
+      "evidence": "momo_book.db에 '받치다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 5개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3487,
+      "headword": "나지막하다",
+      "evidence": "momo_book.db에 '나지막하다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 2개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    },
+    {
+      "literacy_id": 3488,
+      "headword": "꾸물거리다",
+      "evidence": "momo_book.db에 '꾸물거리다'의 다른 정의 있는 후보가 없음(이 표제어는 momo_book.db에 이 행 하나뿐이거나 다른 중복이 전부 정의 NULL) - krdict 후보 1개 entry, 총 senses 4개 중 교재 맥락과 대조할 독립 근거가 없어 HOLD."
+    }
+  ],
+  "all_replace_candidates": [
+    {
+      "literacy_id": 3085,
+      "headword": "모락모락",
+      "current_definition": "작은 것이 순조롭게 잘 자라는 모양.",
+      "entry_definitions": [
+        "작은 것이 순조롭게 잘 자라는 모양.",
+        "김, 연기, 냄새 등이 조금씩 자꾸 피어오르는 모양.",
+        "느낌이나 생각 등이 마음속에서 조금씩 일어나는 모양."
+      ],
+      "evidence": "momo_book.db 다른 후보(id=1153, level=L5, def='연기나 냄새, 김 따위가 계속 조금씩 피어오르는 모양.')가 krdict entry=55994 sense[1]('김, 연기, 냄새 등이 조금씩 자꾸 피어오르는 모양.') (같은 entry의 다른 sense)과 가장 유사(유사도 0.36) - 현재 채택된 entry=55994 sense[0]('작은 것이 순조롭게 잘 자라는 모양.')과 다름 - definitions[0] 고정 채택이 다른 뜻을 놓쳤다는 근거."
+    },
+    {
+      "literacy_id": 2891,
+      "headword": "유용하다",
+      "current_definition": "남의 것이나 이미 용도가 정해져 있는 것을 다른 데에 쓰다.",
+      "entry_definitions": [
+        "남의 것이나 이미 용도가 정해져 있는 것을 다른 데에 쓰다."
+      ],
+      "evidence": "momo_book.db 다른 후보(id=55, level=L5, def='쓸모가 있다.')가 krdict entry=70630 sense[0]('쓸모가 있다.') (다른 동음이의 entry)과 가장 유사(유사도 1.00) - 현재 채택된 entry=70631 sense[0]('남의 것이나 이미 용도가 정해져 있는 것을 다른 데에 쓰다.')과 다름 - definitions[0] 고정 채택이 다른 뜻을 놓쳤다는 근거."
+    },
+    {
+      "literacy_id": 3180,
+      "headword": "선구자",
+      "current_definition": "행렬에서 맨 앞에 가는 사람.",
+      "entry_definitions": [
+        "행렬에서 맨 앞에 가는 사람.",
+        "사회적으로 중요한 일이나 사상에서 다른 사람보다 앞선 사람."
+      ],
+      "evidence": "momo_book.db 다른 후보(id=786, level=L4, def='어떤 일이나 사상에서 다른 사람보다 앞선 사람.')가 krdict entry=63414 sense[1]('사회적으로 중요한 일이나 사상에서 다른 사람보다 앞선 사람.') (같은 entry의 다른 sense)과 가장 유사(유사도 0.60) - 현재 채택된 entry=63414 sense[0]('행렬에서 맨 앞에 가는 사람.')과 다름 - definitions[0] 고정 채택이 다른 뜻을 놓쳤다는 근거."
+    },
+    {
+      "literacy_id": 3278,
+      "headword": "기색",
+      "current_definition": "마음속의 생각이나 감정이 얼굴이나 행동에 나타나는 것.",
+      "entry_definitions": [
+        "마음속의 생각이나 감정이 얼굴이나 행동에 나타나는 것.",
+        "어떤 행동이나 현상 등이 일어나는 것을 짐작할 수 있게 해 주는 눈치나 분위기."
+      ],
+      "evidence": "momo_book.db 다른 후보(id=833, level=L5, def='마음의 작용으로 얼굴에 드러나는 빛. 어떠한 행동이나 현상 따위\\n가 일어나는 것을 짐작할 수 있게 하여 주는 눈치나 낌새.')가 krdict entry=38311 sense[1]('어떤 행동이나 현상 등이 일어나는 것을 짐작할 수 있게 해 주는 눈치나 분위기.') (같은 entry의 다른 sense)과 가장 유사(유사도 0.36) - 현재 채택된 entry=38311 sense[0]('마음속의 생각이나 감정이 얼굴이나 행동에 나타나는 것.')과 다름 - definitions[0] 고정 채택이 다른 뜻을 놓쳤다는 근거."
+    }
+  ]
+}

@@ -104,6 +104,49 @@ def pick_krdict_match(index: dict[str, list[Entry]], headword: str) -> tuple[Ent
     return chosen_pool[0], len(candidates)
 
 
+def resolve_definition(
+    rep_definition: str | None, entry: Entry | None, homonym_count: int
+) -> tuple[str | None, str | None]:
+    """교재 원본 정의가 없을 때 krdict로 폴백할지 결정한다.
+
+    재발 방지 수정(phase8) - 기존 코드(`definition = rep.definition or
+    entry.definitions[0]`)는 동음이의·다의어가 있어도 무조건 `definitions[0]`
+    (파일에 등장한 순서상 첫 번째 뜻)을 채택했다. 이게 실제로 틀린 뜻을 채운
+    사례가 최소 4건(유용하다·관대하다·모락모락·선구자, `reports/
+    literacy_repr_errors_26_verdict_20260924.csv`) 확인됐다.
+
+    설계 원칙(사용자 지시):
+    - 원본 정의가 있으면 그대로 쓴다(변경 없음).
+    - 원본 정의가 없고 krdict 매칭도 없으면 그대로 보류(변경 없음, 기존과 동일).
+    - 원본 정의가 없고 krdict 매칭은 있는데, **동음이의(같은 표제어로 등록된
+      LexicalEntry가 2개 이상) 이거나 매칭된 항목 자체가 다의어(Sense가 2개
+      이상)**이면 - 첫 번째 뜻을 임의로 채우지 않고 `(None, hold_reason)`을
+      반환해 사람이 확인할 때까지 보류한다.
+    - 그 외(krdict 매칭이 있고 동음이의도 다의어도 아님 - 뜻이 애초에 단
+      하나뿐)라면 그 유일한 뜻을 채택한다(구조적으로 "잘못된 인덱스를 고를
+      가능성" 자체가 없는 경우이므로 안전).
+
+    반환: (definition, hold_reason). hold_reason은 보류가 필요할 때만 문자열,
+    아니면 None(=definition을 그대로 써도 됨, 또는 기존처럼 매칭 자체가 없어
+    definition이 애초에 None).
+    """
+    if rep_definition:
+        return rep_definition, None
+    if entry is None or not entry.definitions:
+        return None, None
+    if homonym_count > 1:
+        return None, (
+            f"krdict 동음이의 {homonym_count}건 - 어느 동음이의 항목의 뜻인지 "
+            f"교재 원본 정의 없이는 판단 불가, 자동 선택 보류(사람 확인 필요)"
+        )
+    if len(entry.definitions) > 1:
+        return None, (
+            f"krdict 다의어 {len(entry.definitions)}개 뜻 - 교재 맥락 없이는 "
+            f"어느 뜻인지 판단 불가, 자동 선택 보류(사람 확인 필요)"
+        )
+    return entry.definitions[0], None
+
+
 def group_by_headword(candidates: list[Candidate]) -> dict[str, list[Candidate]]:
     groups: dict[str, list[Candidate]] = defaultdict(list)
     for c in candidates:
@@ -219,15 +262,19 @@ def run(dry_run: bool) -> dict:
     try:
         for rep, other_levels in representatives:
             entry, homonym_count = match_results[rep.vocab_id]
-            krdict_note = f"krdict 동음이의 {homonym_count}건 중 1번 채택" if homonym_count > 1 else None
-            note = build_note(rep, other_levels, krdict_note)
+            definition, hold_reason = resolve_definition(rep.definition, entry, homonym_count)
+            note = build_note(rep, other_levels, hold_reason)
 
-            definition = rep.definition or (entry.definitions[0] if entry and entry.definitions else None)
             pos = entry.pos if entry else None
             origin = rep.clean.origin or None
             sense_category = entry.sense_category if entry else None
             subject_category = entry.subject_category if entry else None
-            review_status = "검수전" if entry else "보류"
+            # 재발 방지 수정(phase8): krdict 매칭이 없거나(기존과 동일), 매칭은
+            # 있지만 동음이의/다의어라 definition을 자동 채택하지 못하고
+            # 보류한 경우(hold_reason) 모두 '보류' 상태로 저장한다 - definitions[0]을
+            # 임의로 채운 뒤 review_status만 '검수전'으로 표시해 마치 확정된 것처럼
+            # 보이게 하지 않는다.
+            review_status = "보류" if (entry is None or hold_reason) else "검수전"
             # 매칭된 krdict 항목이 관용구면 category도 관용구로 저장한다(사용자
             # 결정 - "경을 치다"/"얼이 빠지다" 같은 건 원래부터 관용구이므로
             # '어휘'로 넣으면 안 됨). 매칭 안 되거나 단어/구/문법·표현이면 '어휘'.
@@ -247,7 +294,10 @@ def run(dry_run: bool) -> dict:
             if cur.rowcount:
                 inserted += 1
 
-            if entry and entry.definitions:
+            # 보류된 행(hold_reason)에는 특정 sense를 example로도 남기지 않는다 -
+            # 어느 뜻이 맞는지 모르는 상태에서 후보 하나를 슬쩍 끼워 넣으면
+            # 검수자가 그걸 "이미 확인된 뜻"으로 오인할 위험이 있다.
+            if entry and entry.definitions and not hold_reason:
                 term_id = literacy_conn.execute(
                     "SELECT id FROM terms WHERE source = ? AND external_id = ?",
                     (SOURCE, str(rep.vocab_id)),
@@ -266,6 +316,11 @@ def run(dry_run: bool) -> dict:
                 # 공백 포함인데 매칭도 안 된 건 "어휘아님의심"(정상 관용구인데 krdict에
                 # 없을 수도 있어 사람이 판단) - 공백 없이 단순 매칭 실패는 기존대로.
                 reason = "어휘아님의심" if rep.has_space else "krdict매칭실패"
+                unmatched_csv_rows.append((rep.clean.cleaned, rep.level, rep.clean.original, reason))
+            elif hold_reason:
+                # 신규(phase8): 동음이의/다의어라 자동 채택을 보류한 행도
+                # unmatched.csv에 남겨 사람이 놓치지 않게 한다.
+                reason = "krdict동음이의보류" if homonym_count > 1 else "krdict다의어보류"
                 unmatched_csv_rows.append((rep.clean.cleaned, rep.level, rep.clean.original, reason))
 
         literacy_conn.commit()
