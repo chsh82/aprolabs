@@ -1,0 +1,49 @@
+task_id: vocab-transition-option1-general-l3-code-rehearsal-20261007
+status: completed
+scope: local_code_rehearsal_no_db_write_no_deploy
+created_at_kst: '2026-10-07 17:57:08 +0900'
+repo: C:/Users/aproa/aprolabs
+changed_files:
+  modified:
+    - app/vocabulary_quiz/routers/multiformat.py
+  new:
+    - data/vocab/l3_general_inclusion_option1_manifest_v1.json
+    - tests/test_l3_general_inclusion_option1.py
+    - reports/vocab_transition_option1_general_l3_code_rehearsal_20261007.md
+    - reports/vocab_transition_option1_general_l3_code_rehearsal_status.yaml
+manifest:
+  path: data/vocab/l3_general_inclusion_option1_manifest_v1.json
+  rows: 128
+  distinct_items: 128
+  distinct_contents: 64
+  source_versions:
+    - nikl_grade5_l3_batch1_v1
+    - nikl_grade5_l3_batch2_v1
+  item_types:
+    - CONTEXT_MEANING
+    - MEANING_CHOICE
+behavior_verified:
+  l3_all_candidates_includes_option1_whitelist: true
+  l3_auto_only_excludes_review_boundary_option1: true
+  non_l3_levels_do_not_include_option1: true
+  level_none_availability_remains_source_version_only: true
+  unwhitelisted_batch_items_excluded: true
+commands_run:
+  - venv/Scripts/python.exe -m py_compile app/vocabulary_quiz/routers/multiformat.py tests/test_l3_general_inclusion_option1.py
+  - venv/Scripts/python.exe -m pytest tests/test_l3_general_inclusion_option1.py -q
+  - venv/Scripts/python.exe inline harness invoking four test functions
+  - venv/Scripts/python.exe inline manifest validation
+results:
+  py_compile: passed
+  pytest_runner: not_available_no_module_pytest
+  direct_test_harness: passed_4_of_4
+  manifest_validation: passed
+external_effects:
+  db_writes: 0
+  deployment: none
+  research_server_changed: false
+  public_flags_changed: false
+  allowlist_changed: false
+  feature_flags_changed: false
+  git_add_commit_push: false
+next_action: request_separate_approval_before_server_deploy_or_any_db_write

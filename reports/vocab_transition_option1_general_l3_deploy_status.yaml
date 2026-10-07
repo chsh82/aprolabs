@@ -1,0 +1,74 @@
+task_id: vocab-transition-option1-general-l3-deploy-20261007
+status: completed
+scope: research_site_deploy_and_db_write_script
+approved_by_user: true
+approval_text_summary:
+  - 배포해
+  - db write 도 하고
+  - aprolabs 는 연구용 사이트라 어차피 고객들이 못봐요
+server:
+  host_alias: aprolabs
+  repo_path: /home/chsh82/aprolabs
+  service: aprolabs.service
+  service_status: active
+  main_pid: 2191821
+  active_enter_timestamp_utc: 'Wed 2026-10-07 09:22:25 UTC'
+code_deploy:
+  method: direct_scp_no_git_push
+  backup_dir: /home/chsh82/aprolabs/deploy_backups/l3_option1_20261007-182209
+  files:
+    - app/vocabulary_quiz/routers/multiformat.py
+    - data/vocab/l3_general_inclusion_option1_manifest_v1.json
+    - tests/test_l3_general_inclusion_option1.py
+    - reports/vocab_transition_option1_general_l3_code_rehearsal_20261007.md
+    - reports/vocab_transition_option1_general_l3_code_rehearsal_status.yaml
+db:
+  path: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db
+  backup_path: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db.bak_l3_option1_20261007-092225
+  mode: sqlite_mode_rw
+  manifest_rows: 128
+  manifest_contents: 64
+  inserted_level_rows: 0
+  exact_option1_level_rows: 64
+  integrity_after: ok
+  foreign_key_violations: 0
+  public_flags_nonzero_all_contents: 0
+verification:
+  py_compile: passed
+  direct_test_harness: passed_4_of_4
+  live_db_readback:
+    integrity: ok
+    option1_level_rows: 64
+    public_flags_nonzero: 0
+  live_code_availability:
+    l3_all_candidates:
+      words: 149
+      items: 444
+      by_type:
+        MEANING_CHOICE: 149
+        WORD_FROM_DEFINITION: 84
+        CONTEXT_MEANING: 149
+        CONTEXT_CLOZE: 61
+        MATCH_WORD_MEANING: 1
+    l3_auto_only:
+      words: 80
+      items: 297
+      by_type:
+        MEANING_CHOICE: 80
+        WORD_FROM_DEFINITION: 79
+        CONTEXT_MEANING: 80
+        CONTEXT_CLOZE: 58
+        MATCH_WORD_MEANING: 0
+  http_smoke:
+    local_literacy_health: 302
+    local_vocab_availability_level3: 302
+    public_literacy_health: 302
+    public_vocab_availability_level3: 302
+external_effects:
+  service_restarted: true
+  git_push: false
+  git_commit: false
+  student_public_flags_changed: false
+  allowlist_changed: false
+  feature_flags_changed: false
+next_action: optional_authenticated_clickthrough_check_in_admin_ui

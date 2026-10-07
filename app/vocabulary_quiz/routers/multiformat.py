@@ -73,6 +73,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.vocabulary_quiz.auth import NOINDEX_HEADERS, require_admin
@@ -211,6 +212,23 @@ L3_BATCH_CONFIGS: dict[str, dict] = {
     },
 }
 
+# ==================== L3 보강 일반 L3 포함 리허설(옵션1) ====================
+# 2026-10-07 대표 승인 범위: 학생 공개/allowlist/feature flag/배포 없이,
+# 승인된 L3 보강 64콘텐츠·128문항만 일반 관리자 L3(all_candidates) 후보에
+# 포함하는 로컬 코드 리허설. source_version 전체를 넓히지 않고, option1 적용
+# manifest에서 고정한 item_id 화이트리스트만 허용한다.
+L3_GENERAL_INCLUSION_OPTION1_MANIFEST_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "data" / "vocab" / "l3_general_inclusion_option1_manifest_v1.json"
+)
+EXPECTED_L3_GENERAL_INCLUSION_OPTION1_ITEM_COUNT = 128
+EXPECTED_L3_GENERAL_INCLUSION_OPTION1_CONTENT_COUNT = 64
+L3_GENERAL_INCLUSION_OPTION1_SOURCE_VERSIONS = frozenset({
+    GRADE5_L3_BATCH1_SOURCE_VERSION,
+    GRADE5_L3_BATCH2_SOURCE_VERSION,
+})
+_l3_general_inclusion_option1_rows_cache: list[dict] | None = None
+
 
 class PilotBatchIntegrityError(Exception):
     """파일럿 배치가 기대한 40건과 정확히 일치하지 않을 때(오염/누락) 발생시키는
@@ -223,6 +241,59 @@ class PilotBatchIntegrityError(Exception):
 
 
 _pilot_manifest_rows_cache: list[dict] | None = None
+
+
+def _load_l3_general_inclusion_option1_rows() -> list[dict]:
+    """일반 L3 후보에 연결할 L3 보강 옵션1 item_id 화이트리스트를 읽는다.
+
+    이 manifest는 reports/vocab_transition_option1_l3_backfill_manifest_20261007.csv의
+    승인 범위(64콘텐츠·128문항)만 data/vocab에 고정한 것이다. batch source_version
+    전체를 허용하지 않고 이 item_id 목록만 일반 L3 all_candidates에 추가한다.
+    """
+    global _l3_general_inclusion_option1_rows_cache
+    if _l3_general_inclusion_option1_rows_cache is not None:
+        return _l3_general_inclusion_option1_rows_cache
+
+    if not L3_GENERAL_INCLUSION_OPTION1_MANIFEST_PATH.exists():
+        raise PilotBatchIntegrityError(
+            f"L3 일반 포함 옵션1 매니페스트 파일이 없습니다: "
+            f"{L3_GENERAL_INCLUSION_OPTION1_MANIFEST_PATH}",
+            missing=set(), unexpected=set(),
+        )
+    try:
+        rows = json.loads(L3_GENERAL_INCLUSION_OPTION1_MANIFEST_PATH.read_text(encoding="utf-8"))
+        item_ids = [row["item_id"] for row in rows]
+        content_ids = [row["content_id"] for row in rows]
+    except Exception as exc:  # noqa: BLE001 - 파일 파싱 실패를 명확히 중단
+        raise PilotBatchIntegrityError(
+            f"L3 일반 포함 옵션1 매니페스트를 읽을 수 없습니다: "
+            f"{L3_GENERAL_INCLUSION_OPTION1_MANIFEST_PATH} ({exc})",
+            missing=set(), unexpected=set(),
+        ) from exc
+
+    source_versions = {row.get("source_version") for row in rows}
+    item_types = {row.get("item_type") for row in rows}
+    if (
+        len(item_ids) != EXPECTED_L3_GENERAL_INCLUSION_OPTION1_ITEM_COUNT
+        or len(set(item_ids)) != len(item_ids)
+        or len(set(content_ids)) != EXPECTED_L3_GENERAL_INCLUSION_OPTION1_CONTENT_COUNT
+        or not source_versions <= L3_GENERAL_INCLUSION_OPTION1_SOURCE_VERSIONS
+        or not item_types <= set(LEVEL_MODE_ITEM_TYPES)
+    ):
+        raise PilotBatchIntegrityError(
+            "L3 일반 포함 옵션1 매니페스트가 승인 범위와 다릅니다"
+            f"(rows={len(item_ids)}, distinct_items={len(set(item_ids))}, "
+            f"distinct_contents={len(set(content_ids))}, source_versions={sorted(source_versions)}, "
+            f"item_types={sorted(item_types)}): {L3_GENERAL_INCLUSION_OPTION1_MANIFEST_PATH}",
+            missing=set(), unexpected=set(),
+        )
+
+    _l3_general_inclusion_option1_rows_cache = rows
+    return rows
+
+
+def _l3_general_inclusion_option1_item_ids() -> set[str]:
+    return {row["item_id"] for row in _load_l3_general_inclusion_option1_rows()}
 
 
 def _load_pilot_manifest_rows() -> list[dict]:
@@ -767,18 +838,29 @@ def _matching_level_content_ids(db: Session, level: int, confidence_mode: str) -
 def _select_level_candidates(db: Session, level: int, item_types: list[str], confidence_mode: str) -> list[str]:
     """레벨 모드 후보 item_id 목록. 단일 어휘형은 source_content_id가, 복합형
     (MATCH_WORD_MEANING)은 source_content_ids_json의 전부가 선택 레벨과
-    일치할 때만 포함한다 - 평균/대표 레벨을 임의로 만들지 않는다."""
+    일치할 때만 포함한다 - 평균/대표 레벨을 임의로 만들지 않는다.
+
+    L3 옵션1 보강분은 일반 전체 모드가 아니라 관리자 레벨 모드 L3/all_candidates에만
+    item_id 화이트리스트로 연결한다. source_version 전체를 넓히지 않는다.
+    """
     matching = _matching_level_content_ids(db, level, confidence_mode)
     if not matching:
         return []
     types = [t for t in item_types if t != "CROSSWORD"]  # 레벨 모드는 CROSSWORD 완전 제외
+    l3_option1_item_ids: set[str] = set()
+    source_filter = VocabularyMultiformatItem.source_version == SOURCE_VERSION
+    if level == 3 and confidence_mode == "all_candidates":
+        l3_option1_item_ids = _l3_general_inclusion_option1_item_ids()
+        source_filter = or_(source_filter, VocabularyMultiformatItem.item_id.in_(l3_option1_item_ids))
     items = db.query(VocabularyMultiformatItem).filter(
-        VocabularyMultiformatItem.source_version == SOURCE_VERSION,
+        source_filter,
         VocabularyMultiformatItem.is_active == 1,
         VocabularyMultiformatItem.item_type.in_(types),
     ).all()
     candidates = []
     for item in items:
+        if item.source_version != SOURCE_VERSION and item.item_id not in l3_option1_item_ids:
+            continue
         if item.item_type == "MATCH_WORD_MEANING":
             cids = json.loads(item.source_content_ids_json or "[]")
             if cids and all(c in matching for c in cids):
