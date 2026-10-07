@@ -1,0 +1,78 @@
+task_id: vocab-transition-reconcile-001
+status: completed
+scope: aprolabs_read_only
+input_versions:
+  handoff_file: C:/Users/aproa/AppData/Local/hermes/cache/documents/doc_370afed4b625_vocab_project_hermes_handoff_20261007.md
+  git_head: 6ac220e
+  repo: C:/Users/aproa/aprolabs
+  db:
+    path: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db
+    size_bytes: 17223680
+    integrity_check: ok
+    access_mode: sqlite_uri_mode_ro_plus_PRAGMA_query_only
+  reports_reviewed:
+    - reports/nikl_rule_ab_transition_recalc_with_l3_bogang_20261007.md
+    - reports/nikl_tier1_verdicts_and_dryrun_20260930.md
+    - reports/nikl_tier1_level_adjustment_8_applied_20261006.md
+verification_time_kst: '2026-10-07 15:02:43 +0900'
+artifacts:
+  - reports/vocab_transition_reconcile_001_report_20261007.md
+  - reports/vocab_transition_reconcile_001_status.yaml
+  - C:/Users/aproa/AppData/Local/hermes/profiles/davinci/cache/scratch/vocab_transition_remote_readonly_20261007.json
+  - C:/Users/aproa/AppData/Local/hermes/profiles/davinci/cache/scratch/vocab_publish_readonly_20261007.json
+changed_files:
+  - reports/vocab_transition_reconcile_001_report_20261007.md
+  - reports/vocab_transition_reconcile_001_status.yaml
+commit_sha: null
+tests:
+  passed:
+    - remote sqlite DB exists at confirmed path; no missing-path auto-create used
+    - PRAGMA integrity_check returned ok
+    - RULE_A/B target set verified: RULE_A 1368, RULE_B 40, total 1408, other patterns 0
+    - tier1 latest 31 verified; tier1/RULE_A_B intersection 0
+    - tier1 adjustment 8 current DB levels equal proposed target levels; public_ready/student_exposure remain 0
+    - L3 bogang level rows verified 0 for DB 68 contents and current manifest target 67 contents
+    - supply table recalculated for current and RULE_A/B simulation, all_candidates and auto_only separated
+  failed: []
+  not_run:
+    - pytest or app tests: not applicable; read-only DB/report reconciliation only
+    - live HTTP/API tests: intentionally not run; no deploy or service change requested
+db_effect:
+  writes: 0
+  target: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db
+  backup: null
+  read_only_evidence:
+    - SQLite opened with file URI mode=ro
+    - PRAGMA query_only=ON
+    - only SELECT and PRAGMA integrity_check executed
+external_effects:
+  deployment: none
+  public_flags_changed: false
+  manifest_changed: false
+  item_changed: false
+  human_judgment_changed: false
+  repo_code_changed: false
+  note: remote /tmp query scripts were copied for read-only querying; cleanup rm was blocked by unattended approval policy.
+key_results:
+  rule_a: 1368
+  rule_b: 40
+  rule_total: 1408
+  tier1_latest: 31
+  tier1_rule_intersection: 0
+  tier1_adjustment_already_applied: 8
+  bogang_db_contents: 68
+  bogang_current_manifest_contents: 67
+  bogang_level_rows: 0
+  bogang_publish_approved: 65
+  bogang_manifest_connection_assumption: 64
+  current_l3_all_candidates: 85_words_316_items
+  after_rule_ab_l3_all_candidates: 11_words_42_items
+  after_rule_ab_plus_bogang64_l3_all_candidates: 75_words_170_items
+unresolved:
+  - whether to approve RULE_A, RULE_B, both, or neither
+  - whether RULE_A/B approval should be policy-level, risk-sampled, or item-by-item
+  - whether to insert L3 bogang level rows and which exact set to connect: 64, 67, or DB 68
+  - whether bogang level_status should be REVIEW_BOUNDARY or PROVISIONAL_AUTO
+  - whether Belgium should remain excluded from the general connection whitelist
+  - whether batch2 unreviewed publish items 수시/숙련/순서도 should receive individual review
+next_action: wait_for_representative_decision_on_RULE_A_RULE_B_and_bogang_connection_policy

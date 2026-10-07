@@ -1,0 +1,89 @@
+task_id: vocab-transition-post-option1-followup-20261007
+status: completed
+scope: post_apply_readonly_verification_and_code_impact_analysis
+created_at_kst: '2026-10-07 15:33:30 +0900'
+input_versions:
+  local_repo: C:/Users/aproa/aprolabs
+  local_git_head: 6ac220e
+  remote_repo: /home/chsh82/aprolabs
+  remote_git_head: b8fbe7c
+  db_path: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db
+  manifest_path: C:/Users/aproa/aprolabs/reports/vocab_transition_option1_l3_backfill_manifest_20261007.csv
+  manifest_sha256: 95ff2da82db1da7f278abc49fb58322b0f61ed067942d0caf499972da9021d77
+verification:
+  method: sqlite_readonly_uri_mode_ro_plus_PRAGMA_query_only
+  db_size_bytes: 17281024
+  db_sha256: 967154ed125ac12a94675541c97a8bcd9fa2c60454a6ada2f0ac2f9776b59d1a
+  integrity_check: ok
+  foreign_key_check_violations: 0
+  target_manifest_distinct_contents: 64
+  target_manifest_items: 128
+  target_level_rows_exact_l3_review_boundary: 64
+  target_active_items: 128
+  target_public_flags_nonzero_contents: 0
+  all_contents_public_flags_nonzero: 0
+  rule_a_remaining: 1368
+  rule_b_remaining: 40
+  table_counts:
+    vocabulary_contents: 6018
+    vocabulary_content_levels: 6014
+    vocabulary_multiformat_items: 1747
+    vocabulary_official_grade_reference: 5950
+    vocabulary_publish_reviews: 147
+selection_supply:
+  current_code_l3_all_candidates:
+    words: 85
+    items: 316
+  current_code_l3_auto_only:
+    words: 80
+    items: 297
+  option1_whitelist_l3_all_candidates_simulation:
+    words: 149
+    items: 444
+  option1_whitelist_l3_auto_only_simulation:
+    words: 80
+    items: 297
+code_impact:
+  general_level_selection_source_version_only: '2.1.29'
+  option1_source_versions:
+    - nikl_grade5_l3_batch1_v1
+    - nikl_grade5_l3_batch2_v1
+  option1_visible_in_admin_dedicated_l3_batch_modes: true
+  option1_visible_in_general_level_mode_current_code: false
+  whitelist_needed_for_general_level_inclusion: true
+  deployment_needed_for_general_level_inclusion: true
+commands_run:
+  - "ssh aprolabs 'git -C /home/chsh82/aprolabs rev-parse --short HEAD ...'"
+  - "scp local_check_script_and_manifest aprolabs:/home/chsh82/aprolabs/tmp/"
+  - "ssh aprolabs 'python3 /home/chsh82/aprolabs/tmp/vocab_followup_remote_check_v2.py ...'"
+  - "python -m py_compile app/vocabulary_quiz/routers/multiformat.py app/vocabulary_quiz/routers/quiz.py"
+tests:
+  py_compile_multiformat_and_quiz:
+    status: passed
+    exit_code: 0
+    output: ''
+db_effect:
+  writes_after_option1: 0
+  changed_tables_after_option1: []
+  rule_a_applied: false
+  rule_b_applied: false
+external_effects:
+  deployment: none
+  public_flags_changed: false
+  allowlist_changed: false
+  feature_flags_changed: false
+  momolib_changed: false
+  code_changed: false
+  reports_created:
+    - C:/Users/aproa/aprolabs/reports/vocab_transition_post_option1_followup_20261007.md
+    - C:/Users/aproa/aprolabs/reports/vocab_transition_post_option1_followup_status.yaml
+    - C:/Users/aproa/aprolabs/reports/vocab_transition_selection_code_impact_20261007.md
+notes:
+  - remote_git_head_still_differs_from_local_head_b8fbe7c_vs_6ac220e
+  - current_general_level_code_still_filters_vocabulary_multiformat_items_source_version_2_1_29
+  - option1_64_rows_are_REVIEW_BOUNDARY_so_auto_only_supply_does_not_increase
+  - next_general_level_inclusion_requires_separate_code_rehearsal_and_deploy_approval
+next_decision_options:
+  - A_admin_dedicated_l3_batch_mode_only_keep_general_level_deferred
+  - B_approve_local_isolated_code_rehearsal_for_manifest_whitelist_general_l3_inclusion
+  - C_keep_RULE_A_RULE_B_on_hold_and_track_supply_tables_only

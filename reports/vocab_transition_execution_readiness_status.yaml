@@ -1,0 +1,87 @@
+task_id: vocab-transition-execution-readiness-20261007
+status: completed
+scope: aprolabs_execution_readiness_no_db_write
+created_at_kst: '2026-10-07 15:06:50 +0900'
+input_versions:
+  handoff_file: C:/Users/aproa/AppData/Local/hermes/cache/documents/doc_370afed4b625_vocab_project_hermes_handoff_20261007.md
+  reconcile_report: C:/Users/aproa/aprolabs/reports/vocab_transition_reconcile_001_report_20261007.md
+  reconcile_status: C:/Users/aproa/aprolabs/reports/vocab_transition_reconcile_001_status.yaml
+  repo: C:/Users/aproa/aprolabs
+  git_head: 6ac220e
+artifacts:
+  - reports/vocab_transition_execution_readiness_20261007.md
+  - reports/vocab_transition_execution_readiness_status.yaml
+  - reports/vocab_transition_approval_options_20261007.md
+changed_files_expected:
+  new:
+    - reports/vocab_transition_execution_readiness_20261007.md
+    - reports/vocab_transition_execution_readiness_status.yaml
+    - reports/vocab_transition_approval_options_20261007.md
+  read_only_inputs:
+    - reports/vocab_transition_reconcile_001_report_20261007.md
+    - reports/vocab_transition_reconcile_001_status.yaml
+execution_units:
+  rule_a:
+    status: ready_for_representative_decision
+    target_count: 1368
+    proposed_change: L3_to_L2
+    independent_from:
+      - rule_b
+      - l3_bogang_connection
+      - tier1_adjustment_8_already_applied
+    requires_approval: true
+  rule_b:
+    status: ready_for_representative_decision
+    target_count: 40
+    proposed_change: L2_to_L1
+    independent_from:
+      - rule_a
+      - l3_bogang_connection
+      - tier1_adjustment_8_already_applied
+    requires_approval: true
+  l3_bogang_connection:
+    status: ready_for_representative_decision
+    safe_connection_target: 64_contents_128_items
+    expanded_connection_candidate: 67_contents_134_items
+    db_source_contents: 68
+    current_level_rows: 0
+    requires_approval: true
+    level_status_decision_required:
+      - REVIEW_BOUNDARY
+      - PROVISIONAL_AUTO
+verification:
+  completed:
+    - reviewed handoff approval boundaries
+    - used reconcile report/status as baseline
+    - separated RULE_A, RULE_B, and L3 bogang connection as independent execution units
+    - documented purpose, targets/exclusions, possible touched tables/files, prechecks, backup/rollback, approval wording, postchecks, risks, stop conditions
+    - reduced representative decision options to no more than 3 choices
+    - wrote readiness report, status file, and approval options file
+  not_repeated:
+    - remote DB read-only reconciliation queries from vocab-transition-reconcile-001 were not rerun without cause
+  not_run:
+    - actual DB backup creation: requires approval before write-side operation
+    - actual RULE_A/B UPDATE: forbidden without representative approval
+    - actual L3 bogang level INSERT: forbidden without representative approval
+    - service deployment: forbidden without representative approval
+    - student public/allowlist/feature flag transition: forbidden without representative approval
+db_effect:
+  writes: 0
+  target: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db
+  changed_tables: []
+  backup_created: false
+deployment: none
+external_effects:
+  public_flags_changed: false
+  allowlist_changed: false
+  feature_flags_changed: false
+  human_judgment_changed: false
+  db_levels_changed: false
+  item_changed: false
+  manifest_changed: false
+  momolib_changed: false
+representative_decisions_required:
+  - choose RULE_A/B policy scope
+  - choose L3 bogang connection scope
+  - choose L3 bogang level_status if connection is approved
+next_action: wait_for_representative_approval_option_selection

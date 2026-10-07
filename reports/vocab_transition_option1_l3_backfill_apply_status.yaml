@@ -1,0 +1,69 @@
+task_id: vocab-transition-option1-l3-backfill-apply-20261007
+status: completed
+scope: option1_l3_bogang_64_db_level_insert_only
+created_at_kst: '2026-10-07 15:23:25 +0900'
+input_versions:
+  local_repo: C:/Users/aproa/aprolabs
+  local_git_head: 6ac220e
+  remote_repo: /home/chsh82/aprolabs
+  remote_git_head: b8fbe7c
+  db_path: /home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db
+backup:
+  path: /home/chsh82/aprolabs_data/vocabulary_quiz/backups/vocabulary_quiz_research.db.bak-option1-l3-backfill-pre-20261007-20261007-062230
+  size_bytes: 17223680
+  sha256: e953ac5faa0458a9ba15d3db702fa1475aa6da560b22aedcefcf40f271db10e0
+manifest:
+  path: C:/Users/aproa/aprolabs/reports/vocab_transition_option1_l3_backfill_manifest_20261007.csv
+  rows: 128
+  distinct_content_ids: 64
+  sha256: 95ff2da82db1da7f278abc49fb58322b0f61ed067942d0caf499972da9021d77
+target:
+  contents: 64
+  items: 128
+  level_version: level_policy_v0.1
+  vocab_level: 3
+  level_status: REVIEW_BOUNDARY
+  excluded:
+    batch2_unapproved: 3
+    belgium: true
+execution:
+  inserted_rows: 64
+  transaction: single_BEGIN_IMMEDIATE_then_commit
+  idempotency_guard: NOT_EXISTS_content_id_level_version_plus_precheck_current_level_rows_0
+verification:
+  integrity_check: ok
+  foreign_key_check_violations: 0
+  target_level_rows_after: 64
+  vocabulary_content_levels_before: 5950
+  vocabulary_content_levels_after: 6014
+  target_active_items_after: 128
+  public_ready_nonzero_after: 0
+  student_exposure_nonzero_after: 0
+  rule_a_remaining_after: 1368
+  rule_b_remaining_after: 40
+  l3_supply_current_code_all_candidates_after: "85_words_316_items"
+  l3_supply_whitelist_all_candidates_after: "149_words_444_items"
+  l3_supply_auto_only_after: "80_words_297_items"
+db_effect:
+  writes: 64
+  changed_tables:
+    - vocabulary_content_levels
+  unchanged_tables_verified:
+    - vocabulary_contents
+    - vocabulary_multiformat_items
+    - vocabulary_official_grade_reference
+    - vocabulary_publish_reviews
+    - vocabulary_grade5_candidate_judgments
+external_effects:
+  deployment: none
+  public_flags_changed: false
+  allowlist_changed: false
+  feature_flags_changed: false
+  momolib_changed: false
+artifacts:
+  - reports/vocab_transition_option1_l3_backfill_manifest_20261007.csv
+  - reports/vocab_transition_option1_l3_backfill_apply_20261007.md
+  - reports/vocab_transition_option1_l3_backfill_apply_status.yaml
+notes:
+  - remote_git_head_differed_from_baseline_6ac220e_but_db_target_prechecks_matched
+  - current_deployed_general_level_code_still_filters_source_version_2_1_29; whitelist_inclusion_requires_separate_code_deploy_approval
