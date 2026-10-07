@@ -1,0 +1,25 @@
+{
+  "method": "vocabulary_content_literacy_links(142행)의 content_id를 vocabulary_quiz_research.db vocabulary_content_levels(level_version='level_policy_v0.1')와 조인, literacy_term_id의 level 분포는 phase4 2-3절(직접 재조회 기록)을 재인용",
+  "vq_vocab_level_distribution_of_142_content_ids": {
+    "0": 9,
+    "1": 61,
+    "2": 36,
+    "3": 36,
+    "4": 0,
+    "5": 0,
+    "6": 0
+  },
+  "vq_vocab_level_total": 142,
+  "vq_vocab_level_unmatched_content_id_count": 0,
+  "literacy_terms_level_distribution_of_142_literacy_term_ids_from_phase4": {
+    "0": 61,
+    "1": 48,
+    "2": 33,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0
+  },
+  "literacy_terms_level_total": 142,
+  "conclusion": "142건 링크는 vocabulary_quiz의 vocab_level 체계(0-6)와 literacy.db terms.level 체계(0-6) 양쪽 모두에서 L4/L5/L6 어디에도 존재하지 않는다(양쪽 다 0건). 142건은 momo-textbook(138)+sajaseongeo-pdf(4) 소스로만 구성되어 schemareading-schema/tooldict(V/S)와 전혀 겹치지 않는다는 phase4 사실과 정합적이다."
+}

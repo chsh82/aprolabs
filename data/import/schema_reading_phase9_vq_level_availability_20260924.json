@@ -1,0 +1,184 @@
+{
+  "0": {
+    "all_candidates": {
+      "matching_content_count": 612,
+      "available_items": 121,
+      "distinct_words": 32,
+      "by_type": {
+        "MEANING_CHOICE": 32,
+        "WORD_FROM_DEFINITION": 32,
+        "CONTEXT_MEANING": 32,
+        "CONTEXT_CLOZE": 25,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 586,
+      "available_items": 113,
+      "distinct_words": 30,
+      "by_type": {
+        "MEANING_CHOICE": 30,
+        "WORD_FROM_DEFINITION": 30,
+        "CONTEXT_MEANING": 30,
+        "CONTEXT_CLOZE": 23,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "1": {
+    "all_candidates": {
+      "matching_content_count": 1635,
+      "available_items": 316,
+      "distinct_words": 87,
+      "by_type": {
+        "MEANING_CHOICE": 87,
+        "WORD_FROM_DEFINITION": 87,
+        "CONTEXT_MEANING": 87,
+        "CONTEXT_CLOZE": 55,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 1285,
+      "available_items": 244,
+      "distinct_words": 67,
+      "by_type": {
+        "MEANING_CHOICE": 67,
+        "WORD_FROM_DEFINITION": 67,
+        "CONTEXT_MEANING": 67,
+        "CONTEXT_CLOZE": 43,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "2": {
+    "all_candidates": {
+      "matching_content_count": 1621,
+      "available_items": 332,
+      "distinct_words": 88,
+      "by_type": {
+        "MEANING_CHOICE": 88,
+        "WORD_FROM_DEFINITION": 88,
+        "CONTEXT_MEANING": 88,
+        "CONTEXT_CLOZE": 68,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 21,
+      "available_items": 4,
+      "distinct_words": 1,
+      "by_type": {
+        "MEANING_CHOICE": 1,
+        "WORD_FROM_DEFINITION": 1,
+        "CONTEXT_MEANING": 1,
+        "CONTEXT_CLOZE": 1,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "3": {
+    "all_candidates": {
+      "matching_content_count": 1825,
+      "available_items": 338,
+      "distinct_words": 91,
+      "by_type": {
+        "MEANING_CHOICE": 91,
+        "WORD_FROM_DEFINITION": 90,
+        "CONTEXT_MEANING": 91,
+        "CONTEXT_CLOZE": 65,
+        "MATCH_WORD_MEANING": 1
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 1682,
+      "available_items": 316,
+      "distinct_words": 85,
+      "by_type": {
+        "MEANING_CHOICE": 85,
+        "WORD_FROM_DEFINITION": 84,
+        "CONTEXT_MEANING": 85,
+        "CONTEXT_CLOZE": 62,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "4": {
+    "all_candidates": {
+      "matching_content_count": 30,
+      "available_items": 8,
+      "distinct_words": 2,
+      "by_type": {
+        "MEANING_CHOICE": 2,
+        "WORD_FROM_DEFINITION": 2,
+        "CONTEXT_MEANING": 2,
+        "CONTEXT_CLOZE": 2,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 6,
+      "available_items": 0,
+      "distinct_words": 0,
+      "by_type": {
+        "MEANING_CHOICE": 0,
+        "WORD_FROM_DEFINITION": 0,
+        "CONTEXT_MEANING": 0,
+        "CONTEXT_CLOZE": 0,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "5": {
+    "all_candidates": {
+      "matching_content_count": 0,
+      "available_items": 0,
+      "distinct_words": 0,
+      "by_type": {
+        "MEANING_CHOICE": 0,
+        "WORD_FROM_DEFINITION": 0,
+        "CONTEXT_MEANING": 0,
+        "CONTEXT_CLOZE": 0,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 0,
+      "available_items": 0,
+      "distinct_words": 0,
+      "by_type": {
+        "MEANING_CHOICE": 0,
+        "WORD_FROM_DEFINITION": 0,
+        "CONTEXT_MEANING": 0,
+        "CONTEXT_CLOZE": 0,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  },
+  "6": {
+    "all_candidates": {
+      "matching_content_count": 0,
+      "available_items": 0,
+      "distinct_words": 0,
+      "by_type": {
+        "MEANING_CHOICE": 0,
+        "WORD_FROM_DEFINITION": 0,
+        "CONTEXT_MEANING": 0,
+        "CONTEXT_CLOZE": 0,
+        "MATCH_WORD_MEANING": 0
+      }
+    },
+    "auto_only": {
+      "matching_content_count": 0,
+      "available_items": 0,
+      "distinct_words": 0,
+      "by_type": {
+        "MEANING_CHOICE": 0,
+        "WORD_FROM_DEFINITION": 0,
+        "CONTEXT_MEANING": 0,
+        "CONTEXT_CLOZE": 0,
+        "MATCH_WORD_MEANING": 0
+      }
+    }
+  }
+}

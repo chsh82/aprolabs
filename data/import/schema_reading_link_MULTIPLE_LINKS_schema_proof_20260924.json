@@ -1,0 +1,56 @@
+{
+  "targets": [
+    {
+      "headword": "속수무책",
+      "vocab_content_id": "SC_V1976_B076_042",
+      "vocab_lemma": "속수무책",
+      "vocab_pos": "명사",
+      "literacy_term_id": 3185,
+      "literacy_source": "momo-textbook",
+      "literacy_headword": "속수무책",
+      "literacy_review_status": null,
+      "literacy_reviewed_at": null,
+      "evidence": "cardinality=1:N (s_rows_for_this_headword=2, v_rows_for_this_headword=1) - 단일 nullable literacy_term_id 컬럼 1개로는 이 headword의 모든 literacy_term_id를 동시에 표현 못함.",
+      "link_method": "SCHEMA_CAPABILITY_PROOF_ONLY_NOT_APPLIED"
+    },
+    {
+      "headword": "속수무책",
+      "vocab_content_id": "SC_V1976_B076_042",
+      "vocab_lemma": "속수무책",
+      "vocab_pos": "명사",
+      "literacy_term_id": 7201,
+      "literacy_source": "sajaseongeo-pdf",
+      "literacy_headword": "속수무책",
+      "literacy_review_status": null,
+      "literacy_reviewed_at": null,
+      "evidence": "cardinality=1:N (s_rows_for_this_headword=2, v_rows_for_this_headword=1) - 단일 nullable literacy_term_id 컬럼 1개로는 이 headword의 모든 literacy_term_id를 동시에 표현 못함.",
+      "link_method": "SCHEMA_CAPABILITY_PROOF_ONLY_NOT_APPLIED"
+    },
+    {
+      "headword": "혼비백산",
+      "vocab_content_id": "SC_V19134_B134_003",
+      "vocab_lemma": "혼비백산",
+      "vocab_pos": "명사",
+      "literacy_term_id": 3015,
+      "literacy_source": "momo-textbook",
+      "literacy_headword": "혼비백산",
+      "literacy_review_status": null,
+      "literacy_reviewed_at": null,
+      "evidence": "cardinality=1:N (s_rows_for_this_headword=2, v_rows_for_this_headword=1) - 단일 nullable literacy_term_id 컬럼 1개로는 이 headword의 모든 literacy_term_id를 동시에 표현 못함.",
+      "link_method": "SCHEMA_CAPABILITY_PROOF_ONLY_NOT_APPLIED"
+    },
+    {
+      "headword": "혼비백산",
+      "vocab_content_id": "SC_V19134_B134_003",
+      "vocab_lemma": "혼비백산",
+      "vocab_pos": "명사",
+      "literacy_term_id": 7306,
+      "literacy_source": "sajaseongeo-pdf",
+      "literacy_headword": "혼비백산",
+      "literacy_review_status": null,
+      "literacy_reviewed_at": null,
+      "evidence": "cardinality=1:N (s_rows_for_this_headword=2, v_rows_for_this_headword=1) - 단일 nullable literacy_term_id 컬럼 1개로는 이 headword의 모든 literacy_term_id를 동시에 표현 못함.",
+      "link_method": "SCHEMA_CAPABILITY_PROOF_ONLY_NOT_APPLIED"
+    }
+  ]
+}

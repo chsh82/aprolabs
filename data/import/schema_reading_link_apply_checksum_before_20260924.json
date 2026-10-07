@@ -1,0 +1,15 @@
+{
+  "label": "before",
+  "db_path": "/home/chsh82/aprolabs_data/vocabulary_quiz/vocabulary_quiz_research.db",
+  "vocabulary_contents_row_count": 5723,
+  "vocabulary_contents_checksum_sha256": "117ad3734525f06fb428b87d3247263659e8c2600685541b734d1983d4cc926b",
+  "vocabulary_content_levels_row_count": 5723,
+  "vocabulary_content_levels_checksum_sha256": "6a0c97cc80502dbe0fb8fa8c6df8a08e8a478301b02d9eaf11f42bd6b0fc6f30",
+  "exposure_public_ready_checksum_sha256": "6d24c34e38e689dd0c5e753d4b0ce3cd7ad7de47322d4cac531dbefab408e20b",
+  "sum_student_exposure": 0,
+  "sum_public_ready": 0,
+  "integrity_check": "ok",
+  "foreign_key_violations": 0,
+  "vocabulary_content_literacy_links_table_exists": false,
+  "vocabulary_content_literacy_links_row_count": null
+}

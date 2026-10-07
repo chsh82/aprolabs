@@ -1,0 +1,13 @@
+{
+  "backup_path": "C:\\Users\\aproa\\aprolabs\\data\\backups\\literacy.db.bak-sajaseongeo-datefix-pre-20260924-083740",
+  "backup_sha256": "47303bce47561a39ea3fef49c80ba9011b3b718a884f7e0917c78cb8eac9633a",
+  "updated": 10,
+  "value_match": 10,
+  "checksum_before": "ddddd914c655db536d5ce5069d040e8305685703ffaeb772bf4b4616dc8213a7",
+  "checksum_after": "ddddd914c655db536d5ce5069d040e8305685703ffaeb772bf4b4616dc8213a7",
+  "checksum_match": true,
+  "integrity_check": "ok",
+  "fk_violations": 0,
+  "idempotency_remaining": 0,
+  "others_untouched_count": 215
+}

@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "title": "'정기'(content_id=SR_L4CORE_4786) vocabulary_contents.student_definition 수정 제안 (dry-run, 미적용)",
+    "date": "2026-09-26",
+    "phase": "phase21",
+    "note_ko": "이 파일은 제안(dry-run)일 뿐이다. 이번 세션은 vocabulary_quiz_research.db에 어떤 쿼리도 실행하지 않았고(절대 제약 준수), student_exposure/public_ready를 포함해 이 DB의 어떤 값도 조회·변경하지 않았다. 아래 '현재값'은 이번 세션이 직접 재조회한 것이 아니라 phase20 보고서(schema_reading_phase20_pilot_audit_and_scope_fix_20260926.md, 1-4절)가 이미 확인해 기록해 둔 값을 그대로 인용한 것이다.",
+    "constraint_compliance": "vocabulary_quiz_research.db 전혀 접근하지 않음 - DB 쓰기 0건. literacy.db(원천)만 이번 세션이 재조회해 근거로 확인함."
+  },
+  "root_cause": {
+    "summary_ko": "phase16(2026-09-25)의 문항 생성 스크립트(scripts/vocab/phase16_build_quiz_pilot_dryrun.py)는 문항 생성 시점마다 vocabulary_contents.student_definition을 DB에서 다시 읽지 않고, 스크립트 파일 안에 하드코딩된 L4 튜플의 definition 문자열을 그대로 문항 텍스트로 사용한다. phase17(2026-09-26)이 이 하드코딩 값('일정한 기간마다 되풀이하도록 정한 것')이 literacy.db 원천 정의와 미세하게 다르다는 것을 발견하고 '제안 1'을 냈고, phase17 보고서 말미의 '18단계 1번 작업' 기록에 따르면 그 제안이 실제로 phase16_build_quiz_pilot_dryrun.py의 하드코딩 문자열 자체를 수정하는 데에는 반영됐다('기한이나 기간이 일정하게 정해져 있는 것'으로 변경, 이번 세션이 해당 스크립트 파일을 직접 열어 31-32행에서 재확인함). 이 수정은 스크립트 소스 코드와 그 스크립트가 만들어 이미 배포된 문항 텍스트(vocabulary_multiformat_items.explanation/options_json)에는 반영됐지만, vocabulary_contents.student_definition은 애초에 이 생성 흐름의 입력이 아니라 출제 로직의 다른 경로(1건 콘텐츠 레코드)에서 별도로 관리되는 값이라 phase17/18 어느 단계에서도 이 필드를 갱신하는 코드 경로 자체가 없었다. 즉 '갱신을 깜빡한 것'이 아니라 '애초에 이 필드를 건드리는 스크립트가 존재하지 않았던 것'이다.",
+    "evidence": [
+      "scripts/vocab/phase16_build_quiz_pilot_dryrun.py L31-32 (이번 세션이 직접 확인): (\"정기\", \"SR_L4CORE_4786\", \"4786\", \"명사\", \"기한이나 기간이 일정하게 정해져 있는 것\", ...) - 이는 phase17 addendum이 말하는 '2026-09-26 재생성' 이후의 현재 상태다.",
+      "reports/schema_reading_phase17_quiz_pilot_semantic_review_20260926.md 4절(추가 - '정기' 해설 수정, 18단계 1번 작업): 변경 전(2026-09-25 생성분) '일정한 기간마다 되풀이하도록 정한 것' -> 변경 후(2026-09-26 재생성) '기한이나 기간이 일정하게 정해져 있는 것'. 이 절이 명시하길 '원천 정의(literacy.db id=4786, 변경 없음)'만 인용하고 vocabulary_contents 갱신은 언급하지 않는다 - 즉 이 수정 작업 범위가 스크립트/문항 텍스트에 한정됐음을 phase17 스스로 증언한다.",
+      "reports/schema_reading_phase20_pilot_audit_and_scope_fix_20260926.md 1-4절(HOLD 2건): '로컬 읽기전용 사본에서 재조회한 현재 vocabulary_contents.student_definition(content_id=SR_L4CORE_4786)은 \"일정한 기간마다 되풀이하도록 정한 것\"으로 서로 다르다' - 즉 phase18 재적재 시점까지도 vocabulary_contents 쪽은 phase16의 구버전(2026-09-25) 문구 그대로 남아 있었다.",
+      "literacy.db id=4786 (이번 세션이 로컬+서버 양쪽에서 재조회, 양쪽 byte-identical): \"기한이나 기간이 일정하게 정하여져 있는 것. 또는 그 기한이나 기간.\" (source=schemareading-tooldict, external_id=L4-129, level=4)"
+    ]
+  },
+  "which_side_is_correct": {
+    "verdict": "문항 텍스트(2026-09-26 재생성분, '기한이나 기간이 일정하게 정해져 있는 것')가 원천(literacy.db)에 더 가깝다. vocabulary_contents.student_definition(구버전, '일정한 기간마다 되풀이하도록 정한 것')이 틀린/낡은 쪽이다.",
+    "reasoning_ko": [
+      "literacy.db id=4786 원천 정의는 '기한이나 기간이 일정하게 정하여져 있는 것'(정지·고정 상태)만 말하고 '되풀이/반복'을 명시하지 않는다.",
+      "phase17 3-3절이 이미 이 지점을 정확히 지적했다: '되풀이'는 원천에 없는 해석 확장이었다.",
+      "phase17이 낸 '제안 1'(DB 원문에 더 가깝게 - '기한이나 기간이 일정하게 정해져 있는 것')이 실제로 채택돼 스크립트/문항 쪽에 반영됐다(위 근거 1,2). 즉 이미 한 차례 '어느 쪽이 맞는가'에 대한 판단이 내려졌고, 그 판단이 향한 방향은 vocabulary_contents 쪽이 아니라 문항 쪽 문구를 원천에 맞추는 것이었다.",
+      "vocabulary_contents.student_definition만 그 판단 이전의 구버전에 머물러 있는 것은 판단이 바뀐 게 아니라 단순히 '이 필드를 갱신하는 스크립트가 없었던' 누락이다."
+    ]
+  },
+  "proposed_fix": {
+    "target_db": "vocabulary_quiz_research.db (서버, research)",
+    "target_table": "vocabulary_contents",
+    "target_column": "student_definition",
+    "target_row_selector": "content_id = 'SR_L4CORE_4786'",
+    "current_value_cited_from_phase20": "일정한 기간마다 되풀이하도록 정한 것",
+    "proposed_new_value": "기한이나 기간이 일정하게 정해져 있는 것",
+    "rationale": "문항(vocabulary_multiformat_items)의 현재 정답 텍스트/explanation과 정확히 일치시키고, 그 문항 텍스트는 이미 phase17이 원천(literacy.db id=4786)과 대조해 확정한 값이다 - 3자(원천/문항/콘텐츠) 문구가 전부 통일된다.",
+    "columns_explicitly_not_touched": ["student_exposure", "public_ready", "level_status", "is_active", "id"],
+    "sql_if_approved": "UPDATE vocabulary_contents SET student_definition = '기한이나 기간이 일정하게 정해져 있는 것' WHERE content_id = 'SR_L4CORE_4786';",
+    "not_executed_in_this_session": true,
+    "execution_note_ko": "이 SQL은 이번 세션에서 실행하지 않았다. 실제 적용 시에는 apply_sajaseongeo_datefix_10_server.py와 동일한 패턴(백업 -> 하드가드[대상 정확히 1건, content_id 일치] -> 단일 트랜잭션 UPDATE -> integrity_check/foreign_key_check -> 재실행 멱등성)을 vocabulary_quiz_research.db에 대해 재사용할 것을 제안한다."
+  },
+  "impact_on_40item_verdict_table": {
+    "current_status": "HOLD 2건 (MF_A_SC_SRL4L5PILOT_20260925_L4_008, MF_C_SC_SRL4L5PILOT_20260925_L4_008 - phase20 판정)",
+    "if_fix_applied_would_become": "문항-콘텐츠 텍스트 불일치라는 HOLD 사유 자체가 해소되므로, 재판정 시 PASS로 바뀔 여지가 있다. 다만 이 세션은 그 재판정을 실행하지 않았고 실행해서도 안 된다(지시사항) - 실제 재판정은 vocabulary_contents 값이 실제로 갱신된 뒤, 별도 세션이 phase20과 같은 방식(정답 유일성/오답 배제력/원문 대조)으로 다시 사람 수준 판정을 내려야 한다.",
+    "explicitly_not_done": "이번 세션은 HOLD -> PASS 전환을 수행하지 않았고, vocabulary_contents 값도 변경하지 않았다."
+  }
+}

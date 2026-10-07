@@ -1,0 +1,51 @@
+batch_seq,origin,lemma,pos,source,literacy_db_term_id,literacy_db_level_actual,original_level_pkg,level_mismatch_flag,literacy_db_definition,student_definition_draft,example_sentence_draft,caution,review_status_literacy_db
+1,73draft_L4_FULL_MATCH,원칙,명사,V(schemareading-tooldict),3964,1,L4,MISMATCH,어떤 행동이나 이론 따위에서 일관되게 지켜야 하는 기본적인 규칙이나 법칙.,어떤 일을 할 때 계속 지켜야 하는 기본 규칙,우리 반은 의견이 달라도 끝까지 듣는다는 원칙을 정했습니다.,,검수전
+2,73draft_L4_FULL_MATCH,초기,명사,V(schemareading-tooldict),4561,2,L4,MISMATCH,정해진 기간이나 일의 처음이 되는 떄나 시기.,일이나 기간이 막 시작되는 때,모임 초기에는 서로 이름을 익히는 시간을 가졌습니다.,,검수전
+3,73draft_L4_FULL_MATCH,연속,명사,V(schemareading-tooldict),4394,2,L4,MISMATCH,끊이지 아니하고 죽 이어지거나 지속함.,끊어지지 않고 이어지는 일,사흘 연속 비가 내려 운동장이 젖었습니다.,,검수전
+4,73draft_L4_FULL_MATCH,착수,명사,V(schemareading-tooldict),4813,4,L4,,어떤 일에 손을 댐. 또는 어떤 일을 시작함.,어떤 일을 시작하여 손을 대는 것,도서관 공사가 다음 주에 착수될 예정입니다.,,검수전
+5,73draft_L4_FULL_MATCH,한계,명사,V(schemareading-tooldict),4626,2,L4,MISMATCH,"사물이나 능력, 책임 따위가 실제 작용할 수 있는 범위. 또는 그런 범위를 나타내는 선.",무엇을 할 수 있거나 영향을 미칠 수 있는 범위의 끝,혼자 옮길 수 있는 짐의 무게에는 한계가 있습니다.,,검수전
+6,73draft_L4_FULL_MATCH,원인,명사,V(schemareading-tooldict),4415,2,L4,MISMATCH,어떤 사물이나 상태를 변화시키거나 일으키게 하는 근본이 된 일이나 사건.,어떤 일이 일어나게 된 까닭,수도관이 얼어붙은 원인을 찾으려고 기온을 확인했습니다.,,검수전
+7,73draft_L4_FULL_MATCH,조치,명사,V(schemareading-tooldict),4794,4,L4,,벌어지는 사태를 잘 살펴서 필요한 대책을 세워 행함. 또는 그 대책.,상황을 살펴보고 필요한 일을 하는 것,학교는 미끄러운 계단에 안전 표지를 붙이는 조치를 했습니다.,,검수전
+8,73draft_L4_FULL_MATCH,제한,명사,V(schemareading-tooldict),4511,2,L4,MISMATCH,일정한 한도를 정하거나 그 한도를 넘지 못하게 막음. 또는 그렇게 정한 한계.,할 수 있는 양이나 범위를 정해 그 이상은 못 하게 하는 것,안전을 위해 체육관에 들어갈 수 있는 인원을 제한했습니다.,,검수전
+9,73draft_L4_FULL_MATCH,정지,명사,V(schemareading-tooldict),4500,2,L4,MISMATCH,움직이고 있던 것이 멎거나 그침. 또는 중도에서 멎거나 그치게 함.,움직이던 것이 멈추는 것,갑작스러운 정지 때문에 버스 안의 사람들이 몸을 움츠렸습니다.,,검수전
+10,73draft_L4_FULL_MATCH,제외,명사,V(schemareading-tooldict),4508,2,L4,MISMATCH,따로 떼어 내어 한데 헤아리지 않음.,어떤 것을 따로 빼서 함께 세거나 다루지 않는 것,결석한 학생은 오늘 경기 인원에서 제외했습니다.,,검수전
+11,73draft_L4_FULL_MATCH,제공,명사,V(schemareading-tooldict),4504,2,L4,MISMATCH,무엇을 내주거나 갖다 바침.,필요한 물건이나 도움을 내어 주는 것,도서관은 독서 모임에 필요한 장소를 제공했습니다.,,검수전
+12,73draft_L4_FULL_MATCH,증대,명사,V(schemareading-tooldict),4531,2,L4,MISMATCH,양이 많아지거나 규모가 커짐. 또는 양을 늘리거나 규모를 크게 함.,양이나 규모가 늘어나 더 커지는 것,이 안내판은 교통사고 위험의 증대를 막기 위해 세웠습니다.,,검수전
+13,73draft_L4_FULL_MATCH,질서,명사,V(schemareading-tooldict),4547,2,L4,MISMATCH,혼란 없이 순조롭게 이루어지게 하는 사물의 순서나 차례.,일이 뒤섞이지 않게 지켜지는 차례나 순서,학생들은 줄을 서서 질서를 지키며 강당에 들어갔습니다.,,검수전
+14,73draft_L4_FULL_MATCH,집단,명사,V(schemareading-tooldict),4812,4,L4,,여럿이 모여 이룬 모임.,여러 사람이 모여 이룬 무리,합창단은 노래를 함께 부르려고 모인 집단입니다.,,검수전
+15,73draft_L4_FULL_MATCH,추상,명사,V(schemareading-tooldict),4576,2,L4,MISMATCH,여러 가지 사물이나 개념에서 공통되는 특성이나 속성 따위를 추출하여 파악하는 작용.,여러 대상에서 공통된 특징만 뽑아 생각하는 것,여러 도형에서 크기를 빼고 모양의 공통점만 찾는 것은 추상의 한 방법입니다.,,검수전
+16,73draft_L4_FULL_MATCH,주관,명사,V(schemareading-tooldict),4519,2,L4,MISMATCH,자기만의 견해나 관점.,자신이 대상을 바라보고 판단하는 생각이나 관점,나는 기록을 읽을 때 내 주관이 판단에 영향을 줄 수 있음을 생각했습니다.,,검수전
+17,73draft_L4_FULL_MATCH,지점,명사,V(schemareading-tooldict),4537,2,L4,MISMATCH,땅 위의 일정한 점.,땅 위에서 위치를 가리키는 특정한 곳,조사팀은 강물이 갈라지는 지점에서 수질을 측정했습니다.,,검수전
+18,73draft_L4_FULL_MATCH,인식,명사,V(schemareading-tooldict),4445,2,L4,MISMATCH,사물을 분별하고 판단하여 앎.,대상을 알아보고 무엇인지 판단하는 것,처음에는 문제를 인식하지 못했지만 자료를 보고 원인을 찾아냈습니다.,,검수전
+19,73draft_L4_FULL_MATCH,준수,명사,V(schemareading-tooldict),4523,2,L4,MISMATCH,"전례나 규칙, 명령 따위를 그대로 좇아서 지킴.",정해진 규칙이나 명령을 그대로 지키는 것,실험실에서는 안전 수칙을 준수해야 합니다.,,검수전
+20,73draft_L4_FULL_MATCH,감소,명사,V(schemareading-tooldict),4086,2,L4,MISMATCH,양이나 수치가 줆. 또는 양이나 수치를 줄임.,수나 양이 줄거나 줄어들게 하는 것,버스를 함께 타면 도로의 자동차 수가 감소할 수 있습니다.,,검수전
+21,73draft_L4_FULL_MATCH,종속,명사,V(schemareading-tooldict),4796,4,L4,,자주성이 없이 주가 되는 것에 딸려 붙음.,스스로 결정하지 못하고 다른 것에 딸려 따르는 것,그 조직은 본부에 종속되어 중요한 일을 혼자 결정할 수 없습니다.,,검수전
+22,73draft_L4_FULL_MATCH,정상,명사,V(schemareading-tooldict),4787,4,L4,,특별한 변동이나 탈이 없이 제대로인 상태.,별다른 문제가 없이 제대로인 상태,전원을 다시 켜자 측정기가 정상 상태로 돌아왔습니다.,,검수전
+23,73draft_L4_FULL_MATCH,합성,명사,V(schemareading-tooldict),4827,4,L4,,둘 이상의 것을 합쳐서 하나를 이룸.,둘 이상의 것을 합쳐 하나로 만드는 것,미술 시간에는 여러 사진을 합성하여 새로운 장면을 만들었습니다.,,검수전
+24,73draft_L4_FULL_MATCH,최소,명사,V(schemareading-tooldict),4570,2,L4,MISMATCH,수나 정도 따위가 가장 작음.,"수나 크기, 정도가 가장 작은 것",배가 뜨려면 필요한 물의 양이 최소 얼마인지 실험했습니다.,,검수전
+25,73draft_L4_FULL_MATCH,하위,명사,V(schemareading-tooldict),4825,4,L4,,낮은 지위나 등급이나 위치.,"지위나 등급, 위치가 더 낮은 쪽",이 표에서는 큰 주제 아래에 세부 항목을 하위 항목으로 적었습니다.,,검수전
+26,73draft_L4_FULL_MATCH,한정,명사,V(schemareading-tooldict),4627,2,L4,MISMATCH,수량이나 범위 따위를 제한하여 정함. 또는 그런 한도.,수나 양 또는 다룰 수 있는 범위를 정해 두는 것,토론 시간은 모둠마다 십 분으로 한정했습니다.,,검수전
+27,73draft_L4_FULL_MATCH,현실,명사,V(schemareading-tooldict),4641,2,L4,MISMATCH,현재 실제로 존재하는 사실이나 상태.,지금 실제로 있는 사실이나 상황,좋은 계획이라도 현실에서 가능한지 확인해야 합니다.,,검수전
+28,73draft_L4_FULL_MATCH,획득,명사,V(schemareading-tooldict),4663,2,L4,MISMATCH,얻어 내거나 얻어 가짐.,노력하거나 움직여 원하는 것을 얻는 것,우리 팀은 꾸준히 연습해 결승전 출전권을 획득했습니다.,,검수전
+29,73draft_L4_FULL_MATCH,합계,명사,V(schemareading-tooldict),4629,2,L4,MISMATCH,한데 합하여 계산함. 또는 그런 수효.,여러 수를 한데 더하여 계산한 결과,모둠별 기부 금액의 합계를 칠판에 적었습니다.,,검수전
+30,73draft_L4_FULL_MATCH,적응,명사,V(schemareading-tooldict),4010,1,L4,MISMATCH,일정한 조건이나 환경 따위에 맞추어 응하거나 알맞게 됨.,주변 조건이나 환경에 알맞게 맞추어 가는 것,새 학교에 적응하려고 먼저 친구들의 이름을 익혔습니다.,,검수전
+31,73draft_L4_FULL_MATCH,활성화,명사,V(schemareading-tooldict),4660,2,L4,MISMATCH,사회나 조직 등의 기능이 활발함. 또는 그러한 기능을 활발하게 함.,사람이나 조직의 활동이 더 활발해지게 하는 것,도서관은 독서 모임 활성화를 위해 공간을 더 열었습니다.,,검수전
+32,73draft_L4_FULL_MATCH,차지,명사,V(schemareading-tooldict),4053,1,L4,MISMATCH,"사물이나 공간, 지위 따위를 자기 몫으로 가짐. 또는 그 사물이나 공간.",장소나 물건 또는 지위를 자기 몫으로 가지는 것,나무가 운동장 한쪽을 차지해 그늘을 만들었습니다.,,검수전
+33,73draft_L4_FULL_MATCH,유한,명사,V(schemareading-tooldict),4427,2,L4,MISMATCH,"수, 양, 공간, 시간 따위에 일정한 한도나 한계가 있음.","수나 양, 시간 등에 끝이 있는 상태",전시 공간은 유한하므로 모든 작품을 한 번에 걸 수 없습니다.,,검수전
+34,73draft_L4_FULL_MATCH,중복,명사,V(schemareading-tooldict),4801,4,L4,,거듭하거나 겹침.,같은 것이 거듭되거나 서로 겹치는 것,명단에서 이름의 중복을 확인하고 한 번만 적었습니다.,,검수전
+35,73draft_L4_FULL_MATCH,확보,명사,V(schemareading-tooldict),4653,2,L4,MISMATCH,확실히 보증하거나 가지고 있음.,필요한 것을 확실히 가지고 있거나 보장받는 것,대피 장소를 미리 확보해 두면 긴급할 때 도움이 됩니다.,,검수전
+36,73draft_L4_FULL_MATCH,예외,명사,V(schemareading-tooldict),4400,2,L4,MISMATCH,일반적 규칙이나 정례에서 벗어나는 일.,보통 적용하는 규칙에서 벗어나는 경우,모두가 교실에서 시험을 보지만 몸이 아픈 학생에게는 예외를 두었습니다.,,검수전
+37,73draft_L4_FULL_MATCH,정기,명사,V(schemareading-tooldict),4786,4,L4,,기한이나 기간이 일정하게 정하여져 있는 것. 또는 그 기한이나 기간.,일정한 기간마다 되풀이하도록 정한 것,우리 반은 매달 첫째 주에 정기 모임을 엽니다.,,검수전
+38,73draft_L4_FULL_MATCH,유추,명사,V(schemareading-tooldict),4767,4,L4,,같은 종류의 것 또는 비슷한 것에 기초하여 다른 사물을 미루어 추측하는 일.,비슷한 점을 근거로 다른 일도 그럴 것이라 미루어 생각하는 것,다른 지역의 사례를 유추해 우리 마을에서도 비슷한 일이 일어날지 생각했습니다.,,검수전
+39,73draft_L4_FULL_MATCH,회복,명사,V(schemareading-tooldict),4661,2,L4,MISMATCH,원래의 상태로 돌이키거나 원래의 상태를 되찾음.,잃었거나 나빠졌던 상태를 다시 되찾는 것,물을 충분히 마시고 쉬니 몸 상태가 조금씩 회복됐습니다.,,검수전
+40,supplement_literacy_db_V_L4,간과,명사,V(schemareading-tooldict),4749,4,N/A(literacy.db 자체 level=4),,대충 보아 넘김. 깊이 유의하지 않고 예사로 내버려둠.,중요한 것을 대충 보고 넘겨서 미처 신경 쓰지 않는 것,우리는 안전 규칙을 간과해서 작은 사고가 났습니다.,,검수전
+41,supplement_literacy_db_V_L4,공간,명사,V(schemareading-tooldict),4750,4,N/A(literacy.db 자체 level=4),,"아무 것도 없는 빈 곳. 또는 물질, 물체가 존재할 수 있거나 어떤 일이 일어날 수 있는 자리.",무엇이 있거나 어떤 일이 일어날 수 있는 자리나 빈 곳,교실 뒤쪽에 책상을 놓을 공간이 남아 있습니다.,,검수전
+42,supplement_literacy_db_V_L4,기억,명사,V(schemareading-tooldict),4751,4,N/A(literacy.db 자체 level=4),,지난 일을 잊지 아니함. 또는 그 내용.,지나간 일을 잊지 않고 마음속에 간직하고 있는 것,할머니 댁에서 보낸 여름은 좋은 기억으로 남아 있습니다.,,검수전
+43,supplement_literacy_db_V_L4,만족,명사,V(schemareading-tooldict),4752,4,N/A(literacy.db 자체 level=4),,마음에 흡족함. 또는 흡족하게 생각함.,바라던 대로 이루어져 마음이 흡족한 것,발표를 무사히 마치고 나니 만족스러운 기분이 들었습니다.,,검수전
+44,supplement_literacy_db_V_L4,문자,명사,V(schemareading-tooldict),4753,4,N/A(literacy.db 자체 level=4),,"말의 음과 뜻을 나타내는 시각적 기호, 글자.","말소리와 뜻을 눈으로 볼 수 있게 나타낸 기호, 즉 글자",한글은 소리를 정확하게 나타낼 수 있는 문자입니다.,,검수전
+45,supplement_literacy_db_V_L4,보수,명사,V(schemareading-tooldict),4754,4,N/A(literacy.db 자체 level=4),,낡은 것을 보충해서 수선함.,낡거나 고장 난 것을 손보아 고치는 것,장마가 끝난 뒤 학교는 새는 지붕을 보수했습니다.,"동형이의어 주의: '보수'는 이 headword 외에 '정치적으로 보수적임', '일한 대가로 받는 돈'이라는 다른 뜻도 있다. 여기서는 literacy.db 정의(수선)에 한정된 뜻만 채택함 - 출제 시 문맥으로 뜻을 명확히 구분해야 함.",검수전
+46,supplement_literacy_db_V_L4,불가피하다,형용사,V(schemareading-tooldict),4755,4,N/A(literacy.db 자체 level=4),,피할 수가 없다.,어쩔 수 없어서 피할 수가 없다,갑자기 폭우가 쏟아져 일정 변경이 불가피했습니다.,,검수전
+47,supplement_literacy_db_V_L4,완료,명사,V(schemareading-tooldict),4759,4,N/A(literacy.db 자체 level=4),,완전히 끝마침.,하던 일을 완전히 끝내는 것,모둠은 예정보다 일찍 과제를 완료했습니다.,,검수전
+48,supplement_literacy_db_V_L4,요건,명사,V(schemareading-tooldict),4760,4,N/A(literacy.db 자체 level=4),,긴요한 일이나 안건. 필요한 조건.,어떤 일을 하기 위해 반드시 갖추어야 하는 조건,이 대회에 나가려면 몇 가지 요건을 먼저 갖추어야 합니다.,,검수전
+49,supplement_literacy_db_V_L4,원천,명사,V(schemareading-tooldict),4761,4,N/A(literacy.db 자체 level=4),,물이 흘러나오는 근원. 사물의 근원.,어떤 것이 처음 생겨나거나 흘러나오는 근본이 되는 곳,독서는 새로운 생각의 원천이 됩니다.,,검수전
+50,supplement_literacy_db_V_L4,유동,명사,V(schemareading-tooldict),4762,4,N/A(literacy.db 자체 level=4),,액체 상태의 물질이나 전류 따위가 흘러 움직임. 이리저리 자주 옮겨 다님.,"액체나 전류처럼 흘러 움직이거나, 한곳에 머물지 않고 자주 옮겨 다니는 것",명절에는 고속도로에 차량 유동이 많아집니다.,,검수전
