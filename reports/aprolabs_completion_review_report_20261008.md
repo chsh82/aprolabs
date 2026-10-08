@@ -22,10 +22,12 @@
 
 최종 HEAD:
 
-- local HEAD: `b49b0ca`
-- origin/main: `b49b0ca`
-- server HEAD: `b49b0ca`
-- server origin/main: `b49b0ca`
+- local HEAD: `51cd979`
+- origin/main: `51cd979`
+- server HEAD: `51cd979`
+- server origin/main: `51cd979`
+
+성과 검토 보고서 자체는 최종 커밋 `51cd979`에 포함되어 있다.
 
 서비스:
 
@@ -215,10 +217,10 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 aprolabs 'cd /home/chsh82/aprolabs && g
 결과:
 
 - local status: clean
-- local HEAD: `b49b0ca`
-- origin/main: `b49b0ca`
-- server HEAD: `b49b0ca`
-- server origin/main: `b49b0ca`
+- local HEAD: `51cd979`
+- origin/main: `51cd979`
+- server HEAD: `51cd979`
+- server origin/main: `51cd979`
 - service: `active`
 
 코드/테스트 검증:
@@ -300,12 +302,12 @@ node --check momo_book_db/worksheet/scripts/paginate.js
 
 - repo: `C:/Users/aproa/aprolabs`
 - branch: `main`
-- HEAD: `b49b0ca`
+- HEAD: `51cd979`
 - 핵심 보고서: `reports/aprolabs_completion_review_report_20261008.md`
 
 검토 요청:
 
-1. 최종 HEAD `b49b0ca` 기준으로 local/origin/server 동기화가 일관적인지 확인.
+1. 최종 HEAD `51cd979` 기준으로 local/origin/server 동기화가 일관적인지 확인.
 2. 어휘 DB 전환 결과가 보고서와 일치하는지 확인.
 3. RULE_A 적용, RULE_B 보류, Belgium residue 보류 판단이 정책적으로 타당한지 확인.
 4. schema/literacy 변경 `76e4769`의 `definitions[0]` fallback 방지 로직과 테스트가 충분한지 확인.
