@@ -269,6 +269,9 @@ class VocabularyMultiformatSession(Base):
     metadata_json = Column(Text, nullable=True)  # 관리자 레벨별 출제(v1)의 선택 조건 스냅샷 -
     # {audience, selected_vocab_level, confidence_mode, level_version, requested_count,
     # candidate_count, actual_count, item_types}. 기존 세션은 NULL - 결과 화면에서 "레벨 미지정"으로 표시.
+    student_cohort_id = Column(Text, nullable=True)
+    is_internal_tester = Column(Integer, nullable=False, server_default=text("1"))
+    is_verified_student = Column(Integer, nullable=False, server_default=text("0"))
 
 
 class VocabularyMultiformatResponse(Base):
@@ -288,6 +291,13 @@ class VocabularyMultiformatResponse(Base):
     total_count = Column(Integer, nullable=True)
     attempt_count = Column(Integer, nullable=False, server_default=text("0"))
     hint_used = Column(Integer, nullable=False, server_default=text("0"))
+    sense_id = Column(Text, nullable=True)
+    service_level = Column(Integer, nullable=True)
+    response_time_ms = Column(Integer, nullable=True)
+    attempt_no = Column(Integer, nullable=True)
+    presented_at = Column(Text, nullable=True)
+    item_status_at_exposure = Column(Text, nullable=True)
+    content_release_version = Column(Text, nullable=True)
     answered_at = Column(Text, nullable=True)
 
 

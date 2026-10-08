@@ -279,8 +279,11 @@ CREATE TABLE vocabulary_multiformat_sessions (
     status           TEXT NOT NULL DEFAULT 'in_progress' CHECK (status IN ('in_progress', 'completed')),
     started_at       TEXT NOT NULL,
     completed_at     TEXT,
-    metadata_json    TEXT   -- 관리자 레벨별 출제(v1) 선택 조건 스냅샷(선택 레벨/신뢰도/후보 수 등).
+    metadata_json    TEXT,  -- 관리자 레벨별 출제(v1) 선택 조건 스냅샷(선택 레벨/신뢰도/후보 수 등).
                             -- 기존 세션은 NULL - 결과 화면에서 "레벨 미지정"으로 표시.
+    student_cohort_id TEXT,  -- Closed Pilot cohort 식별자. NULL이면 미지정/내부 테스트.
+    is_internal_tester INTEGER NOT NULL DEFAULT 1, -- 내부 테스터 여부. 기본 1로 두어 학생 데이터와 섞지 않는다.
+    is_verified_student INTEGER NOT NULL DEFAULT 0 -- 실제 학생 검증 여부. 명시 승격 전 0.
 );
 
 CREATE INDEX idx_mf_sessions_user ON vocabulary_multiformat_sessions(user_id, status);
@@ -298,6 +301,13 @@ CREATE TABLE vocabulary_multiformat_responses (
     total_count                   INTEGER, -- 연결형(4)/십자말(활성 칸 수) 전용. 그 외 유형은 NULL
     attempt_count                 INTEGER NOT NULL DEFAULT 0,  -- 문맥빈칸 전용: 제출 시도 횟수(최대 2) - 그 외 유형은 0 또는 1
     hint_used                     INTEGER NOT NULL DEFAULT 0,  -- 문맥빈칸 전용: 초성 힌트를 본 적 있으면 1
+    sense_id                      TEXT,    -- 노출 당시 sense_id snapshot
+    service_level                 INTEGER, -- 노출 당시 운영 service_level snapshot
+    response_time_ms              INTEGER, -- 클라이언트 측 응답 시간(ms)
+    attempt_no                    INTEGER, -- 최종 저장된 제출 시도 번호
+    presented_at                  TEXT,    -- 문항이 학생에게 제시된 시각 snapshot
+    item_status_at_exposure       TEXT,    -- 노출 당시 문항 상태/source_version snapshot
+    content_release_version       TEXT,    -- 노출 당시 content/item release version snapshot
     answered_at                   TEXT,
     UNIQUE (session_id, item_id)
 );

@@ -765,6 +765,9 @@ class CreateSessionBody(BaseModel):
     grade5_l3_batch2_mode: bool = False  # True면 L3 중등 보강 2차(2026-10-07, 잔여
     # 40건 중 38어휘) 전용 경로 - grade5_l3_batch1_mode와 완전히 별개 필드라 1차
     # 동작에는 전혀 영향 없음. 둘 다 True면 422(다른 파일럿 모드와도 상호 배타적).
+    student_cohort_id: str | None = None
+    is_internal_tester: bool = True
+    is_verified_student: bool = False
 
 
 class AnswerBody(BaseModel):
@@ -773,10 +776,43 @@ class AnswerBody(BaseModel):
     answer_text: str | None = None
     answers: dict[str, str] | None = None
     cells: dict[str, str] | None = None
+    response_time_ms: int | None = None
 
 
 class HintBody(BaseModel):
     item_id: str
+
+
+def _session_evidence_kwargs(body: CreateSessionBody) -> dict:
+    """Closed Pilot evidence labels. Defaults keep non-student/internal traffic separated."""
+    return {
+        "student_cohort_id": body.student_cohort_id,
+        "is_internal_tester": 1 if body.is_internal_tester else 0,
+        "is_verified_student": 1 if body.is_verified_student else 0,
+    }
+
+
+def _first_json_value(raw: str | None) -> str | None:
+    if not raw:
+        return None
+    try:
+        values = json.loads(raw)
+    except Exception:
+        return None
+    if isinstance(values, list) and values:
+        return str(values[0])
+    return None
+
+
+def _response_evidence_kwargs(item: VocabularyMultiformatItem, service_level: int | None) -> dict:
+    """Snapshot item facts at exposure time so future content changes do not rewrite evidence."""
+    sense_id = item.sense_id or _first_json_value(item.sense_ids_json)
+    return {
+        "sense_id": sense_id,
+        "service_level": service_level,
+        "item_status_at_exposure": f"is_active={item.is_active};source_version={item.source_version}",
+        "content_release_version": item.source_version,
+    }
 
 
 # ==================== 문항 선택 ====================
@@ -1470,6 +1506,7 @@ def _create_pilot_session(body: CreateSessionBody, db: Session, admin: str) -> d
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
         metadata_json=json.dumps(metadata, ensure_ascii=False),
+        **_session_evidence_kwargs(body),
     )
     db.add(session)
     db.flush()  # session INSERT를 먼저 내보내지 않으면 responses의 session_id FK가 아직 없는
@@ -1479,6 +1516,7 @@ def _create_pilot_session(body: CreateSessionBody, db: Session, admin: str) -> d
         item = items_by_id[item_id]
         db.add(VocabularyMultiformatResponse(
             session_id=session_id, item_id=item_id, order_index=idx, item_type=item.item_type,
+            **_response_evidence_kwargs(item, None),
         ))
     db.commit()
 
@@ -1543,6 +1581,7 @@ def _create_l6_pilot_session(body: CreateSessionBody, db: Session, admin: str) -
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
         metadata_json=json.dumps(metadata, ensure_ascii=False),
+        **_session_evidence_kwargs(body),
     )
     db.add(session)
     db.flush()  # session INSERT를 먼저 내보내지 않으면 responses의 session_id FK가 아직 없는
@@ -1552,6 +1591,7 @@ def _create_l6_pilot_session(body: CreateSessionBody, db: Session, admin: str) -
         item = items_by_id[item_id]
         db.add(VocabularyMultiformatResponse(
             session_id=session_id, item_id=item_id, order_index=idx, item_type=item.item_type,
+            **_response_evidence_kwargs(item, None),
         ))
     db.commit()
 
@@ -1625,6 +1665,7 @@ def _create_existing_l0l3_preview_session(body: CreateSessionBody, db: Session, 
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
         metadata_json=json.dumps(metadata, ensure_ascii=False),
+        **_session_evidence_kwargs(body),
     )
     db.add(session)
     db.flush()
@@ -1632,6 +1673,7 @@ def _create_existing_l0l3_preview_session(body: CreateSessionBody, db: Session, 
         item = items_by_id[item_id]
         db.add(VocabularyMultiformatResponse(
             session_id=session_id, item_id=item_id, order_index=idx, item_type=item.item_type,
+            **_response_evidence_kwargs(item, None),
         ))
     db.commit()
 
@@ -1703,6 +1745,7 @@ def _create_l3_batch_session(body: CreateSessionBody, db: Session, admin: str, b
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
         metadata_json=json.dumps(metadata, ensure_ascii=False),
+        **_session_evidence_kwargs(body),
     )
     db.add(session)
     db.flush()
@@ -1710,6 +1753,7 @@ def _create_l3_batch_session(body: CreateSessionBody, db: Session, admin: str, b
         item = items_by_id[item_id]
         db.add(VocabularyMultiformatResponse(
             session_id=session_id, item_id=item_id, order_index=idx, item_type=item.item_type,
+            **_response_evidence_kwargs(item, None),
         ))
     db.commit()
 
@@ -1829,15 +1873,18 @@ def create_session(body: CreateSessionBody, response: Response, db: Session = De
         item_types_json=json.dumps(item_types, ensure_ascii=False) if item_types else None,
         question_count=len(item_ids), correct_count=0, status="in_progress", started_at=now,
         metadata_json=json.dumps(metadata, ensure_ascii=False) if metadata else None,
+        **_session_evidence_kwargs(body),
     )
     db.add(session)
     db.flush()  # session INSERT를 먼저 내보내지 않으면 responses의 session_id FK가 아직 없는
     # 행을 가리켜 FOREIGN KEY constraint failed가 남 (기존 quiz.py에서 실제로 재현된 패턴과 동일)
 
+    service_level = body.selected_vocab_level if body.selected_vocab_level is not None else None
     for idx, item_id in enumerate(item_ids, start=1):
         item = items_by_id[item_id]
         db.add(VocabularyMultiformatResponse(
             session_id=session_id, item_id=item_id, order_index=idx, item_type=item.item_type,
+            **_response_evidence_kwargs(item, service_level),
         ))
     db.commit()
 
@@ -1883,6 +1930,9 @@ def next_question(session_id: str, response: Response, db: Session = Depends(get
     item = db.query(VocabularyMultiformatItem).filter(
         VocabularyMultiformatItem.item_id == response.item_id
     ).first()
+    if response.presented_at is None:
+        response.presented_at = datetime.now(timezone.utc).isoformat()
+        db.commit()
 
     return {
         "done": False,
@@ -1950,6 +2000,11 @@ def submit_answer(session_id: str, body: AnswerBody, response: Response,
     result = _grade(item, body)
     resp_row.submitted_payload_json = json.dumps(result["submitted"], ensure_ascii=False)
     resp_row.attempt_count += 1
+    resp_row.attempt_no = resp_row.attempt_count
+    if body.response_time_ms is not None:
+        if body.response_time_ms < 0:
+            raise HTTPException(status_code=400, detail="response_time_ms는 0 이상이어야 합니다")
+        resp_row.response_time_ms = body.response_time_ms
 
     # 문맥빈칸은 최대 2회 시도 - 1차 시도가 틀리면 확정하지 않고(answered_at 유지 NULL)
     # 초성 힌트를 자동 공개한 뒤 재시도를 허용한다. 그 외 유형/2차 시도는 즉시 확정한다.
@@ -2250,7 +2305,7 @@ def play_page(request: Request, db: Session = Depends(get_vocabulary_quiz_db), a
             "상태입니다 - 서버 로그의 [grade5-l3-batch2] 태그를 확인하거나 개발 담당자에게 문의하세요."
         )
 
-    return templates.TemplateResponse("vocabulary_quiz/multiformat_play.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/multiformat_play.html", {
         "request": request, "item_types": ITEM_TYPES, "default_question_count": DEFAULT_QUESTION_COUNT,
         "level_grade_labels": GRADE_LABELS, "level_disabled": set(level_disabled),
         "pilot_available": pilot_available, "pilot_unavailable_reason": pilot_unavailable_reason,
