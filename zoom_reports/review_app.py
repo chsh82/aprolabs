@@ -309,7 +309,7 @@ def index(request: Request, tab: str = "pending", instructor_q: str = "", class_
             context["search_total"] = total
             context["page"] = min(page, total_pages)
             context["total_pages"] = total_pages
-        return templates.TemplateResponse("review.html", context)
+        return templates.TemplateResponse(request, "review.html", context)
     finally:
         conn.close()
 

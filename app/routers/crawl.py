@@ -50,7 +50,7 @@ def crawl_page(request: Request):
     import datetime
     current_year = datetime.datetime.now().year
     years = list(range(current_year + 1, 2009, -1))
-    return templates.TemplateResponse("crawl/index.html", {
+    return templates.TemplateResponse(request, "crawl/index.html", {
         "request": request,
         "years": years,
     })

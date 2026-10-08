@@ -232,7 +232,7 @@ def _parse_with_gemini(pdf_path: str) -> list[dict]:
 def answer_keys_list(request: Request, db: Session = Depends(get_db)):
     keys = db.query(AnswerKey).order_by(AnswerKey.created_at.desc()).all()
     ctx = _base_ctx(db, request=request, answer_keys=keys)
-    return templates.TemplateResponse("suneung/answer_keys.html", ctx)
+    return templates.TemplateResponse(request, "suneung/answer_keys.html", ctx)
 
 
 # ─────────────────────────────────────────
@@ -314,7 +314,7 @@ def answer_key_detail(key_id: str, request: Request, db: Session = Depends(get_d
         raise HTTPException(status_code=404, detail="Not found")
     pdf_url = ("/" + key.file_path.replace("\\", "/")) if key.file_path else None
     ctx = _base_ctx(db, request=request, key=key, pdf_url=pdf_url)
-    return templates.TemplateResponse("suneung/answer_key_detail.html", ctx)
+    return templates.TemplateResponse(request, "suneung/answer_key_detail.html", ctx)
 
 
 @router.post("/answer-keys/{key_id}/reparse")

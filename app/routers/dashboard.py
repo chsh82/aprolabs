@@ -77,4 +77,4 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
         daily_rows=daily_rows,
         recent=recent,
     )
-    return templates.TemplateResponse("dashboard.html", ctx)
+    return templates.TemplateResponse(request, "dashboard.html", ctx)

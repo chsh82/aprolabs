@@ -72,7 +72,7 @@ def index(request: Request, db: Session = Depends(get_db),
         total=len(questions),
         page_title=page_title,
     )
-    return templates.TemplateResponse("index.html", ctx)
+    return templates.TemplateResponse(request, "index.html", ctx)
 
 
 @router.get("/questions/{question_id}", response_class=HTMLResponse)
@@ -81,7 +81,7 @@ def detail(request: Request, question_id: str, db: Session = Depends(get_db)):
     if not q:
         raise HTTPException(status_code=404)
     ctx = _base_ctx(db, request=request, q=q)
-    return templates.TemplateResponse("detail.html", ctx)
+    return templates.TemplateResponse(request, "detail.html", ctx)
 
 
 @router.post("/questions/{question_id}/edit")

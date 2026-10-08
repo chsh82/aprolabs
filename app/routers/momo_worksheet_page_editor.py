@@ -53,7 +53,7 @@ def _render(request, project_id, page_id=None, error=None):
     try:
         manifest = pgs.freeze_manifest(project_id)
     except pgs.PageEditError as e:
-        return templates.TemplateResponse("momo_worksheet_editor/pages_error.html", {
+        return templates.TemplateResponse(request, "momo_worksheet_editor/pages_error.html", {
             "request": request, "project_id": project_id, "meta": meta, "error": str(e),
         })
 
@@ -77,7 +77,7 @@ def _render(request, project_id, page_id=None, error=None):
             f"{active_proposal['proposal_id']}/preview/index.html"
         )
 
-    return templates.TemplateResponse("momo_worksheet_editor/pages.html", {
+    return templates.TemplateResponse(request, "momo_worksheet_editor/pages.html", {
         "request": request, "project_id": project_id, "meta": meta, "manifest": manifest,
         "thumbs": thumbs, "selected_id": selected_id, "selected_thumb": selected_thumb, "page": page, "items": items,
         "active_proposal": active_proposal, "current_preview_url": current_preview_url,
@@ -98,7 +98,7 @@ def pages_history(request: Request, project_id: str):
     except (ps.ProjectError, pgs.PageEditError) as e:
         raise HTTPException(status_code=404, detail=str(e))
     history = pgs.list_history(project_id)
-    return templates.TemplateResponse("momo_worksheet_editor/pages_history.html", {
+    return templates.TemplateResponse(request, "momo_worksheet_editor/pages_history.html", {
         "request": request, "project_id": project_id, "meta": meta,
         "manifest": manifest, "history": history,
     })
@@ -112,7 +112,7 @@ def pages_restore(request: Request, project_id: str, revision_id: str = Form(...
         history = pgs.list_history(project_id)
         meta = ps.load_project(project_id)
         manifest = pgs.load_manifest(project_id)
-        return templates.TemplateResponse("momo_worksheet_editor/pages_history.html", {
+        return templates.TemplateResponse(request, "momo_worksheet_editor/pages_history.html", {
             "request": request, "project_id": project_id, "meta": meta,
             "manifest": manifest, "history": history, "error": str(e),
         })

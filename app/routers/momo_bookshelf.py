@@ -248,7 +248,7 @@ def bookshelf_list(
     years = [r[0] for r in db.query(distinct(MomoBookshelfWeek.year)).order_by(MomoBookshelfWeek.year.desc()).all()]
     quarters = sorted(r[0] for r in db.query(distinct(MomoBookshelfWeek.quarter)).all())
 
-    return templates.TemplateResponse("momo_bookshelf/list.html", {
+    return templates.TemplateResponse(request, "momo_bookshelf/list.html", {
         "request": request,
         "weeks": weeks,
         "years": years,
@@ -264,7 +264,7 @@ def bookshelf_list(
 
 @router.get("/upload", response_class=HTMLResponse)
 def bookshelf_upload_page(request: Request):
-    return templates.TemplateResponse("momo_bookshelf/upload.html", {
+    return templates.TemplateResponse(request, "momo_bookshelf/upload.html", {
         "request": request,
         "default_year": datetime.now().year,
     })
@@ -345,7 +345,7 @@ def required_books_list(
 
     grade_quarter_table, matrix_quarters, col_totals, grand_total = _grade_quarter_matrix(db, year_val)
 
-    return templates.TemplateResponse("momo_bookshelf/required.html", {
+    return templates.TemplateResponse(request, "momo_bookshelf/required.html", {
         "request": request,
         "books": books,
         "years": years,

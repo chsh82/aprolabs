@@ -271,7 +271,7 @@ def isbn_page(
     # 연결 모드일 때만 "N주차_교사용" 같은 수업 메타데이터를 제거 (직접 입력한 검색어는 그대로 둠)
     prefill_title = _clean_material_title_for_search(raw_title) if link_target else raw_title
 
-    return templates.TemplateResponse("isbn/index.html", {
+    return templates.TemplateResponse(request, "isbn/index.html", {
         "request": request,
         "material": material,
         "required_book": required_book,
@@ -388,7 +388,7 @@ async def isbn_save_required_book(request: Request, db: Session = Depends(get_db
 def isbn_list_page(request: Request, db: Session = Depends(get_db)):
     """독서 리스트(체크해서 모아둔 도서) 목록"""
     books = db.query(ReadingListBook).order_by(ReadingListBook.created_at.desc()).all()
-    return templates.TemplateResponse("isbn/list.html", {"request": request, "books": books})
+    return templates.TemplateResponse(request, "isbn/list.html", {"request": request, "books": books})
 
 
 @router.post("/list/add")

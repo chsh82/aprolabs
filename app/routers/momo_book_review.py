@@ -139,7 +139,7 @@ def momo_review_list(request: Request, level: str = "", quarter: str = "", week:
             low_conf_counts[row["doc_id"]] = low_conf_counts.get(row["doc_id"], 0) + row["c"]
     conn.close()
 
-    return templates.TemplateResponse("momo_review/list.html", {
+    return templates.TemplateResponse(request, "momo_review/list.html", {
         "request": request,
         "docs": docs,
         "pending_counts": pending_counts,
@@ -197,7 +197,7 @@ def momo_review_detail(request: Request, doc_id: str, back: str = ""):
         images_by_page.setdefault(im["source_page"], []).append(im)
     image_by_path = {im["file_path"]: im for im in images}
 
-    return templates.TemplateResponse("momo_review/detail.html", {
+    return templates.TemplateResponse(request, "momo_review/detail.html", {
         "request": request,
         "doc": doc,
         "vocabulary": vocabulary,

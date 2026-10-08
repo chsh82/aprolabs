@@ -69,7 +69,7 @@ def play_start(request: Request, db: Session = Depends(get_vocabulary_quiz_db),
         .order_by(VocabularyQuizSession.started_at.desc())
         .first()
     )
-    return templates.TemplateResponse("vocabulary_quiz/play.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/play.html", {
         "request": request, "question_count": QUESTION_COUNT, "source_version": SOURCE_VERSION,
         "in_progress": in_progress,
     }, headers=NOINDEX_HEADERS)
@@ -134,7 +134,7 @@ def session_question(request: Request, session_id: str, db: Session = Depends(ge
     item = db.query(VocabularyItem).filter(VocabularyItem.item_id == attempt.item_id).first()
     content = db.query(VocabularyContent).filter(VocabularyContent.content_id == item.content_id).first()
 
-    return templates.TemplateResponse("vocabulary_quiz/session_question.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/session_question.html", {
         "request": request, "session": session, "attempt": attempt, "item": item, "content": content,
     }, headers=NOINDEX_HEADERS)
 
@@ -193,7 +193,7 @@ def session_answer(
     item = db.query(VocabularyItem).filter(VocabularyItem.item_id == item_id).first()
     content = db.query(VocabularyContent).filter(VocabularyContent.content_id == item.content_id).first()
 
-    return templates.TemplateResponse("vocabulary_quiz/session_feedback.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/session_feedback.html", {
         "request": request, "session": session, "attempt": attempt, "item": item, "content": content,
         "is_last": is_last,
     }, headers=NOINDEX_HEADERS)
@@ -224,7 +224,7 @@ def session_result(request: Request, session_id: str, db: Session = Depends(get_
     correct = session.correct_count
     accuracy = round(correct / total * 100, 1) if total else 0.0
 
-    return templates.TemplateResponse("vocabulary_quiz/session_result.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/session_result.html", {
         "request": request, "session": session, "total": total, "correct": correct,
         "wrong_count": len(wrong), "accuracy": accuracy, "wrong_details": wrong_details,
     }, headers=NOINDEX_HEADERS)

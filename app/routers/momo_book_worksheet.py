@@ -103,7 +103,7 @@ def momo_worksheet_list(request: Request):
         current = _current_build(d["doc_id"])
         rows.append({**dict(d), "built_at": current["promoted_at"] if current else None})
 
-    return templates.TemplateResponse("momo_worksheet/list.html", {
+    return templates.TemplateResponse(request, "momo_worksheet/list.html", {
         "request": request, "docs": rows,
     })
 
@@ -121,7 +121,7 @@ def momo_worksheet_detail(request: Request, doc_id: str):
 
     latest_log = _latest_build_log(doc_id)
 
-    return templates.TemplateResponse("momo_worksheet/detail.html", {
+    return templates.TemplateResponse(request, "momo_worksheet/detail.html", {
         "request": request, "doc": doc, "exists": exists,
         "built_at": current["promoted_at"] if exists else None,
         "preview_url": preview_url, "log": latest_log["text"] if latest_log else "",

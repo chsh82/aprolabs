@@ -68,13 +68,13 @@ def list_materials(
         filter_quarter=quarter, filter_grade=grade, filter_family=family,
         filter_status=status, filter_q=q, total=len(materials),
     )
-    return templates.TemplateResponse("reading_essay/list.html", ctx)
+    return templates.TemplateResponse(request, "reading_essay/list.html", ctx)
 
 
 @router.get("/scan", response_class=HTMLResponse)
 def scan_page(request: Request, db: Session = Depends(get_db)):
     ctx = _base_ctx(db, request=request)
-    return templates.TemplateResponse("reading_essay/scan.html", ctx)
+    return templates.TemplateResponse(request, "reading_essay/scan.html", ctx)
 
 
 @router.post("/scan")
@@ -93,7 +93,7 @@ def run_scan(
         limit=int(limit) if limit.isdigit() else None,
     )
     ctx = _base_ctx(db, request=request, result=result)
-    return templates.TemplateResponse("reading_essay/scan.html", ctx)
+    return templates.TemplateResponse(request, "reading_essay/scan.html", ctx)
 
 
 @router.post("/scan/upload")
@@ -157,7 +157,7 @@ def search_page(
         filter_q=q, filter_quarter=quarter, filter_grade=grade, filter_family=family,
         filter_types=content_types or {'vocab', 'ox', 'discussion', 'writing'},
     )
-    return templates.TemplateResponse("reading_essay/search.html", ctx)
+    return templates.TemplateResponse(request, "reading_essay/search.html", ctx)
 
 
 @router.get("/quality", response_class=HTMLResponse)
@@ -171,7 +171,7 @@ def quality_page(
         db, request=request, stats=stats, flagged=flagged,
         filter_family=family, filter_issue=issue,
     )
-    return templates.TemplateResponse("reading_essay/quality.html", ctx)
+    return templates.TemplateResponse(request, "reading_essay/quality.html", ctx)
 
 
 @router.get("/{material_id}", response_class=HTMLResponse)
@@ -180,7 +180,7 @@ def detail(material_id: str, request: Request, db: Session = Depends(get_db)):
     if not material:
         raise HTTPException(status_code=404)
     ctx = _base_ctx(db, request=request, material=material)
-    return templates.TemplateResponse("reading_essay/detail.html", ctx)
+    return templates.TemplateResponse(request, "reading_essay/detail.html", ctx)
 
 
 @router.post("/{material_id}/reextract")

@@ -42,7 +42,7 @@ def review_hub(request: Request, version: str = "2.1.29", db: Session = Depends(
     total = sum(counts.values())
     versions = [row[0] for row in db.query(VocabularyReviewSample.sample_version).distinct().all()]
 
-    return templates.TemplateResponse("vocabulary_quiz/review_hub.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/review_hub.html", {
         "request": request, "version": version, "versions": versions,
         "counts": counts, "total": total,
     }, headers=_NOINDEX_HEADERS)
@@ -79,7 +79,7 @@ def review_card(
     total = _card_query(db, version, status).count()
 
     if sample is None:
-        return templates.TemplateResponse("vocabulary_quiz/review_card.html", {
+        return templates.TemplateResponse(request, "vocabulary_quiz/review_card.html", {
             "request": request, "sample": None, "version": version, "status": status,
             "done": done, "total": total,
         }, headers=_NOINDEX_HEADERS)
@@ -94,7 +94,7 @@ def review_card(
     content = db.query(VocabularyContent).filter(VocabularyContent.content_id == sample.content_id).first()
     item = db.query(VocabularyItem).filter(VocabularyItem.item_id == sample.item_id).first()
 
-    return templates.TemplateResponse("vocabulary_quiz/review_card.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/review_card.html", {
         "request": request, "sample": sample, "content": content, "item": item,
         "version": version, "status": status,
         "prev_id": prev_id.id if prev_id else None, "next_id": next_id.id if next_id else None,

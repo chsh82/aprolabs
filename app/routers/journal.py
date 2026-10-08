@@ -28,7 +28,7 @@ def journal_index(request: Request, entry_type: str = "", db: Session = Depends(
     counts = {t: db.query(JournalEntry).filter(JournalEntry.entry_type == t).count() for t in ENTRY_TYPES}
     counts["전체"] = db.query(JournalEntry).count()
 
-    return templates.TemplateResponse("journal/index.html", {
+    return templates.TemplateResponse(request, "journal/index.html", {
         "request": request,
         "entries": entries,
         "entry_types": ENTRY_TYPES,
@@ -58,7 +58,7 @@ def journal_detail(request: Request, entry_id: str, db: Session = Depends(get_db
     entry = db.query(JournalEntry).filter(JournalEntry.id == entry_id).first()
     if not entry:
         raise HTTPException(status_code=404, detail="글을 찾을 수 없습니다.")
-    return templates.TemplateResponse("journal/detail.html", {
+    return templates.TemplateResponse(request, "journal/detail.html", {
         "request": request,
         "entry": entry,
         "entry_types": ENTRY_TYPES,

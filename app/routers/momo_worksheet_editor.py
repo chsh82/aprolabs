@@ -57,7 +57,7 @@ def editor_list(request: Request):
         docs = conn.execute(
             "SELECT doc_id, book_title FROM documents WHERE review_status='approved' ORDER BY doc_id"
         ).fetchall()
-    return templates.TemplateResponse("momo_worksheet_editor/list.html", {
+    return templates.TemplateResponse(request, "momo_worksheet_editor/list.html", {
         "request": request, "projects": projects, "docs": [dict(d) for d in docs],
     })
 
@@ -240,7 +240,7 @@ def editor_detail(request: Request, project_id: str, item_id: str = ""):
         if os.path.isfile(idx_path):
             preview_url = f"/momo-worksheet-editor/{project_id}/preview/{preview_version}/index.html"
 
-    return templates.TemplateResponse("momo_worksheet_editor/detail.html", {
+    return templates.TemplateResponse(request, "momo_worksheet_editor/detail.html", {
         "request": request, "meta": meta, "items": items, "selected": selected,
         "versions": versions, "assets": assets, "qa_status": qa_status, "preview_url": preview_url,
         "preview_version": preview_version, "showing_previous": showing_previous,
@@ -358,7 +358,7 @@ async def editor_import(request: Request, zip_file: UploadFile = File(...)):
     except ps.ProjectError as e:
         # 손상되거나 자산이 빠진 프로젝트 - 오류만 보여주고 기존 프로젝트들은 전혀 안 건드림
         # (import_project 자체가 임시 폴더에서 작업하다 실패하면 그 임시 폴더만 지움).
-        return templates.TemplateResponse("momo_worksheet_editor/import_error.html", {
+        return templates.TemplateResponse(request, "momo_worksheet_editor/import_error.html", {
             "request": request, "error": str(e),
         }, status_code=400)
     finally:

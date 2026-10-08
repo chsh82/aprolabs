@@ -19,7 +19,7 @@ def login_page(request: Request, next: str = "/"):
     # 이미 로그인된 경우 바로 이동
     if get_current_user_id(request):
         return RedirectResponse(next, status_code=302)
-    return templates.TemplateResponse("login.html",
+    return templates.TemplateResponse(request, "login.html",
                                       {"request": request, "next": next, "error": None})
 
 
@@ -34,7 +34,7 @@ def login_submit(
 ):
     user = db.query(User).filter(User.email == email).first()
     if not user or not verify_password(password, user.hashed_pw):
-        return templates.TemplateResponse("login.html", {
+        return templates.TemplateResponse(request, "login.html", {
             "request": request,
             "next": next,
             "error": "이메일 또는 비밀번호가 올바르지 않습니다.",

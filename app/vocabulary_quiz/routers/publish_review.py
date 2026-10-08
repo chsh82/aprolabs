@@ -59,7 +59,7 @@ def publish_review_index(
         })
     rows.sort(key=lambda r: ((r["vocab_level"] or 99), r["content"].lemma))
 
-    return templates.TemplateResponse("vocabulary_quiz/publish_review_index.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/publish_review_index.html", {
         "request": request, "rows": rows, "verdict_labels": VERDICT_LABELS,
     }, headers=NOINDEX_HEADERS)
 
@@ -87,7 +87,7 @@ def publish_review_detail(
     latest = history[0] if history else None
     stale = pr.review_is_stale(db, latest, content) if latest else None
 
-    return templates.TemplateResponse("vocabulary_quiz/publish_review_detail.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/publish_review_detail.html", {
         "request": request, "content": content, "level": level,
         "items_with_options": items_with_options, "cautions": cautions,
         "history": history, "latest": latest, "stale": stale,

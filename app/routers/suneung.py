@@ -237,7 +237,7 @@ def _base_ctx(db: Session, **kwargs):
 @router.get("/upload", response_class=HTMLResponse)
 def upload_page(request: Request, db: Session = Depends(get_db)):
     ctx = _base_ctx(db, request=request)
-    return templates.TemplateResponse("suneung/upload.html", ctx)
+    return templates.TemplateResponse(request, "suneung/upload.html", ctx)
 
 
 @router.post("/upload")
@@ -606,14 +606,14 @@ def db_list(
         years=years, exam_types=exam_types,
         page_size=PAGE_SIZE,
     )
-    return templates.TemplateResponse("suneung/db.html", ctx)
+    return templates.TemplateResponse(request, "suneung/db.html", ctx)
 
 
 @router.get("/jobs", response_class=HTMLResponse)
 def jobs_list(request: Request, db: Session = Depends(get_db)):
     jobs = db.query(PipelineJob).order_by(PipelineJob.created_at.desc()).all()
     ctx = _base_ctx(db, request=request, jobs=jobs)
-    return templates.TemplateResponse("suneung/jobs.html", ctx)
+    return templates.TemplateResponse(request, "suneung/jobs.html", ctx)
 
 
 @router.get("/jobs/status/{job_id}")
@@ -797,7 +797,7 @@ def answers_list(request: Request, db: Session = Depends(get_db)):
         })
 
     ctx = _base_ctx(db, request=request, exams=exams)
-    return templates.TemplateResponse("suneung/answers.html", ctx)
+    return templates.TemplateResponse(request, "suneung/answers.html", ctx)
 
 
 @router.post("/answers/upload")
@@ -867,7 +867,7 @@ def answer_detail(paper_code: str, request: Request, db: Session = Depends(get_d
         db_questions=db_questions,
         matched=matched,
     )
-    return templates.TemplateResponse("suneung/answer_detail.html", ctx)
+    return templates.TemplateResponse(request, "suneung/answer_detail.html", ctx)
 
 
 @router.get("/review/{job_id}/pages")
@@ -1188,7 +1188,7 @@ def warnings_list(request: Request, db: Session = Depends(get_db)):
         ai_counts=ai_counts,
         total=len(all_warnings),
     )
-    return templates.TemplateResponse("suneung/warnings.html", ctx)
+    return templates.TemplateResponse(request, "suneung/warnings.html", ctx)
 
 
 @router.post("/review/{job_id}/warning-judgment")
@@ -1227,7 +1227,7 @@ def review(request: Request, job_id: str, db: Session = Depends(get_db)):
     if not job:
         return RedirectResponse("/suneung/jobs")
     ctx = _base_ctx(db, request=request, job=job)
-    return templates.TemplateResponse("suneung/review.html", ctx)
+    return templates.TemplateResponse(request, "suneung/review.html", ctx)
 
 
 @router.post("/review/{job_id}/save")

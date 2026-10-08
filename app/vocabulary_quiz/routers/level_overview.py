@@ -40,7 +40,7 @@ def index(
         q=q.strip(), page=page,
     )
 
-    return templates.TemplateResponse("vocabulary_quiz/level_overview_index.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/level_overview_index.html", {
         "request": request, "result": result,
         "category_labels": lo.CATEGORY_LABELS, "grade_labels": lo.GRADE_LABELS,
         "judgment_choices": JUDGMENT_CHOICES,

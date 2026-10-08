@@ -112,7 +112,7 @@ def review_hub(request: Request, db: Session = Depends(get_literacy_db)):
         review_status_counts=review_status_counts,
         recent=recent,
     )
-    return templates.TemplateResponse("literacy/review_hub.html", ctx)
+    return templates.TemplateResponse(request, "literacy/review_hub.html", ctx)
 
 
 # ── 화면① 문항 검수 ──
@@ -176,7 +176,7 @@ def review_quiz(
         level=level, source=source, category=category,
         reject_reasons=REJECT_REASONS,
     )
-    return templates.TemplateResponse("literacy/review_quiz.html", ctx)
+    return templates.TemplateResponse(request, "literacy/review_quiz.html", ctx)
 
 
 @router.post("/review/quiz/save")
@@ -220,7 +220,7 @@ def review_quiz_stats(request: Request, db: Session = Depends(get_literacy_db)):
         .all()
     )
     ctx = _base_ctx(request, status_counts=status_counts, reason_counts=reason_counts)
-    return templates.TemplateResponse("literacy/review_quiz_stats.html", ctx)
+    return templates.TemplateResponse(request, "literacy/review_quiz_stats.html", ctx)
 
 
 # ── 화면② 뜻풀이 작성 ──
@@ -289,7 +289,7 @@ def review_definition(
         next_id=next_term.id if next_term else None,
         total=total, done=done, level=level, source=source,
     )
-    return templates.TemplateResponse("literacy/review_definition.html", ctx)
+    return templates.TemplateResponse(request, "literacy/review_definition.html", ctx)
 
 
 @router.post("/review/definition/save")
@@ -377,7 +377,7 @@ def review_level(
         next_id=next_term.id if next_term else None,
         total=total, done=done, category=category,
     )
-    return templates.TemplateResponse("literacy/review_level.html", ctx)
+    return templates.TemplateResponse(request, "literacy/review_level.html", ctx)
 
 
 @router.post("/review/level/save")
@@ -436,7 +436,7 @@ def review_level_results(
         total_pages=max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE),
         category=category, level=level,
     )
-    return templates.TemplateResponse("literacy/results_level.html", ctx)
+    return templates.TemplateResponse(request, "literacy/results_level.html", ctx)
 
 
 @router.get("/review/definition/results")
@@ -463,7 +463,7 @@ def review_definition_results(
         total_pages=max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE),
         level=level, source=source,
     )
-    return templates.TemplateResponse("literacy/results_definition.html", ctx)
+    return templates.TemplateResponse(request, "literacy/results_definition.html", ctx)
 
 
 @router.get("/review/quiz/results")
@@ -492,7 +492,7 @@ def review_quiz_results(
         review_status=review_status, reject_reason=reject_reason,
         reject_reasons=REJECT_REASONS,
     )
-    return templates.TemplateResponse("literacy/results_quiz.html", ctx)
+    return templates.TemplateResponse(request, "literacy/results_quiz.html", ctx)
 
 
 # ── 전체 조회 - terms 7,087건 전체를 카테고리(어휘/속담/관용구) 무관하게
@@ -531,4 +531,4 @@ def terms_browse(
         category=category, level=level, source=source, q=q,
         category_counts=category_counts, source_counts=source_counts,
     )
-    return templates.TemplateResponse("literacy/terms_browse.html", ctx)
+    return templates.TemplateResponse(request, "literacy/terms_browse.html", ctx)

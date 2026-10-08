@@ -45,7 +45,7 @@ def upload_page(request: Request, db: Session = Depends(get_db),
     ctx = _base_ctx(db, request=request,
                     preset_category=preset_category,
                     preset_subcategory=preset_subcategory)
-    return templates.TemplateResponse("upload.html", ctx)
+    return templates.TemplateResponse(request, "upload.html", ctx)
 
 
 @router.post("/upload")
@@ -76,7 +76,7 @@ async def upload(
                         error="이미지 또는 텍스트를 입력해주세요.",
                         preset_category=category,
                         preset_subcategory=subcategory)
-        return templates.TemplateResponse("upload.html", ctx)
+        return templates.TemplateResponse(request, "upload.html", ctx)
 
     classification = await classify_question(content, category)
 

@@ -124,7 +124,7 @@ def index(
     else:
         visible_rows = rows
 
-    return templates.TemplateResponse("vocabulary_quiz/grade5_l3_batch1_review_index.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/grade5_l3_batch1_review_index.html", {
         "request": request, "rows": visible_rows, "verdict_labels": VERDICT_LABELS,
         "total": len(rows), "judged": judged,
         "held_count": held_count, "stale_count": stale_count, "approved_count": approved_count,
@@ -164,7 +164,7 @@ def detail(
     latest = history[0] if history else None
     stale = br.review_is_stale(db, cfg, latest, content) if latest else None
 
-    return templates.TemplateResponse("vocabulary_quiz/grade5_l3_batch1_review_detail.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/grade5_l3_batch1_review_detail.html", {
         "request": request, "content": content, "current_batch": cfg,
         "items_with_options": items_with_options,
         "old_items_with_options": old_items_with_options,

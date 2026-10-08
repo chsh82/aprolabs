@@ -59,7 +59,7 @@ def index(
             "diff_reason": ogr.diff_reason(ref),
         })
 
-    return templates.TemplateResponse("vocabulary_quiz/official_grade_review_index.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/official_grade_review_index.html", {
         "request": request, "rows": rows,
     }, headers=NOINDEX_HEADERS)
 
@@ -87,7 +87,7 @@ def detail(
     latest = history[0] if history else None
     stale = ogr.judgment_is_stale(latest, ref) if latest else None
 
-    return templates.TemplateResponse("vocabulary_quiz/official_grade_review_detail.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/official_grade_review_detail.html", {
         "request": request, "content": content, "ref": ref, "level": level,
         "short_example": ogr.short_example(content), "diff_reason": ogr.diff_reason(ref),
         "history": history, "latest": latest, "stale": stale,

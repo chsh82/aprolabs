@@ -153,7 +153,7 @@ def zoom_summaries_list(
 
     classes = conn.execute("SELECT class_code, name FROM class ORDER BY class_code").fetchall()
 
-    return templates.TemplateResponse("zoom_summaries/index.html", {
+    return templates.TemplateResponse(request, "zoom_summaries/index.html", {
         "request": request,
         "meetings": page_meetings,
         "meetings_total": total,
@@ -279,7 +279,7 @@ def zoom_summaries_stats(
         "reports": reports_by_week.get(row["yw"], 0),
     } for row in meetings_by_week]
 
-    return templates.TemplateResponse("zoom_summaries/stats.html", {
+    return templates.TemplateResponse(request, "zoom_summaries/stats.html", {
         "request": request,
         "instructor_stats": instructor_stats,
         "totals": totals,
@@ -345,7 +345,7 @@ def zoom_summary_detail(
     for r in reports:
         status_counts[r["status"]] = status_counts.get(r["status"], 0) + 1
 
-    return templates.TemplateResponse("zoom_summaries/detail.html", {
+    return templates.TemplateResponse(request, "zoom_summaries/detail.html", {
         "request": request,
         "class_meeting": dict(class_meeting),
         "segments": segments,
@@ -390,7 +390,7 @@ def report_detail(
             (report_id,),
         ).fetchall()
 
-    return templates.TemplateResponse("zoom_summaries/report_detail.html", {
+    return templates.TemplateResponse(request, "zoom_summaries/report_detail.html", {
         "request": request,
         "report": dict(row),
         "class_meeting_id": class_meeting_id,

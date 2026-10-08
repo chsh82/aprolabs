@@ -54,7 +54,7 @@ def index(
             j = latest_map.get(r.candidate_id)
             stale = g5r.judgment_is_stale(j, r) if j is not None else None
             rows.append({"row": r, "judgment": j, "stale": stale})
-        return templates.TemplateResponse("vocabulary_quiz/grade5_candidate_review_index.html", {
+        return templates.TemplateResponse(request, "vocabulary_quiz/grade5_candidate_review_index.html", {
             "request": request, "rows": rows, "stats": None, "filter": filter,
             "judgment_labels": JUDGMENT_LABELS, "batch_no": batch,
             "available_batches": g5r.available_batch_numbers(db),
@@ -77,7 +77,7 @@ def index(
         stale = g5r.judgment_is_stale(j, r) if j is not None else None
         rows.append({"row": r, "judgment": j, "stale": stale})
 
-    return templates.TemplateResponse("vocabulary_quiz/grade5_candidate_review_index.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/grade5_candidate_review_index.html", {
         "request": request, "rows": rows, "stats": stats, "filter": filter,
         "judgment_labels": JUDGMENT_LABELS, "batch_no": batch_no,
         "available_batches": available_batches,
@@ -113,7 +113,7 @@ def detail(
     stale = g5r.judgment_is_stale(latest, row) if latest else None
     token = g5r.new_submission_token()
 
-    return templates.TemplateResponse("vocabulary_quiz/grade5_candidate_review_detail.html", {
+    return templates.TemplateResponse(request, "vocabulary_quiz/grade5_candidate_review_detail.html", {
         "request": request, "row": row, "history": history, "latest": latest, "stale": stale,
         "judgment_choices": JUDGMENT_CHOICES, "judgment_labels": JUDGMENT_LABELS,
         "prev_id": prev_id, "next_id": next_id, "submission_token": token,
