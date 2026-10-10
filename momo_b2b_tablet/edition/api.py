@@ -22,6 +22,8 @@
 """
 from __future__ import annotations
 
+import base64
+import binascii
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -152,6 +154,10 @@ class GenerateImagesRequest(BaseModel):
     ratio: str = "1:1"
     count: int = 3
     editor: str | None = None
+    # 2026-10-10 사용자 지시 - 생성 시 검수자가 올린 레퍼런스 이미지를 함께
+    # 참고하게 해달라는 요청. data URL("data:image/png;base64,...") 또는
+    # 순수 base64 문자열 모두 받는다.
+    reference_images: list[str] | None = None
 
 
 class ChooseImageRequest(BaseModel):
@@ -322,6 +328,13 @@ def edition_freeform_apply(edition_id: int, req: FreeformApplyRequest,
             "status": new_row["status"], "layout": json.loads(new_row["layout_json"])}
 
 
+def _decode_data_url(value: str) -> bytes:
+    """"data:image/png;base64,...." 또는 순수 base64 문자열 모두 받는다."""
+    if value.startswith("data:"):
+        _, _, value = value.partition(",")
+    return base64.b64decode(value, validate=True)
+
+
 @review_router.get("/api/editions/{edition_id}/pages/{page_idx}/image-candidates")
 def list_image_candidates(edition_id: int, page_idx: int):
     """2026-09-28 [3] - 화면을 다시 열었을 때 이전에 만든 후보들을 보여준다."""
@@ -342,8 +355,16 @@ async def generate_images(edition_id: int, page_idx: int, req: GenerateImagesReq
         raise HTTPException(400, "count는 1~3")
     if req.ratio not in image_gen.RATIO_TO_WH:
         raise HTTPException(400, f"지원하지 않는 ratio: {req.ratio}")
+    reference_images = None
+    if req.reference_images:
+        try:
+            reference_images = [_decode_data_url(s) for s in req.reference_images]
+        except (ValueError, binascii.Error) as e:
+            raise HTTPException(400, f"레퍼런스 이미지 디코딩 실패: {e}") from e
     try:
-        results = await image_gen.generate_candidates(req.scene, req.avoid, row["quarter"], req.ratio, req.count)
+        results = await image_gen.generate_candidates(
+            req.scene, req.avoid, row["quarter"], req.ratio, req.count, reference_images=reference_images,
+        )
     except ValueError as e:
         raise HTTPException(400, str(e)) from e
     except RuntimeError as e:

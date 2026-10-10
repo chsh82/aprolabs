@@ -1320,6 +1320,37 @@ async function renderImageGen(host, pageIdx, slotPath, sceneInput, avoidInput) {
     dimsHost.textContent = "슬롯 크기를 측정할 수 없습니다(1:1로 생성).";
   }
 
+  // 2026-10-10 사용자 지시 - 생성할 때 검수자가 가진 이미지를 레퍼런스로
+  // 같이 넣을 수 있어야 한다는 요청. 선택하면 OpenAI edit 엔드포인트로
+  // 그 이미지(들)를 참고해 생성한다(image_gen.generate_candidates 참고) -
+  // 선택 안 하면 지금까지와 동일하게 텍스트만으로 생성한다.
+  let referenceFiles = [];
+  const refInput = el("input", { type: "file", accept: "image/jpeg,image/png,image/webp", multiple: true });
+  const refStatus = el("span", { class: "hint" }, "");
+  const refClearBtn = el("button", { class: "btn btn--small", hidden: true }, "레퍼런스 지우기");
+  host.append(field("레퍼런스 이미지(선택, 최대 4장)", refInput, el("div", {}, [refStatus, refClearBtn])));
+  const renderRefStatus = () => {
+    refStatus.textContent = referenceFiles.length
+      ? `선택됨: ${referenceFiles.map(f => f.name).join(", ")}`
+      : "";
+    refClearBtn.hidden = referenceFiles.length === 0;
+  };
+  refInput.onchange = () => {
+    referenceFiles = Array.from(refInput.files || []);
+    renderRefStatus();
+  };
+  refClearBtn.onclick = () => {
+    referenceFiles = [];
+    refInput.value = "";
+    renderRefStatus();
+  };
+  const readAsDataURL = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+
   const countSel = el("select", {}, [new Option("2장", "2"), new Option("3장", "3", true, true)]);
   const genBtn = el("button", { class: "btn btn--small btn--primary" }, "후보 만들기");
   const usageLabel = el("span", { class: "hint", style: "margin-left:8px" }, "");
@@ -1360,13 +1391,16 @@ async function renderImageGen(host, pageIdx, slotPath, sceneInput, avoidInput) {
 
   genBtn.onclick = async () => {
     genBtn.disabled = true;
-    genBtn.textContent = "생성 중…";
+    genBtn.textContent = referenceFiles.length ? "레퍼런스 올리는 중…" : "생성 중…";
     try {
+      const referenceImages = referenceFiles.length ? await Promise.all(referenceFiles.map(readAsDataURL)) : undefined;
+      genBtn.textContent = "생성 중…";
       const data = await api(`/api/editions/${editionId}/pages/${pageIdx}/generate-images`, {
         method: "POST",
         body: JSON.stringify({
           page_idx: pageIdx, scene: sceneInput.value, avoid: avoidInput.value,
           ratio, count: parseInt(countSel.value, 10), editor: "reviewer",
+          reference_images: referenceImages,
         }),
       });
       appendGallery(data.candidates);

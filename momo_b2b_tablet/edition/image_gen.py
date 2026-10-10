@@ -103,12 +103,24 @@ def _openai_size_for_ratio(ratio: str) -> str:
     return _OPENAI_SIZE_LANDSCAPE if w_ratio > h_ratio else _OPENAI_SIZE_PORTRAIT
 
 
-async def _generate_openai(prompt: str, ratio: str) -> dict:
+async def _generate_openai(prompt: str, ratio: str, reference_images: list[bytes] | None = None) -> dict:
     size = _openai_size_for_ratio(ratio)
     client = _get_openai_client()
     t0 = time.monotonic()
     try:
-        res = await client.images.generate(model="gpt-image-1", prompt=prompt, size=size, n=1)
+        if reference_images:
+            # gpt-image-1은 generate(텍스트만)와 edit(이미지+텍스트) 엔드포인트가
+            # 분리돼 있다 - 레퍼런스 이미지가 있으면 edit을 써서 그 이미지(들)를
+            # 참고하게 한다. mask 없이 호출하면 이미지 전체를 참고해 새로 그린다
+            # (부분 수정이 아니라 스타일/구도 참고 용도).
+            files = []
+            for i, data in enumerate(reference_images):
+                fmt = Image.open(io.BytesIO(data)).format
+                ext = _UPLOAD_EXT.get(fmt, "png")
+                files.append((f"ref_{i}.{ext}", data, f"image/{ext if ext != 'jpg' else 'jpeg'}"))
+            res = await client.images.edit(model="gpt-image-1", image=files, prompt=prompt, size=size, n=1)
+        else:
+            res = await client.images.generate(model="gpt-image-1", prompt=prompt, size=size, n=1)
     except openai.APIError as e:
         raise RuntimeError(f"OpenAI 이미지 생성 실패: {e}") from e
     elapsed_ms = round((time.monotonic() - t0) * 1000)
@@ -148,11 +160,38 @@ def save_uploaded_image(data: bytes) -> dict:
     return {"file_path": f"generated/{filename}", "width": im.width, "height": im.height}
 
 
+_MAX_REFERENCE_IMAGES = 4
+
+
+def _validate_reference_image(data: bytes) -> None:
+    if len(data) > _MAX_UPLOAD_BYTES:
+        raise ValueError(f"레퍼런스 이미지가 너무 큽니다({len(data) // 1024}KB, 최대 {_MAX_UPLOAD_BYTES // 1024}KB).")
+    try:
+        img = Image.open(io.BytesIO(data))
+        img.verify()
+    except Exception as e:
+        raise ValueError(f"레퍼런스 이미지 파일이 아니거나 손상되었습니다: {e}") from e
+    if img.format not in _UPLOAD_EXT:
+        raise ValueError(f"지원하지 않는 레퍼런스 이미지 형식입니다({img.format}) - JPEG/PNG/WEBP만 가능합니다.")
+
+
 async def generate_candidates(scene: str, avoid: str, quarter: str | None,
-                                ratio: str, count: int) -> list[dict]:
+                                ratio: str, count: int,
+                                reference_images: list[bytes] | None = None) -> list[dict]:
     """2~3장 생성해서 파일로 저장하고, store.save_image_candidates에 넘길 수
-    있는 dict 리스트를 돌려준다(DB에는 아직 안 씀 - 호출자 책임)."""
+    있는 dict 리스트를 돌려준다(DB에는 아직 안 씀 - 호출자 책임).
+
+    reference_images가 있으면(검수자가 올린 파일) OpenAI edit 엔드포인트로
+    그 이미지(들)를 참고해 생성한다 - 다른 제공자(IMAGE_PROVIDER)는 아직
+    레퍼런스 이미지를 지원하지 않으므로 여기서 거부한다."""
     provider_name = os.environ.get("IMAGE_PROVIDER", "openai")
+    if reference_images:
+        if len(reference_images) > _MAX_REFERENCE_IMAGES:
+            raise ValueError(f"레퍼런스 이미지는 최대 {_MAX_REFERENCE_IMAGES}장까지입니다.")
+        for data in reference_images:
+            _validate_reference_image(data)
+        if provider_name != "openai":
+            raise ValueError(f"레퍼런스 이미지는 IMAGE_PROVIDER=openai에서만 지원합니다(현재: {provider_name}).")
     fn = _PROVIDERS.get(provider_name)
     if fn is None:
         raise ValueError(f"지원하지 않는 IMAGE_PROVIDER: {provider_name}")
@@ -160,7 +199,7 @@ async def generate_candidates(scene: str, avoid: str, quarter: str | None,
     prompt = build_prompt(scene, avoid, quarter)
     results = []
     for _ in range(count):
-        r = await fn(prompt, ratio)
+        r = await fn(prompt, ratio, reference_images=reference_images) if reference_images else await fn(prompt, ratio)
         filename = f"{uuid.uuid4().hex}.png"
         r["image"].save(GENERATED_DIR / filename, "PNG")
         results.append({
