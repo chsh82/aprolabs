@@ -139,6 +139,7 @@ body{background:var(--bg);color:var(--ink);font:400 13px/1.5 "Noto Sans KR",sans
 .subfield-row input{flex:1 1 100px}
 .subfield-add{margin-top:2px}
 .section-divider{border:0;border-top:1px solid var(--line);margin:16px 0}
+.vocab-item + .vocab-item{padding-top:10px;margin-top:10px;border-top:1px solid var(--line)}
 .todo-note{font-size:11.5px;color:var(--sub);background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:8px 9px}
 
 /* ---------- 검수 프리셋(SPEC_프롬프트_편집_기능.md 1단계, 2026-09-27) ---------- */

@@ -933,8 +933,16 @@ function renderVocabInspector(body, page, idx, basePath) {
   body.append(el("hr", { class: "section-divider" }));
   body.append(el("h3", {}, "낱말 뜻(vocab)"));
   page.vocab.forEach((item, k) => {
+    const group = el("div", { class: "vocab-item" });
+    const wordInput = el("input", { type: "text", value: item.w || "" });
     const ta = el("textarea", { rows: "2" }, item.d || "");
-    body.append(field(item.w, ta));
+    group.append(field(`낱말 ${k + 1}: 단어`, wordInput));
+    group.append(field(`낱말 ${k + 1}: 뜻`, ta));
+    wordInput.addEventListener("blur", () => {
+      if (wordInput.value !== (item.w || "")) {
+        patch([{ op: "replace", path: `${basePath}/vocab/${k}/w`, value: wordInput.value }], { reason: "검수: 낱말 단어 수정" });
+      }
+    });
     ta.addEventListener("blur", () => {
       if (ta.value !== (item.d || "")) {
         patch([{ op: "replace", path: `${basePath}/vocab/${k}/d`, value: ta.value }], { reason: "검수: 낱말 뜻 수정" });
@@ -952,8 +960,9 @@ function renderVocabInspector(body, page, idx, basePath) {
         if (flag) await resolveFlag(flag.id);
       };
       row.append(confirmBtn);
-      body.append(row);
+      group.append(row);
     }
+    body.append(group);
   });
 }
 
